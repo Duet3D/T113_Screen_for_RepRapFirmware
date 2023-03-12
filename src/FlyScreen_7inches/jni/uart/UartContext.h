@@ -36,8 +36,7 @@ private:
 	bool mIsOpen;
 	int mUartID;
 
-	// 用于拼接缓存数据，可能存在上一包数据解析未完全，残留有数据
-  // Used for splicing cached data, there may be incomplete data parsing of the previous packet, and data remains
+	// Used for splicing cached data, there may be incomplete data parsing of the previous packet, and data remains
 	BYTE *mDataBufPtr;
 	int mDataBufLen;
 };

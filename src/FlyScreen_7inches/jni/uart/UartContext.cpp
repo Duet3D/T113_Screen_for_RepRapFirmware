@@ -79,7 +79,7 @@ bool UartContext::openUart(const char *pFileName, UINT baudRate) {
 		tcflush(mUartID, TCIOFLUSH);
 		tcsetattr(mUartID, TCSANOW, &newtio);
 
-		// 设置为非阻塞 Set to non-blocking
+		// Set to non-blocking
 		fcntl(mUartID, F_SETFL, O_NONBLOCK);
 
 		mIsOpen = run("uart");
@@ -140,23 +140,17 @@ bool UartContext::readyToRun() {
 
 bool UartContext::threadLoop() {
 	if (mIsOpen) {
-		// 可能上一次解析后有残留数据，需要拼接起来
-    // There may be residual data after the last analysis, which needs to be spliced
+		// There may be residual data after the last analysis, which needs to be spliced
 		int readNum = read(mUartID, mDataBufPtr + mDataBufLen, UART_DATA_BUF_LEN - mDataBufLen);
 
 		if (readNum > 0) {
 			mDataBufLen += readNum;
 
-			// 解析协议
-      // Parse protocol
+			// Parse protocol
 			int len = parseProtocol(mDataBufPtr, mDataBufLen);
-			if ((len > 0) && (len < mDataBufLen)) {
-				// 将未解析的数据移到头部
-        // Move unparsed data to the head
-				memcpy(mDataBufPtr, mDataBufPtr + len, mDataBufLen - len);
+			if (len == 0) {
+				mDataBufLen = 0;
 			}
-
-			mDataBufLen -= len;
 		} else {
 			Thread::sleep(50);
 		}

@@ -9,18 +9,10 @@
 #define _UART_PROTOCOL_DATA_H_
 
 #include <string>
-#include "CommDef.h"
-
-/******************** CmdID ***********************/
-#define CMDID_POWER							0x0
-/**************************************************/
-
-/******************** 错误码 Error code ***********************/
-#define ERROR_CODE_CMDID			1
-/**************************************************/
 
 typedef struct {
-	BYTE power;
+	const unsigned char* data;
+	unsigned int len;
 } SProtocolData;
 
 #endif /* _UART_PROTOCOL_DATA_H_ */
