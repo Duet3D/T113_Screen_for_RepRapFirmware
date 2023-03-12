@@ -11,6 +11,16 @@
 #include "uart/ProtocolParser.h"
 #include "utils/Log.h"
 
+#define DEBUG (0)
+
+#if DEBUG
+#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
+
+#else
+# define dbg(fmt, args...)		do {} while(0)
+
+#endif
+
 static Mutex sLock;
 static std::vector<OnProtocolDataUpdateFun> sProtocolDataUpdateListenerList;
 
@@ -69,7 +79,7 @@ static void procParse(const unsigned char *pData, unsigned int len) {
  * Return value: the length of the actual resolution protocol
  */
 int parseProtocol(const unsigned char *pData, unsigned int len) {
-	LOGD("uart.ProtocolParser.parseProtocol: Received %d bytes of data: %.*s", len, len, pData);
+	dbg("uart.ProtocolParser.parseProtocol: Received %d bytes of data: %.*s", len, len, pData);
 	if (pData[len-1] == '\n') {  // a serial message ends with \n
 		procParse(pData, len);
 		return 0;

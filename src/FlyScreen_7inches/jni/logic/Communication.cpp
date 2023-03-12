@@ -16,10 +16,20 @@
 #include "Hardware/Reset.hpp"
 
 #include "uart/CommDef.h"
-#include "utils/Log.h"
 #include "Configuration.hpp"
 #include "ControlCommands.hpp"
 #include "Library/Thumbnail.hpp"
+
+#define DEBUG (1)
+
+#if DEBUG
+# include "utils/Log.h"
+#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
+
+#else
+# define dbg(fmt, args...)		do {} while(0)
+
+#endif
 
 // These defines control which detailed M409 requests will be sent
 // If one of the fields in the disabled ones need to be fetched the
@@ -471,7 +481,6 @@ namespace Comm {
 
 	struct Seq* GetNextSeq(struct Seq *current) {
 		if (current == nullptr) {
-			LOGD("current seq is null");
 			current = seqs;
 		}
 
@@ -490,7 +499,7 @@ namespace Comm {
 	}
 
 	static struct Seq *FindSeqByKey(const char *key) {
-		LOGD("key %s\n", key);
+		dbg("key %s\n", key);
 
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i) {
 			if (strcasecmp(seqs[i].key, key) == 0) {
@@ -506,7 +515,7 @@ namespace Comm {
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i) {
 			if (seqs[i].seqid == seqid) {
 				if (seqs[i].lastSeq != val) {
-					LOGD("%s %d -> %d\n", seqs[i].key, seqs[i].lastSeq, val);
+					dbg("%s %d -> %d\n", seqs[i].key, seqs[i].lastSeq, val);
 					seqs[i].lastSeq = val;
 					seqs[i].state = SeqStateUpdate;
 				}
@@ -612,7 +621,7 @@ namespace Comm {
 
 		if (currentRespSeq != nullptr) {
 			currentRespSeq->state = outOfBuffers ? SeqStateError : SeqStateOk;
-			LOGD("seq %s %d DONE\n", currentRespSeq->key, currentRespSeq->state);
+			dbg("seq %s %d DONE\n", currentRespSeq->key, currentRespSeq->state);
 			currentRespSeq = nullptr;
 		}
 		outOfBuffers = false;	// Reset the out-of-buffers flag
@@ -624,7 +633,7 @@ namespace Comm {
 		//FileManager::EndReceivedMessage();
 
 		if (thumbnailContext.parseErr != 0 || thumbnailContext.err != 0) {
-			LOGD("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
+			dbg("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
 			thumbnailContext.state = ThumbnailState::Init;
 		}
 	#if 0 // && DEBUG
@@ -645,19 +654,19 @@ namespace Comm {
 			break;
 		case ThumbnailState::Header:
 			if (!ThumbnailIsValid(thumbnail)) {
-				LOGD("thumbnail meta invalid.\n");
+				dbg("thumbnail meta invalid.\n");
 				break;
 			}
 			thumbnailContext.state = ThumbnailState::DataRequest;
 			break;
 		case ThumbnailState::Data:
 			if (!ThumbnailDataIsValid(thumbnailData)) {
-				LOGD("thumbnail meta or data invalid.\n");
+				dbg("thumbnail meta or data invalid.\n");
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
 			}/*
 			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0) {
-				LOGD("failed to decode thumbnail chunk %d.\n", ret);
+				dbg("failed to decode thumbnail chunk %d.\n", ret);
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
 			}*/
@@ -723,11 +732,11 @@ namespace Comm {
 
 		// no matching key found
 		if (!searchResult) {
-			LOGD("no matching key found for %s\n", id.c_str());
+			//dbg("no matching key found for %s\n", id.c_str());
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		LOGD("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
+		//dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
 		switch (rde) {
 		// M409 section
 		// TODO: Uncomment stuff below related to UI/OM
@@ -1464,7 +1473,7 @@ namespace Comm {
 			uint32_t offset;
 			if (GetUnsignedInteger(data, offset)) {
 				thumbnailContext.next = offset;
-				LOGD("receive initial offset %d.\n", offset);
+				dbg("receive initial offset %d.\n", offset);
 			}
 			break;
 		case rcvM36ThumbnailsSize:
@@ -1500,14 +1509,14 @@ namespace Comm {
 				thumbnailContext.parseErr = -3;
 				break;
 			}
-			LOGD("receive next offset %d.\n", thumbnailContext.next);
+			dbg("receive next offset %d.\n", thumbnailContext.next);
 			break;
 		case rcvM361ThumbnailOffset:
 			if (!GetUnsignedInteger(data, thumbnailContext.offset)) {
 				thumbnailContext.parseErr = -4;
 				break;
 			}
-			LOGD("receive current offset %d.\n", thumbnailContext.offset);
+			dbg("receive current offset %d.\n", thumbnailContext.offset);
 			break;
 
 		case rcvControlCommand:
@@ -1593,7 +1602,7 @@ namespace Comm {
 
 		if (errors > parserMinErrors) {
 			//MessageLog::AppendMessageF("Warning: received %d malformed responses.", errors);
-			LOGD("Warning: received %d malformed responses.", errors);
+			dbg("Warning: received %d malformed responses.", errors);
 		}
 		if (currentRespSeq == nullptr) {
 			return;
@@ -1608,12 +1617,12 @@ namespace Comm {
 	void sendNext() {
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
-			LOGD("requesting %s\n", currentReqSeq->key);
+			dbg("requesting %s\n", currentReqSeq->key);
 			SerialIo::Sendf("M409 K\"%s\" F\"%s\"\n", currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
-				LOGD("seqs init DONE\n");
+				dbg("seqs init DONE\n");
 				//UI::AllToolsSeen();
 				initialized = true;
 			}
