@@ -10,7 +10,7 @@ EASYUI_COMMON_INCLUDE := $(LOCAL_PATH)/include
 PROJ_ROOT_PATH  :=./
 #Source file extension
 PROJ_SRC_SUFFIX := %.cpp %.c
-PROJ_HEAD_SUFFIX := %.h
+PROJ_HEAD_SUFFIX := %.hpp %.h
 # Recursively traverse all files in the directory
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))  
 # Obtain the corresponding source file
@@ -42,6 +42,7 @@ INCLUDE_DIR := -I$(EASYUI_COMMON_INCLUDE) \
 					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/gui \
 					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/uClibc++ \
 					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/system \
+					-I$(LOCAL_PATH)/logic \
 					-I. 
 
 LDFLAGS = -luClibc++ -leasyui -llog

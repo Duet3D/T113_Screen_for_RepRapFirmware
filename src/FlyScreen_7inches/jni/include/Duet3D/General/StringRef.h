@@ -37,13 +37,12 @@ public:
 	char& operator[](size_t index) const noexcept { return p[index]; }
 
 	void Clear() const noexcept { p[0] = 0; }
-	/*
+
 	int printf(const char * _ecv_array fmt, ...) const noexcept __attribute__ ((format (printf, 2, 3)));
 	int vprintf(const char * _ecv_array fmt, va_list vargs) const noexcept;
 	int catf(const char * _ecv_array fmt, ...) const noexcept __attribute__ ((format (printf, 2, 3)));
 	int lcatf(const char * _ecv_array fmt, ...) const noexcept __attribute__ ((format (printf, 2, 3)));
 	int vcatf(const char * _ecv_array fmt, va_list vargs) const noexcept;
-	*/
 	bool copy(const char* _ecv_array src) const noexcept;						// returns true if buffer is too small
 	bool copy(const char * _ecv_array src, size_t maxlen) const noexcept;		// returns true if buffer is too small
 	bool cat(const char * _ecv_array src) const noexcept;						// returns true if buffer is too small

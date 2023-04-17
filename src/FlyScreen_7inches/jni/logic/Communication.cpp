@@ -17,6 +17,12 @@
 
 #include "uart/CommDef.h"
 #include "Configuration.hpp"
+#include "ObjectModel/Axis.hpp"
+#include "ObjectModel/BedOrChamber.hpp"
+#include "ObjectModel/PrinterStatus.hpp"
+#include "ObjectModel/Spindle.hpp"
+#include "ObjectModel/Tool.hpp"
+#include "ObjectModel/Utils.hpp"
 #include "ControlCommands.hpp"
 #include "Library/Thumbnail.hpp"
 
@@ -59,6 +65,8 @@ namespace Comm {
 
 	static uint8_t oobCounter = 0;
 	static bool outOfBuffers = false;
+
+	static bool isDelta = false;
 
 	static size_t numAxes = 2;
 	static int32_t beepFrequency = 0;
@@ -106,6 +114,8 @@ namespace Comm {
 			next = 0;
 		};
 	} thumbnailContext;
+
+	static OM::PrinterStatus status = OM::PrinterStatus::connecting;
 
 	enum ReceivedDataEvent {
 		rcvUnknown = 0,
@@ -530,9 +540,54 @@ namespace Comm {
 		}
 	}
 
+	bool IsPrintingStatus(OM::PrinterStatus status)
+	{
+		return status == OM::PrinterStatus::printing
+				|| status == OM::PrinterStatus::paused
+				|| status == OM::PrinterStatus::pausing
+				|| status == OM::PrinterStatus::resuming
+				|| status == OM::PrinterStatus::simulating;
+	}
+
+	bool PrintInProgress()
+	{
+		return IsPrintingStatus(status);
+	}
+
 	template<typename T>
 	int compare(const void* lp, const void* rp){
 		return strcasecmp(((T*) lp)->key, ((T*) rp)->key);
+	}
+
+	// Return true if sending a command or file list request to the printer now is a good idea.
+	// We don't want to send these when the printer is busy with a previous command, because they will block normal status requests.
+	static bool OkToSend()
+	{
+		return status == OM::PrinterStatus::idle
+				|| status == OM::PrinterStatus::printing
+				|| status == OM::PrinterStatus::paused
+				|| status == OM::PrinterStatus::off;
+	}
+
+	// Return the printer status
+	OM::PrinterStatus GetStatus()
+	{
+		return status;
+	}
+
+	// This is called when the status changes
+	static void SetStatus(OM::PrinterStatus newStatus)
+	{
+		if (newStatus != status)
+		{
+			dbg("printer status %d -> %d\n", status, newStatus);
+	//		UI::ChangeStatus(status, newStatus);
+
+			status = newStatus;
+	//		UI::UpdatePrintingFields();
+
+	//		lastActionTime = SystemTick::GetTickCount();
+		}
 	}
 
 	// Try to get an integer value from a string. If it is actually a floating point value, round it.
@@ -1020,11 +1075,11 @@ namespace Comm {
 			}
 			break;
 
-		case rcvMoveKinematicsName:/*
+		case rcvMoveKinematicsName:
 			if (status != OM::PrinterStatus::configuring && status != OM::PrinterStatus::connecting) {
 				isDelta = (strcasecmp(data, "delta") == 0);
-				UI::UpdateGeometry(numAxes, isDelta);
-			}*/
+	//			UI::UpdateGeometry(numAxes, isDelta);
+			}
 			break;
 
 		case rcvMoveSpeedFactor:
@@ -1046,10 +1101,10 @@ namespace Comm {
 			break;
 
 		// Network section
-		case rcvNetworkName:/*
+		case rcvNetworkName:
 			if (status != OM::PrinterStatus::configuring && status != OM::PrinterStatus::connecting) {
-				UI::UpdateMachineName(data);
-			}*/
+	//			UI::UpdateMachineName(data);
+			}
 			break;
 
 		case rcvNetworkInterfacesActualIP:
@@ -1166,7 +1221,7 @@ namespace Comm {
 			break;
 
 		// State section
-		case rcvStateCurrentTool:/*
+		case rcvStateCurrentTool:
 			if (status == OM::PrinterStatus::connecting)
 			{
 				break;
@@ -1174,9 +1229,9 @@ namespace Comm {
 			{
 				int32_t tool;
 				if (GetInteger(data, tool)) {
-					UI::SetCurrentTool(tool);
+	//				UI::SetCurrentTool(tool);
 				}
-			}*/
+			}
 			break;
 
 		case rcvStateMessageBox:/*
@@ -1221,7 +1276,7 @@ namespace Comm {
 			currentAlert.flags.SetBit(Alert::GotTitle);*/
 			break;
 
-		case rcvStateStatus:/*
+		case rcvStateStatus:
 			{
 				const OM::PrinterStatusMapEntry key = (OM::PrinterStatusMapEntry) { .key = data, .val = OM::PrinterStatus::connecting};
 				const OM::PrinterStatusMapEntry * statusFromMap =
@@ -1236,7 +1291,7 @@ namespace Comm {
 					break;
 				}
 				SetStatus(statusFromMap->val);
-			}*/
+			}
 			break;
 
 		case rcvStateUptime:/*
@@ -1297,11 +1352,11 @@ namespace Comm {
 			break;
 
 		case rcvToolsNumber:
-			{/*
+			{
 				for (size_t i = lastTool + 1; i < indices[0]; ++i) {
 					OM::RemoveTool(i, false);
 				}
-				lastTool = indices[0];*/
+				lastTool = indices[0];
 			}
 			break;
 
@@ -1557,30 +1612,30 @@ namespace Comm {
 	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
 		} else if (currentResponseType == rcvOMKeyHeat) {
 			if (strcasecmp(id, "heat:bedHeaters^") == 0) {
-	//			OM::RemoveBed(lastBed + 1, true);
+				OM::RemoveBed(lastBed + 1, true);
 				if (initialized) {
 	//				UI::AllToolsSeen();
 				}
 			} else if (strcasecmp(id, "heat:chamberHeaters^") == 0) {
-	//			OM::RemoveChamber(lastChamber + 1, true);
+				OM::RemoveChamber(lastChamber + 1, true);
 				if (initialized) {
 	//				UI::AllToolsSeen();
 				}
 			}
 		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
-	//		OM::RemoveAxis(indices[0], true);
+			OM::RemoveAxis(indices[0], true);
 	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);
 	//		UI::UpdateGeometry(numAxes, isDelta);
 		} else if (currentResponseType == rcvOMKeySpindles) {
 			if (strcasecmp(id, "spindles^") == 0) {
-	//			OM::RemoveSpindle(lastSpindle + 1, true);
+				OM::RemoveSpindle(lastSpindle + 1, true);
 				if (initialized) {
 	//				UI::AllToolsSeen();
 				}
 			}
 		} else if (currentResponseType == rcvOMKeyTools) {
 			if (strcasecmp(id, "tools^") == 0) {
-	//			OM::RemoveTool(lastTool + 1, true);
+				OM::RemoveTool(lastTool + 1, true);
 				if (initialized) {
 	//				UI::AllToolsSeen();
 				}
@@ -1629,12 +1684,10 @@ namespace Comm {
 
 			// check if specific info is needed
 			bool sent = false;
-			// TODO: uncomment below
-			/*
 			if (OkToSend()) {
-				sent = FileManager::ProcessTimers();
+				// TODO: uncomment
+				// sent = FileManager::ProcessTimers();
 			}
-			*/
 
 			// if nothing was fetched do a status update
 			if (!sent) {

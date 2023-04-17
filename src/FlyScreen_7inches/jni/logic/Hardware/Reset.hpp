@@ -14,8 +14,8 @@ extern "C" {
 #endif
 
 // Restart the hardware
-void Reset() noexcept __attribute__((noreturn));
-void EraseAndReset() noexcept __attribute__((noreturn));
+void Reset() noexcept;
+void EraseAndReset() noexcept;
 
 #ifdef __cplusplus
 }

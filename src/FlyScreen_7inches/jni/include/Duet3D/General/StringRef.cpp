@@ -11,7 +11,7 @@
 #include "StringRef.h"
 #include <cstring>
 #include <cstdio>
-//#include "SafeVsnprintf.h"
+#include "SafeVsnprintf.h"
 
 //*************************************************************************************************
 // StringRef class member implementations
@@ -20,7 +20,7 @@ size_t StringRef::strlen() const noexcept
 {
 	return Strnlen(p, len - 1);
 }
-/*
+
 int StringRef::printf(const char *_ecv_array fmt, ...) const noexcept
 {
 	va_list vargs;
@@ -82,7 +82,7 @@ int StringRef::vcatf(const char *_ecv_array fmt, va_list vargs) const noexcept
 	}
 	return 0;
 }
-*/
+
 // This is quicker than printf for printing constant strings
 bool StringRef::copy(const char *_ecv_array src) const noexcept
 {
