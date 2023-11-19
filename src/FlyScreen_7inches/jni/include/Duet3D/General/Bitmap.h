@@ -16,6 +16,13 @@
 #include "gcc_builtins.h"
 #include "../ecv_duet3d.h"
 
+// Some functions can only be defined 'constexpr' if we are using C++14 or later
+#if __cplusplus >=201402L
+# define CONSTEXPR14 constexpr
+#else
+# define CONSTEXPR14
+#endif
+
 // Helper functions to work on bitmaps of various lengths.
 // The primary purpose of these is to allow us to switch between 16, 32 and 64-bit bitmaps.
 
@@ -48,7 +55,7 @@ inline unsigned int LowestSetBit(unsigned long long val) noexcept
 
 // Extract one bit from a value and move it to a target bit number, returning a value with only the target bit possibly set
 // T should be an unsigned integer type
-template<class T> inline constexpr T ExtractBit(T val, unsigned int fromBitNumber, unsigned int toBitNumber) noexcept
+template<class T> inline CONSTEXPR14 T ExtractBit(T val, unsigned int fromBitNumber, unsigned int toBitNumber) noexcept
 {
 	if (fromBitNumber == toBitNumber)
 	{
@@ -66,7 +73,7 @@ template<class T> inline constexpr T ExtractBit(T val, unsigned int fromBitNumbe
 
 // Extract two bits from a value and move it to a target bit number, returning a value with only the target bits possibly set
 // T should be an unsigned integer type
-template<class T> inline constexpr T ExtractTwoBits(T val, unsigned int fromBitNumber, unsigned int toBitNumber) noexcept
+template<class T> inline CONSTEXPR14 T ExtractTwoBits(T val, unsigned int fromBitNumber, unsigned int toBitNumber) noexcept
 {
 	if (fromBitNumber == toBitNumber)
 	{
@@ -85,47 +92,47 @@ template<class T> inline constexpr T ExtractTwoBits(T val, unsigned int fromBitN
 template<class BaseType> class Bitmap
 {
 public:
-	constexpr Bitmap() noexcept : bits(0) { }
-	explicit constexpr Bitmap(BaseType n) noexcept : bits(n) { }
+	CONSTEXPR14 Bitmap() noexcept : bits(0) { }
+	explicit CONSTEXPR14 Bitmap(BaseType n) noexcept : bits(n) { }
 
-	static constexpr unsigned int MaxBits() noexcept { return sizeof(BaseType) * CHAR_BIT; }
-	constexpr BaseType GetRaw() const noexcept { return bits; }
-	constexpr bool IsEmpty() const noexcept { return bits == 0; }
-	constexpr bool IsNonEmpty() const noexcept { return bits != 0; }
+	static CONSTEXPR14 unsigned int MaxBits() noexcept { return sizeof(BaseType) * CHAR_BIT; }
+	CONSTEXPR14 BaseType GetRaw() const noexcept { return bits; }
+	CONSTEXPR14 bool IsEmpty() const noexcept { return bits == 0; }
+	CONSTEXPR14 bool IsNonEmpty() const noexcept { return bits != 0; }
 
-	constexpr bool IsBitSet(unsigned int n) const noexcept
+	CONSTEXPR14 bool IsBitSet(unsigned int n) const noexcept
 	{
 		return (bits & ((BaseType)1u << n)) != 0;
 	}
 
-	constexpr void Clear() noexcept { bits = 0; }
+	CONSTEXPR14 void Clear() noexcept { bits = 0; }
 
 	// Set a bit
-	constexpr void SetBit(unsigned int n) noexcept
+	CONSTEXPR14 void SetBit(unsigned int n) noexcept
 	{
 		bits |= ((BaseType)1u << n);
 	}
 
 	// Clear a bit
-	constexpr void ClearBit(unsigned int n) noexcept
+	CONSTEXPR14 void ClearBit(unsigned int n) noexcept
 	{
 		bits &= ~((BaseType)1u << n);
 	}
 
 	// Invert a bit
-	constexpr void InvertBit(unsigned int n) noexcept
+	CONSTEXPR14 void InvertBit(unsigned int n) noexcept
 	{
 		bits ^= ((BaseType)1u << n);
 	}
 
 	// Clear multiple bits
-	constexpr void ClearBits(Bitmap<BaseType> other) noexcept
+	CONSTEXPR14 void ClearBits(Bitmap<BaseType> other) noexcept
 	{
 		bits &= ~other.bits;
 	}
 
 	// Set a bit to a given state
-	constexpr void SetOrClearBit(unsigned int n, bool b) noexcept
+	CONSTEXPR14 void SetOrClearBit(unsigned int n, bool b) noexcept
 	{
 		if (b)
 		{
@@ -137,70 +144,70 @@ public:
 		}
 	}
 
-	constexpr Bitmap<BaseType> operator & (Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 Bitmap<BaseType> operator & (Bitmap<BaseType> other) const noexcept
 	{
 		return Bitmap<BaseType>(bits & other.bits);
 	}
 
-	constexpr Bitmap<BaseType>& operator &= (Bitmap<BaseType> other) noexcept
+	CONSTEXPR14 Bitmap<BaseType>& operator &= (Bitmap<BaseType> other) noexcept
 	{
 		bits &= other.bits;
 		return *this;
 	}
 
-	constexpr Bitmap<BaseType> operator | (Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 Bitmap<BaseType> operator | (Bitmap<BaseType> other) const noexcept
 	{
 		return Bitmap<BaseType>(bits | other.bits);
 	}
 
-	constexpr Bitmap<BaseType> operator ~ () const noexcept
+	CONSTEXPR14 Bitmap<BaseType> operator ~ () const noexcept
 	{
 		return Bitmap<BaseType>(~bits);
 	}
 
-	constexpr Bitmap<BaseType>& operator |= (Bitmap<BaseType> other) noexcept
+	CONSTEXPR14 Bitmap<BaseType>& operator |= (Bitmap<BaseType> other) noexcept
 	{
 		bits |= other.bits;
 		return *this;
 	}
 
-	constexpr Bitmap<BaseType> operator - (Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 Bitmap<BaseType> operator - (Bitmap<BaseType> other) const noexcept
 	{
 		return Bitmap<BaseType>(bits & ~other.bits);
 	}
 
-	constexpr bool operator == (Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 bool operator == (Bitmap<BaseType> other) const noexcept
 	{
 		return bits == other.bits;
 	}
 
-	constexpr bool operator != (Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 bool operator != (Bitmap<BaseType> other) const noexcept
 	{
 		return bits != other.bits;
 	}
 
-	constexpr bool Intersects(Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 bool Intersects(Bitmap<BaseType> other) const noexcept
 	{
 		return (bits & other.bits) != 0;
 	}
 
-	constexpr bool Disjoint(Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 bool Disjoint(Bitmap<BaseType> other) const noexcept
 	{
 		return (bits & other.bits) == 0;
 	}
 
-	constexpr bool Contains(Bitmap<BaseType> other) const noexcept
+	CONSTEXPR14 bool Contains(Bitmap<BaseType> other) const noexcept
 	{
 		return (~bits & other.bits) == 0;
 	}
 
-	constexpr Bitmap<BaseType> ShiftUp(unsigned int n) const noexcept
+	CONSTEXPR14 Bitmap<BaseType> ShiftUp(unsigned int n) const noexcept
 	{
 		return Bitmap<BaseType>(bits << n);
 	}
 
 	// Set the bits from a base type bitmap
-	constexpr void SetFromRaw(BaseType b) noexcept
+	CONSTEXPR14 void SetFromRaw(BaseType b) noexcept
 	{
 		bits = b;
 	}
@@ -221,31 +228,31 @@ public:
 	bool IterateWhile(function_ref_noexcept<bool(unsigned int, unsigned int) noexcept> func) const noexcept;
 
 	// Make a bitmap with the lowest n bits set
-	static constexpr Bitmap<BaseType> MakeLowestNBits(unsigned int n) noexcept
+	static CONSTEXPR14 Bitmap<BaseType> MakeLowestNBits(unsigned int n) noexcept
 	{
 		return Bitmap<BaseType>((n < MaxBits()) ? ((BaseType)1u << n) - 1 : ~(BaseType)0);
 	}
 
 	// Convert an unsigned integer to a bit in a bitmap
-	static constexpr Bitmap<BaseType> MakeFromBits(unsigned int b1) noexcept
+	static CONSTEXPR14 Bitmap<BaseType> MakeFromBits(unsigned int b1) noexcept
 	{
 		return Bitmap<BaseType>((BaseType)1u << b1);
 	}
 
 	// Convert an unsigned integer to a bit in a bitmap
-	static constexpr Bitmap<BaseType> MakeFromBits(unsigned int b1, unsigned int b2) noexcept
+	static CONSTEXPR14 Bitmap<BaseType> MakeFromBits(unsigned int b1, unsigned int b2) noexcept
 	{
 		return Bitmap<BaseType>((BaseType)1u << b1 | (BaseType)1u << b2);
 	}
 
 	// Convert an unsigned integer to a bit in a bitmap
-	static constexpr Bitmap<BaseType> MakeFromBits(unsigned int b1, unsigned int b2, unsigned int b3) noexcept
+	static CONSTEXPR14 Bitmap<BaseType> MakeFromBits(unsigned int b1, unsigned int b2, unsigned int b3) noexcept
 	{
 		return Bitmap<BaseType>((BaseType)1u << b1 | (BaseType)1u << b2 |  (BaseType)1u << b3);
 	}
 
 	// Convert an unsigned integer to a bit in a bitmap
-	static constexpr Bitmap<BaseType> MakeFromRaw(BaseType b) noexcept
+	static CONSTEXPR14 Bitmap<BaseType> MakeFromRaw(BaseType b) noexcept
 	{
 		return Bitmap<BaseType>(b);
 	}

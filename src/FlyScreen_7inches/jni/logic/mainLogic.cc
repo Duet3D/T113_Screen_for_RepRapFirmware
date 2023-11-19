@@ -110,7 +110,8 @@ static bool onUI_Timer(int id){
 	switch (id) {
 
 		case TIMER_UPDATE_DATA:
-			// Comm::sendNext();
+			Comm::sendNext();
+
 			break;
 
 		default:

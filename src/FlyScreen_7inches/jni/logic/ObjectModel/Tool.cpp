@@ -122,11 +122,9 @@ namespace OM
 		{
 			heaters[i] = nullptr;
 		}
-		// TODO: uncomment this
 		extruders.Clear();
 		spindle = nullptr;
 		spindleRpm = 0;
-		// TODO: uncomment this
 		fans.Clear();
 		for (size_t i = 0; i < MaxTotalAxes; ++i)
 		{

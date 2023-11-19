@@ -1,6 +1,6 @@
 eclipse.preferences.version=1
 environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CC/delimiter=;
-environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CC/operation=append
+environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CC/operation=replace
 environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CC/value=arm-flythings-eabi-gcc
 environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CROSS_COMPILE/delimiter=;
 environment/project/cdt.managedbuild.config.gnu.exe.debug.566211490/CROSS_COMPILE/operation=replace
