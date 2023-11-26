@@ -10,6 +10,9 @@
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
+#define DEBUG (1)
+#include "Debug.hpp"
+
 
 typedef Vector<OM::Axis*, MaxTotalAxes> AxisList;
 static AxisList axes;
@@ -33,6 +36,7 @@ namespace OM
 
 	Axis* GetAxis(const size_t index)
 	{
+		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;

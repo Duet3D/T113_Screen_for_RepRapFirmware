@@ -17,6 +17,7 @@
 
 #include "uart/CommDef.h"
 #include "Configuration.hpp"
+#include <UI/UserInterface.hpp>
 #include "ObjectModel/Axis.hpp"
 #include "ObjectModel/BedOrChamber.hpp"
 #include "ObjectModel/PrinterStatus.hpp"
@@ -27,15 +28,7 @@
 #include "Library/Thumbnail.hpp"
 
 #define DEBUG (1)
-
-#if DEBUG
-# include "utils/Log.h"
-#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
-
-#else
-# define dbg(fmt, args...)		do {} while(0)
-
-#endif
+#include "Debug.hpp"
 
 // These defines control which detailed M409 requests will be sent
 // If one of the fields in the disabled ones need to be fetched the
@@ -1032,28 +1025,28 @@ namespace Comm {
 
 		case rcvMoveAxesLetter:
 			{
-				//UI::SetAxisLetter(indices[0], data[0]);
+				UI::SetAxisLetter(indices[0], data[0]);
 			}
 			break;
 
 		case rcvMoveAxesUserPosition:
-			{/*
+			{
 				float fval;
 				if (GetFloat(data, fval)) {
 					UI::UpdateAxisPosition(indices[0], fval);
-				}*/
+				}
 			}
 			break;
 
 		case rcvMoveAxesVisible:
-			{/*
+			{
 				bool visible;
 				if (GetBool(data, visible)) {
 					UI::SetAxisVisible(indices[0], visible);
 					if (visible) {
 						++visibleAxesCounted;
 					}
-				}*/
+				}
 			}
 			break;
 
@@ -1078,7 +1071,7 @@ namespace Comm {
 		case rcvMoveKinematicsName:
 			if (status != OM::PrinterStatus::configuring && status != OM::PrinterStatus::connecting) {
 				isDelta = (strcasecmp(data, "delta") == 0);
-	//			UI::UpdateGeometry(numAxes, isDelta);
+				UI::UpdateGeometry(numAxes, isDelta);
 			}
 			break;
 
