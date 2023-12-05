@@ -420,10 +420,10 @@ bool FormattedPrinter::PrintFloat(double d, char formatLetter) noexcept
 	{
 		return PutString("nan");
 	}
-	if (isinf(d))
-	{
-		return PutString("inf");
-	}
+//	if (isinf(d))
+//	{
+//		return PutString("inf");
+//	}
 
 	double ud = fabs(d);
 	if (ud > (double)LLONG_MAX && (formatLetter == 'f' || formatLetter == 'F'))
