@@ -2,4 +2,4 @@ easyui.cfg.debug={"baud"\:"57600","defBrightness"\:-1,"font"\:"/mnt/extsd/ui/fzc
 easyui.cfg.release={"baud"\:"57600","defBrightness"\:-1,"font"\:"/res/ui/fzcircle.ttf","languageCode"\:"zh_CN","languagePath"\:"/res/tr/","resPath"\:"/res/ui/","rotateScreen"\:0,"rotateTouch"\:0,"screensaverTimeOut"\:-1,"startupLibPath"\:"/res/lib/libzkgui.so","startupTouchCalib"\:false,"touchDev"\:"/dev/input/event1","uart"\:"ttyS0","zkdebug"\:true}
 eclipse.preferences.version=1
 platform={"name"\:"Z11S","cprojectTemplateDir"\:"bundle/cproject/z11s","internalCode"\:"z11s"}
-resolution=800x480
+resolution=1024x600
