@@ -752,7 +752,7 @@ namespace Comm {
 	// Public functions called by the SerialIo module
 	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]) {
 		ReceivedDataEvent currentResponseType = ReceivedDataEvent::rcvUnknown;
-
+		dbg("id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
 		if (StringStartsWith(id.c_str(), "result")) {
 			// We might either get something like:
 			// * "result[optional modified]:[key]:[field]" for a live response or
@@ -784,7 +784,7 @@ namespace Comm {
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		//dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
+		dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
 		switch (rde) {
 		// M409 section
 		// TODO: Uncomment stuff below related to UI/OM

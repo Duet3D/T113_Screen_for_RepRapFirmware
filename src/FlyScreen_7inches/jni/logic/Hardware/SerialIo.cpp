@@ -12,7 +12,7 @@
 #include "SerialIo.hpp"
 #include "uart/UartContext.h"
 
-#define DEBUG (0)
+#define DEBUG (1)
 
 #if DEBUG
 # include "utils/Log.h"
@@ -152,6 +152,8 @@ namespace SerialIo {
 			cbs->ProcessArrayEnd(fieldId.c_str(), arrayIndices);
 		}
 		if (arrayDepth != 0) {			// should always be true
+			dbg("id %s (%s), arrayIndices [%d|%d|%d|%d], arrayDepth %d", fieldId.c_str(), fieldVal.c_str(), arrayIndices[0], arrayIndices[1], arrayIndices[2], arrayIndices[3], arrayDepth);
+			arrayIndices[arrayDepth - 1] = 0;
 			--arrayDepth;
 			RemoveLastIdChar();
 		}

@@ -11,7 +11,7 @@
 #include "uart/ProtocolParser.h"
 #include "utils/Log.h"
 
-#define DEBUG (0)
+#define DEBUG (1)
 
 #if DEBUG
 #define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
