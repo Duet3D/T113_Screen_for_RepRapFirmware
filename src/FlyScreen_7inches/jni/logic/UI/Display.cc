@@ -11,16 +11,20 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 
+
 static UI::Element elements[] = {
-	{
-		"heat:heaters^:current",
-		[](const char *data, const size_t arrayIndices[])
-		{
-			float fval;
-			if (Comm::GetFloat(data, fval))
+	ELEMENT_FLOAT(
+			"heat:heaters^:current",
+			[](const float val, const size_t indices[])
 			{
-				mTempGraphPtr->addData(arrayIndices[0], fval);
+				mTempGraphPtr->addData(indices[0], val);
+				LOGD("current temperature heater %d = %fC", indices[0], val);
 			}
-		}
-	},
+	),
+	ELEMENT_FLOAT(
+			"heat:heaters^:current",
+			[](const float val, const size_t indices[])
+			{
+				dbg("test");
+			})
 };

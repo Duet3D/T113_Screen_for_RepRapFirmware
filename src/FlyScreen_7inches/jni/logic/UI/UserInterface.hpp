@@ -10,8 +10,61 @@
 
 #include <map>
 #include <vector>
+#include "Communication.hpp"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
+
+#define ELEMENT_FLOAT(key, callback) \
+	UI::Element{ \
+		key, \
+		[&](const char *data, const size_t indices[]) \
+		{ \
+			float val; \
+			if (Comm::GetFloat(data, val)) \
+			{ \
+				callback(val, indices); \
+			} \
+		} \
+	}
+
+#define ELEMENT_INT(key, callback) \
+	UI::Element{ \
+		key, \
+		[&](const char *data, const size_t indices[]) \
+		{ \
+			int32_t val; \
+			if (Comm::GetInteger(data, val)) \
+			{ \
+				callback(val, indices); \
+			} \
+		} \
+	}
+
+#define ELEMENT_UINT(key, callback) \
+	UI::Element{ \
+		key, \
+		[&](const char *data, const size_t indices[]) \
+		{ \
+			uint32_t val; \
+			if (Comm::GetUnsignedInteger(data, val)) \
+			{ \
+				callback(val, indices); \
+			} \
+		} \
+	}
+
+#define ELEMENT_BOOL(key, callback) \
+	UI::Element{ \
+		key, \
+		[&](const char *data, const size_t indices[]) \
+		{ \
+			bool val; \
+			if (Comm::GetBool(data, val)) \
+			{ \
+				callback(val, indices); \
+			} \
+		} \
+	}
 
 typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices[]);
 

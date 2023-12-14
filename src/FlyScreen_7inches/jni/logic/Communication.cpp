@@ -794,7 +794,7 @@ namespace Comm {
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
+//		dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType, data);
 		switch (rde) {
 		// M409 section
 		// TODO: Uncomment stuff below related to UI/OM
