@@ -2,38 +2,55 @@
  * UserInterface.hpp
  *
  *  Created on: Nov 19, 2023
- *      Author: Loïc
+ *      Author: Loïc & Andy Everitt
  */
 
 #ifndef JNI_LOGIC_UI_USERINTERFACE_HPP_
 #define JNI_LOGIC_UI_USERINTERFACE_HPP_
 
-
-#include <ObjectModel/BedOrChamber.hpp>
-#include <ObjectModel/PrinterStatus.hpp>
-#include <ObjectModel/Spindle.hpp>
-#include <ObjectModel/Tool.hpp>
-#include <UI/Display.hpp>
+#include <map>
+#include <vector>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
+typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices);
 
+// Custom comparator for string literals at compile time
+struct ConstCharComparator
+{
+	constexpr bool operator()(const char* a, const char* b) const
+	{
+		return std::strcmp(a, b) < 0;
+	}
+};
 
 namespace UI
 {
-	static FloatField *controlTabAxisPos[MaxDisplayableAxes];
+	class Element
+	{
+	public:
+		Element(const char *key, ui_update_cb cb);
+		void Init();
+		void Update(const char data[], const size_t arrayIndices);
 
-	extern void ShowAxis(size_t axis, bool b, const char* axisLetter = nullptr);
+		Element *next;
+		static Element *head;
+	private:
+		const char *key;
+		ui_update_cb cb;
+	};
 
-	extern void UpdateAxisPosition(size_t axis, float fval);
+	class ElementMap
+	{
+	public:
+		void RegisterElement(const char *key, const Element& element); // Method to add a pair to the data store
+		const std::vector<Element>& GetElements(const char* key) const;	// Method to retrieve the elements associated with a key
 
-	extern void UpdateGeometry(unsigned int p_numAxes, bool p_isDelta);
+	private:
+		std::map<const char*, std::vector<Element>, ConstCharComparator> elementsMap;
+	};
 
-	extern void SetBabystepOffset(size_t index, float f);
-	extern void SetAxisLetter(size_t index, char l);
-	extern void SetAxisVisible(size_t index, bool v);
-	extern void SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
-	extern void SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
+	extern ElementMap elementMap;
 }
 
 #endif /* JNI_LOGIC_UI_USERINTERFACE_HPP_ */

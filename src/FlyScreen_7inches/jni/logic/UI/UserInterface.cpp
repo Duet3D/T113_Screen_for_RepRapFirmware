@@ -2,9 +2,8 @@
  * UserInterface.cpp
  *
  *  Created on: Nov 19, 2023
- *      Author: Loïc
+ *      Author: Loïc & Andy Everitt
  */
-
 
 #include <UI/UserInterface.hpp>
 
@@ -14,158 +13,58 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 
-
-
-static uint8_t numVisibleAxes = 0;	// initialize to 0 so we refresh the macros list when we receive the number of axes
-static uint8_t numDisplayedAxes = 0;
-static bool isDelta = false;
-
 namespace UI
 {
+	ElementMap elementMap;
+	Element *Element::head = nullptr;
 
-	// Show or hide an axis on the move button grid and on the axis display
-	void ShowAxis(size_t slot, bool b, const char* axisLetter)
+	Element::Element(const char *key, ui_update_cb cb) :
+			key(key), cb(cb)
 	{
-		if (slot >= MaxDisplayableAxes)
+		if (head == nullptr)
 		{
-			return;
-		}
-		// TODO: uncomment things ...
-		/*
-		// The table gives us a pointer to the label field, which is followed by 8 buttons. So we need to show or hide 9 fields.
-		DisplayField *f = moveAxisRows[slot];
-		for (int i = 0; i < 9 && f != nullptr; ++i)
-		{
-			mgr.Show(f, b);
-			if (i > 0) // actual move buttons
-			{
-				TextButtonForAxis *textButton = static_cast<TextButtonForAxis*>(f);
-				textButton->SetAxisLetter(axisLetter[0]);
-			}
-			f = f->next;
-		}
-		mgr.Show(controlTabAxisPos[slot], b);
-#if DISPLAY_X == 800
-		mgr.Show(printTabAxisPos[slot], b);
-#endif
-		if (numDisplayedAxes < MaxDisplayableAxes)
-		{
-			mgr.Show(movePopupAxisPos[slot], b);		// the move popup axis positions occupy the last axis row of the move popup
+			head = this;
 		}
 		else
 		{
-			// This is incremental and we might end up that this row is no longer available
-			for (size_t i = 0; i < MaxDisplayableAxes; ++i)
+			Element *current = head;
+			while (current->next != nullptr)
 			{
-				mgr.Show(movePopupAxisPos[i], false);
+				current = current->next;
 			}
-		}
-		*/
-	}
-
-	// Update the geometry or the number of axes
-	// TODO: uncomment things ...
-	void UpdateGeometry(unsigned int p_numAxes, bool p_isDelta)
-	{
-		if (p_numAxes != numVisibleAxes || p_isDelta != isDelta)
-		{
-			numVisibleAxes = p_numAxes;
-			isDelta = p_isDelta;
-			//FileManager::RefreshMacrosList();
-			numDisplayedAxes = 0;
-			OM::IterateAxesWhile([](OM::Axis*& axis, size_t)
-			{
-				axis->slot = MaxTotalAxes;
-				if (!axis->visible)
-				{
-					return true;
-				}
-				const char * letter = axis->letter;
-				if (numDisplayedAxes < MaxDisplayableAxes)
-				{
-					axis->slot = numDisplayedAxes;
-					++numDisplayedAxes;
-
-					// Update axis letter everywhere we display it
-					const uint8_t slot = axis->slot;
-
-					//mAxisSlot1_labelPtr->setText(letter);
-					dbg("Slot: %d - Letter: %s\n", slot, letter);
-
-					//controlTabAxisPos[slot]->SetLabel(letter);	// TODO: comprendre pourquoi cette ligne fait planter le systeme
-					/*
-					moveAxisRows		[slot]->SetValue(letter);
-					movePopupAxisPos	[slot]->SetLabel(letter);
-					homeButtons			[slot]->SetText(letter);
-
-					// Update axis letter to be sent for homing commands
-					homeButtons[slot]->SetEvent(homeButtons[slot]->GetEvent(), letter);
-					homeButtons[slot]->SetColours(colours->buttonTextColour, (axis->homed) ? colours->homedButtonBackColour : colours->notHomedButtonBackColour);
-
-					mgr.Show(homeButtons[slot], !isDelta);
-					*/
-					ShowAxis(slot, true, axis->letter);
-				}
-				// When we get here it's likely to be the initialisation phase
-				// and we won't have the babystep amount set
-				if (axis->letter[0] == 'Z')
-				{
-					//babystepOffsetField->SetValue(axis->babystep);
-				}
-				return true;
-			});
-			// Hide axes possibly shown before
-			for (size_t i = numDisplayedAxes; i < MaxDisplayableAxes; ++i)
-			{
-				//mgr.Show(homeButtons[i], false);
-				ShowAxis(i, false);
-			}
+			current->next = this;
 		}
 	}
 
-
-
-
-
-	void UpdateAxisPosition(size_t axisIndex, float fval)
+	void Element::Init()
 	{
-		if (axisIndex < MaxTotalAxes)
-		{
-			auto axis = OM::GetAxis(axisIndex);
-			if (axis != nullptr && axis->slot < MaxDisplayableAxes)
-			{
-				size_t slot = axis->slot;
-				dbg("Slot: %d - Position: %f\n", slot, fval);
+		dbg("Registering element against key %s", key);
+		elementMap.RegisterElement(key, *this);
+#if DEBUG
+		int size = elementMap.GetElements(key).size();
+		dbg("%d elements registered against key %s", size, key);
+#endif
+	}
 
-				controlTabAxisPos[slot]->SetValue(fval);
-				/*
-				movePopupAxisPos[slot]->SetValue(fval);
-				*/
-			}
+	void Element::Update(const char data[], const size_t arrayIndices)
+	{
+		if (cb != nullptr)
+		{
+			cb(data, arrayIndices);
 		}
 	}
 
-	void SetAxisLetter(size_t index, char l)
+	void ElementMap::RegisterElement(const char *key, const Element& element)
 	{
-		if (index < MaxTotalAxes)
-		{
-			OM::Axis *axis = OM::GetOrCreateAxis(index);
-			if (axis != nullptr)
-			{
-				axis->letter[0] = l;
-			}
-		}
+		auto& elementList = elementsMap[key];
+		elementList.push_back(element);
 	}
 
-	void SetAxisVisible(size_t index, bool v)
+	// Method to retrieve the elements associated with a key
+	const std::vector<Element>& ElementMap::GetElements(const char* key) const
 	{
-		if (index < MaxTotalAxes)
-		{
-			OM::Axis *axis = OM::GetOrCreateAxis(index);
-			if (axis != nullptr)
-			{
-				axis->visible = v;
-			}
-		}
+		static const std::vector<Element> emptyVector; // Return an empty vector if key not found
+		auto it = elementsMap.find(key);
+		return (it != elementsMap.end()) ? it->second : emptyVector;
 	}
 }
