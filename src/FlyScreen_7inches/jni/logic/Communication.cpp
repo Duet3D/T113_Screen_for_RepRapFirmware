@@ -586,7 +586,7 @@ namespace Comm {
 	// Try to get an integer value from a string. If it is actually a floating point value, round it.
 	// NB: We are using the old fashioned way (using strtol/strtof) instead of the safe functions provided
 	// by the RRFLibraries because of the uClibc++ library not providing the things we need for that.
-	static bool GetInteger(const char s[], int32_t &rslt) {
+	bool GetInteger(const char s[], int32_t &rslt) {
 		if (s[0] == 0) return false;			// empty string
 
 		char* endptr;
@@ -629,7 +629,7 @@ namespace Comm {
 	}
 
 	// Try to get a bool value from a string.
-	static bool GetBool(const char s[], bool &rslt) {
+	bool GetBool(const char s[], bool &rslt) {
 		if (s[0] == 0) return false;			// empty string
 
 		rslt = (strcasecmp(s, "true") == 0);

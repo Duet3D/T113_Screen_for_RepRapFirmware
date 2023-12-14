@@ -11,5 +11,5 @@
 #include "Debug.hpp"
 
 static UI::Element elementsCustom[] = {
-		{"heat:heaters^:standby", [](const char *data, const size_t arrayIndices[]){dbg("test2");}},
+//		{"heat:heaters^:standby", [](const char *data, const size_t arrayIndices[]){dbg("test2");}},
 };

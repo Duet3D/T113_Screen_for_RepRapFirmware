@@ -184,7 +184,7 @@ org.eclipse.cdt.core.formatter.insert_space_between_empty_parens_in_method_decla
 org.eclipse.cdt.core.formatter.insert_space_between_empty_parens_in_method_invocation=do not insert
 org.eclipse.cdt.core.formatter.join_wrapped_lines=true
 org.eclipse.cdt.core.formatter.keep_else_statement_on_same_line=false
-org.eclipse.cdt.core.formatter.keep_empty_array_initializer_on_one_line=false
+org.eclipse.cdt.core.formatter.keep_empty_array_initializer_on_one_line=true
 org.eclipse.cdt.core.formatter.keep_imple_if_on_one_line=false
 org.eclipse.cdt.core.formatter.keep_then_statement_on_same_line=false
 org.eclipse.cdt.core.formatter.lineSplit=80
