@@ -5,6 +5,8 @@
 #include "Hardware/SerialIo.hpp"
 //#include "UI/UserInterface.cc"
 #include "UI/UserInterface.hpp"
+#include "UI/Display.cc"
+#include "UI/DisplayCustom.cc"
 
 #define DEBUG (1)
 #include "Debug.hpp"
@@ -56,13 +58,7 @@
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_UPDATE_DATA,  500}, // Timer id=0, interval of 500ms
-	{1,  100},
-};
-
-static UI::Element elements[] = {
-		{"key1", [](const char *data, const size_t arrayIndices){}},
-		{"key1", [](const char *data, const size_t arrayIndices){}},
-		{"key2", [](const char *data, const size_t arrayIndices){}},
+//	{1,  100},
 };
 
 /**
@@ -140,10 +136,6 @@ static bool onUI_Timer(int id){
 			float val = (float)(rand()%100);
 			dbg("rand %f", val);
 			mTempGraphPtr->addData(0, val);
-			auto var = [](){
-				dbg("test");
-			};
-			var();
 
 			int size = UI::elementMap.GetElements("key1").size();
 			dbg("%d elements registered against key \"%s\"", size, "key1");

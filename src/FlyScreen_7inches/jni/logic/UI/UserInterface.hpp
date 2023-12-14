@@ -13,7 +13,7 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
-typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices);
+typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices[]);
 
 // Custom comparator for string literals at compile time
 struct ConstCharComparator
@@ -31,7 +31,7 @@ namespace UI
 	public:
 		Element(const char *key, ui_update_cb cb);
 		void Init();
-		void Update(const char data[], const size_t arrayIndices);
+		void Update(const char data[], const size_t arrayIndices[]);
 
 		Element *next;
 		static Element *head;

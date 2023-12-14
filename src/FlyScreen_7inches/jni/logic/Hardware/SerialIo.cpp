@@ -12,7 +12,7 @@
 #include "SerialIo.hpp"
 #include "uart/UartContext.h"
 
-#define DEBUG (1)
+#define DEBUG (0)
 
 #if DEBUG
 # include "utils/Log.h"

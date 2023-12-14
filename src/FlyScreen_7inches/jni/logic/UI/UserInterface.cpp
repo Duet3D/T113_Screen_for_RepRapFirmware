@@ -46,7 +46,7 @@ namespace UI
 #endif
 	}
 
-	void Element::Update(const char data[], const size_t arrayIndices)
+	void Element::Update(const char data[], const size_t arrayIndices[])
 	{
 		if (cb != nullptr)
 		{
