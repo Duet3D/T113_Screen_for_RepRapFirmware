@@ -3,10 +3,9 @@
 #include "json/json.h"
 #include "Communication.hpp"
 #include "Hardware/SerialIo.hpp"
-//#include "UI/UserInterface.cc"
+#include "UI/Display.h"
+#include "UI/DisplayCustom.h"
 #include "UI/UserInterface.hpp"
-#include "UI/Display.cc"
-#include "UI/DisplayCustom.cc"
 
 #define DEBUG (1)
 #include "Debug.hpp"
@@ -179,8 +178,8 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev) {
 
 
 static bool onButtonClick_TriggerBtn(ZKButton *pButton) {
-    Comm::sendNext();
-
+//    Comm::sendNext();
+	mAxisSlot1_posPtr->setText("Test\nmultiple rows");
     return false;
 }
 static void onCheckedChanged_RadioGroup1(ZKRadioGroup* pRadioGroup, int checkedID) {
@@ -198,4 +197,8 @@ static void obtainListItemData_ListView1(ZKListView *pListView,ZKListView::ZKLis
 
 static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) {
     //LOGD(" onListItemClick_ ListView1  !!!\n");
+}
+static bool onButtonClick_Button1(ZKButton *pButton) {
+    LOGD(" ButtonClick Button1 !!!\n");
+    return false;
 }

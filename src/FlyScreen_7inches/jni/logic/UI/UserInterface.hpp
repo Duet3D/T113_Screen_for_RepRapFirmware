@@ -14,57 +14,52 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
-#define ELEMENT_FLOAT(key, callback) \
+#define ELEMENT_TEMPLATE(key, callback, type, convertor) \
 	UI::Element{ \
 		key, \
 		[&](const char *data, const size_t indices[]) \
 		{ \
-			float val; \
-			if (Comm::GetFloat(data, val)) \
+			type val; \
+			if (convertor(data, val)) \
 			{ \
 				callback(val, indices); \
 			} \
 		} \
 	}
 
-#define ELEMENT_INT(key, callback) \
-	UI::Element{ \
-		key, \
-		[&](const char *data, const size_t indices[]) \
-		{ \
-			int32_t val; \
-			if (Comm::GetInteger(data, val)) \
-			{ \
-				callback(val, indices); \
-			} \
-		} \
-	}
+#define ELEMENT_FLOAT(key, callback) ELEMENT_TEMPLATE(key, callback, float, Comm::GetFloat)
+#define ELEMENT_INT(key, callback) ELEMENT_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
+#define ELEMENT_UINT(key, callback) ELEMENT_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
+#define ELEMENT_BOOL(key, callback) ELEMENT_TEMPLATE(key, callback, bool, Comm::GetBool)
 
-#define ELEMENT_UINT(key, callback) \
-	UI::Element{ \
-		key, \
-		[&](const char *data, const size_t indices[]) \
-		{ \
-			uint32_t val; \
-			if (Comm::GetUnsignedInteger(data, val)) \
-			{ \
-				callback(val, indices); \
-			} \
-		} \
-	}
+template <typename T>
+std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, T>>>>& GetPrevValMap() {
+    static std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, T>>>> prevValMap;
+    return prevValMap;
+}
 
-#define ELEMENT_BOOL(key, callback) \
-	UI::Element{ \
-		key, \
-		[&](const char *data, const size_t indices[]) \
+#define ELEMENT_IF_CHANGED_TEMPLATE(key, callback, type, convertor) \
+	ELEMENT_TEMPLATE(key, \
+		([](const type val, const size_t indices[]) \
 		{ \
-			bool val; \
-			if (Comm::GetBool(data, val)) \
+			static std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, type> > > > prevValMap; \
+			auto &prevVal = prevValMap[indices[0]][indices[1]][indices[2]][indices[3]]; \
+			if (val != prevVal) \
 			{ \
+				prevValMap[indices[0]][indices[1]][indices[2]][indices[3]] = val; \
 				callback(val, indices); \
 			} \
-		} \
-	}
+			else \
+			{ \
+				LOGD("key %s[%d|%d|%d|%d] hasn't changed, skipping update", key, indices[0], indices[1], indices[2], indices[3]); \
+			} \
+		}), type, convertor \
+	)
+
+#define ELEMENT_FLOAT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, float, Comm::GetFloat)
+#define ELEMENT_INT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
+#define ELEMENT_UINT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
+#define ELEMENT_BOOL_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, bool, Comm::GetBool)
 
 typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices[]);
 
