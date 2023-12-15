@@ -175,30 +175,55 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev) {
 	}
 	return false;
 }
-
-
-static bool onButtonClick_TriggerBtn(ZKButton *pButton) {
-//    Comm::sendNext();
-	mAxisSlot1_posPtr->setText("Test\nmultiple rows");
+static bool onButtonClick_HomeBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick HomeBtn !!!\n");
     return false;
 }
-static void onCheckedChanged_RadioGroup1(ZKRadioGroup* pRadioGroup, int checkedID) {
-    LOGD(" RadioGroup RadioGroup1 checked %d", checkedID);
+static bool onButtonClick_BackBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick BackBtn !!!\n");
+    return false;
 }
 
-static int getListItemCount_ListView1(const ZKListView *pListView) {
-    //LOGD("getListItemCount_ListView1 !\n");
-    return 2;
+static bool onButtonClick_MacroBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick MacroBtn !!!\n");
+    return false;
 }
 
-static void obtainListItemData_ListView1(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ ListView1  !!!\n");
+static bool onButtonClick_EStopBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick EStopBtn !!!\n");
+    return false;
 }
 
-static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ ListView1  !!!\n");
-}
 static bool onButtonClick_Button1(ZKButton *pButton) {
     LOGD(" ButtonClick Button1 !!!\n");
     return false;
+}
+
+static int getListItemCount_ToolListView(const ZKListView *pListView) {
+    LOGD("getListItemCount_ToolListView !\n");
+    return 5;
+}
+
+static void obtainListItemData_ToolListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    LOGD(" obtainListItemData_ ToolListView  !!!\n");
+}
+
+static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id) {
+    LOGD(" onListItemClick_ ToolListView  !!!\n");
+}
+
+static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index) {
+    LOGD(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
+}
+static int getListItemCount_TemperatureGraphLegend(const ZKListView *pListView) {
+    //LOGD("getListItemCount_TemperatureGraphLegend !\n");
+    return 5;
+}
+
+static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ TemperatureGraphLegend  !!!\n");
+}
+
+static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
 }

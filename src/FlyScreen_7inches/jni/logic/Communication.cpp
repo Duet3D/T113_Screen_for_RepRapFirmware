@@ -27,7 +27,7 @@
 #include "ControlCommands.hpp"
 #include "Library/Thumbnail.hpp"
 
-#define DEBUG (1)
+#define DEBUG (0)
 #include "Debug.hpp"
 
 // These defines control which detailed M409 requests will be sent
