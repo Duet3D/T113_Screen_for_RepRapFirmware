@@ -42,11 +42,16 @@ std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, T>>>>& GetPr
 	ELEMENT_TEMPLATE(key, \
 		([](const type val, const size_t indices[]) \
 		{ \
-			static std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, type> > > > prevValMap; \
-			auto &prevVal = prevValMap[indices[0]][indices[1]][indices[2]][indices[3]]; \
+			int32_t packedIndex = 0; \
+			packedIndex |= (static_cast<int32_t>(indices[0]) & 0xFF) << 24; \
+			packedIndex |= (static_cast<int32_t>(indices[1]) & 0xFF) << 16; \
+			packedIndex |= (static_cast<int32_t>(indices[2]) & 0xFF) << 8; \
+			packedIndex |= (static_cast<int32_t>(indices[3]) & 0xFF); \
+			static std::map<int32_t, type> prevValMap; \
+			auto &prevVal = prevValMap[packedIndex]; \
 			if (val != prevVal) \
 			{ \
-				prevValMap[indices[0]][indices[1]][indices[2]][indices[3]] = val; \
+				prevVal = val; \
 				callback(val, indices); \
 			} \
 			else \
