@@ -17,7 +17,7 @@
 
 #include "uart/CommDef.h"
 #include "Configuration.hpp"
-#include <UI/UserInterface.hpp>
+#include "UI/OmObserver.hpp"
 #include "ObjectModel/Axis.hpp"
 #include "ObjectModel/BedOrChamber.hpp"
 #include "ObjectModel/PrinterStatus.hpp"

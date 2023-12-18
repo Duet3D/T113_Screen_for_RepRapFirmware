@@ -6,10 +6,15 @@
  */
 
 #pragma once
-#include "UI/UserInterface.hpp"
+#include "OmObserver.hpp"
 #define DEBUG (1)
 #include "Debug.hpp"
 
 static UI::Element<UI::ui_field_update_cb> elementsCustom[] = {
-//		{"heat:heaters^:standby", [](const char *data, const size_t arrayIndices[]){dbg("test2");}},
+//	ELEMENT_FLOAT(
+//		"heat:heaters^:standby",
+//		[](ELEMENT_FLOAT_ARGS)
+//		{
+//		}
+//	)
 };

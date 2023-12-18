@@ -7,10 +7,11 @@
 
 #pragma once
 #include "Communication.hpp"
-#include "UI/UserInterface.hpp"
+#include "UI/OmObserver.hpp"
 #include "UI/UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/Utils.hpp"
+#include "MainMenuFunc.hpp"
 
 #include "Debug.hpp"
 

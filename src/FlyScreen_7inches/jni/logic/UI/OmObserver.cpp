@@ -5,10 +5,9 @@
  *      Author: Loïc & Andy Everitt
  */
 
-#include <UI/UserInterface.hpp>
-
 #include <ObjectModel/Axis.hpp>
 #include <ObjectModel/Utils.hpp>
+#include "OmObserver.hpp"
 
 #define DEBUG (1)
 #include "Debug.hpp"

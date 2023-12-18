@@ -5,8 +5,8 @@
  *      Author: Loïc & Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_USERINTERFACE_HPP_
-#define JNI_LOGIC_UI_USERINTERFACE_HPP_
+#ifndef JNI_LOGIC_UI_OMOBSERVER_HPP_
+#define JNI_LOGIC_UI_OMOBSERVER_HPP_
 
 #include <map>
 #include <vector>
@@ -164,4 +164,4 @@ namespace UI
 	extern ElementMap<ui_array_end_update_cb> elementMapArrayEnd;
 }
 
-#endif /* JNI_LOGIC_UI_USERINTERFACE_HPP_ */
+#endif /* JNI_LOGIC_UI_OMOBSERVER_HPP_ */
