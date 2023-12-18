@@ -14,13 +14,26 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
+#include "Debug.hpp"
+
 #define ELEMENT_FLOAT_ARGS const float &val, const size_t indices[]
 #define ELEMENT_INT_ARGS const int32_t &val, const size_t indices[]
 #define ELEMENT_UINT_ARGS const uint32_t &val, const size_t indices[]
 #define ELEMENT_BOOL_ARGS const bool &val, const size_t indices[]
+#define ELEMENT_ARRAY_END_ARGS const size_t indices[]
+
+#define ELEMENT_ARRAY_END(key, callback) \
+	UI::Element<UI::ui_array_end_update_cb>{ \
+		key, \
+		[&](const size_t indices[]) \
+		{ \
+			callback(indices); \
+		}, \
+		UI::omArrayEndElementHead, \
+	}
 
 #define ELEMENT_TEMPLATE(key, callback, type, convertor) \
-	UI::Element{ \
+	UI::Element<UI::ui_field_update_cb>{ \
 		key, \
 		[&](const char *data, const size_t indices[]) \
 		{ \
@@ -29,7 +42,8 @@
 			{ \
 				callback(val, indices); \
 			} \
-		} \
+		}, \
+		UI::omFieldElementHead, \
 	}
 
 #define ELEMENT_FLOAT(key, callback) ELEMENT_TEMPLATE(key, callback, float, Comm::GetFloat)
@@ -65,8 +79,6 @@
 #define ELEMENT_UINT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
 #define ELEMENT_BOOL_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, bool, Comm::GetBool)
 
-typedef void (*ui_update_cb)(const char *data, const size_t arrayIndices[]);
-
 // Custom comparator for string literals at compile time
 struct ConstCharComparator
 {
@@ -78,31 +90,78 @@ struct ConstCharComparator
 
 namespace UI
 {
+	typedef void (*ui_field_update_cb)(const char *data, const size_t arrayIndices[]);
+	typedef void (*ui_array_end_update_cb)(const size_t arrayIndices[]);
+
+	template<typename cbType>
+	class ElementMap;
+
+	template<typename cbType>
 	class Element
 	{
 	public:
-		Element(const char *key, ui_update_cb cb);
-		void Init();
-		void Update(const char data[], const size_t arrayIndices[]);
+		Element(const char *key, cbType cb, Element *&head) :
+			key(key), cb(cb)
+		{
+			next = head;
+			head = this;
+		}
+		void Init(ElementMap<cbType> &elementMap)
+		{
+			dbg("Registering element against key %s", key);
+			elementMap.RegisterElement(key, *this);
+	#if DEBUG
+			int size = elementMap.GetElements(key).size();
+			dbg("%d elements registered against key %s", size, key);
+	#endif
+		}
+		void Update(const size_t arrayIndices[])
+		{
+			if (cb != nullptr)
+			{
+				cb(arrayIndices);
+			}
+		}
+		void Update(const char data[], const size_t arrayIndices[])
+		{
+			if (cb != nullptr)
+			{
+				cb(data, arrayIndices);
+			}
+		}
+		const char * GetKey(){ return key; }
 
 		Element *next;
 		static Element *head;
 	private:
 		const char *key;
-		ui_update_cb cb;
+		cbType cb;
 	};
 
+	template<typename cbType>
 	class ElementMap
 	{
 	public:
-		void RegisterElement(const char *key, const Element& element); // Method to add a pair to the data store
-		const std::vector<Element>& GetElements(const char* key) const;	// Method to retrieve the elements associated with a key
-
+		void RegisterElement(const char *key, const Element<cbType>& element)
+		{
+			auto& elementList = elementsMap[key];
+			elementList.push_back(element);
+		}
+		const std::vector<Element<cbType>>& GetElements(const char* key) const
+			{
+				static const std::vector<Element<cbType>> emptyVector; // Return an empty vector if key not found
+				auto it = elementsMap.find(key);
+				return (it != elementsMap.end()) ? it->second : emptyVector;
+			}
 	private:
-		std::map<const char*, std::vector<Element>, ConstCharComparator> elementsMap;
+		std::map<const char*, std::vector<Element<cbType>>, ConstCharComparator> elementsMap;
 	};
 
-	extern ElementMap elementMap;
+	extern Element<ui_field_update_cb> *omFieldElementHead;
+	extern Element<ui_array_end_update_cb> *omArrayEndElementHead;
+
+	extern ElementMap<ui_field_update_cb> elementMap;
+	extern ElementMap<ui_array_end_update_cb> elementMapArrayEnd;
 }
 
 #endif /* JNI_LOGIC_UI_USERINTERFACE_HPP_ */

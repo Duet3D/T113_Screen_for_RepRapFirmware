@@ -11,11 +11,11 @@
 #include "UI/UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/Utils.hpp"
-#define DEBUG (0)
+
 #include "Debug.hpp"
 
 
-static UI::Element elements[] = {
+static UI::Element<UI::ui_field_update_cb> mainMenuFields[] = {
 	/* Update what heaters are associated with what tool */
 	ELEMENT_UINT_IF_CHANGED(
 			"tools^:heaters^",
@@ -56,8 +56,20 @@ static UI::Element elements[] = {
 			"heat:heaters^:current",
 			[](ELEMENT_FLOAT_ARGS)
 			{
-				mTempGraphPtr->addData(indices[0], val);
+//				mTempGraphPtr->addData(indices[0], val);
 				dbg("current temperature heater %d = %fC", indices[0], val);
+			}
+	),
+};
+
+static UI::Element<UI::ui_array_end_update_cb> mainMenuArrayEnd[] = {
+	ELEMENT_ARRAY_END(
+			"tools^:heaters^",
+			[](ELEMENT_ARRAY_END_ARGS)
+			{
+				float val = (float) (rand() % 100);
+				LOGD("rand %f", val);
+				mTempGraphPtr->addData(0, val);
 			}
 	),
 };

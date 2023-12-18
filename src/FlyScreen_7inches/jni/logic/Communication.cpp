@@ -771,10 +771,10 @@ namespace Comm {
 		}
 
 		// search for key in elementMap
-		std::vector<UI::Element> elements = UI::elementMap.GetElements(id.c_str());
+		auto elements = UI::elementMap.GetElements(id.c_str());
 		if (elements.size() != 0)
 		{
-			for (UI::Element &elem : elements)
+			for (auto &elem : elements)
 			{
 				elem.Update(data, indices);
 			}
@@ -997,6 +997,15 @@ namespace Comm {
 
 	// Public function called when the serial I/O module finishes receiving an array of values
 	static void ProcessArrayEnd(const char id[], const size_t indices[]) {
+		// search for key in elementMap
+		auto elements = UI::elementMapArrayEnd.GetElements(id);
+		if (elements.size() != 0)
+		{
+			for (auto &elem : elements)
+			{
+				elem.Update(indices);
+			}
+		}
 		ReceivedDataEvent currentResponseType = currentRespSeq != nullptr ? currentRespSeq->event : ReceivedDataEvent::rcvUnknown;
 		// TODO: uncomment stuff below related to UI/OM
 		if (indices[0] == 0 && strcmp(id, "files^") == 0) {

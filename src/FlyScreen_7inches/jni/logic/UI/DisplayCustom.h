@@ -10,6 +10,6 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 
-static UI::Element elementsCustom[] = {
+static UI::Element<UI::ui_field_update_cb> elementsCustom[] = {
 //		{"heat:heaters^:standby", [](const char *data, const size_t arrayIndices[]){dbg("test2");}},
 };
