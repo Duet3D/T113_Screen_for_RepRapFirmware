@@ -153,4 +153,37 @@ namespace OM
 	{
 		return Remove<ToolList, Tool>(tools, index, allFollowing);
 	}
+
+	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex)
+	{
+		if (toolHeaterIndex >= MaxHeatersPerTool)
+		{
+			return false;
+		}
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		OM::ToolHeater *toolHeater = tool->GetOrCreateHeater(toolHeaterIndex);
+		if (toolHeater == nullptr)
+		{
+			return false;
+		}
+		toolHeater->heaterIndex = heaterIndex;
+		return true;
+	}
+
+	bool UpdateToolTemp(size_t toolIndex, size_t toolHeaterIndex, int32_t temp, bool active)
+	{
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+
+		// If we do not handle this tool back off
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		tool->UpdateTemp(toolHeaterIndex, temp, active);
+	}
 }

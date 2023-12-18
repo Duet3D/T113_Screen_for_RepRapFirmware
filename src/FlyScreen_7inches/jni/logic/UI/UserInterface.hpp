@@ -14,6 +14,11 @@
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
+#define ELEMENT_FLOAT_ARGS const float &val, const size_t indices[]
+#define ELEMENT_INT_ARGS const int32_t &val, const size_t indices[]
+#define ELEMENT_UINT_ARGS const uint32_t &val, const size_t indices[]
+#define ELEMENT_BOOL_ARGS const bool &val, const size_t indices[]
+
 #define ELEMENT_TEMPLATE(key, callback, type, convertor) \
 	UI::Element{ \
 		key, \
@@ -31,12 +36,6 @@
 #define ELEMENT_INT(key, callback) ELEMENT_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
 #define ELEMENT_UINT(key, callback) ELEMENT_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
 #define ELEMENT_BOOL(key, callback) ELEMENT_TEMPLATE(key, callback, bool, Comm::GetBool)
-
-template <typename T>
-std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, T>>>>& GetPrevValMap() {
-    static std::map<size_t, std::map<size_t, std::map<size_t, std::map<size_t, T>>>> prevValMap;
-    return prevValMap;
-}
 
 #define ELEMENT_IF_CHANGED_TEMPLATE(key, callback, type, convertor) \
 	ELEMENT_TEMPLATE(key, \
