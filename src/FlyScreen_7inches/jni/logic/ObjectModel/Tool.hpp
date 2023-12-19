@@ -76,7 +76,9 @@ namespace OM
 		ToolStatus status;
 		uint8_t slot;
 
+		ToolHeater* GetHeater(const uint8_t toolHeaterIndex);
 		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex);
+		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		int8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;

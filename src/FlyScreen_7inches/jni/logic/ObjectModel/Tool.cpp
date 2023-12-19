@@ -2,7 +2,7 @@
  * Tool.cpp
  *
  *  Created on: 17 Feb 2021
- *      Author: manuel
+ *      Author: manuel & Andy Everitt
  */
 
 #include "Tool.hpp"
@@ -35,20 +35,36 @@ namespace OM
 		FreelistManager::Release<Tool>(p);
 	}
 
-	ToolHeater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex)
+	ToolHeater* Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MaxHeatersPerTool)
 		{
 			return nullptr;
 		}
-		if (heaters[toolHeaterIndex] != nullptr)
+		return heaters[toolHeaterIndex];
+	}
+
+	ToolHeater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex)
+	{
+		ToolHeater *heater = GetHeater(toolHeaterIndex);
+		if (heater != nullptr)
 		{
-			return heaters[toolHeaterIndex];
+			return heater;
 		}
 		ToolHeater* th = new ToolHeater;
 		th->Reset();
 		heaters[toolHeaterIndex] = th;
 		return th;
+	}
+
+	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
+	{
+		ToolHeater *heater = GetOrCreateHeater(toolHeaterIndex);
+		if (heater == nullptr)
+		{
+			return -2000;
+		}
+		return active ? heater->activeTemp : heater->standbyTemp;
 	}
 
 	bool Tool::GetHeaterTemps(const StringRef& ref, const bool active)

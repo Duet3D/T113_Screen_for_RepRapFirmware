@@ -236,6 +236,60 @@ static int getListItemCount_ToolListView(const ZKListView *pListView)
 static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
 	LOGD(" obtainListItemData_ ToolListView  !!!\n");
+	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_ToolNameSubItem);
+	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_ToolCurrentTemperatureSubItem);
+	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_ToolActiveTemperatureSubItem);
+	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_ToolStandbyTemperatureSubItem);
+
+	// Check Tools to see if list index is within tool heaters
+	OM::Tool *tool = nullptr;
+	OM::BedOrChamber *bedOrChamber = nullptr;
+
+	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
+	if (tool != nullptr)
+	{
+		dbg("List index %d = Tool %d heater %d", index, tool->index, toolHeaterIndex);
+		ptoolName->setText(tool->name.c_str());
+		OM::ToolHeater *heater;
+		heater = tool->GetHeater(toolHeaterIndex);
+		if (heater != nullptr)
+		{
+			pactiveTemperature->setText(heater->activeTemp);
+			pstandbyTemperature->setText(heater->standbyTemp);
+		}
+		return;
+	}
+
+	int8_t bedOrChamberIndex = index - toolHeaterIndex;
+	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
+	if (bed != nullptr)
+	{
+		dbg("List index %d = Bed %d", index, bed->index);
+		ptoolName->setText("Bed");
+	}
+
+//	OM::IterateToolsWhile([&](OM::Tool*& tool, size_t)
+//			{
+//				const bool hasHeater = tool->heaters[0] != nullptr;
+//				const bool hasSpindle = tool->spindle != nullptr;
+//				// Spindle takes precedence
+//				if (hasSpindle)
+//				{
+//				}
+//				else if (hasHeater)
+//				{
+//					tool->IterateHeaters([&ptoolName, &tool](OM::ToolHeater*, size_t)
+//							{
+//								ptoolName->setText
+//							});
+//				}
+//				else
+//				{
+//					// Hides everything by default
+//					++count;
+//				}
+//				return true;
+//			});
 }
 
 static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id)

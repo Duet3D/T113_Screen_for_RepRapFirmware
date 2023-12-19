@@ -66,6 +66,31 @@ namespace UI
 		totalCount = count;
 	}
 
+	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool)
+	{
+		int8_t count = 0;
+		int8_t heaterIndex = -1;
+		OM::IterateToolsWhile([&](OM::Tool*& toolIter, size_t)
+			{
+				if (listIndex < count + toolIter->GetHeaterCount())
+				{
+					tool = toolIter;
+					heaterIndex = listIndex - count;
+					return false;
+				}
+				count += toolIter->GetHeaterCount();
+				return true;
+			});
+		if (heaterIndex > -1)
+		{
+			dbg("List index %d is Tool %d heater %d", listIndex, tool->index, heaterIndex);
+			return heaterIndex;
+		}
+		dbg("List index %d is not in tool heaters (%d)", listIndex, count);
+		tool = nullptr;
+		return count;				// list index is greater than all heaters for tools
+	}
+
 	void RefreshToolList(ZKListView *listView)
 	{
 		toolsList.CalculateTotalHeaterCount();

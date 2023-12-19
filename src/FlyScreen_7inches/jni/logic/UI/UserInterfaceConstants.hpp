@@ -19,6 +19,7 @@ static const float _ecv_array babystepAmountsF[] = { 0.01, 0.02, 0.05, 0.1 };
 constexpr int8_t NoTool = -1;
 
 const unsigned int MaxSlots = 7;
+const unsigned int MaxHeaters = 32;
 #define MaxDisplayableAxes	(6)
 
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */
