@@ -62,6 +62,13 @@ namespace OM
 		return !ref.IsEmpty();
 	}
 
+	int8_t Tool::GetHeaterCount() const
+	{
+		int8_t count;
+		for (count = 0; count < MaxHeatersPerTool && heaters[count] != nullptr; ++count){}
+		return count;
+	}
+
 	int8_t Tool::HasHeater(const uint8_t heaterIndex) const
 	{
 		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
@@ -172,6 +179,16 @@ namespace OM
 		}
 		toolHeater->heaterIndex = heaterIndex;
 		return true;
+	}
+
+	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	{
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		return tool->RemoveHeatersFrom(firstIndexToDelete) > 0;
 	}
 
 	bool UpdateToolTemp(size_t toolIndex, size_t toolHeaterIndex, int32_t temp, bool active)

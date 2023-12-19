@@ -76,6 +76,12 @@ namespace OM
 	size_t GetChamberCount();
 	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
+	bool SetBedHeater(const uint8_t heaterIndex, const int8_t heaterNumber);
+	bool SetChamberHeater(const uint8_t heaterIndex, const int8_t heaterNumber);
+
+	extern int8_t lastBed;
+	extern int8_t lastChamber;
+
 }
 
 #endif /* SRC_OBJECTMODEL_BEDORCHAMBER_HPP_ */

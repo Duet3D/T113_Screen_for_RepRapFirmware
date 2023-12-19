@@ -74,6 +74,7 @@ namespace OM
 
 		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
+		int8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
@@ -88,6 +89,7 @@ namespace OM
 	size_t RemoveTool(const size_t index, const bool allFollowing);
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
+	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete);
 	bool UpdateToolTemp(size_t toolIndex, size_t toolHeaterIndex, int32_t temp, bool active);
 }
 

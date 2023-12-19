@@ -13,65 +13,9 @@
 #include "ListHelpers.hpp"
 //#include "FlashData.hpp"
 
+#define DEBUG (1)
+#include "Debug.hpp"
+
 namespace OM
 {
-	void GetHeaterSlots(
-			const size_t heaterIndex,
-			Slots& slots,
-			const bool addTools,
-			const bool addBeds,
-			const bool addChambers)
-	{
-		if (addBeds)
-		{
-			IterateBedsWhile(
-				[&slots, heaterIndex](Bed*& bed, size_t) {
-					if (bed->slot < MaxSlots && bed->heater == (int)heaterIndex)
-					{
-						slots.Add(bed->slot);
-					}
-					return bed->slot < MaxSlots;
-				});
-		}
-		if (addChambers)
-		{
-			IterateChambersWhile(
-				[&slots, heaterIndex](Chamber*& chamber, size_t) {
-					if (chamber->slot < MaxSlots && chamber->heater == (int)heaterIndex)
-					{
-						slots.Add(chamber->slot);
-					}
-					return chamber->slot < MaxSlots;
-				});
-		}
-		if (addTools)
-		{
-			IterateToolsWhile(
-				[&slots, heaterIndex](Tool*& tool, size_t) {
-					if (tool->slot < MaxSlots)
-					{
-					// TODO: uncomment this (depends on FlashData.hpp)
-					/*
-						if (nvData.GetHeaterCombineType() == HeaterCombineType::notCombined)
-						{
-							tool->IterateHeaters([tool, &slots, heaterIndex](ToolHeater* th, size_t index) {
-								if (tool->slot + index < MaxSlots && th->heaterIndex == (int) heaterIndex)
-								{
-									slots.Add(tool->slot + index);
-								}
-							});
-						}
-						else
-						{
-					*/
-							if (tool->slot < MaxSlots && tool->heaters[0] != nullptr && tool->heaters[0]->heaterIndex == (int) heaterIndex)
-							{
-								slots.Add(tool->slot);
-							}
-					//	}
-					}
-					return tool->slot < MaxSlots;
-				});
-		}
-	}
 }

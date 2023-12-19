@@ -12,14 +12,7 @@
 #include "utils/Log.h"
 
 #define DEBUG (0)
-
-#if DEBUG
-#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
-
-#else
-# define dbg(fmt, args...)		do {} while(0)
-
-#endif
+#include "Debug.hpp"
 
 static Mutex sLock;
 static std::vector<OnProtocolDataUpdateFun> sProtocolDataUpdateListenerList;

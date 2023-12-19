@@ -10,14 +10,21 @@
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
+#define DEBUG (1)
+#include "Debug.hpp"
+
 typedef Vector<OM::Bed*, MaxSlots> BedList;
 typedef Vector<OM::Chamber*, MaxSlots> ChamberList;
 
 static BedList beds;
 static ChamberList chambers;
 
+
 namespace OM
 {
+	int8_t lastBed = -1;
+	int8_t lastChamber = -1;
+
 	void BedOrChamber::Reset()
 	{
 		index = 0;
@@ -38,7 +45,8 @@ namespace OM
 
 	Bed* GetFirstBed()
 	{
-		return Find<BedList, Bed>(beds, [](Bed* bed) { return bed->heater > -1; });
+		return Find<BedList, Bed>(beds, [](Bed* bed)
+		{	return bed->heater > -1;});
 	}
 
 	size_t GetBedCount()
@@ -46,13 +54,15 @@ namespace OM
 		return beds.Size();
 	}
 
-	bool IterateBedsWhile(function_ref<bool(Bed*&, size_t)> func, const size_t startAt)
+	bool IterateBedsWhile(function_ref<bool(Bed*&, size_t)> func,
+			const size_t startAt)
 	{
 		return beds.IterateWhile(func, startAt);
 	}
 
 	size_t RemoveBed(const size_t index, const bool allFollowing)
 	{
+		dbg("Removing bed %d allFollowing=%s", index, allFollowing? "true" : "false");
 		return Remove<BedList, Bed>(beds, index, allFollowing);
 	}
 
@@ -68,7 +78,8 @@ namespace OM
 
 	Chamber* GetFirstChamber()
 	{
-		return Find<ChamberList, Chamber>(chambers, [](Chamber* chamber) { return chamber->heater > -1; });
+		return Find<ChamberList, Chamber>(chambers, [](Chamber* chamber)
+		{	return chamber->heater > -1;});
 	}
 
 	size_t GetChamberCount()
@@ -76,7 +87,8 @@ namespace OM
 		return chambers.Size();
 	}
 
-	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt)
+	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func,
+			const size_t startAt)
 	{
 		return chambers.IterateWhile(func, startAt);
 	}
@@ -86,4 +98,28 @@ namespace OM
 		return Remove<ChamberList, Chamber>(chambers, index, allFollowing);
 	}
 
+	bool SetBedHeater(const uint8_t heaterIndex, const int8_t heaterNumber)
+	{
+		auto bed = OM::GetOrCreateBed(heaterIndex);
+		if (bed == nullptr)
+		{
+			dbg("Failed to get or create bed %d", heaterIndex);
+			return false;
+		}
+		bed->heater = heaterNumber;
+		dbg("Created bed %d, heater number %d", heaterIndex, heaterNumber);
+		return true;
+
+	}
+
+	bool SetChamberHeater(const uint8_t heaterIndex, const int8_t heaterNumber)
+	{
+		auto chamber = OM::GetOrCreateChamber(heaterIndex);
+		if (chamber == nullptr)
+		{
+			return false;
+		}
+		chamber->heater = heaterNumber;
+		return true;
+	}
 }

@@ -71,8 +71,6 @@ namespace Comm {
 	static uint32_t fileSize = 0;
 	static uint8_t visibleAxesCounted = 0;
 
-	static int8_t lastBed = -1;
-	static int8_t lastChamber = -1;
 	static int8_t lastSpindle = -1;
 	static int8_t lastTool = -1;
 	static bool initialized = false;
@@ -814,8 +812,8 @@ namespace Comm {
 				// reset processing variables
 				switch (currentRespSeq->event) {
 				case rcvOMKeyHeat:
-					lastBed = -1;
-					lastChamber = -1;
+					OM::lastBed = -1;
+					OM::lastChamber = -1;
 					break;
 				case rcvOMKeyMove:
 					visibleAxesCounted = 0;
@@ -1011,17 +1009,6 @@ namespace Comm {
 		if (indices[0] == 0 && strcmp(id, "files^") == 0) {
 	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
 		} else if (currentResponseType == rcvOMKeyHeat) {
-			if (strcasecmp(id, "heat:bedHeaters^") == 0) {
-				OM::RemoveBed(lastBed + 1, true);
-				if (initialized) {
-	//				UI::AllToolsSeen();
-				}
-			} else if (strcasecmp(id, "heat:chamberHeaters^") == 0) {
-				OM::RemoveChamber(lastChamber + 1, true);
-				if (initialized) {
-	//				UI::AllToolsSeen();
-				}
-			}
 		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
 			OM::RemoveAxis(indices[0], true);
 	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);

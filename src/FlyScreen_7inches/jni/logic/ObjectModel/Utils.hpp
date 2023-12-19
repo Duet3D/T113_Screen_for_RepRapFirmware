@@ -14,14 +14,6 @@
 #include <UI/UserInterfaceConstants.hpp>
 
 namespace OM {
-	typedef Vector<uint8_t, MaxSlots> Slots;
-
-	void GetHeaterSlots(
-			const size_t heaterIndex,
-			Slots& slots,
-			const bool addTools = true,
-			const bool addBeds = true,
-			const bool addChambers = true);
 }
 
 #endif /* SRC_OBJECTMODEL_UTILS_HPP_ */
