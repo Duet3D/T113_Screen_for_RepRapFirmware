@@ -29,40 +29,47 @@
 static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 	/* Update what heaters are associated with what tool */
 	OBSERVER_UINT_IF_CHANGED(
-			"tools^:heaters^",
-			[](OBSERVER_UINT_ARGS)
+		"tools^:heaters^",
+		[](OBSERVER_UINT_ARGS)
+		{
+			if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
 			{
-				if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
-				{
-					dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
-					return;
-				}
+				dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
+				return;
 			}
-	),
+		}),
 	/* Update what tool heaters active temperature */
 	OBSERVER_INT_IF_CHANGED(
-			"tools^:active^",
-			[](OBSERVER_INT_ARGS)
+		"tools^:active^",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
 			{
-				if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
-				{
-					dbg("Failed to update tool %d heater %d active temperature to %d", indices[0], indices[1], val);
-					return;
-				}
+				dbg("Failed to update tool %d heater %d active temperature to %d", indices[0], indices[1], val);
+				return;
 			}
-	),
+		}),
 	/* Update what tool heaters standby temperature */
 	OBSERVER_INT_IF_CHANGED(
-			"tools^:standby^",
-			[](OBSERVER_INT_ARGS)
+		"tools^:standby^",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
 			{
-				if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
-				{
-					dbg("Failed to update tool %d heater %d standby temperature to %d", indices[0], indices[1], val);
-					return;
-				}
+				dbg("Failed to update tool %d heater %d standby temperature to %d", indices[0], indices[1], val);
+				return;
 			}
-	),
+		}),
+	OBSERVER_CHAR(
+		"tools^:name",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			if (!OM::UpdateToolName(indices[0], val))
+			{
+				dbg("Failed to update tool %d name to %s", indices[0], val);
+				return;
+			}
+		}),
 };
 
 /*
@@ -71,21 +78,19 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
  */
 static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END(
-			"tools^",
-			[](OBSERVER_ARRAY_END_ARGS)
-			{
-				if (OM::RemoveTool(indices[0], true))
-					UI::RefreshToolList(mToolListViewPtr);
-			}
-	),
+		"tools^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			if (OM::RemoveTool(indices[0], true))
+				UI::RefreshToolList(mToolListViewPtr);
+		}),
 	OBSERVER_ARRAY_END(
-			"tools^:heaters^",
-			[](OBSERVER_ARRAY_END_ARGS)
-			{
-				if (OM::RemoveToolHeaters(indices[0], indices[1]))
-					UI::RefreshToolList(mToolListViewPtr);
-			}
-	),
+		"tools^:heaters^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			if (OM::RemoveToolHeaters(indices[0], indices[1]))
+				UI::RefreshToolList(mToolListViewPtr);
+		}),
 };
 
 

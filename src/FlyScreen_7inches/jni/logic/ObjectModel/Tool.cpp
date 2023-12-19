@@ -10,6 +10,9 @@
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
+#define DEBUG (1)
+#include "Debug.hpp"
+
 typedef Vector<OM::Tool*, MaxSlots> ToolList;
 static ToolList tools;
 
@@ -191,7 +194,7 @@ namespace OM
 		return tool->RemoveHeatersFrom(firstIndexToDelete) > 0;
 	}
 
-	bool UpdateToolTemp(size_t toolIndex, size_t toolHeaterIndex, int32_t temp, bool active)
+	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
 		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
 
@@ -202,5 +205,28 @@ namespace OM
 		}
 
 		tool->UpdateTemp(toolHeaterIndex, temp, active);
+		return true;
+	}
+
+	bool UpdateToolName(const size_t toolIndex, const char *name)
+	{
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+
+		// If we do not handle this tool back off
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		if (strcmp(name, "") == 0)
+		{
+			tool->name.printf("Tool %d", tool->index);
+		}
+		else
+		{
+			tool->name.copy(name, TOOL_NAME_MAX_LEN);
+		}
+		dbg("Tool %d name=%s", tool->index, tool->name.c_str());
+		return true;
 	}
 }

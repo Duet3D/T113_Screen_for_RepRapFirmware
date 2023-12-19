@@ -16,6 +16,8 @@
 
 #include "Debug.hpp"
 
+
+#define OBSERVER_CHAR_ARGS const char *val, const size_t indices[]
 #define OBSERVER_FLOAT_ARGS const float &val, const size_t indices[]
 #define OBSERVER_INT_ARGS const int32_t &val, const size_t indices[]
 #define OBSERVER_UINT_ARGS const uint32_t &val, const size_t indices[]

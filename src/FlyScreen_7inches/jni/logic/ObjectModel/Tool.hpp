@@ -13,9 +13,12 @@
 #include "Spindle.hpp"
 #include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
+#include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
 #include <UI/UserInterfaceConstants.hpp>
+
+#define TOOL_NAME_MAX_LEN 10
 
 namespace OM
 {
@@ -63,6 +66,7 @@ namespace OM
 
 		// tool number
 		uint8_t index;
+		String<TOOL_NAME_MAX_LEN> name;
 		ToolHeater* heaters[MaxHeatersPerTool];
 		ExtrudersBitmap extruders;
 		FansBitmap fans;
@@ -90,7 +94,8 @@ namespace OM
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
 	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete);
-	bool UpdateToolTemp(size_t toolIndex, size_t toolHeaterIndex, int32_t temp, bool active);
+	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
+	bool UpdateToolName(const size_t toolIndex, const char *name);
 }
 
 #endif /* SRC_OBJECTMODEL_TOOL_HPP_ */
