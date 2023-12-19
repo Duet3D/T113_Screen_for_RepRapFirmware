@@ -1,0 +1,50 @@
+/*
+ * Heat.hpp
+ *
+ *  Created on: 19 Dec 2023
+ *      Author: Andy Everitt
+ */
+
+#ifndef JNI_LOGIC_OBJECTMODEL_HEAT_HPP_
+#define JNI_LOGIC_OBJECTMODEL_HEAT_HPP_
+
+#include <sys/types.h>
+#include "Spindle.hpp"
+#include <Duet3D/General/Bitmap.h>
+#include <Duet3D/General/FreelistManager.h>
+#include <Duet3D/General/String.h>
+#include <Duet3D/General/StringRef.h>
+#include <Duet3D/General/function_ref.h>
+#include <UI/UserInterfaceConstants.hpp>
+
+#define TOOL_NAME_MAX_LEN 10
+
+namespace OM
+{
+	namespace Heat
+	{
+		struct Heater
+		{
+			void* operator new(size_t) noexcept { return FreelistManager::Allocate<Heater>(); }
+			void operator delete(void* p) noexcept { FreelistManager::Release<Heater>(p); }
+
+			uint8_t index;	// This is the heater number
+			int32_t activeTemp;
+			int32_t standbyTemp;
+			float current;
+			float avgPwm;
+
+			void Reset();
+			int32_t GetTemperature();
+			int32_t GetHeaterTarget(const bool active);
+			bool UpdateTarget(const int32_t temp, const bool active);
+			void UpdateTemp(const float temp) { current = temp; }
+		};
+
+		Heater* GetHeater(const size_t heaterIndex);
+		Heater* GetOrCreateHeater(const size_t heaterIndex);
+		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt = 0);
+	}
+}
+
+#endif /* JNI_LOGIC_OBJECTMODEL_HEAT_HPP_ */

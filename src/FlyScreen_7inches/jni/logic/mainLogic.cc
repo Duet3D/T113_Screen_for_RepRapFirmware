@@ -250,12 +250,13 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	{
 		dbg("List index %d = Tool %d heater %d", index, tool->index, toolHeaterIndex);
 		ptoolName->setText(tool->name.c_str());
-		OM::ToolHeater *heater;
+		OM::Heat::Heater *heater;
 		heater = tool->GetHeater(toolHeaterIndex);
 		if (heater != nullptr)
 		{
 			pactiveTemperature->setText(heater->activeTemp);
 			pstandbyTemperature->setText(heater->standbyTemp);
+			pcurrentTemperature->setText((int32_t)heater->current);
 		}
 		return;
 	}
@@ -266,6 +267,14 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	{
 		dbg("List index %d = Bed %d", index, bed->index);
 		ptoolName->setText("Bed");
+		OM::Heat::Heater *heater;
+		heater = OM::Heat::GetHeater(bed->heater);
+		if (heater != nullptr)
+		{
+			pactiveTemperature->setText(heater->activeTemp);
+			pstandbyTemperature->setText(heater->standbyTemp);
+			pcurrentTemperature->setText((int32_t)heater->current);
+		}
 	}
 
 //	OM::IterateToolsWhile([&](OM::Tool*& tool, size_t)

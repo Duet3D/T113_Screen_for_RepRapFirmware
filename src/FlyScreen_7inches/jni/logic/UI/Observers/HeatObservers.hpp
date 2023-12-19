@@ -11,6 +11,7 @@
 #include "Debug.hpp"
 
 #include "ObjectModel/BedOrChamber.hpp"
+#include "ObjectModel/Heat.hpp"
 #include "UI/OmObserver.hpp"
 #include "UI/UserInterfaceConstants.hpp"
 #include "UI/UserInterface.hpp"
@@ -32,6 +33,8 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 			[](OBSERVER_FLOAT_ARGS)
 			{
 //				mTempGraphPtr->addData(indices[0], val);
+				OM::Heat::Heater *heater = OM::Heat::GetOrCreateHeater(indices[0]);
+				heater->UpdateTemp(val);
 				dbg("current temperature heater %d = %fC", indices[0], val);
 			}),
 	OBSERVER_INT(

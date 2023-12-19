@@ -11,6 +11,7 @@
 //#include <cstdint>
 #include <sys/types.h>
 #include "Spindle.hpp"
+#include "Heat.hpp"
 #include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
@@ -24,18 +25,6 @@ namespace OM
 {
 	typedef Bitmap<unsigned char> ExtrudersBitmap;		// Type of a bitmap representing a set of extruder drive numbers
 	typedef Bitmap<unsigned short> FansBitmap;			// Type of a bitmap representing a set of fan numbers
-
-	struct ToolHeater
-	{
-		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ToolHeater>(); }
-		void operator delete(void* p) noexcept { FreelistManager::Release<ToolHeater>(p); }
-
-		uint8_t heaterIndex;	// This is the heater number
-		int16_t activeTemp;
-		int16_t standbyTemp;
-
-		void Reset();
-	};
 
 	// Status that a tool may report to us.
 	enum class ToolStatus
@@ -67,7 +56,7 @@ namespace OM
 		// tool number
 		uint8_t index;
 		String<TOOL_NAME_MAX_LEN> name;
-		ToolHeater* heaters[MaxHeatersPerTool];
+		Heat::Heater* heaters[MaxHeatersPerTool];
 		ExtrudersBitmap extruders;
 		FansBitmap fans;
 		Spindle* spindle;
@@ -76,13 +65,13 @@ namespace OM
 		ToolStatus status;
 		uint8_t slot;
 
-		ToolHeater* GetHeater(const uint8_t toolHeaterIndex);
-		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex);
+		Heat::Heater* GetHeater(const uint8_t toolHeaterIndex);
+		Heat::Heater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		int8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
-		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
+		void IterateHeaters(function_ref<void(Heat::Heater*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
 
