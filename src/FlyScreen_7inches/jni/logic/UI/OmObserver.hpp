@@ -16,24 +16,24 @@
 
 #include "Debug.hpp"
 
-#define ELEMENT_FLOAT_ARGS const float &val, const size_t indices[]
-#define ELEMENT_INT_ARGS const int32_t &val, const size_t indices[]
-#define ELEMENT_UINT_ARGS const uint32_t &val, const size_t indices[]
-#define ELEMENT_BOOL_ARGS const bool &val, const size_t indices[]
-#define ELEMENT_ARRAY_END_ARGS const size_t indices[]
+#define OBSERVER_FLOAT_ARGS const float &val, const size_t indices[]
+#define OBSERVER_INT_ARGS const int32_t &val, const size_t indices[]
+#define OBSERVER_UINT_ARGS const uint32_t &val, const size_t indices[]
+#define OBSERVER_BOOL_ARGS const bool &val, const size_t indices[]
+#define OBSERVER_ARRAY_END_ARGS const size_t indices[]
 
-#define ELEMENT_ARRAY_END(key, callback) \
-	UI::Element<UI::ui_array_end_update_cb>{ \
+#define OBSERVER_ARRAY_END(key, callback) \
+	UI::Observer<UI::ui_array_end_update_cb>{ \
 		key, \
 		[&](const size_t indices[]) \
 		{ \
 			callback(indices); \
 		}, \
-		UI::omArrayEndElementHead, \
+		UI::omArrayEndObserverHead, \
 	}
 
-#define ELEMENT_TEMPLATE(key, callback, type, convertor) \
-	UI::Element<UI::ui_field_update_cb>{ \
+#define OBSERVER_TEMPLATE(key, callback, type, convertor) \
+	UI::Observer<UI::ui_field_update_cb>{ \
 		key, \
 		[&](const char *data, const size_t indices[]) \
 		{ \
@@ -43,16 +43,22 @@
 				callback(val, indices); \
 			} \
 		}, \
-		UI::omFieldElementHead, \
+		UI::omFieldObserverHead, \
 	}
 
-#define ELEMENT_FLOAT(key, callback) ELEMENT_TEMPLATE(key, callback, float, Comm::GetFloat)
-#define ELEMENT_INT(key, callback) ELEMENT_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
-#define ELEMENT_UINT(key, callback) ELEMENT_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
-#define ELEMENT_BOOL(key, callback) ELEMENT_TEMPLATE(key, callback, bool, Comm::GetBool)
+#define OBSERVER_CHAR(key, callback) \
+	UI::Observer<UI::ui_field_update_cb>{ \
+		key, \
+		callback, \
+		UI::omFieldObserverHead, \
+	}
+#define OBSERVER_FLOAT(key, callback) OBSERVER_TEMPLATE(key, callback, float, Comm::GetFloat)
+#define OBSERVER_INT(key, callback) OBSERVER_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
+#define OBSERVER_UINT(key, callback) OBSERVER_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
+#define OBSERVER_BOOL(key, callback) OBSERVER_TEMPLATE(key, callback, bool, Comm::GetBool)
 
-#define ELEMENT_IF_CHANGED_TEMPLATE(key, callback, type, convertor) \
-	ELEMENT_TEMPLATE(key, \
+#define OBSERVER_IF_CHANGED_TEMPLATE(key, callback, type, convertor) \
+	OBSERVER_TEMPLATE(key, \
 		([](const type val, const size_t indices[]) \
 		{ \
 			int32_t packedIndex = 0; \
@@ -74,10 +80,10 @@
 		}), type, convertor \
 	)
 
-#define ELEMENT_FLOAT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, float, Comm::GetFloat)
-#define ELEMENT_INT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
-#define ELEMENT_UINT_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
-#define ELEMENT_BOOL_IF_CHANGED(key, callback) ELEMENT_IF_CHANGED_TEMPLATE(key, callback, bool, Comm::GetBool)
+#define OBSERVER_FLOAT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, float, Comm::GetFloat)
+#define OBSERVER_INT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
+#define OBSERVER_UINT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
+#define OBSERVER_BOOL_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, bool, Comm::GetBool)
 
 // Custom comparator for string literals at compile time
 struct ConstCharComparator
@@ -94,25 +100,25 @@ namespace UI
 	typedef void (*ui_array_end_update_cb)(const size_t arrayIndices[]);
 
 	template<typename cbType>
-	class ElementMap;
+	class ObserverMap;
 
 	template<typename cbType>
-	class Element
+	class Observer
 	{
 	public:
-		Element(const char *key, cbType cb, Element *&head) :
+		Observer(const char *key, cbType cb, Observer *&head) :
 			key(key), cb(cb)
 		{
 			next = head;
 			head = this;
 		}
-		void Init(ElementMap<cbType> &elementMap)
+		void Init(ObserverMap<cbType> &observerMap)
 		{
-			dbg("Registering element against key %s", key);
-			elementMap.RegisterElement(key, *this);
+			dbg("Registering observer against key %s", key);
+			observerMap.RegisterObserver(key, *this);
 	#if DEBUG
-			int size = elementMap.GetElements(key).size();
-			dbg("%d elements registered against key %s", size, key);
+			int size = observerMap.GetObservers(key).size();
+			dbg("%d observers registered against key %s", size, key);
 	#endif
 		}
 		void Update(const size_t arrayIndices[])
@@ -131,37 +137,37 @@ namespace UI
 		}
 		const char * GetKey(){ return key; }
 
-		Element *next;
-		static Element *head;
+		Observer *next;
+		static Observer *head;
 	private:
 		const char *key;
 		cbType cb;
 	};
 
 	template<typename cbType>
-	class ElementMap
+	class ObserverMap
 	{
 	public:
-		void RegisterElement(const char *key, const Element<cbType>& element)
+		void RegisterObserver(const char *key, const Observer<cbType>& observer)
 		{
-			auto& elementList = elementsMap[key];
-			elementList.push_back(element);
+			auto& observerList = observersMap[key];
+			observerList.push_back(observer);
 		}
-		const std::vector<Element<cbType>>& GetElements(const char* key) const
+		const std::vector<Observer<cbType>>& GetObservers(const char* key) const
 			{
-				static const std::vector<Element<cbType>> emptyVector; // Return an empty vector if key not found
-				auto it = elementsMap.find(key);
-				return (it != elementsMap.end()) ? it->second : emptyVector;
+				static const std::vector<Observer<cbType>> emptyVector; // Return an empty vector if key not found
+				auto it = observersMap.find(key);
+				return (it != observersMap.end()) ? it->second : emptyVector;
 			}
 	private:
-		std::map<const char*, std::vector<Element<cbType>>, ConstCharComparator> elementsMap;
+		std::map<const char*, std::vector<Observer<cbType>>, ConstCharComparator> observersMap;
 	};
 
-	extern Element<ui_field_update_cb> *omFieldElementHead;
-	extern Element<ui_array_end_update_cb> *omArrayEndElementHead;
+	extern Observer<ui_field_update_cb> *omFieldObserverHead;
+	extern Observer<ui_array_end_update_cb> *omArrayEndObserverHead;
 
-	extern ElementMap<ui_field_update_cb> elementMap;
-	extern ElementMap<ui_array_end_update_cb> elementMapArrayEnd;
+	extern ObserverMap<ui_field_update_cb> observerMap;
+	extern ObserverMap<ui_array_end_update_cb> observerMapArrayEnd;
 }
 
 #endif /* JNI_LOGIC_UI_OMOBSERVER_HPP_ */

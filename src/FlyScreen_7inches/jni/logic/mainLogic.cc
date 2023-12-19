@@ -69,26 +69,26 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
-	/* Initialise UI element updaters that run on each field value that is received from the OM */
-	auto *elem = UI::omFieldElementHead;
-	while (elem != nullptr)
+	/* Initialise UI observer updaters that run on each field value that is received from the OM */
+	auto *observer = UI::omFieldObserverHead;
+	while (observer != nullptr)
 	{
-		elem->Init(UI::elementMap);
-		dbg("Initialised field element against key %s (%d)",
-				elem->GetKey(),
-				UI::elementMap.GetElements(elem->GetKey()).size());
-		elem = elem->next;
+		observer->Init(UI::observerMap);
+		dbg("Initialised field observer against key %s (%d)",
+				observer->GetKey(),
+				UI::observerMap.GetObservers(observer->GetKey()).size());
+		observer = observer->next;
 	}
 
-	/* Initialise UI element updaters that run after an array has been received */
-	auto *elemArrayEnd = UI::omArrayEndElementHead;
-	while (elemArrayEnd != nullptr)
+	/* Initialise UI observer updaters that run after an array has been received */
+	auto *observerArrayEnd = UI::omArrayEndObserverHead;
+	while (observerArrayEnd != nullptr)
 	{
-		elemArrayEnd->Init(UI::elementMapArrayEnd);
-		dbg("Initialised array end element against key %s (%d)",
-				elemArrayEnd->GetKey(),
-				UI::elementMapArrayEnd.GetElements(elemArrayEnd->GetKey()).size());
-		elemArrayEnd = elemArrayEnd->next;
+		observerArrayEnd->Init(UI::observerMapArrayEnd);
+		dbg("Initialised array end observer against key %s (%d)",
+				observerArrayEnd->GetKey(),
+				UI::observerMapArrayEnd.GetObservers(observerArrayEnd->GetKey()).size());
+		observerArrayEnd = observerArrayEnd->next;
 	}
 }
 

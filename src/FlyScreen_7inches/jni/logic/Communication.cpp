@@ -29,6 +29,7 @@
 
 #define DEBUG (0)
 #include "Debug.hpp"
+#include "utils/Log.h"
 
 // These defines control which detailed M409 requests will be sent
 // If one of the fields in the disabled ones need to be fetched the
@@ -768,13 +769,13 @@ namespace Comm {
 			}
 		}
 
-		// search for key in elementMap
-		auto elements = UI::elementMap.GetElements(id.c_str());
-		if (elements.size() != 0)
+		// search for key in observerMap
+		auto observers = UI::observerMap.GetObservers(id.c_str());
+		if (observers.size() != 0)
 		{
-			for (auto &elem : elements)
+			for (auto &observer : observers)
 			{
-				elem.Update(data, indices);
+				observer.Update(data, indices);
 			}
 		}
 
@@ -995,13 +996,13 @@ namespace Comm {
 
 	// Public function called when the serial I/O module finishes receiving an array of values
 	static void ProcessArrayEnd(const char id[], const size_t indices[]) {
-		// search for key in elementMap
-		auto elements = UI::elementMapArrayEnd.GetElements(id);
-		if (elements.size() != 0)
+		// search for key in observerMap
+		auto observers = UI::observerMapArrayEnd.GetObservers(id);
+		if (observers.size() != 0)
 		{
-			for (auto &elem : elements)
+			for (auto &observer : observers)
 			{
-				elem.Update(indices);
+				observer.Update(indices);
 			}
 		}
 		ReceivedDataEvent currentResponseType = currentRespSeq != nullptr ? currentRespSeq->event : ReceivedDataEvent::rcvUnknown;
@@ -1059,7 +1060,7 @@ namespace Comm {
 	void sendNext() {
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
-			dbg("requesting %s\n", currentReqSeq->key);
+			LOGD("requesting %s\n", currentReqSeq->key);
 			SerialIo::Sendf("M409 K\"%s\" F\"%s\"\n", currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once

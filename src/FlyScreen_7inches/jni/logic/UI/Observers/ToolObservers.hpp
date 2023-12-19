@@ -26,11 +26,11 @@
  * The _IF_CHANGED suffix only runs the function if the data is different from the previous
  * time function was called. This is unique to each combination of indices.
  */
-static UI::Element<UI::ui_field_update_cb> ToolObserversFields[] = {
+static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 	/* Update what heaters are associated with what tool */
-	ELEMENT_UINT_IF_CHANGED(
+	OBSERVER_UINT_IF_CHANGED(
 			"tools^:heaters^",
-			[](ELEMENT_UINT_ARGS)
+			[](OBSERVER_UINT_ARGS)
 			{
 				if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
 				{
@@ -40,9 +40,9 @@ static UI::Element<UI::ui_field_update_cb> ToolObserversFields[] = {
 			}
 	),
 	/* Update what tool heaters active temperature */
-	ELEMENT_INT_IF_CHANGED(
+	OBSERVER_INT_IF_CHANGED(
 			"tools^:active^",
-			[](ELEMENT_INT_ARGS)
+			[](OBSERVER_INT_ARGS)
 			{
 				if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
 				{
@@ -52,9 +52,9 @@ static UI::Element<UI::ui_field_update_cb> ToolObserversFields[] = {
 			}
 	),
 	/* Update what tool heaters standby temperature */
-	ELEMENT_INT_IF_CHANGED(
+	OBSERVER_INT_IF_CHANGED(
 			"tools^:standby^",
-			[](ELEMENT_INT_ARGS)
+			[](OBSERVER_INT_ARGS)
 			{
 				if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
 				{
@@ -69,18 +69,18 @@ static UI::Element<UI::ui_field_update_cb> ToolObserversFields[] = {
  * These functions are run when the end of an array has been received from the OM
  * The function needs to take in an array containing the indices of the OM key
  */
-static UI::Element<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
-	ELEMENT_ARRAY_END(
+static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
+	OBSERVER_ARRAY_END(
 			"tools^",
-			[](ELEMENT_ARRAY_END_ARGS)
+			[](OBSERVER_ARRAY_END_ARGS)
 			{
 				if (OM::RemoveTool(indices[0], true))
 					UI::RefreshToolList(mToolListViewPtr);
 			}
 	),
-	ELEMENT_ARRAY_END(
+	OBSERVER_ARRAY_END(
 			"tools^:heaters^",
-			[](ELEMENT_ARRAY_END_ARGS)
+			[](OBSERVER_ARRAY_END_ARGS)
 			{
 				if (OM::RemoveToolHeaters(indices[0], indices[1]))
 					UI::RefreshToolList(mToolListViewPtr);
