@@ -876,10 +876,10 @@ namespace Comm {
 
 		case rcvToolsNumber:
 			{
-				for (size_t i = lastTool + 1; i < indices[0]; ++i) {
-					OM::RemoveTool(i, false);
-				}
-				lastTool = indices[0];
+//				for (size_t i = lastTool + 1; i < indices[0]; ++i) {
+//					OM::RemoveTool(i, false);
+//				}
+//				lastTool = indices[0];
 			}
 			break;
 
@@ -1023,7 +1023,7 @@ namespace Comm {
 			}
 		} else if (currentResponseType == rcvOMKeyTools) {
 			if (strcasecmp(id, "tools^") == 0) {
-				OM::RemoveTool(lastTool + 1, true);
+//				OM::RemoveTool(lastTool + 1, true);
 				if (initialized) {
 	//				UI::AllToolsSeen();
 				}

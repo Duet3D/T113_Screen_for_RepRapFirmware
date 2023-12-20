@@ -27,8 +27,14 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
+	OBSERVER_CHAR(
+		"tools^",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			OM::RemoveTool(indices[0], false);
+		}),
 	/* Update what heaters are associated with what tool */
-	OBSERVER_UINT_IF_CHANGED(
+	OBSERVER_UINT(
 		"tools^:heaters^",
 		[](OBSERVER_UINT_ARGS)
 		{
@@ -37,6 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
 				return;
 			}
+			UI::RefreshToolList(mToolListViewPtr);
 		}),
 	OBSERVER_CHAR(
 		"tools^:name",
@@ -59,15 +66,15 @@ static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 		"tools^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
-			if (OM::RemoveTool(indices[0], true))
-				UI::RefreshToolList(mToolListViewPtr);
+			if (OM::RemoveTool(indices[0], true)){}
+			UI::RefreshToolList(mToolListViewPtr);
 		}),
 	OBSERVER_ARRAY_END(
 		"tools^:heaters^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
-			if (OM::RemoveToolHeaters(indices[0], indices[1]))
-				UI::RefreshToolList(mToolListViewPtr);
+			if (OM::RemoveToolHeaters(indices[0], indices[1])){}
+			UI::RefreshToolList(mToolListViewPtr);
 		}),
 };
 

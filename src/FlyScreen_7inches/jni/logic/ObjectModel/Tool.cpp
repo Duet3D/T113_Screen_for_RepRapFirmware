@@ -5,12 +5,12 @@
  *      Author: manuel & Andy Everitt
  */
 
+#define DEBUG (1)
 #include "Tool.hpp"
 #include "ListHelpers.hpp"
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
-#define DEBUG (1)
 #include "Debug.hpp"
 
 typedef Vector<OM::Tool*, MaxSlots> ToolList;
@@ -23,7 +23,7 @@ namespace OM
 		Tool* t = static_cast<Tool*>(p);
 		for (size_t i = 0; i < MaxHeatersPerTool; ++i)
 		{
-			delete t->heaters[i];
+			t->heaters[i] = nullptr;
 		}
 		FreelistManager::Release<Tool>(p);
 	}
@@ -159,6 +159,7 @@ namespace OM
 
 	Tool* GetOrCreateTool(const size_t index)
 	{
+		dbg("%d", index);
 		return GetOrCreate<ToolList, Tool>(tools, index, true);
 	}
 
@@ -169,6 +170,7 @@ namespace OM
 
 	size_t RemoveTool(const size_t index, const bool allFollowing)
 	{
+		dbg("Removing tool %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<ToolList, Tool>(tools, index, allFollowing);
 	}
 
@@ -189,13 +191,14 @@ namespace OM
 			dbg("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
 			return false;
 		}
+		dbg("Assigned heater %d to tool %d heaterIndex %d", heaterIndex, toolIndex, toolHeaterIndex);
 		tool->heaters[toolHeaterIndex] = heater;
 		return true;
 	}
 
 	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete)
 	{
-		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+		OM::Tool *tool = OM::GetTool(toolIndex);
 		if (tool == nullptr)
 		{
 			return false;

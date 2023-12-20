@@ -6,12 +6,12 @@
  */
 
 
+#define DEBUG (1)
 #include "Heat.hpp"
 #include "ListHelpers.hpp"
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
-#define DEBUG (1)
 #include "Debug.hpp"
 
 typedef Vector<OM::Heat::Heater*, MaxHeaters> HeaterList;
@@ -87,6 +87,7 @@ namespace OM
 
 		size_t RemoveHeater(const size_t index, const bool allFollowing)
 		{
+			dbg("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 			return Remove<HeaterList, Heater>(heaters, index, allFollowing);
 		}
 	}

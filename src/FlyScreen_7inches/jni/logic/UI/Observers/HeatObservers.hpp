@@ -32,12 +32,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 		"heat:heaters^",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			for (size_t i = OM::Heat::lastHeater + 1; i < indices[0]; ++i)
-			{
-				OM::Heat::RemoveHeater(i, false);
-				dbg("Removing heater %d", indices[0]);
-			}
-			OM::Heat::lastHeater = indices[0];
+			OM::Heat::RemoveHeater(indices[0], false);
 		}),
 	OBSERVER_FLOAT(
 		"heat:heaters^:current",
@@ -125,6 +120,7 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			OM::RemoveBed(OM::lastBed + 1, true);
+			OM::lastBed = -1;
 			UI::RefreshToolList(mToolListViewPtr);
 		}),
 	OBSERVER_ARRAY_END(
@@ -132,6 +128,7 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			OM::RemoveChamber(OM::lastChamber + 1, true);
+			OM::lastChamber = -1;
 			UI::RefreshToolList(mToolListViewPtr);
 		}),
 };

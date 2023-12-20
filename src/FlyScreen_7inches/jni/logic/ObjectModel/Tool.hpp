@@ -84,7 +84,7 @@ namespace OM
 	size_t RemoveTool(const size_t index, const bool allFollowing);
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
-	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete);
+	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
 	bool UpdateToolName(const size_t toolIndex, const char *name);
 }
