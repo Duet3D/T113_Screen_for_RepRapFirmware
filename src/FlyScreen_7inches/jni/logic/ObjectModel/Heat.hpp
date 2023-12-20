@@ -23,13 +23,13 @@ namespace OM
 {
 	namespace Heat
 	{
-		// Status that a tool may report to us.
+		// Status that a tool may report to us. Must be in alphabetical order.
 		enum class HeaterStatus
 		{
-			off = 0,
-			active = 1,
-			standby = 2,
-			fault = 3,
+			active = 0,
+			fault,
+			off,
+			standby,
 		};
 
 		struct HeaterStatusMapEntry
@@ -41,10 +41,10 @@ namespace OM
 		// This table must be kept in case-insensitive alphabetical order of the search string.
 		const HeaterStatusMapEntry heaterStatusMap[] =
 		{
-			{"active",	HeaterStatus::active },
-			{"fault", HeaterStatus::fault},
-			{"off",		HeaterStatus::off },
-			{"standby",	HeaterStatus::standby },
+			{ "active",		HeaterStatus::active	},
+			{ "fault", 		HeaterStatus::fault		},
+			{ "off",		HeaterStatus::off 		},
+			{ "standby",	HeaterStatus::standby 	},
 		};
 
 		struct Heater
@@ -62,6 +62,7 @@ namespace OM
 			void Reset();
 			int32_t GetTemperature();
 			int32_t GetHeaterTarget(const bool active);
+			const char * GetHeaterStatusStr();
 			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }
 		};

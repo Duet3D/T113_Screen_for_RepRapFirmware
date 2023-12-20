@@ -268,7 +268,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
-		pstatus->setText(heater->status);
+		pstatus->setText(heater->GetHeaterStatusStr());
 		return;
 	}
 
@@ -297,7 +297,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
-		pstatus->setText(heater->status);
+		pstatus->setText(heater->GetHeaterStatusStr());
 		return;
 	}
 

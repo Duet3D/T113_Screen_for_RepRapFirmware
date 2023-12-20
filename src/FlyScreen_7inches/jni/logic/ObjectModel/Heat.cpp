@@ -19,9 +19,20 @@ typedef Vector<OM::Heat::Heater*, MaxHeaters> HeaterList;
 static HeaterList heaters;
 
 template <typename T>
-int compare(const void *lp, const void *rp)
+int compareKey(const void *lp, const void *rp)
 {
 	return strcasecmp(((T *)lp)->key, ((T *)rp)->key);
+}
+
+template <typename T>
+int compareValue(const void *lp, const void *rp)
+{
+	if (((T *)lp)->val < ((T *)rp)->val)
+		return -1;
+	else if (((T *)lp)->val > ((T *)rp)->val)
+		return 1;
+	else
+		return 0;
 }
 
 namespace OM
@@ -37,6 +48,20 @@ namespace OM
 			standbyTemp = 0;
 			current = 0;
 			avgPwm = 0;
+		}
+
+		const char * Heater::GetHeaterStatusStr()
+		{
+			const HeaterStatusMapEntry key = {"unknown", status};
+			const HeaterStatusMapEntry *statusFromMap =
+				(HeaterStatusMapEntry *)bsearch(
+					&key,
+					heaterStatusMap,
+					ARRAY_SIZE(heaterStatusMap),
+					sizeof(HeaterStatusMapEntry),
+					compareValue<HeaterStatusMapEntry>);
+
+			return (statusFromMap != nullptr) ? statusFromMap->key : "unknown";
 		}
 
 		void Heater::UpdateTarget(const int32_t temp, const bool active)
@@ -101,8 +126,9 @@ namespace OM
 					heaterStatusMap,
 					ARRAY_SIZE(heaterStatusMap),
 					sizeof(HeaterStatusMapEntry),
-					compare<HeaterStatusMapEntry>);
-			const HeaterStatus status = (statusFromMap != nullptr) ? statusFromMap->val : HeaterStatus::off;
+					compareKey<HeaterStatusMapEntry>);
+			HeaterStatus status = (statusFromMap != nullptr) ? statusFromMap->val : HeaterStatus::off;
+			UpdateHeaterStatus(heaterIndex, status);
 		}
 
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status)
@@ -113,6 +139,7 @@ namespace OM
 				return false;
 
 			heater->status = status;
+			dbg("Heater %d state=%d %s", heaterIndex, heater->status, heater->GetHeaterStatusStr());
 			return true;
 		}
 

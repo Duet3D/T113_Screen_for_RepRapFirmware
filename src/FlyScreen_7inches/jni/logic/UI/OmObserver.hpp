@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include "Communication.hpp"
+#include "ObjectModel/Utils.hpp"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
@@ -87,14 +88,6 @@
 #define OBSERVER_UINT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
 #define OBSERVER_BOOL_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, bool, Comm::GetBool)
 
-// Custom comparator for string literals at compile time
-struct ConstCharComparator
-{
-	constexpr bool operator()(const char* a, const char* b) const
-	{
-		return std::strcmp(a, b) < 0;
-	}
-};
 
 namespace UI
 {
