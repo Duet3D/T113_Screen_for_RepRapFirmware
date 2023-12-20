@@ -40,12 +40,12 @@ namespace OM
 	Heat::Heater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
 		Heat::Heater *toolHeater = GetHeater(toolHeaterIndex);
-		if (toolHeater != nullptr)
+		if (toolHeater != nullptr && toolHeater->index == heaterIndex)
 		{
 			return toolHeater;
 		}
 		Heat::Heater* th = Heat::GetOrCreateHeater(heaterIndex);
-		th->Reset();
+		dbg("Setting tool %d heater %d=%d", index, toolHeaterIndex, heaterIndex);
 		heaters[toolHeaterIndex] = th;
 		return th;
 	}
@@ -110,7 +110,6 @@ namespace OM
 		size_t removed = 0;
 		for (size_t i = heaterIndex; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
 		{
-			delete heaters[i];
 			heaters[i] = nullptr;
 			++removed;
 		}
@@ -184,12 +183,13 @@ namespace OM
 		{
 			return false;
 		}
-		OM::Heat::Heater *toolHeater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
-		if (toolHeater == nullptr)
+		OM::Heat::Heater *heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
+		if (heater == nullptr)
 		{
+			dbg("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
 			return false;
 		}
-		toolHeater->index = heaterIndex;
+		tool->heaters[toolHeaterIndex] = heater;
 		return true;
 	}
 

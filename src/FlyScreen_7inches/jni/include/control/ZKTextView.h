@@ -9,6 +9,7 @@
 #define _CONTROL_ZKTEXTVIEW_H_
 
 #include "ZKBase.h"
+#include <Duet3D/General/SafeVsnprintf.h>
 
 class ZKTextViewPrivate;
 
@@ -36,6 +37,13 @@ public:
 	 * @brief 设置字符文本
 	 */
 	void setText(char text);
+
+	void setText(float text)
+	{
+		char str[10];
+		SafeSnprintf(str, 10, "%.2f", text);
+		setText(str);
+	}
 
 	/**
 	 * @brief 设置数字文本

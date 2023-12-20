@@ -38,30 +38,6 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				return;
 			}
 		}),
-	/* Update what tool heaters active temperature */
-	OBSERVER_INT_IF_CHANGED(
-		"tools^:active^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
-			{
-				dbg("Failed to update tool %d heater %d active temperature to %d", indices[0], indices[1], val);
-				return;
-			}
-			UI::RefreshToolList(mToolListViewPtr);
-		}),
-	/* Update what tool heaters standby temperature */
-	OBSERVER_INT_IF_CHANGED(
-		"tools^:standby^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
-			{
-				dbg("Failed to update tool %d heater %d standby temperature to %d", indices[0], indices[1], val);
-				return;
-			}
-			UI::RefreshToolList(mToolListViewPtr);
-		}),
 	OBSERVER_CHAR(
 		"tools^:name",
 		[](OBSERVER_CHAR_ARGS)

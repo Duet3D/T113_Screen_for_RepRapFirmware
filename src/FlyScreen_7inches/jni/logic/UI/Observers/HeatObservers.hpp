@@ -28,45 +28,84 @@
  */
 static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 	/* Update heaters current reading */
+	OBSERVER_CHAR(
+		"heat:heaters^",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			for (size_t i = OM::Heat::lastHeater + 1; i < indices[0]; ++i)
+			{
+				OM::Heat::RemoveHeater(i, false);
+				dbg("Removing heater %d", indices[0]);
+			}
+			OM::Heat::lastHeater = indices[0];
+		}),
 	OBSERVER_FLOAT(
-			"heat:heaters^:current",
-			[](OBSERVER_FLOAT_ARGS)
+		"heat:heaters^:current",
+		[](OBSERVER_FLOAT_ARGS)
+		{
+			if (!OM::Heat::UpdateHeaterTemp(indices[0], val))
 			{
-//				mTempGraphPtr->addData(indices[0], val);
-				OM::Heat::Heater *heater = OM::Heat::GetOrCreateHeater(indices[0]);
-				heater->UpdateTemp(val);
-				dbg("current temperature heater %d = %fC", indices[0], val);
-			}),
+				dbg("Failed to update heater temperature; heater %d = %fC", indices[0], val);
+				return;
+			}
+			UI::RefreshToolList(mToolListViewPtr, false);
+			mTempGraphPtr->addData(indices[0], val);
+		}),	/* Update what tool heaters active temperature */
+	OBSERVER_INT_IF_CHANGED(
+		"heat:heaters^:active",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (!OM::Heat::UpdateHeaterTarget(indices[0], val, true))
+			{
+				dbg("Failed to update heater %d active temperature to %d", indices[0], val);
+				return;
+			}
+			dbg("Updated heater %d active temperature to %d", indices[0], val);
+			UI::RefreshToolList(mToolListViewPtr, false);
+		}),
+	/* Update what tool heaters standby temperature */
+	OBSERVER_INT_IF_CHANGED(
+		"heat:heaters^:standby",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (!OM::Heat::UpdateHeaterTarget(indices[0], val, false))
+			{
+				dbg("Failed to update heater %d standby temperature to %d", indices[0], val);
+				return;
+			}
+			dbg("Updated heater %d standby temperature to %d", indices[0], val);
+			UI::RefreshToolList(mToolListViewPtr, false);
+		}),
 	OBSERVER_INT(
-			"heat:bedHeaters^",
-			[](OBSERVER_INT_ARGS)
+		"heat:bedHeaters^",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (val > -1)
 			{
-				if (val > -1)
+				OM::SetBedHeater(indices[0], val);
+				for (size_t i = OM::lastBed + 1; i < indices[0]; ++i)
 				{
-					OM::SetBedHeater(indices[0], val);
-					for (size_t i = OM::lastBed + 1; i < indices[0]; ++i)
-					{
-						OM::RemoveBed(i, false);
-					}
-					OM::lastBed = indices[0];
-					dbg("lastBed=%d", OM::lastBed);
+					OM::RemoveBed(i, false);
 				}
-			}),
+				OM::lastBed = indices[0];
+				dbg("lastBed=%d", OM::lastBed);
+			}
+		}),
 	OBSERVER_INT(
-			"heat:chamberHeaters^",
-			[](OBSERVER_INT_ARGS)
+		"heat:chamberHeaters^",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (val > -1)
 			{
-				if (val > -1)
+				OM::SetChamberHeater(indices[0], val);
+				for (size_t i = OM::lastChamber+ 1; i < indices[0]; ++i)
 				{
-					OM::SetChamberHeater(indices[0], val);
-					for (size_t i = OM::lastChamber+ 1; i < indices[0]; ++i)
-					{
-						OM::RemoveChamber(i, false);
-					}
-					OM::lastChamber = indices[0];
-					dbg("lastChamber=%d", OM::lastChamber);
+					OM::RemoveChamber(i, false);
 				}
-			}),
+				OM::lastChamber = indices[0];
+				dbg("lastChamber=%d", OM::lastChamber);
+			}
+		}),
 };
 
 /*
@@ -75,21 +114,26 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
  */
 static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END(
-			"heat:bedHeaters^",
-			[](OBSERVER_ARRAY_END_ARGS)
-			{
-				OM::RemoveBed(OM::lastBed + 1, true);
+		"heaters^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			if (OM::Heat::RemoveHeater(indices[0], true))
 				UI::RefreshToolList(mToolListViewPtr);
-			}
-	),
+		}),
 	OBSERVER_ARRAY_END(
-			"heat:chamberHeaters^",
-			[](OBSERVER_ARRAY_END_ARGS)
-			{
-				OM::RemoveChamber(OM::lastChamber + 1, true);
-				UI::RefreshToolList(mToolListViewPtr);
-			}
-	),
+		"heat:bedHeaters^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			OM::RemoveBed(OM::lastBed + 1, true);
+			UI::RefreshToolList(mToolListViewPtr);
+		}),
+	OBSERVER_ARRAY_END(
+		"heat:chamberHeaters^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			OM::RemoveChamber(OM::lastChamber + 1, true);
+			UI::RefreshToolList(mToolListViewPtr);
+		}),
 };
 
 

@@ -37,13 +37,18 @@ namespace OM
 			void Reset();
 			int32_t GetTemperature();
 			int32_t GetHeaterTarget(const bool active);
-			bool UpdateTarget(const int32_t temp, const bool active);
+			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }
 		};
 
 		Heater* GetHeater(const size_t heaterIndex);
 		Heater* GetOrCreateHeater(const size_t heaterIndex);
 		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt = 0);
+		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
+		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
+		size_t RemoveHeater(const size_t index, const bool allFollowing);
+
+		extern size_t lastHeater;
 	}
 }
 

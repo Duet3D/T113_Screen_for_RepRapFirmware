@@ -229,13 +229,12 @@ static bool onButtonClick_Button1(ZKButton *pButton)
 static int getListItemCount_ToolListView(const ZKListView *pListView)
 {
 	size_t count = UI::toolsList.GetTotalHeaterCount(false);
-	dbg("Setting ToolList length to %d", count);
+//	dbg("Setting ToolList length to %d", count);
 	return count;
 }
 
 static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
-	LOGD(" obtainListItemData_ ToolListView  !!!\n");
 	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_ToolNameSubItem);
 	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_ToolCurrentTemperatureSubItem);
 	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_ToolActiveTemperatureSubItem);
@@ -248,16 +247,20 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
 	if (tool != nullptr)
 	{
-		dbg("List index %d = Tool %d heater %d", index, tool->index, toolHeaterIndex);
 		ptoolName->setText(tool->name.c_str());
 		OM::Heat::Heater *heater;
 		heater = tool->GetHeater(toolHeaterIndex);
-		if (heater != nullptr)
+		if (heater == nullptr)
 		{
-			pactiveTemperature->setText(heater->activeTemp);
-			pstandbyTemperature->setText(heater->standbyTemp);
-			pcurrentTemperature->setText((int32_t)heater->current);
+			dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
+			return;
 		}
+		dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
+				index, tool->index, toolHeaterIndex, heater->index,
+				heater->current, heater->activeTemp, heater->standbyTemp);
+		pactiveTemperature->setText(heater->activeTemp);
+		pstandbyTemperature->setText(heater->standbyTemp);
+		pcurrentTemperature->setText(heater->current);
 		return;
 	}
 
@@ -265,16 +268,21 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
 	if (bed != nullptr)
 	{
-		dbg("List index %d = Bed %d", index, bed->index);
 		ptoolName->setText("Bed");
 		OM::Heat::Heater *heater;
 		heater = OM::Heat::GetHeater(bed->heater);
-		if (heater != nullptr)
+		if (heater == nullptr)
 		{
-			pactiveTemperature->setText(heater->activeTemp);
-			pstandbyTemperature->setText(heater->standbyTemp);
-			pcurrentTemperature->setText((int32_t)heater->current);
+			dbg("List index %d: Bed %d heater %d is null", index, bed->index, bed->heater);
+			return;
 		}
+		dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
+				index, bed->index, bed->heater, heater->index,
+				heater->current, heater->activeTemp, heater->standbyTemp);
+		pactiveTemperature->setText(heater->activeTemp);
+		pstandbyTemperature->setText(heater->standbyTemp);
+		pcurrentTemperature->setText((int32_t)heater->current);
+		return;
 	}
 
 //	OM::IterateToolsWhile([&](OM::Tool*& tool, size_t)

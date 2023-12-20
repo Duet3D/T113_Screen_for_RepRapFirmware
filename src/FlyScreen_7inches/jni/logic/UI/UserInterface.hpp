@@ -36,7 +36,7 @@ namespace UI
 	extern ToolsList toolsList;
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool);
-	void RefreshToolList(ZKListView *listView);
+	void RefreshToolList(ZKListView *listView, const bool lengthChanged = true);
 
 }
 
