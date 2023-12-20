@@ -2,7 +2,7 @@
 #define DEBUG (1)
 
 #include <vector>
-#include "json/json.h"
+#include <string>
 #include "Communication.hpp"
 #include "Hardware/SerialIo.hpp"
 #include "ObjectModel/Utils.hpp"
@@ -349,58 +349,77 @@ static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int in
 {
 	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
 }
+
+static std::string sNumPadStr;
+static void numPadAddOneChar(char ch)
+{
+	sNumPadStr += ch;
+	mNumPadInputPtr->setText(sNumPadStr);
+	mNumPadInputPtr->setText(sNumPadStr);
+}
+
+static void numPadDelOneChar()
+{
+	if (!sNumPadStr.empty())
+	{
+		sNumPadStr.erase(sNumPadStr.length() - 1, 1);
+		mNumPadInputPtr->setText(sNumPadStr);
+		mNumPadInputPtr->setText(sNumPadStr);
+	}
+}
+
 static bool onButtonClick_NumPad1(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad1 !!!\n");
+	numPadAddOneChar('1');
     return false;
 }
 
 static bool onButtonClick_NumPad2(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad2 !!!\n");
+	numPadAddOneChar('2');
     return false;
 }
 
 static bool onButtonClick_NumPad3(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad3 !!!\n");
+	numPadAddOneChar('3');
     return false;
 }
 
 static bool onButtonClick_NumPad4(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad4 !!!\n");
+	numPadAddOneChar('4');
     return false;
 }
 
 static bool onButtonClick_NumPad5(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad5 !!!\n");
+    numPadAddOneChar('5');
     return false;
 }
 
 static bool onButtonClick_NumPad6(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad6 !!!\n");
+	numPadAddOneChar('6');
     return false;
 }
 
 static bool onButtonClick_NumPad7(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad7 !!!\n");
+	numPadAddOneChar('7');
     return false;
 }
 
 static bool onButtonClick_NumPad8(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad8 !!!\n");
+	numPadAddOneChar('8');
     return false;
 }
 
 static bool onButtonClick_NumPad9(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad9 !!!\n");
+	numPadAddOneChar('9');
     return false;
 }
 
 static bool onButtonClick_NumPadDel(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPadDel !!!\n");
+    numPadDelOneChar();
     return false;
 }
 
 static bool onButtonClick_NumPad0(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPad0 !!!\n");
+	numPadAddOneChar('0');
     return false;
 }
 

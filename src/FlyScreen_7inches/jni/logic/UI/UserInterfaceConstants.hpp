@@ -22,4 +22,6 @@ const unsigned int MaxSlots = 7;
 const unsigned int MaxHeaters = 32;
 #define MaxDisplayableAxes	(6)
 
+#define MaxCommandLength (50)
+
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */
