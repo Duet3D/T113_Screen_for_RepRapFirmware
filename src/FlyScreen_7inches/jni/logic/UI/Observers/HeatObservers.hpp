@@ -27,13 +27,13 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
-	/* Update heaters current reading */
 	OBSERVER_CHAR(
 		"heat:heaters^",
 		[](OBSERVER_CHAR_ARGS)
 		{
 			OM::Heat::RemoveHeater(indices[0], false);
 		}),
+	/* Update heaters current reading */
 	OBSERVER_FLOAT(
 		"heat:heaters^:current",
 		[](OBSERVER_FLOAT_ARGS)
@@ -70,6 +70,12 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 			}
 			dbg("Updated heater %d standby temperature to %d", indices[0], val);
 			UI::RefreshToolList(mToolListViewPtr, false);
+		}),
+	OBSERVER_CHAR(
+		"heat:heaters^:state",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			OM::Heat::UpdateHeaterStatus(indices[0], val);
 		}),
 	OBSERVER_INT(
 		"heat:bedHeaters^",

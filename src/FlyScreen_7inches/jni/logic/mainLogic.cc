@@ -239,6 +239,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_ToolCurrentTemperatureSubItem);
 	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_ToolActiveTemperatureSubItem);
 	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_ToolStandbyTemperatureSubItem);
+	ZKListView::ZKListSubItem *pstatus = pListItem->findSubItemByID(ID_MAIN_ToolStatusSubItem);
 
 	// Check Tools to see if list index is within tool heaters
 	OM::Tool *tool = nullptr;
@@ -267,6 +268,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
+		pstatus->setText(heater->status);
 		return;
 	}
 
@@ -294,7 +296,8 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		}
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
-		pcurrentTemperature->setText((int32_t)heater->current);
+		pcurrentTemperature->setText(heater->current);
+		pstatus->setText(heater->status);
 		return;
 	}
 

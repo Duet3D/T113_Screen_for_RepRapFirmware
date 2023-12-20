@@ -23,6 +23,30 @@ namespace OM
 {
 	namespace Heat
 	{
+		// Status that a tool may report to us.
+		enum class HeaterStatus
+		{
+			off = 0,
+			active = 1,
+			standby = 2,
+			fault = 3,
+		};
+
+		struct HeaterStatusMapEntry
+		{
+			const char* key;
+			HeaterStatus val;
+		};
+
+		// This table must be kept in case-insensitive alphabetical order of the search string.
+		const HeaterStatusMapEntry heaterStatusMap[] =
+		{
+			{"active",	HeaterStatus::active },
+			{"fault", HeaterStatus::fault},
+			{"off",		HeaterStatus::off },
+			{"standby",	HeaterStatus::standby },
+		};
+
 		struct Heater
 		{
 			void* operator new(size_t) noexcept { return FreelistManager::Allocate<Heater>(); }
@@ -33,6 +57,7 @@ namespace OM
 			int32_t standbyTemp;
 			float current;
 			float avgPwm;
+			HeaterStatus status;
 
 			void Reset();
 			int32_t GetTemperature();
@@ -46,6 +71,8 @@ namespace OM
 		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt = 0);
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
+		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status);
+		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
 
 		extern size_t lastHeater;

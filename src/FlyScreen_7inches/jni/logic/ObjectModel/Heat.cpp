@@ -9,6 +9,7 @@
 #define DEBUG (1)
 #include "Heat.hpp"
 #include "ListHelpers.hpp"
+#include "uart/CommDef.h"
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
@@ -16,6 +17,12 @@
 
 typedef Vector<OM::Heat::Heater*, MaxHeaters> HeaterList;
 static HeaterList heaters;
+
+template <typename T>
+int compare(const void *lp, const void *rp)
+{
+	return strcasecmp(((T *)lp)->key, ((T *)rp)->key);
+}
 
 namespace OM
 {
@@ -82,6 +89,30 @@ namespace OM
 			}
 
 			heater->UpdateTemp(temp);
+			return true;
+		}
+
+		bool UpdateHeaterStatus(const size_t heaterIndex, const char *statusStr)
+		{
+			const HeaterStatusMapEntry key = {statusStr, HeaterStatus::off};
+			const HeaterStatusMapEntry *statusFromMap =
+				(HeaterStatusMapEntry *)bsearch(
+					&key,
+					heaterStatusMap,
+					ARRAY_SIZE(heaterStatusMap),
+					sizeof(HeaterStatusMapEntry),
+					compare<HeaterStatusMapEntry>);
+			const HeaterStatus status = (statusFromMap != nullptr) ? statusFromMap->val : HeaterStatus::off;
+		}
+
+		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status)
+		{
+			Heater *heater = GetOrCreateHeater(heaterIndex);
+
+			if (heater == nullptr)
+				return false;
+
+			heater->status = status;
 			return true;
 		}
 
