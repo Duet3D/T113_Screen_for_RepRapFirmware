@@ -38,6 +38,17 @@ public:
 	 */
 	void setText(char text);
 
+	int setTextf(const char *format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		char buffer[50];
+		const int ret = SafeVsnprintf(buffer, 50, format, vargs);
+		va_end(vargs);
+		setText(buffer);
+		return ret;
+	}
+
 	void setText(float text)
 	{
 		char str[10];

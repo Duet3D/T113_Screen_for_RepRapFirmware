@@ -242,22 +242,28 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 
 	// Check Tools to see if list index is within tool heaters
 	OM::Tool *tool = nullptr;
-	OM::BedOrChamber *bedOrChamber = nullptr;
-
 	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
 	if (tool != nullptr)
 	{
-		ptoolName->setText(tool->name.c_str());
 		OM::Heat::Heater *heater;
 		heater = tool->GetHeater(toolHeaterIndex);
 		if (heater == nullptr)
 		{
 			dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
+			ptoolName->setText(tool->name.c_str());
 			return;
 		}
 		dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
 				index, tool->index, toolHeaterIndex, heater->index,
 				heater->current, heater->activeTemp, heater->standbyTemp);
+		if (tool->GetHeaterCount() > 1)
+		{
+			ptoolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex);
+		}
+		else
+		{
+			ptoolName->setText(tool->name.c_str());
+		}
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
@@ -268,7 +274,6 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
 	if (bed != nullptr)
 	{
-		ptoolName->setText("Bed");
 		OM::Heat::Heater *heater;
 		heater = OM::Heat::GetHeater(bed->heater);
 		if (heater == nullptr)
@@ -279,6 +284,14 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
 				index, bed->index, bed->heater, heater->index,
 				heater->current, heater->activeTemp, heater->standbyTemp);
+		if (OM::GetBedCount() > 1)
+		{
+			ptoolName->setTextf("Bed %d", bed->index );
+		}
+		else
+		{
+			ptoolName->setText("Bed");
+		}
 		pactiveTemperature->setText(heater->activeTemp);
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText((int32_t)heater->current);
@@ -332,4 +345,63 @@ static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView, ZKL
 static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id)
 {
 	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
+}
+static bool onButtonClick_NumPad1(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad1 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad2(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad2 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad3(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad3 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad4(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad4 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad5(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad5 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad6(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad6 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad7(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad7 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad8(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad8 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad9(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad9 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPadDel(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPadDel !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPad0(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPad0 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPadConfirm !!!\n");
+    return false;
 }
