@@ -69,6 +69,7 @@ namespace OM
 		Heat::Heater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
+		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
 		int8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(Heat::Heater*, size_t)> func, const size_t startAt = 0);

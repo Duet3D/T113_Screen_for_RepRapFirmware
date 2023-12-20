@@ -7,6 +7,7 @@
 
 #include "UserInterface.hpp"
 #include "UserInterfaceConstants.hpp"
+#include "ObjectModel/Tool.hpp"
 
 #define DEBUG (1)
 #include "Debug.hpp"
@@ -64,6 +65,28 @@ namespace UI
 			count = MaxSlots;
 		}
 		totalCount = count;
+	}
+
+	void ToolsList::OpenNumPad(ZKWindow *numPadWindow, const size_t toolIndex, const size_t toolHeaterIndex, const bool active)
+	{
+		numPadData.active = active;
+		numPadData.toolIndex = toolIndex;
+		numPadData.toolHeaterIndex = toolHeaterIndex;
+		numPadWindow->showWnd();
+	}
+
+	void ToolsList::CloseNumPad(ZKWindow *numPadWindow)
+	{
+		numPadWindow->hideWnd();
+	}
+
+	bool ToolsList::SendTempTarget(int32_t target)
+	{
+		OM::Tool *tool = OM::GetTool(numPadData.toolIndex);
+		if (tool == nullptr)
+			return false;
+
+		tool->SetHeaterTemps(numPadData.toolHeaterIndex, target, numPadData.active);
 	}
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool)

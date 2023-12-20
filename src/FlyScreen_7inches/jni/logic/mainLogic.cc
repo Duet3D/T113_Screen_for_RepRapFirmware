@@ -300,34 +300,30 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pstatus->setText(heater->GetHeaterStatusStr());
 		return;
 	}
-
-//	OM::IterateToolsWhile([&](OM::Tool*& tool, size_t)
-//			{
-//				const bool hasHeater = tool->heaters[0] != nullptr;
-//				const bool hasSpindle = tool->spindle != nullptr;
-//				// Spindle takes precedence
-//				if (hasSpindle)
-//				{
-//				}
-//				else if (hasHeater)
-//				{
-//					tool->IterateHeaters([&ptoolName, &tool](OM::ToolHeater*, size_t)
-//							{
-//								ptoolName->setText
-//							});
-//				}
-//				else
-//				{
-//					// Hides everything by default
-//					++count;
-//				}
-//				return true;
-//			});
 }
 
 static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id)
 {
-	LOGD(" onListItemClick_ ToolListView  !!!\n");
+//	LOGD(" onListItemClick_ ToolListView  !!!\n");
+	dbg("index=%d, id=%d", index, id);
+	OM::Tool *tool = nullptr;
+	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
+	if (tool != nullptr)
+	{
+		switch (id)
+		{
+		case ID_MAIN_ToolActiveTemperatureSubItem:
+			UI::toolsList.OpenNumPad(mTemperatureInputWindowPtr, tool->index, toolHeaterIndex, true);
+			break;
+		case ID_MAIN_ToolStandbyTemperatureSubItem:
+			UI::toolsList.OpenNumPad(mTemperatureInputWindowPtr, tool->index, toolHeaterIndex, false);
+			break;
+		case ID_MAIN_ToolStatusSubItem:
+			break;
+		case ID_MAIN_ToolNameSubItem:
+			break;
+		}
+	}
 }
 
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
@@ -424,6 +420,7 @@ static bool onButtonClick_NumPad0(ZKButton *pButton) {
 }
 
 static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPadConfirm !!!\n");
+    UI::toolsList.SendTempTarget(atoi(sNumPadStr.c_str()));
+    UI::toolsList.CloseNumPad(mTemperatureInputWindowPtr);
     return false;
 }

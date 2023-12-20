@@ -8,8 +8,10 @@
 #define DEBUG (1)
 #include "Tool.hpp"
 #include "ListHelpers.hpp"
+#include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
+#include "Hardware/SerialIo.hpp"
 
 #include "Debug.hpp"
 
@@ -72,6 +74,32 @@ namespace OM
 		}
 
 		return !ref.IsEmpty();
+	}
+
+	bool Tool::SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active)
+	{
+		String<MaxCommandLength> command;
+		command.catf("M568 P%d %s", index, active ? "S" : "R");
+
+		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		{
+			if (i > 0)
+			{
+				command.cat(':');
+			}
+			if (i == toolHeaterIndex)
+			{
+				command.catf("%d", temp);
+				continue;
+			}
+			command.catf("%d", (active ? heaters[i]->activeTemp : heaters[i]->standbyTemp));
+		}
+		if (command.IsEmpty())
+			return false;
+
+		SerialIo::Sendf("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
+
+		return true;
 	}
 
 	int8_t Tool::GetHeaterCount() const
