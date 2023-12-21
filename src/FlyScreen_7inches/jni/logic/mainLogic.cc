@@ -372,12 +372,12 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 	}
 
 	int8_t bedOrChamberIndex = index - toolHeaterIndex;
-	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
-	if (bed != nullptr)
+	OM::Bed *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
+	if (bedOrChamber != nullptr)
 	{
-		dbg("Bed index=%d", bed->index);
+		dbg("Bed index=%d", bedOrChamber->index);
 		numPadData.heaterType = UI::HeaterType::bed;
-		numPadData.bedOrChamberIndex = bed->index;
+		numPadData.bedOrChamberIndex = bedOrChamber->index;
 		switch (id)
 		{
 		case ID_MAIN_ToolActiveTemperatureSubItem:
@@ -397,6 +397,34 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 		}
 		return;
 	}
+
+	bedOrChamberIndex -= OM::GetBedCount();
+	bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
+	if (bedOrChamber != nullptr)
+	{
+		dbg("Chamber index=%d", bedOrChamber->index);
+		numPadData.heaterType = UI::HeaterType::chamber;
+		numPadData.bedOrChamberIndex = bedOrChamber->index;
+		switch (id)
+		{
+		case ID_MAIN_ToolActiveTemperatureSubItem:
+			numPadData.active = true;
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
+			break;
+		case ID_MAIN_ToolStandbyTemperatureSubItem:
+			numPadData.active = false;
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
+			break;
+		case ID_MAIN_ToolStatusSubItem:
+			break;
+		case ID_MAIN_ToolNameSubItem:
+			break;
+		}
+		return;
+	}
+	dbg("Unknown index");
 }
 
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
