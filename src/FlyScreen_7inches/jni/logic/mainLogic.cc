@@ -314,23 +314,58 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 	dbg("index=%d, id=%d", index, id);
 	OM::Tool *tool = nullptr;
 	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
+	UI::NumPadData numPadData;
 	if (tool != nullptr)
 	{
+		dbg("Tool index=%d", tool->index);
+		numPadData.heaterType = UI::HeaterType::tool;
+		numPadData.toolIndex = tool->index;
+		numPadData.toolHeaterIndex = toolHeaterIndex;
 		switch (id)
 		{
 		case ID_MAIN_ToolActiveTemperatureSubItem:
+			numPadData.active = true;
 			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(tool->index, toolHeaterIndex, true);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
 			break;
 		case ID_MAIN_ToolStandbyTemperatureSubItem:
+			numPadData.active = false;
 			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(tool->index, toolHeaterIndex, false);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
 			break;
 		case ID_MAIN_ToolStatusSubItem:
 			break;
 		case ID_MAIN_ToolNameSubItem:
 			break;
 		}
+		return;
+	}
+
+	int8_t bedOrChamberIndex = index - toolHeaterIndex;
+	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
+	if (bed != nullptr)
+	{
+		dbg("Bed index=%d", bed->index);
+		numPadData.heaterType = UI::HeaterType::bed;
+		numPadData.bedOrChamberIndex = bed->index;
+		switch (id)
+		{
+		case ID_MAIN_ToolActiveTemperatureSubItem:
+			numPadData.active = true;
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
+			break;
+		case ID_MAIN_ToolStandbyTemperatureSubItem:
+			numPadData.active = false;
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
+			UI::TOOLSLIST->OpenNumPad(numPadData);
+			break;
+		case ID_MAIN_ToolStatusSubItem:
+			break;
+		case ID_MAIN_ToolNameSubItem:
+			break;
+		}
+		return;
 	}
 }
 

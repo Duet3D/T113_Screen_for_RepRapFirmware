@@ -7,8 +7,11 @@
 
 #include "BedOrChamber.hpp"
 #include "ListHelpers.hpp"
+#include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.hpp>
+#include "ObjectModel/Heat.hpp"
 #include <UI/UserInterfaceConstants.hpp>
+#include "Hardware/SerialIo.hpp"
 
 #define DEBUG (1)
 #include "Debug.hpp"
@@ -31,6 +34,32 @@ namespace OM
 		heater = -1;
 		heaterStatus = HeaterStatus::off;
 		slot = MaxSlots;
+	}
+
+	bool BedOrChamber::SetBedTemp(const int32_t temp, const bool active)
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return false;
+
+		String<MaxCommandLength> command;
+		command.catf("M140 P%d %s%d", index, active ? "S" : "R", temp);
+
+		SerialIo::Sendf(command.c_str());
+		return true;
+	}
+
+	bool BedOrChamber::SetChamberTemp(const int32_t temp, const bool active)
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return false;
+
+		String<MaxCommandLength> command;
+		command.catf("M141 P%d %s%d", index, active ? "S" : "R", temp);
+
+		SerialIo::Sendf(command.c_str());
+		return true;
 	}
 
 	Bed* GetBed(const size_t index)
@@ -98,23 +127,23 @@ namespace OM
 		return Remove<ChamberList, Chamber>(chambers, index, allFollowing);
 	}
 
-	bool SetBedHeater(const uint8_t heaterIndex, const int8_t heaterNumber)
+	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber)
 	{
-		auto bed = OM::GetOrCreateBed(heaterIndex);
+		auto bed = OM::GetOrCreateBed(bedIndex);
 		if (bed == nullptr)
 		{
-			dbg("Failed to get or create bed %d", heaterIndex);
+			dbg("Failed to get or create bed %d", bedIndex);
 			return false;
 		}
 		bed->heater = heaterNumber;
-		dbg("Created bed %d, heater number %d", heaterIndex, heaterNumber);
+		dbg("Created bed %d, heater number %d", bedIndex, heaterNumber);
 		return true;
 
 	}
 
-	bool SetChamberHeater(const uint8_t heaterIndex, const int8_t heaterNumber)
+	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber)
 	{
-		auto chamber = OM::GetOrCreateChamber(heaterIndex);
+		auto chamber = OM::GetOrCreateChamber(chamberIndex);
 		if (chamber == nullptr)
 		{
 			return false;

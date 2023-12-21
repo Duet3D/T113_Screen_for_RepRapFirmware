@@ -35,7 +35,7 @@ bool addToVector(std::vector<T> &vec, T item)
 
 namespace UI
 {
-	static Window* Window::GetInstance()
+	Window* Window::GetInstance()
 	{
 		static Window window;
 		return &window;
@@ -106,7 +106,7 @@ namespace UI
 		closedWindows.clear();
 	}
 
-	static ToolsList* ToolsList::GetInstance()
+	ToolsList* ToolsList::GetInstance()
 	{
 		static ToolsList instance;
 		return &instance;
@@ -179,13 +179,24 @@ namespace UI
 		toolListView->refreshListView();
 	}
 
-	void ToolsList::OpenNumPad(const size_t toolIndex, const size_t toolHeaterIndex, const bool active)
+	void ToolsList::OpenNumPad(const NumPadData data)
 	{
 		numPadData.numPadStr = "";
 		numPadInput->setText("");
-		numPadData.active = active;
-		numPadData.toolIndex = toolIndex;
-		numPadData.toolHeaterIndex = toolHeaterIndex;
+		numPadData.heaterType = data.heaterType;
+		numPadData.active = data.active;
+
+		switch (data.heaterType)
+		{
+		case HeaterType::tool:
+			numPadData.toolIndex = data.toolIndex;
+			numPadData.toolHeaterIndex = data.toolHeaterIndex;
+			break;
+		case HeaterType::bed:
+		case HeaterType::chamber:
+			numPadData.bedOrChamberIndex = data.bedOrChamberIndex;
+			break;
+		}
 		WINDOW->OpenWindow(numPadWindow);
 	}
 
@@ -212,15 +223,38 @@ namespace UI
 
 	bool ToolsList::SendTempTarget()
 	{
-		OM::Tool *tool = OM::GetTool(numPadData.toolIndex);
-		if (tool == nullptr)
-			return false;
-
 		if (numPadData.numPadStr.empty())
 			return false;
 
 		int32_t target = atoi(numPadData.numPadStr.c_str());
-		tool->SetHeaterTemps(numPadData.toolHeaterIndex, target, numPadData.active);
+		OM::Tool* tool = nullptr;
+		OM::BedOrChamber* bedOrChamber = nullptr;
+		dbg("onListItemClick heaterType=%d", numPadData.heaterType);
+		switch (numPadData.heaterType)
+		{
+		case HeaterType::tool:
+			tool = OM::GetTool(numPadData.toolIndex);
+			if (tool == nullptr)
+				return false;
+
+			tool->SetHeaterTemps(numPadData.toolHeaterIndex, target, numPadData.active);
+			break;
+		case HeaterType::bed:
+			bedOrChamber = OM::GetBed(numPadData.bedOrChamberIndex);
+			if (bedOrChamber == nullptr)
+				return false;
+
+			bedOrChamber->SetBedTemp(target, numPadData.active);
+			break;
+		case HeaterType::chamber:
+			bedOrChamber = OM::GetChamber(numPadData.bedOrChamberIndex);
+			if (bedOrChamber == nullptr)
+				return false;
+
+			bedOrChamber->SetChamberTemp(target, numPadData.active);
+			break;
+		}
+
 		return true;
 	}
 

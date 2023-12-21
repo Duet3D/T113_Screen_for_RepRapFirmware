@@ -13,9 +13,9 @@
 #include "uart/UartContext.h"
 
 #define DEBUG (0)
+# include "utils/Log.h"
 
 #if DEBUG
-# include "utils/Log.h"
 #define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
 
 #else
@@ -64,6 +64,7 @@ namespace SerialIo {
 
 		char buf[128];
 		int ret = vsprintf(buf, fmt, vargs);
+		LOGD("Sending %s", buf);
 		UARTCONTEXT->send((unsigned char*)buf, ret);
 
 		va_end(vargs);

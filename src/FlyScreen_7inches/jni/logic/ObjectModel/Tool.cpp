@@ -79,7 +79,6 @@ namespace OM
 	bool Tool::SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
 		String<MaxCommandLength> command;
-		command.catf("M568 P%d %s", index, active ? "S" : "R");
 
 		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
 		{

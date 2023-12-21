@@ -35,12 +35,27 @@ namespace UI
 		std::vector<ZKWindow*> closedWindows;
 	};
 
+	enum class HeaterType
+	{
+		tool = 0,
+		bed,
+		chamber
+	};
+
 	struct NumPadData
 	{
-		size_t toolIndex;
-		size_t toolHeaterIndex;
-		bool active;
+		HeaterType heaterType;
 		std::string numPadStr;
+		bool active;
+		union {
+			struct {
+				size_t toolIndex;
+				size_t toolHeaterIndex;
+			};
+			struct {
+				size_t bedOrChamberIndex;
+			};
+		};
 	};
 
 	class ToolsList
@@ -62,8 +77,7 @@ namespace UI
 			return totalCount;
 		}
 		void RefreshToolList(const bool lengthChanged = true);
-		void OpenNumPad(const size_t toolIndex,
-				const size_t toolHeaterIndex, const bool active);
+		void OpenNumPad(const NumPadData data);
 		void CloseNumPad();
 		void NumPadAddOneChar(char ch);
 		void NumPadDelOneChar();

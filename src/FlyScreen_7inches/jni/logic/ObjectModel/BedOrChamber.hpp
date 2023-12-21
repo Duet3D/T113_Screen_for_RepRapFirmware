@@ -58,6 +58,8 @@ namespace OM
 		uint8_t slot;
 
 		void Reset();
+		bool SetBedTemp(const int32_t temp, const bool active);
+		bool SetChamberTemp(const int32_t temp, const bool active);
 	};
 
 	typedef BedOrChamber Bed;
@@ -76,8 +78,8 @@ namespace OM
 	size_t GetChamberCount();
 	bool IterateChambersWhile(function_ref<bool(Chamber*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveChamber(const size_t index, const bool allFollowing);
-	bool SetBedHeater(const uint8_t heaterIndex, const int8_t heaterNumber);
-	bool SetChamberHeater(const uint8_t heaterIndex, const int8_t heaterNumber);
+	bool SetBedHeater(const uint8_t bedIndex, const int8_t heaterNumber);
+	bool SetChamberHeater(const uint8_t chamberIndex, const int8_t heaterNumber);
 
 	extern int8_t lastBed;
 	extern int8_t lastChamber;
