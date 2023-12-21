@@ -279,22 +279,22 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	}
 
 	int8_t bedOrChamberIndex = index - toolHeaterIndex;
-	OM::Bed *bed = OM::GetBed(bedOrChamberIndex);
-	if (bed != nullptr)
+	OM::BedOrChamber *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
+	OM::Heat::Heater *heater;
+	if (bedOrChamber != nullptr)
 	{
-		OM::Heat::Heater *heater;
-		heater = OM::Heat::GetHeater(bed->heater);
+		heater = OM::Heat::GetHeater(bedOrChamber->heater);
 		if (heater == nullptr)
 		{
-			dbg("List index %d: Bed %d heater %d is null", index, bed->index, bed->heater);
+			dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 			return;
 		}
 		dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
-				index, bed->index, bed->heater, heater->index,
+				index, bedOrChamber->index, bedOrChamber->heater, heater->index,
 				heater->current, heater->activeTemp, heater->standbyTemp);
 		if (OM::GetBedCount() > 1)
 		{
-			ptoolName->setTextf("Bed %d", bed->index );
+			ptoolName->setTextf("Bed %d", bedOrChamber->index );
 		}
 		else
 		{
@@ -306,6 +306,36 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pstatus->setText(heater->GetHeaterStatusStr());
 		return;
 	}
+
+	bedOrChamberIndex -= OM::GetBedCount();
+	dbg("Chamber index %d", bedOrChamberIndex);
+	bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
+	if (bedOrChamber != nullptr)
+	{
+		heater = OM::Heat::GetHeater(bedOrChamber->heater);
+		if (heater == nullptr)
+		{
+			dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
+			return;
+		}
+		dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d",
+				index, bedOrChamber->index, bedOrChamber->heater, heater->index,
+				heater->current, heater->activeTemp, heater->standbyTemp);
+		if (OM::GetChamberCount() > 1)
+		{
+			ptoolName->setTextf("Chamber %d", bedOrChamber->index );
+		}
+		else
+		{
+			ptoolName->setText("Chamber");
+		}
+		pactiveTemperature->setText(heater->activeTemp);
+		pstandbyTemperature->setText(heater->standbyTemp);
+		pcurrentTemperature->setText(heater->current);
+		pstatus->setText(heater->GetHeaterStatusStr());
+		return;
+	}
+	dbg("Unknown index");
 }
 
 static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id)

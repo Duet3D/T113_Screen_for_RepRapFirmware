@@ -62,6 +62,14 @@ namespace OM
 		return true;
 	}
 
+	Bed* GetBedBySlot(const size_t index)
+	{
+		if (index >= beds.Size())
+			return nullptr;
+
+		return beds[index];
+	}
+
 	Bed* GetBed(const size_t index)
 	{
 		return GetOrCreate<BedList, Bed>(beds, index, false);
@@ -93,6 +101,14 @@ namespace OM
 	{
 		dbg("Removing bed %d allFollowing=%s", index, allFollowing? "true" : "false");
 		return Remove<BedList, Bed>(beds, index, allFollowing);
+	}
+
+	Chamber* GetChamberBySlot(const size_t index)
+	{
+		if (index >= chambers.Size())
+			return nullptr;
+
+		return chambers[index];
 	}
 
 	Chamber* GetChamber(const size_t index)

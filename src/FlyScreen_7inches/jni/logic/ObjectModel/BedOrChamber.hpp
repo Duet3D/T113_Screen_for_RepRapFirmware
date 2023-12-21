@@ -65,6 +65,7 @@ namespace OM
 	typedef BedOrChamber Bed;
 	typedef BedOrChamber Chamber;
 
+	Bed* GetBedBySlot(const size_t index);
 	Bed* GetBed(const size_t index);
 	Bed* GetOrCreateBed(const size_t index);
 	Bed* GetFirstBed();
@@ -72,6 +73,7 @@ namespace OM
 	bool IterateBedsWhile(function_ref<bool(Bed*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveBed(const size_t index, const bool allFollowing);
 
+	Chamber* GetChamberBySlot(const size_t index);
 	Chamber* GetChamber(const size_t index);
 	Chamber* GetOrCreateChamber(const size_t index);
 	Chamber* GetFirstChamber();
