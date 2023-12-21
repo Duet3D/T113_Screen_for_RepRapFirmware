@@ -48,6 +48,18 @@ namespace OM
 		{"standby",	ToolStatus::standby },
 	};
 
+	struct ToolHeater
+	{
+		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ToolHeater>(); }
+		void operator delete(void* p) noexcept { FreelistManager::Release<ToolHeater>(p); }
+
+		int32_t activeTemp;
+		int32_t standbyTemp;
+		Heat::Heater* heater;
+
+		void Reset();
+	};
+
 	struct Tool
 	{
 		void* operator new(size_t) noexcept { return FreelistManager::Allocate<Tool>(); }
@@ -56,7 +68,7 @@ namespace OM
 		// tool number
 		uint8_t index;
 		String<TOOL_NAME_MAX_LEN> name;
-		Heat::Heater* heaters[MaxHeatersPerTool];
+		ToolHeater* heaters[MaxHeatersPerTool];
 		ExtrudersBitmap extruders;
 		FansBitmap fans;
 		Spindle* spindle;
@@ -65,14 +77,14 @@ namespace OM
 		ToolStatus status;
 		uint8_t slot;
 
-		Heat::Heater* GetHeater(const uint8_t toolHeaterIndex);
-		Heat::Heater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
+		ToolHeater* GetHeater(const uint8_t toolHeaterIndex);
+		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
 		int8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
-		void IterateHeaters(function_ref<void(Heat::Heater*, size_t)> func, const size_t startAt = 0);
+		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
 

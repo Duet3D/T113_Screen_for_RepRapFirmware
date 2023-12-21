@@ -20,17 +20,23 @@ static ToolList tools;
 
 namespace OM
 {
+	void ToolHeater::Reset()
+	{
+		activeTemp = 0;
+		standbyTemp = 0;
+	}
+
 	void Tool::operator delete(void * p) noexcept
 	{
 		Tool* t = static_cast<Tool*>(p);
 		for (size_t i = 0; i < MaxHeatersPerTool; ++i)
 		{
-			t->heaters[i] = nullptr;
+			delete t->heaters[i];
 		}
 		FreelistManager::Release<Tool>(p);
 	}
 
-	Heat::Heater* Tool::GetHeater(const uint8_t toolHeaterIndex)
+	ToolHeater* Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
 		if (toolHeaterIndex >= MaxHeatersPerTool)
 		{
@@ -39,14 +45,17 @@ namespace OM
 		return heaters[toolHeaterIndex];
 	}
 
-	Heat::Heater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
+	ToolHeater* Tool::GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
-		Heat::Heater *toolHeater = GetHeater(toolHeaterIndex);
-		if (toolHeater != nullptr && toolHeater->index == heaterIndex)
+		ToolHeater *toolHeater = GetHeater(toolHeaterIndex);
+		if (toolHeater != nullptr && toolHeater->heater->index == heaterIndex)
 		{
 			return toolHeater;
 		}
-		Heat::Heater* th = Heat::GetOrCreateHeater(heaterIndex);
+		ToolHeater* th = new ToolHeater;
+		th->Reset();
+		Heat::Heater* heater = Heat::GetOrCreateHeater(heaterIndex);
+		th->heater = heater;
 		dbg("Setting tool %d heater %d=%d", index, toolHeaterIndex, heaterIndex);
 		heaters[toolHeaterIndex] = th;
 		return th;
@@ -54,7 +63,7 @@ namespace OM
 
 	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
 	{
-		Heat::Heater *heater = GetHeater(toolHeaterIndex);
+		ToolHeater *heater = GetHeater(toolHeaterIndex);
 		if (heater == nullptr)
 		{
 			return -2000;
@@ -112,7 +121,7 @@ namespace OM
 	{
 		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
 		{
-			if (heaters[i]->index == (int) heaterIndex)
+			if (heaters[i]->heater->index == (int) heaterIndex)
 			{
 				return i;
 			}
@@ -120,7 +129,7 @@ namespace OM
 		return -1;
 	}
 
-	void Tool::IterateHeaters(function_ref<void(Heat::Heater*, size_t)> func, const size_t startAt)
+	void Tool::IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt)
 	{
 		for (size_t i = startAt; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
 		{
@@ -137,6 +146,7 @@ namespace OM
 		size_t removed = 0;
 		for (size_t i = heaterIndex; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
 		{
+			delete heaters[i];
 			heaters[i] = nullptr;
 			++removed;
 		}
@@ -145,7 +155,7 @@ namespace OM
 
 	void Tool::UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
-		Heat::Heater* toolHeater = GetHeater(toolHeaterIndex);
+		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
 		if (toolHeater == nullptr)
 		{
 			return;
@@ -212,7 +222,7 @@ namespace OM
 		{
 			return false;
 		}
-		OM::Heat::Heater *heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
+		ToolHeater *heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
 		if (heater == nullptr)
 		{
 			dbg("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);

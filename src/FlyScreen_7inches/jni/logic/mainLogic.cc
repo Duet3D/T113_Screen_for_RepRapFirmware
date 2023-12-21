@@ -252,17 +252,17 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
 	if (tool != nullptr)
 	{
-		OM::Heat::Heater *heater;
-		heater = tool->GetHeater(toolHeaterIndex);
-		if (heater == nullptr)
+		OM::ToolHeater *toolHeater;
+		toolHeater = tool->GetHeater(toolHeaterIndex);
+		if (toolHeater == nullptr)
 		{
 			dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
 			ptoolName->setText(tool->name.c_str());
 			return;
 		}
 		dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
-				index, tool->index, toolHeaterIndex, heater->index,
-				heater->current, heater->activeTemp, heater->standbyTemp);
+				index, tool->index, toolHeaterIndex, toolHeater->heater->index,
+				toolHeater->heater->current, toolHeater->activeTemp, toolHeater->standbyTemp);
 		if (tool->GetHeaterCount() > 1)
 		{
 			ptoolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex);
@@ -271,10 +271,10 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		{
 			ptoolName->setText(tool->name.c_str());
 		}
-		pactiveTemperature->setText(heater->activeTemp);
-		pstandbyTemperature->setText(heater->standbyTemp);
-		pcurrentTemperature->setText(heater->current);
-		pstatus->setText(heater->GetHeaterStatusStr());
+		pactiveTemperature->setText(toolHeater->activeTemp);
+		pstandbyTemperature->setText(toolHeater->standbyTemp);
+		pcurrentTemperature->setText(toolHeater->heater->current);
+		pstatus->setText(toolHeater->heater->GetHeaterStatusStr());
 		return;
 	}
 

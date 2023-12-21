@@ -149,10 +149,7 @@ namespace UI
 				}
 				else if (hasHeater)
 				{
-					tool->IterateHeaters([&count, &tool](OM::Heat::Heater*, size_t)
-							{
-								++count;
-							});
+					count += tool->GetHeaterCount();
 				}
 				else
 				{
