@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
 				return;
 			}
-			UI::RefreshToolList(mToolListViewPtr);
+			UI::TOOLSLIST->RefreshToolList();
 		}),
 	OBSERVER_CHAR(
 		"tools^:name",
@@ -67,14 +67,14 @@ static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			if (OM::RemoveTool(indices[0], true)){}
-			UI::RefreshToolList(mToolListViewPtr);
+			UI::TOOLSLIST->RefreshToolList();
 		}),
 	OBSERVER_ARRAY_END(
 		"tools^:heaters^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			if (OM::RemoveToolHeaters(indices[0], indices[1])){}
-			UI::RefreshToolList(mToolListViewPtr);
+			UI::TOOLSLIST->RefreshToolList();
 		}),
 };
 

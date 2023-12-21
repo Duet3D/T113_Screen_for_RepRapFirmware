@@ -5,6 +5,7 @@
  *      Author: andy
  */
 
+#include <algorithm>
 #include "UserInterface.hpp"
 #include "UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
@@ -12,9 +13,84 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 
+template<typename T>
+bool removeFromVector(std::vector<T> &vec, T item)
+{
+	auto it =  std::find(vec.begin(), vec.end(), item);
+	if (it != vec.end())
+	{
+		vec.erase(it);
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
+bool addToVector(std::vector<T> &vec, T item)
+{
+	removeFromVector<T>(vec, item);
+	vec.push_back(item);
+	return true;
+}
+
 namespace UI
 {
-	ToolsList toolsList;
+	static Window* Window::GetInstance()
+	{
+		static Window window;
+		return &window;
+	}
+
+	void Window::OpenWindow(ZKWindow* window)
+	{
+		dbg("Opening window %d", window->getID());
+		window->showWnd();
+		removeFromVector<ZKWindow*>(closedWindows, window);
+		addToVector<ZKWindow*>(openedWindows, window);
+
+	}
+
+	void Window::CloseWindow(ZKWindow* window, const bool returnable)
+	{
+		dbg("Closing window %d", window->getID());
+		window->hideWnd();
+		removeFromVector<ZKWindow*>(openedWindows, window);
+		if (returnable)
+			addToVector<ZKWindow*>(closedWindows, window);
+	}
+
+	void Window::Back()
+	{
+		if (!openedWindows.empty())
+		{
+			ZKWindow* lastOpened = openedWindows.back();
+			dbg("Hiding window %d", lastOpened->getID());
+			lastOpened->hideWnd();
+		}
+		if (!closedWindows.empty())
+		{
+			ZKWindow* lastClosed = closedWindows.back();
+			OpenWindow(lastClosed);
+		}
+	}
+
+	void Window::Home()
+	{
+
+	}
+
+	static ToolsList* ToolsList::GetInstance()
+	{
+		static ToolsList instance;
+		return &instance;
+	}
+
+	void ToolsList::Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput)
+	{
+		this->toolListView = toolListView;
+		this->numPadWindow = numPadWindow;
+		this->numPadInput = numPadInput;
+	}
 
 	void ToolsList::CalculateTotalHeaterCount(
 				const bool addTools = true,
@@ -67,26 +143,57 @@ namespace UI
 		totalCount = count;
 	}
 
-	void ToolsList::OpenNumPad(ZKWindow *numPadWindow, const size_t toolIndex, const size_t toolHeaterIndex, const bool active)
+	void ToolsList::RefreshToolList(const bool lengthChanged)
 	{
+		if (lengthChanged)
+		{
+			CalculateTotalHeaterCount();
+		}
+		toolListView->refreshListView();
+	}
+
+	void ToolsList::OpenNumPad(const size_t toolIndex, const size_t toolHeaterIndex, const bool active)
+	{
+		numPadData.numPadStr = "";
+		numPadInput->setText("");
 		numPadData.active = active;
 		numPadData.toolIndex = toolIndex;
 		numPadData.toolHeaterIndex = toolHeaterIndex;
-		numPadWindow->showWnd();
+		WINDOW->OpenWindow(numPadWindow);
 	}
 
-	void ToolsList::CloseNumPad(ZKWindow *numPadWindow)
+	void ToolsList::CloseNumPad()
 	{
-		numPadWindow->hideWnd();
+		WINDOW->CloseWindow(numPadWindow, false);
 	}
 
-	bool ToolsList::SendTempTarget(int32_t target)
+	void ToolsList::NumPadAddOneChar(char ch)
+	{
+		numPadData.numPadStr += ch;
+		numPadInput->setText(numPadData.numPadStr);
+	}
+
+	void ToolsList::NumPadDelOneChar()
+	{
+		if (!numPadData.numPadStr.empty())
+		{
+			numPadData.numPadStr.erase(numPadData.numPadStr.length() - 1, 1);
+			numPadInput->setText(numPadData.numPadStr);
+		}
+	}
+
+	bool ToolsList::SendTempTarget()
 	{
 		OM::Tool *tool = OM::GetTool(numPadData.toolIndex);
 		if (tool == nullptr)
 			return false;
 
+		if (numPadData.numPadStr.empty())
+			return false;
+
+		int32_t target = atoi(numPadData.numPadStr.c_str());
 		tool->SetHeaterTemps(numPadData.toolHeaterIndex, target, numPadData.active);
+		return true;
 	}
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool)
@@ -112,15 +219,6 @@ namespace UI
 //		dbg("List index %d is not in tool heaters (total tool heaters %d)", listIndex, count);
 		tool = nullptr;
 		return count;				// list index is greater than all heaters for tools
-	}
-
-	void RefreshToolList(ZKListView *listView, const bool lengthChanged)
-	{
-		if (lengthChanged)
-		{
-			toolsList.CalculateTotalHeaterCount();
-		}
-		listView->refreshListView();
 	}
 }
 

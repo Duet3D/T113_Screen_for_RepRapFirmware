@@ -9,6 +9,9 @@
 #define JNI_LOGIC_UI_USERINTERFACE_HPP_
 
 #include <sys/types.h>
+#include <string>
+#include <vector>
+#include "control/ZKTextView.h"
 #include "control/ZKListView.h"
 #include "window/ZKWindow.h"
 #include "ObjectModel/Tool.hpp"
@@ -16,11 +19,26 @@
 
 namespace UI
 {
+	class Window
+	{
+	public:
+		static Window * GetInstance();
+		void OpenWindow(ZKWindow *window);
+		void CloseWindow(ZKWindow *window, const bool returnable = true);
+		void Back();
+		void Home();
+
+	private:
+		std::vector<ZKWindow*> openedWindows;
+		std::vector<ZKWindow*> closedWindows;
+	};
+
 	struct NumPadData
 	{
 		size_t toolIndex;
 		size_t toolHeaterIndex;
 		bool active;
+		std::string numPadStr;
 	};
 
 	class ToolsList
@@ -30,27 +48,36 @@ namespace UI
 				totalCount(0)
 		{
 		}
+		static ToolsList* GetInstance();
+		void Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput);
 		void CalculateTotalHeaterCount(const bool addTools = true,
 				const bool addBeds = true, const bool addChambers = true);
-		size_t GetTotalHeaterCount(const bool calculate, const bool addTools = true,
-				const bool addBeds = true, const bool addChambers = true)
+		size_t GetTotalHeaterCount(const bool calculate, const bool addTools =
+				true, const bool addBeds = true, const bool addChambers = true)
 		{
-			if (calculate) CalculateTotalHeaterCount(addTools, addBeds, addChambers);
+			if (calculate)
+				CalculateTotalHeaterCount(addTools, addBeds, addChambers);
 			return totalCount;
 		}
-		void OpenNumPad(ZKWindow *numPadWindow, const size_t toolIndex, const size_t toolHeaterIndex, const bool active);
-		void CloseNumPad(ZKWindow *numPadWindow);
-		bool SendTempTarget(int32_t target);
+		void RefreshToolList(const bool lengthChanged = true);
+		void OpenNumPad(const size_t toolIndex,
+				const size_t toolHeaterIndex, const bool active);
+		void CloseNumPad();
+		void NumPadAddOneChar(char ch);
+		void NumPadDelOneChar();
+		bool SendTempTarget();
 	private:
 		size_t totalCount;
 		NumPadData numPadData;
+		ZKListView* toolListView;
+		ZKWindow* numPadWindow;
+		ZKTextView* numPadInput;
 	};
 
-	extern ToolsList toolsList;
-
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool);
-	void RefreshToolList(ZKListView *listView, const bool lengthChanged = true);
 
+#define WINDOW Window::GetInstance()
+#define TOOLSLIST ToolsList::GetInstance()
 }
 
 #endif /* JNI_LOGIC_UI_USERINTERFACE_HPP_ */
