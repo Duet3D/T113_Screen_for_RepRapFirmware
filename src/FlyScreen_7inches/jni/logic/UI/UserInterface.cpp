@@ -50,6 +50,19 @@ namespace UI
 
 	}
 
+	size_t Window::ReOpenLastWindow(size_t numWindows)
+	{
+		size_t count = 0;
+		for (size_t i=0; i < numWindows; ++i)
+		{
+			if (closedWindows.empty())
+				return count;
+			auto window = closedWindows.back();
+			OpenWindow(window);
+		}
+		return count;
+	}
+
 	void Window::CloseWindow(ZKWindow* window, const bool returnable)
 	{
 		dbg("Closing window %d", window->getID());
@@ -76,7 +89,21 @@ namespace UI
 
 	void Window::Home()
 	{
+		for (auto window : openedWindows)
+		{
+			window->hideWnd();
+		}
+		for (auto window : closedWindows)
+		{
+			window->showWnd();
+		}
+		Clear();
+	}
 
+	void Window::Clear()
+	{
+		openedWindows.clear();
+		closedWindows.clear();
 	}
 
 	static ToolsList* ToolsList::GetInstance()
@@ -165,6 +192,7 @@ namespace UI
 	void ToolsList::CloseNumPad()
 	{
 		WINDOW->CloseWindow(numPadWindow, false);
+		WINDOW->Home();
 	}
 
 	void ToolsList::NumPadAddOneChar(char ch)

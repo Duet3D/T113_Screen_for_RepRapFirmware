@@ -204,6 +204,7 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev)
 static bool onButtonClick_HomeBtn(ZKButton *pButton)
 {
 	LOGD(" ButtonClick HomeBtn !!!\n");
+	UI::WINDOW->Home();
 	return false;
 }
 static bool onButtonClick_BackBtn(ZKButton *pButton)
@@ -318,9 +319,11 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 		switch (id)
 		{
 		case ID_MAIN_ToolActiveTemperatureSubItem:
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
 			UI::TOOLSLIST->OpenNumPad(tool->index, toolHeaterIndex, true);
 			break;
 		case ID_MAIN_ToolStandbyTemperatureSubItem:
+			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
 			UI::TOOLSLIST->OpenNumPad(tool->index, toolHeaterIndex, false);
 			break;
 		case ID_MAIN_ToolStatusSubItem:

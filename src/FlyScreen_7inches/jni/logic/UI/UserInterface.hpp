@@ -24,9 +24,11 @@ namespace UI
 	public:
 		static Window * GetInstance();
 		void OpenWindow(ZKWindow *window);
+		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseWindow(ZKWindow *window, const bool returnable = true);
 		void Back();
 		void Home();
+		void Clear();
 
 	private:
 		std::vector<ZKWindow*> openedWindows;
