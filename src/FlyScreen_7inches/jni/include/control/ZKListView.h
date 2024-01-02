@@ -15,7 +15,7 @@ class ZKBasePrivate;
 class ZKListViewPrivate;
 
 /**
- * @brief 列表控件
+ * @brief List control
  */
 class ZKListView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKListView)
@@ -51,7 +51,7 @@ public:
 		virtual ~ZKListItem();
 
 		/**
-		 * @brief 通过ID值获取子项
+		 * @brief Get sub-item by ID
 		 */
 		ZKListSubItem* findSubItemByID(int id) const;
 		int getSubItemCount() const { return mSubItemCount; }
@@ -73,7 +73,7 @@ public:
 	};
 
 	/**
-	 * @brief 数据与UI绑定适配器
+	 * @brief Data and UI binding adapter
 	 */
 	class AbsListAdapter {
 		friend class ZKListView;
@@ -83,7 +83,7 @@ public:
 		virtual void obtainListItemData(ZKListView *pListView, ZKListItem *pListItem, int index) = 0;
 
 		/**
-		 * 数据更新，重绘UI
+		 * Data update, redraw UI
 		 */
 		void notifyDataSetChanged(ZKListView *pListView) {
 			if (pListView) {
@@ -97,7 +97,7 @@ public:
 	}
 
 	/**
-	 * @brief 列表项点击监听接口
+	 * @brief List item click listener interface
 	 */
 	class IItemClickListener {
 	public:
@@ -106,7 +106,7 @@ public:
 	};
 
 	/**
-	 * @brief 列表项长按监听接口
+	 * @brief List item long press listener interface
 	 */
 	class IItemLongClickListener {
 	public:
@@ -118,47 +118,47 @@ public:
 	void setItemLongClickListener(IItemLongClickListener *pListener) { mItemLongClickListenerPtr = pListener; }
 
 	/**
-	 * @brief 刷新列表
+	 * @brief Refresh the list
 	 */
 	void refreshListView();
 
 	/**
-	 * @brief 跳转到指定行或列
+	 * @brief Jump to the specified row or column
 	 */
 	void setSelection(int index);
 
 	/**
-	 * @brief 获取列表项宽
+	 * @brief Get the item width
 	 */
 	UINT getItemWidth() const;
 
 	/**
-	 * @brief 获取列表项高
+	 * @brief Get the item height
 	 */
 	UINT getItemHeight() const;
 
 	/**
-	 * @brief 获取列表行数
+	 * @brief Get the number of rows in the list
 	 */
 	UINT getRows() const;
 
 	/**
-	 * @brief 获取列表列数
+	 * @brief Get the number of columns in the list
 	 */
 	UINT getCols() const;
 
 	/**
-	 * @brief 获取列表总项数
+	 * @brief Get the total number of list items
 	 */
 	int getListItemCount() const;
 
 	/**
-	 * @brief 获取第一个可见项的索引值
+	 * @brief Get the index value of the first visible item
 	 */
 	int getFirstVisibleItemIndex() const;
 
 	/**
-	 * @brief 获取第一个可见项的偏移值
+	 * @brief Get the offset value of the first visible item
 	 */
 	int getFirstVisibleItemOffset() const;
 
@@ -185,19 +185,19 @@ private:
 	void resetOffset();
 	void resetItemPressInfo();
 
-	// 启动回滚
+	// Start rollback
 	void startRollback();
 
 	void startSinkScrollbar();
 
-	// 停止滚动
+	// Stop scrolling
 	void stopRoll();
 
-	// 循环列表 调整首项偏移值
+	// Cycle list Adjust the offset value of the first item
 	void cycleFirstItemOffset();
 
 	/**
-	 * 记录列表项按下信息
+	 * Record list item press information
 	 */
 	typedef struct {
 		BOOL isPressed;
@@ -207,8 +207,8 @@ private:
 
 	typedef enum {
 		E_EDGE_EFFECT_NONE,
-		E_EDGE_EFFECT_DRAG,			// 拖拽效果
-		E_EDGE_EFFECT_FADING		// 阴影逐渐褪去效果
+		E_EDGE_EFFECT_DRAG,			// Drag effect
+		E_EDGE_EFFECT_FADING		// Shadow gradually fades effect
 	} EEdgeEffect;
 
 	BOOL isVerticalOrientation() const { return mOrientation == E_ORIENTATION_VERTICAL; }
@@ -222,7 +222,7 @@ private:
 	int mFirstItemXOffset;
 	int mFirstItemYOffset;
 
-	int mFirstItemXOffsetOfDown;	// 记录按下时首项的偏移位置
+	int mFirstItemXOffsetOfDown;	// Record the offset position of the first item when pressed
 	int mFirstItemYOffsetOfDown;
 
 	UINT mItemWidth;
@@ -231,13 +231,13 @@ private:
 	BOOL mIsDamping;
 	BOOL mIsRolling;
 
-	BOOL mIsAutoRollback;		// 自动回滚对齐标志
-	BOOL mIsCycleEnable;		// 循环列表
+	BOOL mIsAutoRollback;		// Auto rollback alignment flag
+	BOOL mIsCycleEnable;		// Circular list
 
 	VelocityTracker mVelocityTracker;
 	float mCurVelocity;
 
-	EOrientation mOrientation;	// 方向: 0 横向, 1 纵向
+	EOrientation mOrientation;	// Direction: 0 Horizontal, 1 Vertical
 	EEdgeEffect mEdgeEffect;
 
 	UINT mDragMaxDistance;
