@@ -172,6 +172,20 @@ namespace OM
 		}
 	}
 
+	void Tool::ToggleState()
+	{
+		switch (status)
+		{
+		case ToolStatus::active:
+			SerialIo::Sendf("T-1", index);
+			break;
+		case ToolStatus::standby:
+		case ToolStatus::off:
+			SerialIo::Sendf("T%d", index);
+			break;
+		}
+	}
+
 	void Tool::Reset()
 	{
 		index = 0;

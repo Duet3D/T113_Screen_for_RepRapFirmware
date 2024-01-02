@@ -371,6 +371,7 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 		case ID_MAIN_ToolStatusSubItem:
 			break;
 		case ID_MAIN_ToolNameSubItem:
+			tool->ToggleState();
 			break;
 		}
 		return;

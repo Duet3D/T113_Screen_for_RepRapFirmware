@@ -87,6 +87,7 @@ namespace OM
 		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
+		void ToggleState();
 
 		void Reset();
 	};
