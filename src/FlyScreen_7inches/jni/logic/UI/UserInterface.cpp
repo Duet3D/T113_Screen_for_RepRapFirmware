@@ -83,7 +83,7 @@ namespace UI
 		if (!closedWindows.empty())
 		{
 			ZKWindow* lastClosed = closedWindows.back();
-			OpenWindow(lastClosed);
+			lastClosed->showWnd();
 		}
 	}
 

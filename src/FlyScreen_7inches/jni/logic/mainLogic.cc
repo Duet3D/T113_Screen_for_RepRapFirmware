@@ -437,6 +437,34 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
 {
 	LOGD(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
+	UI::WINDOW->CloseWindow(mMainWindowPtr);
+	switch (index)
+	{
+	case (int)UI::SlideWindowIndex::move:
+		UI::WINDOW->OpenWindow(mMoveWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::extrude:
+		UI::WINDOW->OpenWindow(mExtrudeWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::console:
+		UI::WINDOW->OpenWindow(mConsoleWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::heightmap:
+		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::fans:
+		UI::WINDOW->OpenWindow(mFanWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::print:
+		UI::WINDOW->OpenWindow(mFilesWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::network:
+		UI::WINDOW->OpenWindow(mNetworkWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::settings:
+		UI::WINDOW->OpenWindow(mSettingsWindowPtr);
+		break;
+	}
 }
 static int getListItemCount_TemperatureGraphLegend(const ZKListView *pListView)
 {
@@ -512,5 +540,62 @@ static bool onButtonClick_NumPad0(ZKButton *pButton) {
 static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
     UI::TOOLSLIST->SendTempTarget();
     UI::TOOLSLIST->CloseNumPad();
+    return false;
+}
+static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick HomeAllBtn !!!\n");
+    return false;
+}
+
+static int getListItemCount_AxisControlListView(const ZKListView *pListView) {
+    //LOGD("getListItemCount_AxisControlListView !\n");
+    return 5;
+}
+
+static void obtainListItemData_AxisControlListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ AxisControlListView  !!!\n");
+}
+
+static void onListItemClick_AxisControlListView(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ AxisControlListView  !!!\n");
+}
+
+static bool onButtonClick_FeedrateBtn1(ZKButton *pButton) {
+    LOGD(" ButtonClick FeedrateBtn1 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_TrueLevelBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick TrueLevelBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_MeshLevelBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick MeshLevelBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_HeightmapBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick HeightmapBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_FeedrateBtn2(ZKButton *pButton) {
+    LOGD(" ButtonClick FeedrateBtn2 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_FeedrateBtn3(ZKButton *pButton) {
+    LOGD(" ButtonClick FeedrateBtn3 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_FeedrateBtn4(ZKButton *pButton) {
+    LOGD(" ButtonClick FeedrateBtn4 !!!\n");
+    return false;
+}
+
+static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
+    LOGD(" ButtonClick FeedrateBtn5 !!!\n");
     return false;
 }
