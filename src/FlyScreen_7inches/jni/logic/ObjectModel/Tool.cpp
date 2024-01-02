@@ -186,6 +186,33 @@ namespace OM
 		}
 	}
 
+	void Tool::ToggleHeaterState(const uint8_t toolHeaterIndex)
+	{
+		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
+		if (toolHeater == nullptr)
+		{
+			return;
+		}
+		switch (toolHeater->heater->status)
+		{
+		case Heat::HeaterStatus::active:
+			SerialIo::Sendf("M568 P%d A1", index);
+			break;
+		case Heat::HeaterStatus::fault:
+			SerialIo::Sendf("M562 P%d", toolHeater->heater->index);
+			break;
+		case Heat::HeaterStatus::off:
+			SerialIo::Sendf("M568 P%d A2", index);
+			break;
+		case Heat::HeaterStatus::standby:
+			SerialIo::Sendf("M568 P%d A0", index);
+			break;
+		case Heat::HeaterStatus::offline:
+		case Heat::HeaterStatus::tuning:
+			break;
+		}
+	}
+
 	void Tool::Reset()
 	{
 		index = 0;

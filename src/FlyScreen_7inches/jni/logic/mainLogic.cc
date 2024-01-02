@@ -369,6 +369,7 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 			UI::TOOLSLIST->OpenNumPad(numPadData);
 			break;
 		case ID_MAIN_ToolStatusSubItem:
+			tool->ToggleHeaterState(toolHeaterIndex);
 			break;
 		case ID_MAIN_ToolNameSubItem:
 			tool->ToggleState();
