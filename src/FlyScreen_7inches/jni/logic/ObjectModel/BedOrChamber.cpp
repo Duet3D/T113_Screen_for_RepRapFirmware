@@ -62,6 +62,58 @@ namespace OM
 		return true;
 	}
 
+	bool BedOrChamber::ToggleBedState()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return false;
+
+		switch (pheater->status)
+		{
+		case Heat::HeaterStatus::active:
+			SerialIo::Sendf("M144 P%d", index);
+			break;
+		case Heat::HeaterStatus::standby:
+			SerialIo::Sendf("M140 P%d S-273.15", index);
+			break;
+		case Heat::HeaterStatus::off:
+			SerialIo::Sendf("M140 P%d S%d", index, pheater->activeTemp);
+			break;
+		case Heat::HeaterStatus::fault:
+			SerialIo::Sendf("M562 P%d", pheater->index);
+			break;
+		case Heat::HeaterStatus::offline:
+		case Heat::HeaterStatus::tuning:
+			break;
+		}
+		return true;
+	}
+
+	bool BedOrChamber::ToggleChamberState()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return false;
+
+		switch (pheater->status)
+		{
+		case Heat::HeaterStatus::active:
+		case Heat::HeaterStatus::standby:
+			SerialIo::Sendf("M141 P%d S-273.15", index);
+			break;
+		case Heat::HeaterStatus::off:
+			SerialIo::Sendf("M141 P%d S%d", index, pheater->activeTemp);
+			break;
+		case Heat::HeaterStatus::fault:
+			SerialIo::Sendf("M562 P%d", pheater->index);
+			break;
+		case Heat::HeaterStatus::offline:
+		case Heat::HeaterStatus::tuning:
+			break;
+		}
+		return true;
+	}
+
 	Bed* GetBedBySlot(const size_t index)
 	{
 		if (index >= beds.Size())

@@ -398,8 +398,8 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 			UI::TOOLSLIST->OpenNumPad(numPadData);
 			break;
 		case ID_MAIN_ToolStatusSubItem:
-			break;
 		case ID_MAIN_ToolNameSubItem:
+			bedOrChamber->ToggleBedState();
 			break;
 		}
 		return;
@@ -425,8 +425,8 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 			UI::TOOLSLIST->OpenNumPad(numPadData);
 			break;
 		case ID_MAIN_ToolStatusSubItem:
-			break;
 		case ID_MAIN_ToolNameSubItem:
+			bedOrChamber->ToggleChamberState();
 			break;
 		}
 		return;

@@ -60,6 +60,8 @@ namespace OM
 		void Reset();
 		bool SetBedTemp(const int32_t temp, const bool active);
 		bool SetChamberTemp(const int32_t temp, const bool active);
+		bool ToggleBedState();
+		bool ToggleChamberState();
 	};
 
 	typedef BedOrChamber Bed;
