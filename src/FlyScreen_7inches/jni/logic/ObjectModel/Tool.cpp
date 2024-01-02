@@ -6,12 +6,14 @@
  */
 
 #define DEBUG (1)
+#include "uart/CommDef.h"
 #include "Tool.hpp"
 #include "ListHelpers.hpp"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 #include "Hardware/SerialIo.hpp"
+#include "ObjectModel/Utils.hpp"
 
 #include "Debug.hpp"
 
@@ -276,6 +278,29 @@ namespace OM
 			tool->name.copy(name, TOOL_NAME_MAX_LEN);
 		}
 		dbg("Tool %d name=%s", tool->index, tool->name.c_str());
+		return true;
+	}
+
+	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr)
+	{
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+
+		// If we do not handle this tool back off
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		const ToolStatusMapEntry key = {statusStr, ToolStatus::off};
+		const ToolStatusMapEntry *statusFromMap =
+			(ToolStatusMapEntry *)bsearch(
+				&key,
+				toolStatusMap,
+				ARRAY_SIZE(toolStatusMap),
+				sizeof(ToolStatusMapEntry),
+				compareKey<ToolStatusMapEntry>);
+		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::off;
+		tool->status = status;
 		return true;
 	}
 }

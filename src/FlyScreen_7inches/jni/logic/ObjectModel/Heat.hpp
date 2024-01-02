@@ -29,7 +29,9 @@ namespace OM
 			active = 0,
 			fault,
 			off,
+			offline,
 			standby,
+			tuning,
 		};
 
 		struct HeaterStatusMapEntry
@@ -41,10 +43,12 @@ namespace OM
 		// This table must be kept in case-insensitive alphabetical order of the search string.
 		const HeaterStatusMapEntry heaterStatusMap[] =
 		{
-			{ "active",		HeaterStatus::active	},
-			{ "fault", 		HeaterStatus::fault		},
-			{ "off",		HeaterStatus::off 		},
-			{ "standby",	HeaterStatus::standby 	},
+			{ "active",		HeaterStatus::active },
+			{ "fault",		HeaterStatus::fault },
+			{ "off",	 	HeaterStatus::off },
+			{ "offline",	HeaterStatus::offline },
+			{ "standby",	HeaterStatus::standby },
+			{ "tuning",		HeaterStatus::tuning },
 		};
 
 		struct Heater

@@ -8,6 +8,7 @@
 #include "ObjectModel/Utils.hpp"
 #include "UI/UserInterface.hpp"
 #include "UI/UserInterfaceConstants.hpp"
+#include "UI/Colors.hpp"
 #include "UI/OmObserver.hpp"
 #include "UI/MainMenu.h"
 #include "Debug.hpp"
@@ -275,6 +276,8 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pstandbyTemperature->setText(toolHeater->standbyTemp);
 		pcurrentTemperature->setText(toolHeater->heater->current);
 		pstatus->setText(toolHeater->heater->GetHeaterStatusStr());
+		(tool->status == OM::ToolStatus::active) ? pListItem->setSelected(true) : pListItem->setSelected(false);
+
 		return;
 	}
 
@@ -304,6 +307,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
 		pstatus->setText(heater->GetHeaterStatusStr());
+		pListItem->setSelected(false);
 		return;
 	}
 
@@ -333,6 +337,7 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 		pstandbyTemperature->setText(heater->standbyTemp);
 		pcurrentTemperature->setText(heater->current);
 		pstatus->setText(heater->GetHeaterStatusStr());
+		pListItem->setSelected(false);
 		return;
 	}
 	dbg("Unknown index");

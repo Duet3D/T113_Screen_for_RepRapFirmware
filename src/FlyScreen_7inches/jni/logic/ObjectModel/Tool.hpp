@@ -100,6 +100,7 @@ namespace OM
 	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
 	bool UpdateToolName(const size_t toolIndex, const char *name);
+	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr);
 }
 
 #endif /* SRC_OBJECTMODEL_TOOL_HPP_ */

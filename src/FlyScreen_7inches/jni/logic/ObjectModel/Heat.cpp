@@ -12,28 +12,12 @@
 #include "uart/CommDef.h"
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
+#include "ObjectModel/Utils.hpp"
 
 #include "Debug.hpp"
 
 typedef Vector<OM::Heat::Heater*, MaxHeaters> HeaterList;
 static HeaterList heaters;
-
-template <typename T>
-int compareKey(const void *lp, const void *rp)
-{
-	return strcasecmp(((T *)lp)->key, ((T *)rp)->key);
-}
-
-template <typename T>
-int compareValue(const void *lp, const void *rp)
-{
-	if (((T *)lp)->val < ((T *)rp)->val)
-		return -1;
-	else if (((T *)lp)->val > ((T *)rp)->val)
-		return 1;
-	else
-		return 0;
-}
 
 namespace OM
 {

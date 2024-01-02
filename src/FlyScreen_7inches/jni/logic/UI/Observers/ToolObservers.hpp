@@ -80,6 +80,16 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				return;
 			}
 		}),
+	OBSERVER_CHAR(
+		"tools^:state",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			if (!OM::UpdateToolStatus(indices[0], val))
+			{
+				dbg("Failed to update tool %d name to %s", indices[0], val);
+				return;
+			}
+		}),
 };
 
 /*

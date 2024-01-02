@@ -16,7 +16,7 @@
 
 namespace OM
 {
-	enum class HeaterStatus
+	enum class BedOrChamberStatus
 	{
 		off = 0,
 		standby,
@@ -27,21 +27,21 @@ namespace OM
 	};
 
 
-	struct HeaterStatusMapEntry
+	struct BedOrChamberStatusMapEntry
 	{
 		const char* key;
-		const HeaterStatus val;
+		const BedOrChamberStatus val;
 	};
 
 	// This table has to be kept in alphabetical order of the keys
-	const HeaterStatusMapEntry heaterStatusMap[] =
+	const BedOrChamberStatusMapEntry bedOrChamberStatusMap[] =
 	{
-		{ "active",		HeaterStatus::active },
-		{ "fault",		HeaterStatus::fault },
-		{ "off",	 	HeaterStatus::off },
-		{ "offline",	HeaterStatus::offline },
-		{ "standby",	HeaterStatus::standby },
-		{ "tuning",		HeaterStatus::tuning },
+		{ "active",		BedOrChamberStatus::active },
+		{ "fault",		BedOrChamberStatus::fault },
+		{ "off",	 	BedOrChamberStatus::off },
+		{ "offline",	BedOrChamberStatus::offline },
+		{ "standby",	BedOrChamberStatus::standby },
+		{ "tuning",		BedOrChamberStatus::tuning },
 	};
 
 	struct BedOrChamber
@@ -53,7 +53,7 @@ namespace OM
 		uint8_t index;
 		// Id of heater
 		int8_t heater;
-		HeaterStatus heaterStatus;
+		BedOrChamberStatus status;
 		// Slot for display on panel
 		uint8_t slot;
 
