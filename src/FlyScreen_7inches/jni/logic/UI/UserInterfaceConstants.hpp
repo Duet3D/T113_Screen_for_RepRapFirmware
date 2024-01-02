@@ -20,8 +20,10 @@ constexpr int8_t NoTool = -1;
 
 const unsigned int MaxSlots = 7;
 const unsigned int MaxHeaters = 32;
-#define MaxDisplayableAxes	(6)
+constexpr unsigned int MaxDisplayableAxes = 6;
 
-#define MaxCommandLength (50)
+constexpr unsigned int MaxCommandLength = 50;
+constexpr unsigned int MaxResponseLineLength = 45;
+constexpr unsigned int MaxResponseLines = 50;
 
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */

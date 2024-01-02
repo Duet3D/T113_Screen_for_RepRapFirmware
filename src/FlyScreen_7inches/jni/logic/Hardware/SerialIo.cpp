@@ -12,7 +12,7 @@
 #include "SerialIo.hpp"
 #include "uart/UartContext.h"
 
-#define DEBUG (0)
+#define DEBUG (1)
 # include "utils/Log.h"
 
 #if DEBUG
@@ -591,8 +591,8 @@ namespace SerialIo {
 				}
 
 #if DEBUG
-				if (lastState != state)
-					dbg("state %d -> %d", lastState, state);
+//				if (lastState != state)
+//					dbg("state %d -> %d", lastState, state);
 #endif
 			}
 		}

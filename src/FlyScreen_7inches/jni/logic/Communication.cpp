@@ -36,14 +36,14 @@
 // corresponding define has to be set to (1)
 #define FETCH_BOARDS		(1)
 #define FETCH_DIRECTORIES	(0)
-#define FETCH_FANS			(0)
+#define FETCH_FANS			(1)
 #define FETCH_HEAT			(1)
 #define FETCH_INPUTS		(0)
 #define FETCH_JOB			(1)
 #define FETCH_MOVE			(1)
 #define FETCH_NETWORK		(1)
 #define FETCH_SCANNER		(0)
-#define FETCH_SENSORS		(0)
+#define FETCH_SENSORS		(1)
 #define FETCH_SPINDLES		(1)
 #define FETCH_STATE			(1)
 #define FETCH_TOOLS			(1)
@@ -63,8 +63,6 @@ namespace Comm {
 	static bool isDelta = false;
 
 	static size_t numAxes = 2;
-	static int32_t beepFrequency = 0;
-	static int32_t beepLength = 0;
 
 	static uint32_t messageSeq = 0;
 	static uint32_t newMessageSeq = 0;
@@ -72,8 +70,6 @@ namespace Comm {
 	static uint32_t fileSize = 0;
 	static uint8_t visibleAxesCounted = 0;
 
-	static int8_t lastSpindle = -1;
-	static int8_t lastTool = -1;
 	static bool initialized = false;
 
 	static struct ThumbnailData thumbnailData;
@@ -809,25 +805,6 @@ namespace Comm {
 				if (currentRespSeq == nullptr) {
 					break;
 				}
-
-				// reset processing variables
-				switch (currentRespSeq->event) {
-				case rcvOMKeyHeat:
-					OM::lastBed = -1;
-					OM::lastChamber = -1;
-					break;
-				case rcvOMKeyMove:
-					visibleAxesCounted = 0;
-					break;
-				case rcvOMKeySpindles:
-					lastSpindle = -1;
-					break;
-				case rcvOMKeyTools:
-					lastTool = -1;
-					break;
-				default:
-					break;
-				}
 			}
 			break;
 
@@ -874,26 +851,6 @@ namespace Comm {
 			}
 			break;
 
-		case rcvToolsNumber:
-			{
-//				for (size_t i = lastTool + 1; i < indices[0]; ++i) {
-//					OM::RemoveTool(i, false);
-//				}
-//				lastTool = indices[0];
-			}
-			break;
-
-		case rcvPushSeq:
-			GetUnsignedInteger(data, newMessageSeq);
-			break;
-
-		case rcvPushBeepDuration:
-			GetInteger(data, beepLength);
-			break;
-
-		case rcvPushBeepFrequency:
-			GetInteger(data, beepFrequency);
-			break;
 
 		case rcvM36Filename:
 			thumbnailContext.filename.copy(data);
@@ -1009,32 +966,10 @@ namespace Comm {
 		// TODO: uncomment stuff below related to UI/OM
 		if (indices[0] == 0 && strcmp(id, "files^") == 0) {
 	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
-		} else if (currentResponseType == rcvOMKeyHeat) {
 		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
 			OM::RemoveAxis(indices[0], true);
 	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);
 	//		UI::UpdateGeometry(numAxes, isDelta);
-		} else if (currentResponseType == rcvOMKeySpindles) {
-			if (strcasecmp(id, "spindles^") == 0) {
-				OM::RemoveSpindle(lastSpindle + 1, true);
-				if (initialized) {
-	//				UI::AllToolsSeen();
-				}
-			}
-		} else if (currentResponseType == rcvOMKeyTools) {
-			if (strcasecmp(id, "tools^") == 0) {
-//				OM::RemoveTool(lastTool + 1, true);
-				if (initialized) {
-	//				UI::AllToolsSeen();
-				}
-			} else if (strcasecmp(id, "tools^:extruders^") == 0 && indices[1] == 0) {
-	//			UI::SetToolExtruder(indices[0], -1);			// No extruder defined for this tool
-			} else if (strcasecmp(id, "tools^:heaters^") == 0) {
-				// Remove all heaters no longer defined
-	//			if (UI::RemoveToolHeaters(indices[0], indices[1]) && initialized) {
-	//				UI::AllToolsSeen();
-	//			}
-			}
 		} else if (currentResponseType == rcvOMKeyVolumes && strcasecmp(id, "volumes^") == 0) {
 	//		FileManager::SetNumVolumes(indices[0]);
 		}
@@ -1066,7 +1001,6 @@ namespace Comm {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
 				dbg("seqs init DONE\n");
-				//UI::AllToolsSeen();
 				initialized = true;
 			}
 

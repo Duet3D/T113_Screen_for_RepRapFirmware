@@ -9,6 +9,7 @@
 #include "UI/UserInterface.hpp"
 #include "UI/UserInterfaceConstants.hpp"
 #include "UI/Colors.hpp"
+#include "UI/Gcodes.hpp"
 #include "UI/OmObserver.hpp"
 #include "UI/MainMenu.h"
 #include "Debug.hpp"
@@ -224,12 +225,6 @@ static bool onButtonClick_MacroBtn(ZKButton *pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	LOGD(" ButtonClick EStopBtn !!!\n");
-	return false;
-}
-
-static bool onButtonClick_Button1(ZKButton *pButton)
-{
-	LOGD(" ButtonClick Button1 !!!\n");
 	return false;
 }
 
@@ -598,4 +593,37 @@ static bool onButtonClick_FeedrateBtn4(ZKButton *pButton) {
 static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
     LOGD(" ButtonClick FeedrateBtn5 !!!\n");
     return false;
+}
+static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
+    //LOGD("getListItemCount_ConsoleListView !\n");
+    return MaxResponseLines;
+}
+
+static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ ConsoleListView  !!!\n");
+	pListItem->setText(sGcodeResponses[(index - sGcodeResponseHead) % MaxResponseLines].c_str());
+}
+
+static void onListItemClick_ConsoleListView(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ ConsoleListView  !!!\n");
+}
+
+static int getListItemCount_GcodeListView(const ZKListView *pListView) {
+	return sizeof(Gcode) / sizeof(gcode);
+}
+
+static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+	pListItem->setText(Gcode[index].displayText);
+}
+
+static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
+}
+
+static void onEditTextChanged_EditText1(const std::string &text) {
+    //LOGD(" onEditTextChanged_ EditText1 %s !!!\n", text.c_str());
+	SerialIo::Sendf(text.c_str());
+}
+static bool onButtonClick_SendBtn(ZKButton *pButton) {
+    SerialIo::Sendf(mEditText1Ptr->getText().c_str());
+    return true;
 }
