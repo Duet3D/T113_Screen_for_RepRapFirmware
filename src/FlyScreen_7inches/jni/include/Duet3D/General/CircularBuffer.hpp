@@ -47,6 +47,13 @@ public:
         return full_;
     }
 
+    void Reset()
+    {
+    	full_ = false;
+    	head_ = 0;
+    	tail_ = 0;
+    }
+
     size_t GetSize() const {
         return Size;
     }

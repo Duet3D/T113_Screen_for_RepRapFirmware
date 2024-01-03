@@ -5,13 +5,13 @@
  *      Author: andy
  */
 
+#define DEBUG (1)
+#include "Debug.hpp"
 #include <algorithm>
 #include "UserInterface.hpp"
 #include "UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
 
-#define DEBUG (1)
-#include "Debug.hpp"
 
 template<typename T>
 bool removeFromVector(std::vector<T> &vec, T item)
@@ -114,9 +114,9 @@ namespace UI
 
 	void ToolsList::Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput)
 	{
-		this->toolListView = toolListView;
-		this->numPadWindow = numPadWindow;
-		this->numPadInput = numPadInput;
+		pToolListView_ = toolListView;
+		pNumPadWindow_ = numPadWindow;
+		pNumPadInput_ = numPadInput;
 	}
 
 	void ToolsList::CalculateTotalHeaterCount(
@@ -164,7 +164,7 @@ namespace UI
 			dbg("Total heater items (%d) exceeds MaxSlots (%d)", count, MaxSlots);
 			count = MaxSlots;
 		}
-		totalCount = count;
+		totalCount_ = count;
 	}
 
 	void ToolsList::RefreshToolList(const bool lengthChanged)
@@ -173,82 +173,82 @@ namespace UI
 		{
 			CalculateTotalHeaterCount();
 		}
-		toolListView->refreshListView();
+		pToolListView_->refreshListView();
 	}
 
 	void ToolsList::OpenNumPad(const NumPadData data)
 	{
-		numPadData.numPadStr = "";
-		numPadInput->setText("");
-		numPadData.heaterType = data.heaterType;
-		numPadData.active = data.active;
+		numPadData_.numPadStr = "";
+		pNumPadInput_->setText("");
+		numPadData_.heaterType = data.heaterType;
+		numPadData_.active = data.active;
 
 		switch (data.heaterType)
 		{
 		case HeaterType::tool:
-			numPadData.toolIndex = data.toolIndex;
-			numPadData.toolHeaterIndex = data.toolHeaterIndex;
+			numPadData_.toolIndex = data.toolIndex;
+			numPadData_.toolHeaterIndex = data.toolHeaterIndex;
 			break;
 		case HeaterType::bed:
 		case HeaterType::chamber:
-			numPadData.bedOrChamberIndex = data.bedOrChamberIndex;
+			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
 			break;
 		}
-		WINDOW->OpenWindow(numPadWindow);
+		WINDOW->OpenWindow(pNumPadWindow_);
 	}
 
 	void ToolsList::CloseNumPad()
 	{
-		WINDOW->CloseWindow(numPadWindow, false);
+		WINDOW->CloseWindow(pNumPadWindow_, false);
 		WINDOW->Home();
 	}
 
 	void ToolsList::NumPadAddOneChar(char ch)
 	{
-		numPadData.numPadStr += ch;
-		numPadInput->setText(numPadData.numPadStr);
+		numPadData_.numPadStr += ch;
+		pNumPadInput_->setText(numPadData_.numPadStr);
 	}
 
 	void ToolsList::NumPadDelOneChar()
 	{
-		if (!numPadData.numPadStr.empty())
+		if (!numPadData_.numPadStr.empty())
 		{
-			numPadData.numPadStr.erase(numPadData.numPadStr.length() - 1, 1);
-			numPadInput->setText(numPadData.numPadStr);
+			numPadData_.numPadStr.erase(numPadData_.numPadStr.length() - 1, 1);
+			pNumPadInput_->setText(numPadData_.numPadStr);
 		}
 	}
 
 	bool ToolsList::SendTempTarget()
 	{
-		if (numPadData.numPadStr.empty())
+		if (numPadData_.numPadStr.empty())
 			return false;
 
-		int32_t target = atoi(numPadData.numPadStr.c_str());
+		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
-		dbg("onListItemClick heaterType=%d", numPadData.heaterType);
-		switch (numPadData.heaterType)
+		dbg("onListItemClick heaterType=%d", numPadData_.heaterType);
+		switch (numPadData_.heaterType)
 		{
 		case HeaterType::tool:
-			tool = OM::GetTool(numPadData.toolIndex);
+			tool = OM::GetTool(numPadData_.toolIndex);
 			if (tool == nullptr)
 				return false;
 
-			tool->SetHeaterTemps(numPadData.toolHeaterIndex, target, numPadData.active);
+			tool->SetHeaterTemps(numPadData_.toolHeaterIndex, target, numPadData_.active);
 			break;
 		case HeaterType::bed:
-			bedOrChamber = OM::GetBed(numPadData.bedOrChamberIndex);
+			bedOrChamber = OM::GetBed(numPadData_.bedOrChamberIndex);
 			if (bedOrChamber == nullptr)
 				return false;
 
-			bedOrChamber->SetBedTemp(target, numPadData.active);
+			bedOrChamber->SetBedTemp(target, numPadData_.active);
 			break;
 		case HeaterType::chamber:
-			bedOrChamber = OM::GetChamber(numPadData.bedOrChamberIndex);
+			bedOrChamber = OM::GetChamber(numPadData_.bedOrChamberIndex);
 			if (bedOrChamber == nullptr)
 				return false;
 
-			bedOrChamber->SetChamberTemp(target, numPadData.active);
+			bedOrChamber->SetChamberTemp(target, numPadData_.active);
 			break;
 		}
 
@@ -278,6 +278,60 @@ namespace UI
 //		dbg("List index %d is not in tool heaters (total tool heaters %d)", listIndex, count);
 		tool = nullptr;
 		return count;				// list index is greater than all heaters for tools
+	}
+
+	void Console::Init(ZKListView* console, ZKEditText* input)
+	{
+		pConsole_ = console;
+		pInput_ = input;
+	}
+
+	void Console::AddCommand(const std::string &command)
+	{
+		dbg("AddingCommand %s", command);
+	    String<MaxResponseLineLength> line;
+	    AddLineBreak();
+	    line.catf("> %s:", command.c_str());
+	    AddMessage(line);
+	    AddLineBreak();
+	    Refresh();
+	}
+
+	void Console::AddResponse(String<MaxResponseLineLength> line)
+	{
+		AddMessage(line);
+	}
+
+	void Console::AddLineBreak()
+	{
+	    String<MaxResponseLineLength> line;
+	    line.copy("");
+	    AddMessage(line);
+	}
+
+	void Console::AddMessage(String<MaxResponseLineLength> line)
+	{
+		buffer_.Push(line);
+		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+	}
+
+	void Console::Refresh()
+	{
+		pConsole_->refreshListView();
+		if (!buffer_.Full())
+			pConsole_->setSelection(buffer_.GetHead() - pConsole_->getRows());
+	}
+
+	void Console::Clear()
+	{
+		String<MaxResponseLineLength> line;
+		line.copy("");
+		for (size_t i = 0; i < MaxResponseLines; i++)
+		{
+			buffer_.Push(line);
+		}
+		buffer_.Reset();
+		Refresh();
 	}
 }
 

@@ -11,7 +11,6 @@
 #include "Debug.hpp"
 #include <algorithm>
 #include <string>
-#include "Duet3D/General/CircularBuffer.hpp"
 #include "Duet3D/General/String.h"
 #include "UI/OmObserver.hpp"
 #include "UI/UserInterfaceConstants.hpp"
@@ -28,7 +27,6 @@
  * time function was called. This is unique to each combination of indices.
  */
 
-static CircularBuffer<String<MaxResponseLineLength>, MaxResponseLines> sGcodeResponses;
 
 static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_CHAR(
@@ -36,7 +34,6 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 		[](OBSERVER_CHAR_ARGS)
 		{
 			static string str;
-			static size_t index = 0;
 			size_t substrlen;
 
 			str = val;
@@ -47,14 +44,9 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 				substrlen = std::min(str.length() - i, MaxResponseLineLength);
 				dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
 				line.copy(str.substr(i, substrlen).c_str());
-				dbg("resp: adding line to sGcodeResponses[%d] = %s", sGcodeResponses.GetHead(), line.c_str());
-				sGcodeResponses.Push(line);
-				index++;
+				UI::CONSOLE->AddResponse(line);
 			}
-			mConsoleListViewPtr->refreshListView();
-			if (!sGcodeResponses.Full())
-				mConsoleListViewPtr->setSelection(sGcodeResponses.GetHead() - mConsoleListViewPtr->getRows());
-
+			UI::CONSOLE->Refresh();
 		}
 	),
 	OBSERVER_CHAR(

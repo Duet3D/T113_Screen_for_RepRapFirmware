@@ -96,6 +96,7 @@ static void onUI_init()
 	}
 
 	UI::TOOLSLIST->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 }
 
 /**
@@ -601,7 +602,7 @@ static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
 
 static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     //LOGD(" obtainListItemData_ ConsoleListView  !!!\n");
-	pListItem->setText(sGcodeResponses.GetItem(index).c_str());
+	pListItem->setText(UI::CONSOLE->GetItem(index).c_str());
 }
 
 static void onListItemClick_ConsoleListView(ZKListView *pListView, int index, int id) {
@@ -622,8 +623,16 @@ static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int 
 static void onEditTextChanged_EditText1(const std::string &text) {
     //LOGD(" onEditTextChanged_ EditText1 %s !!!\n", text.c_str());
 	SerialIo::Sendf(text.c_str());
+    UI::CONSOLE->AddCommand(text);
 }
+
 static bool onButtonClick_SendBtn(ZKButton *pButton) {
     SerialIo::Sendf(mEditText1Ptr->getText().c_str());
+    dbg("About to add comman");
+    UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
     return true;
+}
+static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
+    UI::CONSOLE->Clear();
+    return false;
 }
