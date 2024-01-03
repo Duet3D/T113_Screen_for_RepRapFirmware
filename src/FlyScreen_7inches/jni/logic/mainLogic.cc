@@ -622,17 +622,33 @@ static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int 
 
 static void onEditTextChanged_EditText1(const std::string &text) {
     //LOGD(" onEditTextChanged_ EditText1 %s !!!\n", text.c_str());
-	SerialIo::Sendf(text.c_str());
+	SerialIo::Sendf("%s\n", text.c_str());
     UI::CONSOLE->AddCommand(text);
 }
 
 static bool onButtonClick_SendBtn(ZKButton *pButton) {
     SerialIo::Sendf(mEditText1Ptr->getText().c_str());
-    dbg("About to add comman");
     UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
     return true;
 }
 static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
     UI::CONSOLE->Clear();
     return false;
+}
+
+static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick FileRefreshBtn !!!\n");
+    return false;
+}
+static int getListItemCount_FileListView(const ZKListView *pListView) {
+    //LOGD("getListItemCount_FileListView !\n");
+    return 10;
+}
+
+static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ FileListView  !!!\n");
+}
+
+static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ FileListView  !!!\n");
 }

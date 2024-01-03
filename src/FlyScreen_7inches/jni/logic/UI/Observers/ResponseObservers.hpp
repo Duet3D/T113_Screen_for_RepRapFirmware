@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_OBSERVERS_PUSHOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_PUSHOBSERVERS_HPP_
+#ifndef JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
+#define JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
 
 #include "Debug.hpp"
 #include <algorithm>
@@ -80,4 +80,4 @@ static UI::Observer<UI::ui_array_end_update_cb> PushObserversArrayEnd[] = {
 
 
 
-#endif /* JNI_LOGIC_UI_OBSERVERS_PUSHOBSERVERS_HPP_ */
+#endif /* JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_ */

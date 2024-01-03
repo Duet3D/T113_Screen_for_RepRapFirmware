@@ -24,7 +24,6 @@ public:
         if (head_ == Size - 1)
             full_ = true;
         IncrementIndex(head_);
-		dbg("resp: head=%d, tail=%d", head_, tail_);
     }
 
     T Pop() {
@@ -63,7 +62,6 @@ public:
     const T& GetItem(const size_t index) const
     {
     	size_t i = (tail_ + index) % Size;
-    	dbg("Console: index %d = item %d (tail=%d)", index, i, tail_);
     	return buffer_[i];
     }
 
