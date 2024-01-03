@@ -601,7 +601,7 @@ static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
 
 static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     //LOGD(" obtainListItemData_ ConsoleListView  !!!\n");
-	pListItem->setText(sGcodeResponses[(index - sGcodeResponseHead) % MaxResponseLines].c_str());
+	pListItem->setText(sGcodeResponses.GetItem(index).c_str());
 }
 
 static void onListItemClick_ConsoleListView(ZKListView *pListView, int index, int id) {

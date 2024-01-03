@@ -9,7 +9,9 @@
 #define JNI_LOGIC_UI_OBSERVERS_PUSHOBSERVERS_HPP_
 
 #include "Debug.hpp"
+#include <algorithm>
 #include <string>
+#include "Duet3D/General/CircularBuffer.hpp"
 #include "Duet3D/General/String.h"
 #include "UI/OmObserver.hpp"
 #include "UI/UserInterfaceConstants.hpp"
@@ -26,31 +28,32 @@
  * time function was called. This is unique to each combination of indices.
  */
 
-static String<MaxResponseLineLength> sGcodeResponses[MaxResponseLines];
-static size_t sGcodeResponseHead = 0;
+static CircularBuffer<String<MaxResponseLineLength>, MaxResponseLines> sGcodeResponses;
 
 static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_CHAR(
 		"resp",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			static size_t index = 0;
 			static string str;
+			static size_t index = 0;
+			size_t substrlen;
 
 			str = val;
 			String<MaxResponseLineLength> line;
 			dbg("resp: %s", val);
-			while (str.length() > MaxResponseLineLength)
+			for (size_t i = 0; i < str.length(); i += MaxResponseLineLength)
 			{
-				line.copy(str.substr(0, MaxResponseLineLength).c_str());
-				str = str.substr(MaxResponseLineLength, str.length() - MaxResponseLineLength);
-				sGcodeResponses[index] = line;
+				substrlen = std::min(str.length() - i, MaxResponseLineLength);
+				dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
+				line.Clear();
+				line.catf("%d: ", index);
+				line.cat(str.substr(i, substrlen).c_str());
+				dbg("resp: adding line to sGcodeResponses[%d] = %s", sGcodeResponses.GetHead(), line.c_str());
+				sGcodeResponses.Push(line);
 				index++;
 			}
-			dbg("resp: adding line to sGcodeResponses[%d]", index);
-			line.copy(str.c_str());
-			sGcodeResponses[index] = line;
-			index++;
+			mConsoleListViewPtr->refreshListView();
 
 		}
 	),
