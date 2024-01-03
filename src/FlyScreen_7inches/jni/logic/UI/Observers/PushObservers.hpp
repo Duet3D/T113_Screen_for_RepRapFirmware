@@ -54,6 +54,8 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 				index++;
 			}
 			mConsoleListViewPtr->refreshListView();
+			if (!sGcodeResponses.Full())
+				mConsoleListViewPtr->setSelection(sGcodeResponses.GetHead() - mConsoleListViewPtr->getRows());
 
 		}
 	),
