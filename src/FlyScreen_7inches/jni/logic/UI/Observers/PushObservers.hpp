@@ -40,15 +40,13 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 			size_t substrlen;
 
 			str = val;
-			String<MaxResponseLineLength> line;
 			dbg("resp: %s", val);
 			for (size_t i = 0; i < str.length(); i += MaxResponseLineLength)
 			{
+				String<MaxResponseLineLength> line;
 				substrlen = std::min(str.length() - i, MaxResponseLineLength);
 				dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
-				line.Clear();
-				line.catf("%d: ", index);
-				line.cat(str.substr(i, substrlen).c_str());
+				line.copy(str.substr(i, substrlen).c_str());
 				dbg("resp: adding line to sGcodeResponses[%d] = %s", sGcodeResponses.GetHead(), line.c_str());
 				sGcodeResponses.Push(line);
 				index++;
