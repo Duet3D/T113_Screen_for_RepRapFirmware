@@ -120,9 +120,9 @@ namespace UI
 	}
 
 	void ToolsList::CalculateTotalHeaterCount(
-				const bool addTools = true,
-				const bool addBeds = true,
-				const bool addChambers = true)
+				const bool addTools,
+				const bool addBeds,
+				const bool addChambers)
 	{
 		size_t count = 0;
 		if (addBeds)
@@ -257,7 +257,7 @@ namespace UI
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool)
 	{
-		int8_t count = 0;
+		uint8_t count = 0;
 		int8_t toolHeaterIndex = -1;
 		OM::IterateToolsWhile([&](OM::Tool*& toolIter, size_t)
 			{

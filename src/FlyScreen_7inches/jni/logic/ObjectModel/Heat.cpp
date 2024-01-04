@@ -112,7 +112,7 @@ namespace OM
 					sizeof(HeaterStatusMapEntry),
 					compareKey<HeaterStatusMapEntry>);
 			HeaterStatus status = (statusFromMap != nullptr) ? statusFromMap->val : HeaterStatus::off;
-			UpdateHeaterStatus(heaterIndex, status);
+			return UpdateHeaterStatus(heaterIndex, status);
 		}
 
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status)

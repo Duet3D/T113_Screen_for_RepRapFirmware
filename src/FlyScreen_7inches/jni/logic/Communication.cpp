@@ -53,22 +53,10 @@ namespace Comm {
 
 	const int parserMinErrors = 2;
 
-	static uint32_t lastPollTime = 0;
-	static uint32_t lastResponseTime = 0;
-	static uint32_t lastOutOfBufferResponse = 0;
-
-	static uint8_t oobCounter = 0;
 	static bool outOfBuffers = false;
-
-	static bool isDelta = false;
-
-	static size_t numAxes = 2;
 
 	static uint32_t messageSeq = 0;
 	static uint32_t newMessageSeq = 0;
-
-	static uint32_t fileSize = 0;
-	static uint8_t visibleAxesCounted = 0;
 
 	static bool initialized = false;
 

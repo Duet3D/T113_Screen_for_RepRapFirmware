@@ -34,6 +34,16 @@ namespace OM
 		return path;
 	}
 
+	File* Folder::GetFile(const std::string& name)
+	{
+		for (File& file : files_)
+		{
+			if (file.GetName() == name)
+				return &file;
+		}
+		return nullptr
+	}
+
 	Folder* Folder::GetSubFolder(const std::string& name)
 	{
 		for (Folder& folder : folders_)
@@ -44,7 +54,24 @@ namespace OM
 		return nullptr;
 	}
 
-	void SetCurrentDir(std::string& path)
+
+	File* Folder::GetOrCreateFile(const std::string& name)
+	{
+		File* file = GetFile(name);
+		if (file != nullptr)
+			return file;
+		return AddFile(name);
+	}
+
+	Folder* Folder::GetOrCreateSubFolder(const std::string& name)
+	{
+		Folder* folder= GetSubFolder(name);
+		if (folder != nullptr)
+			return folder;
+		return AddFolder(name);
+	}
+
+	void SetCurrentDir(const std::string& path)
 	{
 		std::istringstream stream(path);
 		std::string folderName;
@@ -69,9 +96,14 @@ namespace OM
 		}
 	}
 
-	std::string& GetCurrentDir()
+	std::string& GetCurrentDirPath()
 	{
 		return sCurrentDirPath;
+	}
+
+	Folder* GetCurrentFolder()
+	{
+		return spCurrentFolder;
 	}
 
 } /* namespace OM */

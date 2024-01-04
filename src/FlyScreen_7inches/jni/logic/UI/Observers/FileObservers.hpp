@@ -34,12 +34,25 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 			dbg("Files: dir=%s", val);
 			std::string folderPath(val);
 			OM::SetCurrentDir(folderPath);
+			dbg("Files: current dir = %s", OM::GetCurrentFolder()->GetName().c_str());
 		}
 	),
 	OBSERVER_CHAR(
-		"files",
+		"files^:type",
 		[](OBSERVER_CHAR_ARGS)
 		{
+			dbg("Files: type check");
+			switch (*val)
+			{
+			case 'd':
+				OM::Folder* folder = OM::GetCurrentFolder()->AddFolder();
+				dbg("Files: folder at index %d", indices[0]);
+				break;
+			case 'f':
+				OM::File* file = OM::GetCurrentFolder()->AddFile();
+				dbg("Files: file at index %d", indices[0]);
+				break;
+			}
 		}
 	),
 };
