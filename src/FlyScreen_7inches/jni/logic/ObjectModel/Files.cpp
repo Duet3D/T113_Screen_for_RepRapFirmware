@@ -12,11 +12,11 @@
 
 namespace OM
 {
-	static Folder root("/");
+	static Folder sRootFolder("/");
 	static std::string sCurrentDirPath;
-	static Folder* spCurrentFolder = &root;
+	static Folder* spCurrentFolder = &sRootFolder;
 
-	std::string FileSystemItem::GetPath()
+	std::string FileSystemItem::GetPath() const
 	{
 		FileSystemItem* item = this;
 		std::string path;
@@ -34,22 +34,37 @@ namespace OM
 		return path;
 	}
 
+	FileSystemItem::~FileSystemItem()
+	{
+		dbg("Files: destructing file %s", GetPath().c_str());
+	}
+
 	File* Folder::GetFile(const std::string& name)
 	{
-		for (File& file : files_)
+		for (FileSystemItem* item : items_)
 		{
-			if (file.GetName() == name)
-				return &file;
+			if (item == nullptr)
+				continue;
+			if (item->GetName() != name)
+				continue;
+			if (item->GetType() != FileSystemItemType::file)
+				continue;
+			return (File*)item;
 		}
-		return nullptr
+		return nullptr;
 	}
 
 	Folder* Folder::GetSubFolder(const std::string& name)
 	{
-		for (Folder& folder : folders_)
+		for (FileSystemItem* item : items_)
 		{
-			if (folder.GetName() == name)
-				return &folder;
+			if (item == nullptr)
+				continue;
+			if (item->GetName() != name)
+				continue;
+			if (item->GetType() != FileSystemItemType::folder)
+				continue;
+			return (Folder*)item;
 		}
 		return nullptr;
 	}
@@ -71,10 +86,18 @@ namespace OM
 		return AddFolder(name);
 	}
 
+	Folder* GetRootFolder()
+	{
+		return &sRootFolder;
+	}
+
 	void SetCurrentDir(const std::string& path)
 	{
 		std::istringstream stream(path);
 		std::string folderName;
+
+//		sRootFolder.Clear();
+		spCurrentFolder = &sRootFolder;
 
 		sCurrentDirPath = path;
 		while (std::getline(stream, folderName, '/'))
@@ -93,6 +116,8 @@ namespace OM
 			}
 			spCurrentFolder = subFolder;
 			dbg("Files: current subfolder path = %s", spCurrentFolder->GetPath().c_str());
+			spCurrentFolder->Clear();
+			dbg("Files: here");
 		}
 	}
 

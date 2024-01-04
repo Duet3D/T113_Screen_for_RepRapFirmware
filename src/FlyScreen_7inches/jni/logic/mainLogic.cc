@@ -452,6 +452,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFanWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::print:
+		SerialIo::Sendf("M20 S3 P\"0:/gcodes\"");
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
@@ -637,16 +638,32 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick FileRefreshBtn !!!\n");
+	SerialIo::Sendf("M20 S3 P\"%s\"", OM::GetCurrentDirPath().c_str());
     return false;
 }
 static int getListItemCount_FileListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_FileListView !\n");
-    return 10;
+    return OM::GetCurrentFolder()->GetItemCount();
 }
 
 static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     //LOGD(" obtainListItemData_ FileListView  !!!\n");
+	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
+
+	OM::FileSystemItem* item = OM::GetCurrentFolder()->GetItem(index);
+	if (item == nullptr)
+		return;
+//	dbg("Files: settings list item %d name to %s", index, item->GetName().c_str());
+	pListItem->setText(item->GetName());
+	switch (item->GetType())
+	{
+	case OM::FileSystemItemType::file:
+		pFileType->setText("File");
+		break;
+	case OM::FileSystemItemType::folder:
+		pFileType->setText("Folder");
+		break;
+	}
 }
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {

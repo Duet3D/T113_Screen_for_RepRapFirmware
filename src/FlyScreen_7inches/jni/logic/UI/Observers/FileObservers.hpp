@@ -34,6 +34,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 			dbg("Files: dir=%s", val);
 			std::string folderPath(val);
 			OM::SetCurrentDir(folderPath);
+			mFolderIDPtr->setText("Folder: " + OM::GetCurrentFolder()->GetPath());
 			dbg("Files: current dir = %s", OM::GetCurrentFolder()->GetName().c_str());
 		}
 	),
@@ -41,18 +42,31 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		"files^:type",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			dbg("Files: type check");
+			dbg("Files: type check val=%s", val);
 			switch (*val)
 			{
 			case 'd':
-				OM::Folder* folder = OM::GetCurrentFolder()->AddFolder();
+				OM::GetCurrentFolder()->AddFolderAt(indices[0]);
 				dbg("Files: folder at index %d", indices[0]);
 				break;
 			case 'f':
-				OM::File* file = OM::GetCurrentFolder()->AddFile();
 				dbg("Files: file at index %d", indices[0]);
+				OM::GetCurrentFolder()->AddFileAt(indices[0]);
 				break;
 			}
+		}
+	),
+	OBSERVER_CHAR(
+		"files^:name",
+		[](OBSERVER_CHAR_ARGS)
+		{
+			dbg("Files: name assignment, val=%s", val);
+			OM::FileSystemItem* item = OM::GetCurrentFolder()->GetItem(indices[0]);
+			if (item == nullptr)
+				return;
+
+			item->SetName(val);
+			dbg("Files: item[%d] name=%s", indices[0], item->GetName().c_str());
 		}
 	),
 };
@@ -63,9 +77,10 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
  */
 static UI::Observer<UI::ui_array_end_update_cb> FileObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END(
-		"",
+		"files^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
+			mFileListViewPtr->refreshListView();
 		}
 	),
 };
