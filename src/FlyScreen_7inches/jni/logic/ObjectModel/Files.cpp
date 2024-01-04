@@ -155,7 +155,13 @@ namespace OM
 
 	void RequestFiles(const std::string& path)
 	{
-		SerialIo::Sendf("M20 S3 P\"%s\"", path.c_str());
+		SerialIo::Sendf("M20 S3 P\"%s\"\n", path.c_str());
+	}
+
+	void StartFile(const std::string& path)
+	{
+		SerialIo::Sendf("M23 \"%s\"\n", path.c_str());
+		SerialIo::Sendf("M24\n");
 	}
 
 	void ClearFileSystem()

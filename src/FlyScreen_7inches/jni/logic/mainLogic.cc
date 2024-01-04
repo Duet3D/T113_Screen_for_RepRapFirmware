@@ -676,6 +676,7 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	switch (item->GetType())
 	{
 	case OM::FileSystemItemType::file:
+		OM::StartFile(item->GetPath());
 		break;
 	case OM::FileSystemItemType::folder:
 		OM::RequestFiles(item->GetPath());
