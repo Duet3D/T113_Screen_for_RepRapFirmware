@@ -71,7 +71,12 @@ namespace OM
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
 	void RequestFiles(const std::string& path);
-	void StartFile(const std::string& path);
+	void RunFile(const std::string& path);
+	void RunMacro(const std::string& path);
+	void StartPrint(const std::string& path);
+	void ResumePrint();
+	void PausePrint();
+	void StopPrint();
 	void ClearFileSystem();
 } /* namespace OM */
 

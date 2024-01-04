@@ -14,6 +14,7 @@ namespace OM
 {
 	static std::string sCurrentDirPath;
 	static std::vector<FileSystemItem*> sItems;
+	static bool sInMacroFolder = false;
 
 	std::string FileSystemItem::GetPath() const
 	{
@@ -155,13 +156,42 @@ namespace OM
 
 	void RequestFiles(const std::string& path)
 	{
+		sInMacroFolder = path.find("macro") != std::string::npos;
 		SerialIo::Sendf("M20 S3 P\"%s\"\n", path.c_str());
 	}
 
-	void StartFile(const std::string& path)
+	void RunFile(const std::string& path)
+	{
+		if (sInMacroFolder)
+			RunMacro(path);
+		else
+			StartPrint(path);
+	}
+
+	void RunMacro(const std::string& path)
+	{
+		SerialIo::Sendf("M98 P\"%s\"\n", path.c_str());
+	}
+
+	void StartPrint(const std::string& path)
 	{
 		SerialIo::Sendf("M23 \"%s\"\n", path.c_str());
 		SerialIo::Sendf("M24\n");
+	}
+
+	void ResumePrint()
+	{
+		SerialIo::Sendf("M24\n");
+	}
+
+	void PausePrint()
+	{
+		SerialIo::Sendf("M25\n");
+	}
+
+	void StopPrint()
+	{
+		SerialIo::Sendf("M0\n");
 	}
 
 	void ClearFileSystem()
