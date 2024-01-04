@@ -65,7 +65,6 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 
 			item->SetName(val);
 			dbg("Files: item[%d] name=%s", indices[0], item->GetName().c_str());
-			OM::ListItems();
 		}
 	),
 	OBSERVER_UINT(

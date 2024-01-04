@@ -11,6 +11,7 @@
 #include "UserInterface.hpp"
 #include "UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
+#include "ObjectModel/Files.hpp"
 
 
 template<typename T>

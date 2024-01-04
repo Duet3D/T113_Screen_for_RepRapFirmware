@@ -638,7 +638,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
-	SerialIo::Sendf("M20 S3 P\"%s\"", OM::GetCurrentDirPath().c_str());
+	OM::RequestFiles(OM::GetCurrentDirPath());
     return false;
 }
 static int getListItemCount_FileListView(const ZKListView *pListView) {
@@ -672,5 +672,13 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 }
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ FileListView  !!!\n");
+	OM::FileSystemItem* item = OM::GetItem(index);
+	switch (item->GetType())
+	{
+	case OM::FileSystemItemType::file:
+		break;
+	case OM::FileSystemItemType::folder:
+		OM::RequestFiles(item->GetPath());
+		break;
+	}
 }

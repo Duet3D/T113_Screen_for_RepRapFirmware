@@ -8,7 +8,7 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 #include "Files.hpp"
-#include <sstream>
+#include "Hardware/SerialIo.hpp"
 
 namespace OM
 {
@@ -111,9 +111,6 @@ namespace OM
 
 	void SetCurrentDir(const std::string& path)
 	{
-		std::istringstream stream(path);
-		std::string folderName;
-
 		ClearFileSystem();
 		sCurrentDirPath = path;
 		dbg("Files: current directory = %s", sCurrentDirPath.c_str());
@@ -144,21 +141,14 @@ namespace OM
 		return sCurrentDirPath;
 	}
 
-	void ListItems()
+	void RequestFiles(const std::string& path)
 	{
-		std::string itemStr;
-		for (auto item : sItems)
-		{
-			itemStr += item->GetName();
-			itemStr += " ";
-		}
-		dbg("Files: item list = %s", itemStr.c_str());
+		SerialIo::Sendf("M20 S3 P\"%s\"", path.c_str());
 	}
 
 	void ClearFileSystem()
 	{
 		dbg("Files: clearing items");
-		ListItems();
 		for (auto item : sItems)
 		{
 			if (item == nullptr)
