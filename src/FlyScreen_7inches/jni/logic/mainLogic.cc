@@ -643,14 +643,17 @@ static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
 }
 static int getListItemCount_FileListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_FileListView !\n");
-    return OM::GetCurrentFolder()->GetItemCount();
+    return OM::GetItemCount();
 }
 
 static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     //LOGD(" obtainListItemData_ FileListView  !!!\n");
 	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
+	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
+	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
+	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
 
-	OM::FileSystemItem* item = OM::GetCurrentFolder()->GetItem(index);
+	OM::FileSystemItem* item = OM::GetItem(index);
 	if (item == nullptr)
 		return;
 //	dbg("Files: settings list item %d name to %s", index, item->GetName().c_str());
@@ -664,6 +667,8 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 		pFileType->setText("Folder");
 		break;
 	}
+	pFileSize->setTextf("Size: %d", item->GetSize());
+	pFileDate->setTextf("Date: %s", item->GetDate().c_str());
 }
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {

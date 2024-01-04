@@ -12,36 +12,76 @@
 
 namespace OM
 {
-	static Folder sRootFolder("/");
 	static std::string sCurrentDirPath;
-	static Folder* spCurrentFolder = &sRootFolder;
+	static std::vector<FileSystemItem*> sItems;
 
 	std::string FileSystemItem::GetPath() const
 	{
-		FileSystemItem* item = this;
-		std::string path;
-		bool lastItem = true;
-		while (item->pParent_ != nullptr)
+		return sCurrentDirPath + "/" + name_;
+	}
+
+	void FileSystemItem::SetName(const std::string name)
+	{
+		name_ = name.c_str();
+#ifdef DEBUG
+		switch (type_)
 		{
-			if (!lastItem)
-			{
-				path.insert(0, "/");
-			}
-			lastItem = false;
-			path.insert(0, item->GetName());
-			item = item->pParent_;
+		case FileSystemItemType::file:
+			dbg("Files: set file name to %s", name_.c_str());
+			break;
+		case FileSystemItemType::folder:
+			dbg("Files: set folder name to %s", name_.c_str());
+			break;
 		}
-		return path;
+#endif
 	}
 
 	FileSystemItem::~FileSystemItem()
 	{
-		dbg("Files: destructing file %s", GetPath().c_str());
+		dbg("Files: destructing item %s", GetPath().c_str());
 	}
 
-	File* Folder::GetFile(const std::string& name)
+	File* AddFileAt(const size_t index)
 	{
-		for (FileSystemItem* item : items_)
+		if (index < sItems.size())
+		{
+			dbg("Deleting item[%d]", index);
+			delete sItems[index];
+			sItems[index] = nullptr;
+		}
+		File* file = new File();
+		sItems.insert(sItems.begin() + index, file);
+		return file;
+	}
+
+	Folder* AddFolderAt(const size_t index)
+	{
+		if (index < sItems.size())
+		{
+			dbg("Deleting item[%d]", index);
+			delete sItems[index];
+			sItems[index] = nullptr;
+		}
+		Folder* folder = new Folder();
+		sItems.insert(sItems.begin() + index, folder);
+		return folder;
+	}
+
+	const size_t GetItemCount()
+	{
+		return sItems.size();
+	}
+
+	FileSystemItem* GetItem(const size_t index)
+	{
+		if (index >= GetItemCount())
+			return nullptr;
+		return sItems[index];
+	}
+
+	File* GetFile(const std::string& name)
+	{
+		for (FileSystemItem* item : sItems)
 		{
 			if (item == nullptr)
 				continue;
@@ -54,9 +94,9 @@ namespace OM
 		return nullptr;
 	}
 
-	Folder* Folder::GetSubFolder(const std::string& name)
+	Folder* GetSubFolder(const std::string& name)
 	{
-		for (FileSystemItem* item : items_)
+		for (FileSystemItem* item : sItems)
 		{
 			if (item == nullptr)
 				continue;
@@ -69,56 +109,34 @@ namespace OM
 		return nullptr;
 	}
 
-
-	File* Folder::GetOrCreateFile(const std::string& name)
-	{
-		File* file = GetFile(name);
-		if (file != nullptr)
-			return file;
-		return AddFile(name);
-	}
-
-	Folder* Folder::GetOrCreateSubFolder(const std::string& name)
-	{
-		Folder* folder= GetSubFolder(name);
-		if (folder != nullptr)
-			return folder;
-		return AddFolder(name);
-	}
-
-	Folder* GetRootFolder()
-	{
-		return &sRootFolder;
-	}
-
 	void SetCurrentDir(const std::string& path)
 	{
 		std::istringstream stream(path);
 		std::string folderName;
 
-//		sRootFolder.Clear();
-		spCurrentFolder = &sRootFolder;
-
+		ClearFileSystem();
 		sCurrentDirPath = path;
-		while (std::getline(stream, folderName, '/'))
-		{
-			if (folderName.empty())
-				break;
-//			if (folderName.find(':') != std::string::npos)
-//				continue;
+		dbg("Files: current directory = %s", sCurrentDirPath.c_str());
+	}
 
-			dbg("Files: folderName=%s", folderName.c_str());
+	std::string GetParentDirPath()
+	{
+		std::string path;
+		size_t i = sCurrentDirPath.find_last_of('/');
 
-			Folder* subFolder = spCurrentFolder->GetSubFolder(folderName);
-			if (subFolder == nullptr)
-			{
-				subFolder = spCurrentFolder->AddFolder(folderName);
-			}
-			spCurrentFolder = subFolder;
-			dbg("Files: current subfolder path = %s", spCurrentFolder->GetPath().c_str());
-			spCurrentFolder->Clear();
-			dbg("Files: here");
-		}
+		if (i == std::string::npos)
+			return sCurrentDirPath;
+		return sCurrentDirPath.substr(0, i);
+	}
+
+	std::string GetCurrentDirName()
+	{
+		std::string path;
+		size_t i = sCurrentDirPath.find_last_of('/');
+
+		if (i == std::string::npos)
+			return sCurrentDirPath;
+		return sCurrentDirPath.substr(i, sCurrentDirPath.size() - i);
 	}
 
 	std::string& GetCurrentDirPath()
@@ -126,10 +144,31 @@ namespace OM
 		return sCurrentDirPath;
 	}
 
-	Folder* GetCurrentFolder()
+	void ListItems()
 	{
-		return spCurrentFolder;
+		std::string itemStr;
+		for (auto item : sItems)
+		{
+			itemStr += item->GetName();
+			itemStr += " ";
+		}
+		dbg("Files: item list = %s", itemStr.c_str());
 	}
+
+	void ClearFileSystem()
+	{
+		dbg("Files: clearing items");
+		ListItems();
+		for (auto item : sItems)
+		{
+			if (item == nullptr)
+				continue;
+			dbg("Files: deleting item %s", item->GetName().c_str());
+			delete item;
+		}
+		sItems.clear();
+	}
+
 
 } /* namespace OM */
 
