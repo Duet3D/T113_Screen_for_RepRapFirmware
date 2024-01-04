@@ -55,13 +55,18 @@ namespace UI
 		return &window;
 	}
 
+	void Window::SetHome(ZKWindow* home)
+	{
+		home_ = home;
+	}
+
 	void Window::OpenWindow(ZKWindow* window)
 	{
 		dbg("Opening window %d", window->getID());
 		window->showWnd();
-		RemoveFromVector<ZKWindow*>(closedWindows, window);
-		if (!closedWindows.empty())
-			AddToVector<ZKWindow*>(openedWindows, window);
+		RemoveFromVector<ZKWindow*>(closedWindows_, window);
+		if (!closedWindows_.empty())
+			AddToVector<ZKWindow*>(openedWindows_, window);
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)
@@ -69,9 +74,9 @@ namespace UI
 		size_t count = 0;
 		for (size_t i=0; i < numWindows; ++i)
 		{
-			if (closedWindows.empty())
+			if (closedWindows_.empty())
 				return count;
-			auto window = closedWindows.back();
+			auto window = closedWindows_.back();
 			OpenWindow(window);
 		}
 		return count;
@@ -79,18 +84,18 @@ namespace UI
 
 	void Window::CloseLastWindow()
 	{
-		if (openedWindows.empty())
+		if (openedWindows_.empty())
 			return;
-		CloseWindow(openedWindows.back());
+		CloseWindow(openedWindows_.back());
 	}
 
 	void Window::CloseWindow(ZKWindow* window, const bool returnable)
 	{
 		dbg("Closing window %d", window->getID());
 		window->hideWnd();
-		RemoveFromVector<ZKWindow*>(openedWindows, window);
+		RemoveFromVector<ZKWindow*>(openedWindows_, window);
 		if (returnable)
-			AddToVector<ZKWindow*>(closedWindows, window);
+			AddToVector<ZKWindow*>(closedWindows_, window);
 	}
 
 	void Window::Back()
@@ -100,37 +105,33 @@ namespace UI
 			OM::RequestFiles(OM::GetParentDirPath());
 			return;
 		}
-		if (!openedWindows.empty())
+		if (!openedWindows_.empty())
 		{
-			ZKWindow* lastOpened = openedWindows.back();
+			ZKWindow* lastOpened = openedWindows_.back();
 			dbg("Hiding window %d", lastOpened->getID());
 			lastOpened->hideWnd();
 		}
-		if (!closedWindows.empty())
+		if (!closedWindows_.empty())
 		{
-			ZKWindow* lastClosed = closedWindows.back();
+			ZKWindow* lastClosed = closedWindows_.back();
 			OpenWindow(lastClosed);
 		}
 	}
 
 	void Window::Home()
 	{
-		for (auto window : openedWindows)
+		for (auto window : openedWindows_)
 		{
 			window->hideWnd();
 		}
-		if (!closedWindows.empty())
-		{
-			ZKWindow* home = closedWindows.front();
-			home->showWnd();
-		}
+		home_->showWnd();
 		Clear();
 	}
 
 	void Window::Clear()
 	{
-		openedWindows.clear();
-		closedWindows.clear();
+		openedWindows_.clear();
+		closedWindows_.clear();
 	}
 
 	ToolsList* ToolsList::GetInstance()

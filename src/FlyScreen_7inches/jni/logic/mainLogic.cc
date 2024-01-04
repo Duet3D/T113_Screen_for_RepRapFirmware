@@ -95,6 +95,7 @@ static void onUI_init()
 		observerArrayEnd = observerArrayEnd->next;
 	}
 
+	UI::WINDOW->SetHome(mMainWindowPtr);
 	UI::TOOLSLIST->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 }

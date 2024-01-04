@@ -37,6 +37,7 @@ namespace UI
 	{
 	public:
 		static Window * GetInstance();
+		void SetHome(ZKWindow* home);
 		void OpenWindow(ZKWindow *window);
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
@@ -46,8 +47,9 @@ namespace UI
 		void Clear();
 
 	private:
-		std::vector<ZKWindow*> openedWindows;
-		std::vector<ZKWindow*> closedWindows;
+		std::vector<ZKWindow*> openedWindows_;
+		std::vector<ZKWindow*> closedWindows_;
+		ZKWindow* home_;
 	};
 
 	enum class HeaterType
