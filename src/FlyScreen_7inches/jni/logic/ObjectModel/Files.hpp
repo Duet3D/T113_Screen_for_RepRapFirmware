@@ -69,6 +69,7 @@ namespace OM
 	std::string GetParentDirPath();
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
+	bool IsInSubFolder();
 	void RequestFiles(const std::string& path);
 	void ClearFileSystem();
 } /* namespace OM */

@@ -452,7 +452,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFanWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::print:
-		SerialIo::Sendf("M20 S3 P\"0:/gcodes\"");
+		OM::RequestFiles("0:/gcodes");
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:

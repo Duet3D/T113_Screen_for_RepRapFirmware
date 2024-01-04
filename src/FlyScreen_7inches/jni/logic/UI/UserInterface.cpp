@@ -75,6 +75,11 @@ namespace UI
 
 	void Window::Back()
 	{
+		if (OM::IsInSubFolder())
+		{
+			OM::RequestFiles(OM::GetParentDirPath());
+			return;
+		}
 		if (!openedWindows.empty())
 		{
 			ZKWindow* lastOpened = openedWindows.back();

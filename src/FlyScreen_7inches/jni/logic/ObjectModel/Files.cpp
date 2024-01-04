@@ -141,6 +141,18 @@ namespace OM
 		return sCurrentDirPath;
 	}
 
+	bool IsInSubFolder()
+	{
+		size_t count = 0;
+		for (auto c : sCurrentDirPath)
+		{
+			if (c == '/')
+				count++;
+		}
+		dbg("Files: %d", count);
+		return count > 1;
+	}
+
 	void RequestFiles(const std::string& path)
 	{
 		SerialIo::Sendf("M20 S3 P\"%s\"", path.c_str());
