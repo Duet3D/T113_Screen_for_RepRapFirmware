@@ -15,11 +15,23 @@
 
 
 template<typename T>
-bool removeFromVector(std::vector<T> &vec, T item)
+bool InVector(std::vector<T> &vec, T item)
 {
 	auto it =  std::find(vec.begin(), vec.end(), item);
 	if (it != vec.end())
 	{
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
+bool RemoveFromVector(std::vector<T> &vec, T item)
+{
+	auto it =  std::find(vec.begin(), vec.end(), item);
+	if (it != vec.end())
+	{
+		dbg("Window: removing window %d from vector", item->getID());
 		vec.erase(it);
 		return true;
 	}
@@ -27,9 +39,10 @@ bool removeFromVector(std::vector<T> &vec, T item)
 }
 
 template<typename T>
-bool addToVector(std::vector<T> &vec, T item)
+bool AddToVector(std::vector<T> &vec, T item)
 {
-	removeFromVector<T>(vec, item);
+	RemoveFromVector<T>(vec, item);
+	dbg("Window: adding window %d to vector", item->getID());
 	vec.push_back(item);
 	return true;
 }
@@ -46,9 +59,9 @@ namespace UI
 	{
 		dbg("Opening window %d", window->getID());
 		window->showWnd();
-		removeFromVector<ZKWindow*>(closedWindows, window);
-		addToVector<ZKWindow*>(openedWindows, window);
-
+		RemoveFromVector<ZKWindow*>(closedWindows, window);
+		if (!closedWindows.empty())
+			AddToVector<ZKWindow*>(openedWindows, window);
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)
@@ -64,13 +77,20 @@ namespace UI
 		return count;
 	}
 
+	void Window::CloseLastWindow()
+	{
+		if (openedWindows.empty())
+			return;
+		CloseWindow(openedWindows.back());
+	}
+
 	void Window::CloseWindow(ZKWindow* window, const bool returnable)
 	{
 		dbg("Closing window %d", window->getID());
 		window->hideWnd();
-		removeFromVector<ZKWindow*>(openedWindows, window);
+		RemoveFromVector<ZKWindow*>(openedWindows, window);
 		if (returnable)
-			addToVector<ZKWindow*>(closedWindows, window);
+			AddToVector<ZKWindow*>(closedWindows, window);
 	}
 
 	void Window::Back()
@@ -89,7 +109,7 @@ namespace UI
 		if (!closedWindows.empty())
 		{
 			ZKWindow* lastClosed = closedWindows.back();
-			lastClosed->showWnd();
+			OpenWindow(lastClosed);
 		}
 	}
 
@@ -99,9 +119,10 @@ namespace UI
 		{
 			window->hideWnd();
 		}
-		for (auto window : closedWindows)
+		if (!closedWindows.empty())
 		{
-			window->showWnd();
+			ZKWindow* home = closedWindows.front();
+			home->showWnd();
 		}
 		Clear();
 	}

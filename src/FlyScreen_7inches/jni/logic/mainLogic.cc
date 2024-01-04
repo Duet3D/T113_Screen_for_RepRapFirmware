@@ -219,7 +219,11 @@ static bool onButtonClick_BackBtn(ZKButton *pButton)
 
 static bool onButtonClick_MacroBtn(ZKButton *pButton)
 {
-	LOGD(" ButtonClick MacroBtn !!!\n");
+	OM::RequestFiles("0:/macros");
+	if (mMainWindowPtr->isWndShow())
+		UI::WINDOW->CloseWindow(mMainWindowPtr);
+	UI::WINDOW->CloseLastWindow();
+	UI::WINDOW->OpenWindow(mFilesWindowPtr);
 	return false;
 }
 
