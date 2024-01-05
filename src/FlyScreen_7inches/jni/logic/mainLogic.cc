@@ -5,6 +5,7 @@
 #include <string>
 #include "Communication.hpp"
 #include "Hardware/SerialIo.hpp"
+#include "ObjectModel/Files.hpp"
 #include "ObjectModel/Utils.hpp"
 #include "UI/UserInterface.hpp"
 #include "UI/UserInterfaceConstants.hpp"

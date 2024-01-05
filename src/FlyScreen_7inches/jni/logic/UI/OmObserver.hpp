@@ -28,7 +28,7 @@
 #define OBSERVER_ARRAY_END(key, callback) \
 	UI::Observer<UI::ui_array_end_update_cb>{ \
 		key, \
-		[&](const size_t indices[]) \
+		[](const size_t indices[]) \
 		{ \
 			callback(indices); \
 		}, \
@@ -38,7 +38,7 @@
 #define OBSERVER_TEMPLATE(key, callback, type, convertor) \
 	UI::Observer<UI::ui_field_update_cb>{ \
 		key, \
-		[&](const char *data, const size_t indices[]) \
+		[](const char *data, const size_t indices[]) \
 		{ \
 			type val; \
 			if (convertor(data, val)) \
