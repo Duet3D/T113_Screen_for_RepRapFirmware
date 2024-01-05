@@ -1,8 +1,10 @@
 /*
- * ZKRadioGroup.h
+ * ZKRadioGroup.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Oct 23, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKRADIOGROUP_H_
@@ -16,11 +18,20 @@ class ZKRadioGroup : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKRadioGroup)
 
 public:
-	ZKRadioGroup(HWND hParentWnd);
+	ZKRadioGroup(ZKBase *pParent);
 	virtual ~ZKRadioGroup();
 
+	/**
+	 * @brief 设置选中项
+	 * @param id 子项id值
+	 */
 	void setCheckedID(int id);
-	int getCheckedID() const { return mCheckedID; }
+
+	/**
+	 * @brief 获取选中项
+	 * @return 子项id值
+	 */
+	int getCheckedID() const;
 
 	ZKCheckBox* getRadioItem(int index) const;
 
@@ -35,28 +46,20 @@ public:
 		virtual void onCheckedChanged(ZKRadioGroup *pRadioGroup, int checkedID) = 0;
 	};
 
-	void setCheckedChangeListener(ICheckedChangeListener *pListener) {
-		mCheckedChangeListenerPtr = pListener;
-	}
+	void setCheckedChangeListener(ICheckedChangeListener *pListener);
 
 protected:
-	ZKRadioGroup(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKRadioGroup(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual void onAfterCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_RADIOGROUP; }
 
-	virtual BOOL onTouchEvent(const MotionEvent &ev);
+	virtual bool onTouchEvent(const MotionEvent &ev);
 
 private:
 	void parseRadioGroupAttributeFromJson(const Json::Value &json);
 	void parseRadioButtonsAttributeFromJson(const Json::Value &json);
-
-private:
-	ICheckedChangeListener *mCheckedChangeListenerPtr;
-	int mCheckedID;
-
-	vector<ZKCheckBox*> mCheckBoxsList;
 };
 
 #endif /* _CONTROL_ZKRADIOGROUP_H_ */

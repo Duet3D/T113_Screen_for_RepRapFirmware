@@ -9,7 +9,9 @@ extern "C" {
 #endif  /* __cplusplus */
 
 void onEasyUIInit(EasyUIContext *pContext) {
-	// Open the serial port during initialization
+	//设置时区为东八区
+    setenv("TZ", "CST-8", 1);
+	// 初始化时打开串口
 	UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), CONFIGMANAGER->getUartBaudRate());
 	Comm::init();
 }
@@ -26,5 +28,6 @@ const char* onStartupApp(EasyUIContext *pContext) {
 #ifdef __cplusplus
 
 }
+
 #endif  /* __cplusplus */
 

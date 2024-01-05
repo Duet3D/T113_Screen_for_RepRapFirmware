@@ -1,3 +1,12 @@
+/*
+ * MountMonitor.h - Zkswe
+ *
+ * Copyright (C) 2018 Zkswe Technology Corp.
+ *
+ *  Created on: Mar 6, 2018
+ *      Author: zkswe@zkswe.com
+ */
+
 #ifndef _OS_MOUNT_MONITOR_H
 #define _OS_MOUNT_MONITOR_H
 

@@ -1,8 +1,10 @@
 /*
- * IMEBaseApp.h
+ * IMEBaseApp.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Oct 30, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _APP_IMEBASEAPP_H_

@@ -1,8 +1,10 @@
 /*
- * ZKDigitalClock.h
+ * ZKDigitalClock.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Sep 19, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKDIGITALCLOCK_H_
@@ -19,31 +21,23 @@ class ZKDigitalClock : public ZKTextView {
 	ZK_DECLARE_PRIVATE(ZKDigitalClock)
 
 public:
-	ZKDigitalClock(HWND hParentWnd);
+	ZKDigitalClock(ZKBase *pParent);
 	virtual ~ZKDigitalClock();
 
+	void setHourFormat(bool is24HourFormat);
+
 protected:
-	ZKDigitalClock(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKDigitalClock(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual void onAfterCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_DIGITALCLOCK; }
 
-	virtual void onDraw(HDC hdc);
+	virtual void onDraw(ZKCanvas *pCanvas);
 	virtual void onTimer(int id);
 
-	void _section_(zk) drawClock(HDC hdc);
-
 private:
-	void _section_(zk) parseDigitalClockAttributeFromJson(const Json::Value &json);
-	bool checkTimeUpdate();
-
-private:
-	bool mIsBeated;		// 冒号跳动
-	bool mShowColon;	// 显示冒号
-	bool mIs24HourFormat;
-	bool mHasWithSec;
-	int mClockColor;
+	void parseDigitalClockAttributeFromJson(const Json::Value &json);
 };
 
 #endif /* _CONTROL_ZKDIGITALCLOCK_H_ */

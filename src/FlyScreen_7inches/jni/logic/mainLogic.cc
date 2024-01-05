@@ -5,6 +5,7 @@
 #include <string>
 #include "Communication.hpp"
 #include "Hardware/SerialIo.hpp"
+#include "ObjectModel/Files.hpp"
 #include "ObjectModel/Utils.hpp"
 #include "UI/UserInterface.hpp"
 #include "UI/UserInterfaceConstants.hpp"
@@ -24,11 +25,11 @@
  XXX represents the [ID value] name in the GUI tool, such as Button1.
  When the return value is false, the system will no longer process this button,
  and when it returns true, the system will continue to process this button. Such as SYS_BACK.
- *========================onSlideWindowItemClick_XXXX(int index) 
+ *========================onSlideWindowItemClick_XXXX(int index)
  When there is a sliding window on the page and the user clicks the icon of the sliding window, the system will call this function.
  XXX represents the [ID value] name in the GUI tool, for example: slideWindow1.
  index represents the offset value of the pressed icon
- *========================onSeekBarChange_XXXX(int progress) 
+ *========================onSeekBarChange_XXXX(int progress)
  When there is a slider on the page and the user changes the progress, the system will call this function.
  XXX represents the [ID value] name in the GUI tool, such as SeekBar1.
  progress represents the current progress value

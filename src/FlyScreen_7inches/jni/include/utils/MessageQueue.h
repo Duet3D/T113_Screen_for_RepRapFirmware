@@ -1,3 +1,12 @@
+/*
+ * MessageQueue.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
+ *
+ *  Created on: Aug 19, 2017
+ *      Author: zkswe@zkswe.com
+ */
+
 #ifndef _UTILS_MESSAGEQUEUE_H_
 #define _UTILS_MESSAGEQUEUE_H_
 

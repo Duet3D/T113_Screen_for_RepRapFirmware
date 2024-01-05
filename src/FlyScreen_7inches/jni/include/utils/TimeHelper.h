@@ -1,8 +1,10 @@
 /*
- * TimeHelper.h
+ * TimeHelper.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: May 22, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _UTILS_TIME_HELPER_H_
@@ -18,7 +20,7 @@ public:
 	/**
 	 * @brief 获取当前日期时间，单位为毫秒
 	 */
-	static long getCurrentTime();
+	static long long getCurrentTime();
 
 	/**
 	 * @brief 获取当前日期

@@ -1,8 +1,10 @@
 /*
- * ZKCircleBar.h
+ * ZKCircleBar.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Sep 5, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKCIRCLEBAR_H_
@@ -19,7 +21,7 @@ class ZKCircleBar : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKCircleBar)
 
 public:
-	ZKCircleBar(HWND hParentWnd);
+	ZKCircleBar(ZKBase *pParent);
 	virtual ~ZKCircleBar();
 
 	/**
@@ -30,7 +32,7 @@ public:
 	/**
 	 * @brief 获取最大进度值
 	 */
-	int getMax() const { return mMax; }
+	int getMax() const;
 
 	/**
 	 * @brief 设置当前进度值
@@ -40,12 +42,32 @@ public:
 	/**
 	 * @brief 获取当前进度值
 	 */
-	int getProgress() const { return mProgress; }
+	int getProgress() const;
 
 	/**
 	 * @brief 设置起始角度
 	 */
 	void setStartAngle(int angle);
+
+	/**
+	 * @brief 设置文本颜色
+	 * @param color 颜色值为0x ARGB
+	 */
+	void setTextColor(int color);
+
+	/**
+	 * @brief 设置进度图片
+	 */
+	void setProgressPic(const char *pPicPath);
+
+	/**
+	 * @brief 设置滑块图片
+	 * @param status   状态
+	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
+	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
+	 * @param pPicPath 图片路径
+	 */
+	void setThumbPic(int status, const char *pPicPath);
 
 public:
 	class ICircleBarChangeListener {
@@ -59,45 +81,16 @@ public:
 	void setCircleBarChangeListener(ICircleBarChangeListener *pListener);
 
 protected:
-	ZKCircleBar(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKCircleBar(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_CIRCLEBAR; }
 
-	virtual void onDraw(HDC hdc);
-	virtual BOOL onTouchEvent(const MotionEvent &ev);
-
-	void _section_(zk) drawProgress(HDC hdc);
-	void _section_(zk) drawThumb(HDC hdc);
-	void _section_(zk) drawProgressText(HDC hdc);
+	virtual void onDraw(ZKCanvas *pCanvas);
+	virtual bool onTouchEvent(const MotionEvent &ev);
 
 private:
-	void _section_(zk) parseCircleBarAttributeFromJson(const Json::Value &json);
-
-	bool isInTouchRange(int x, int y);
-	int calculateProgress(int x, int y);
-
-protected:
-	typedef enum {
-		E_TEXT_TYPE_NONE,				// 不绘制文本
-		E_TEXT_TYPE_NUM,				// 数字
-		E_TEXT_TYPE_NUM_WITH_UNIT		// 数字 + 单位
-	} EProgressTextType;
-
-	int mMax;
-	int mProgress;
-
-	EProgressTextType mTextType;
-	PLOGFONT mLogFontPtr;
-	int mTextSize;
-	int mTextColor;
-	string mUnitStr;		// 单位, 默认: %
-
-	int mStartAngle;
-	bool mIsClockwise;	// 顺时针方向
-
-	PBITMAP mProgressPicPtr;
-	HDC mProgressDC;
+	void parseCircleBarAttributeFromJson(const Json::Value &json);
 };
 
 #endif /* _CONTROL_ZKCIRCLEBAR_H_ */

@@ -9,7 +9,7 @@
 #define SRC_GENERAL_STRINGFUNCTIONS_H_
 
 #include "../ecv_duet3d.h"
-#include <cstdint>
+//#include <cstdint>
 #include <cstddef>
 
 bool StringEndsWithIgnoreCase(const char* _ecv_array string, const char* _ecv_array ending) noexcept;

@@ -1,8 +1,10 @@
 /*
- * LanguageManager.h
+ * LanguageManager.h - Zkswe
+ *
+ * Copyright (C) 2018 Zkswe Technology Corp.
  *
  *  Created on: Mar 6, 2018
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _MANAGER_LANGUAGE_MANAGER_H_
@@ -14,8 +16,8 @@
 #include "json/json.h"
 
 typedef struct {
-	const char *code;		// 国家码
-	const char *language;	// 语言名称
+	char code[16];			// 国家码
+	char language[64];		// 语言名称
 } SLanguageInfo;
 
 class LanguageManager {
@@ -32,6 +34,10 @@ public:
 		return mCurrentCode;
 	}
 
+	const std::string& getCurrentLanguage() const {
+		return mCurrentLanguage;
+	}
+
 	std::string getValue(const char *name);
 
 private:
@@ -40,7 +46,9 @@ private:
 
 private:
 	std::vector<SLanguageInfo> mLanguageInfos;
+
 	std::string mCurrentCode;
+	std::string mCurrentLanguage;
 
 	Json::Value mContent;
 	Json::Value mInternalContent;

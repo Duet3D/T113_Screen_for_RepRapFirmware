@@ -1,8 +1,10 @@
 /*
- * Activity.h
+ * Activity.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 21, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _APP_ACTIVITY_H_

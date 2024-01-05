@@ -1,8 +1,10 @@
 /*
- * ZKSeekBar.h
+ * ZKSeekBar.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Jun 26, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKSEEKBAR_H_
@@ -19,7 +21,7 @@ class ZKSeekBar : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKSeekBar)
 
 public:
-	ZKSeekBar(HWND hParentWnd);
+	ZKSeekBar(ZKBase *pParent);
 	virtual ~ZKSeekBar();
 
 	/**
@@ -30,7 +32,7 @@ public:
 	/**
 	 * @brief 获取最大进度值
 	 */
-	int getMax() const { return mMax; }
+	int getMax() const;
 
 	/**
 	 * @brief 设置当前进度值
@@ -40,7 +42,21 @@ public:
 	/**
 	 * @brief 获取当前进度值
 	 */
-	int getProgress() const { return mProgress; }
+	int getProgress() const;
+
+	/**
+	 * @brief 设置进度图片
+	 */
+	void setProgressPic(const char *pPicPath);
+
+	/**
+	 * @brief 设置滑块图片
+	 * @param status   状态
+	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
+	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
+	 * @param pPicPath 图片路径
+	 */
+	void setThumbPic(int status, const char *pPicPath);
 
 public:
 	class ISeekBarChangeListener {
@@ -51,39 +67,19 @@ public:
 		virtual void onStopTrackingTouch(ZKSeekBar *pSeekBar) { }
 	};
 
-	void setSeekBarChangeListener(ISeekBarChangeListener *pListener) {
-		mSeekBarChangeListenerPtr = pListener;
-	}
+	void setSeekBarChangeListener(ISeekBarChangeListener *pListener);
 
 protected:
-	ZKSeekBar(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKSeekBar(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_SEEKBAR; }
 
-	virtual void onDraw(HDC hdc);
-	virtual BOOL onTouchEvent(const MotionEvent &ev);
-
-	void _section_(zk) drawProgress(HDC hdc);
-	void _section_(zk) drawThumb(HDC hdc);
+	virtual void onDraw(ZKCanvas *pCanvas);
+	virtual bool onTouchEvent(const MotionEvent &ev);
 
 private:
-	void _section_(zk) parseSeekBarAttributeFromJson(const Json::Value &json);
-	BOOL isHorizontalOrientation() const { return mOrientation == E_ORIENTATION_HORIZONTAL; }
-	int calculateProgress(int x, int y);
-
-protected:
-	ISeekBarChangeListener *mSeekBarChangeListenerPtr;
-
-	int mMax;
-	int mProgress;
-	EOrientation mOrientation;	// 方向: 0 横向, 1 纵向
-
-	PBITMAP mProgressPicPtr;
-	PBITMAP mThumbNormalPicPtr;
-	PBITMAP mThumbPressedPicPtr;
-
-	SIZE mThumbSize;
+	void parseSeekBarAttributeFromJson(const Json::Value &json);
 };
 
 #endif /* _CONTROL_ZKSEEKBAR_H_ */

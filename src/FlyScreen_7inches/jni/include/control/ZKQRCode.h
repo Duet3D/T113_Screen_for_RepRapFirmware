@@ -1,8 +1,10 @@
 /*
- * ZKQRCode.h
+ * ZKQRCode.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Oct 9, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKQRCODE_H_
@@ -19,8 +21,14 @@ class ZKQRCode : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKQRCode)
 
 public:
-	ZKQRCode(HWND hParentWnd);
+	ZKQRCode(ZKBase *pParent);
 	virtual ~ZKQRCode();
+
+	/**
+	 * @brief 设置前景颜色
+	 * @param color 颜色值为0x ARGB
+	 */
+	void setForegroundColor(uint32_t color);
 
 	/**
 	 * @brief 加载二维码数据
@@ -28,20 +36,14 @@ public:
 	bool loadQRCode(const char *pStr);
 
 protected:
-	ZKQRCode(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKQRCode(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_QRCODE; }
-	virtual void onDraw(HDC hdc);
-
-	void drawQRCode(HDC hdc);
+	virtual void onDraw(ZKCanvas *pCanvas);
 
 private:
 	void parseQRCodeAttributeFromJson(const Json::Value &json);
-	void deleteQRCodeDC();
-
-private:
-	HDC mQRCodeDC;
 };
 
 #endif /* _CONTROL_ZKQRCODE_H_ */

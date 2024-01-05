@@ -1,27 +1,28 @@
 /*
- * ZKListView.h
+ * ZKListView.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Jun 28, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKLISTVIEW_H_
 #define _CONTROL_ZKLISTVIEW_H_
 
 #include "ZKButton.h"
-#include "utils/VelocityTracker.h"
 
-class ZKBasePrivate;
 class ZKListViewPrivate;
+class ZKListSubItemPrivate;
 
 /**
- * @brief List control
+ * @brief 列表控件
  */
 class ZKListView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKListView)
 
 public:
-	ZKListView(HWND hParentWnd);
+	ZKListView(ZKBase *pParent);
 	virtual ~ZKListView();
 
 public:
@@ -29,16 +30,16 @@ public:
 	class ZKListSubItem : public ZKButton {
 		friend class ZKListView;
 		friend class ZKListItem;
-		friend class ZKBasePrivate;
+		ZK_DECLARE_PRIVATE(ZKListSubItem)
 	public:
 		ZKListSubItem();
 		virtual ~ZKListSubItem();
 
 	protected:
-		virtual BOOL createWindow() { return FALSE; }
+		virtual bool createWindow() { return false; }
 		virtual const char* getClassName() const { return NULL; }
 
-		void drawSubItem(HDC hdc, int xOffset, int yOffset);
+		void drawSubItem(ZKCanvas *pCanvas, int xOffset, int yOffset);
 
 		int getLongClickTimeOut() const;
 		int getLongClickIntervalTime() const;
@@ -46,12 +47,13 @@ public:
 
 	class ZKListItem : public ZKListSubItem {
 		friend class ZKListView;
+		friend class ZKListViewPrivate;
 	public:
 		ZKListItem();
 		virtual ~ZKListItem();
 
 		/**
-		 * @brief Get sub-item by ID
+		 * @brief 通过ID值获取子项
 		 */
 		ZKListSubItem* findSubItemByID(int id) const;
 		int getSubItemCount() const { return mSubItemCount; }
@@ -60,20 +62,19 @@ public:
 		virtual void onBeforeCreateWindow(const Json::Value &json);
 
 		int hitItemID(const MotionEvent &ev);
-		void drawItem(HDC hdc, int xOffset, int yOffset);
-		void setItemPressed(int itemID, BOOL isPressed);
+		void drawItem(ZKCanvas *pCanvas, int xOffset, int yOffset);
+		void setItemPressed(int itemID, bool isPressed);
 
 	private:
 		void parseListItemAttributeFromJson(const Json::Value &json);
 
 	private:
-		const static int S_MAX_SUB_ITEM_COUNT = 5;
-		ZKListSubItem *mListSubItems[S_MAX_SUB_ITEM_COUNT];
+		ZKListSubItem **mListSubItemList;
 		int mSubItemCount;
 	};
 
 	/**
-	 * @brief Data and UI binding adapter
+	 * @brief 数据与UI绑定适配器
 	 */
 	class AbsListAdapter {
 		friend class ZKListView;
@@ -83,21 +84,17 @@ public:
 		virtual void obtainListItemData(ZKListView *pListView, ZKListItem *pListItem, int index) = 0;
 
 		/**
-		 * Data update, redraw UI
+		 * 数据更新，重绘UI
 		 */
 		void notifyDataSetChanged(ZKListView *pListView) {
 			if (pListView) {
-				pListView->invalidate();
+				pListView->refreshListView();
 			}
 		}
 	};
 
-	void setListAdapter(AbsListAdapter *pAdapter) {
-		mAdapterPtr = pAdapter;
-	}
-
 	/**
-	 * @brief List item click listener interface
+	 * @brief 列表项点击监听接口
 	 */
 	class IItemClickListener {
 	public:
@@ -106,7 +103,7 @@ public:
 	};
 
 	/**
-	 * @brief List item long press listener interface
+	 * @brief 列表项长按监听接口
 	 */
 	class IItemLongClickListener {
 	public:
@@ -114,143 +111,73 @@ public:
 		virtual void onItemLongClick(ZKListView *pListView, int index, int itemID) = 0;
 	};
 
-	void setItemClickListener(IItemClickListener *pListener) { mItemClickListenerPtr = pListener; }
-	void setItemLongClickListener(IItemLongClickListener *pListener) { mItemLongClickListenerPtr = pListener; }
+	void setListAdapter(AbsListAdapter *pAdapter);
+	void setItemClickListener(IItemClickListener *pListener);
+	void setItemLongClickListener(IItemLongClickListener *pListener);
 
 	/**
-	 * @brief Refresh the list
+	 * @brief 刷新列表
 	 */
 	void refreshListView();
 
 	/**
-	 * @brief Jump to the specified row or column
+	 * @brief 跳转到指定行或列
 	 */
 	void setSelection(int index);
 
 	/**
-	 * @brief Get the item width
+	 * @brief 获取列表项宽
 	 */
-	UINT getItemWidth() const;
+	uint32_t getItemWidth() const;
 
 	/**
-	 * @brief Get the item height
+	 * @brief 获取列表项高
 	 */
-	UINT getItemHeight() const;
+	uint32_t getItemHeight() const;
 
 	/**
-	 * @brief Get the number of rows in the list
+	 * @brief 获取列表行数
 	 */
-	UINT getRows() const;
+	uint32_t getRows() const;
 
 	/**
-	 * @brief Get the number of columns in the list
+	 * @brief 获取列表列数
 	 */
-	UINT getCols() const;
+	uint32_t getCols() const;
 
 	/**
-	 * @brief Get the total number of list items
+	 * @brief 获取列表总项数
 	 */
 	int getListItemCount() const;
 
 	/**
-	 * @brief Get the index value of the first visible item
+	 * @brief 获取第一个可见项的索引值
 	 */
 	int getFirstVisibleItemIndex() const;
 
 	/**
-	 * @brief Get the offset value of the first visible item
+	 * @brief 获取第一个可见项的偏移值
 	 */
 	int getFirstVisibleItemOffset() const;
 
+	/**
+	 * @brief 设置惯性滑动减速比例
+	 * @param ratio 减速比例 范围： 0 < ratio < 1
+	 */
+	void setDecRatio(float ratio);
+
 protected:
-	ZKListView(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKListView(ZKBase *pParent, ZKBasePrivate *pBP);
 
 	virtual void onBeforeCreateWindow(const Json::Value &json);
 	virtual const char* getClassName() const { return ZK_LISTVIEW; }
 
-	virtual void onDraw(HDC hdc);
-	virtual BOOL onTouchEvent(const MotionEvent &ev);
+	virtual void onDraw(ZKCanvas *pCanvas);
+	virtual bool onTouchEvent(const MotionEvent &ev);
 	virtual void onTimer(int id);
 
-	void _section_(zk) drawListView(HDC hdc);
-	void _section_(zk) drawListItem(HDC hdc, int index, int xOffset, int yOffset);
-
 private:
-	void _section_(zk) parseListViewAttributeFromJson(const Json::Value &json);
-	void getFirstVisibleItemOffset(int &xOffset, int &yOffset) const;
-	int getEndEdgeOffset() const;
-
-	int getRowsOrCols() const;
-
-	void resetOffset();
-	void resetItemPressInfo();
-
-	// Start rollback
-	void startRollback();
-
-	void startSinkScrollbar();
-
-	// Stop scrolling
-	void stopRoll();
-
-	// Cycle list Adjust the offset value of the first item
-	void cycleFirstItemOffset();
-
-	/**
-	 * Record list item press information
-	 */
-	typedef struct {
-		BOOL isPressed;
-		int index;
-		int itemID;
-	} SItemPressInfo;
-
-	typedef enum {
-		E_EDGE_EFFECT_NONE,
-		E_EDGE_EFFECT_DRAG,			// Drag effect
-		E_EDGE_EFFECT_FADING		// Shadow gradually fades effect
-	} EEdgeEffect;
-
-	BOOL isVerticalOrientation() const { return mOrientation == E_ORIENTATION_VERTICAL; }
-	BOOL isDragEffect() const { return mEdgeEffect == E_EDGE_EFFECT_DRAG; }
-	BOOL isFadingEffect() const { return mEdgeEffect == E_EDGE_EFFECT_FADING; }
-
-private:
-	UINT mRows;
-	UINT mCols;
-
-	int mFirstItemXOffset;
-	int mFirstItemYOffset;
-
-	int mFirstItemXOffsetOfDown;	// Record the offset position of the first item when pressed
-	int mFirstItemYOffsetOfDown;
-
-	UINT mItemWidth;
-	UINT mItemHeight;
-
-	BOOL mIsDamping;
-	BOOL mIsRolling;
-
-	BOOL mIsAutoRollback;		// Auto rollback alignment flag
-	BOOL mIsCycleEnable;		// Circular list
-
-	VelocityTracker mVelocityTracker;
-	float mCurVelocity;
-
-	EOrientation mOrientation;	// Direction: 0 Horizontal, 1 Vertical
-	EEdgeEffect mEdgeEffect;
-
-	UINT mDragMaxDistance;
-
-	IItemClickListener *mItemClickListenerPtr;
-	IItemLongClickListener *mItemLongClickListenerPtr;
-
-	SItemPressInfo mItemPressInfo;
-
-	ZKListItem *mListItemPtr;
-	AbsListAdapter *mAdapterPtr;
-
-	HGRAPHICS mBackgroundGraphics;
+	void parseListViewAttributeFromJson(const Json::Value &json);
 };
 
 #endif /* _CONTROL_ZKLISTVIEW_H_ */

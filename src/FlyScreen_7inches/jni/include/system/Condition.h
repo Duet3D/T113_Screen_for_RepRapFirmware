@@ -1,8 +1,10 @@
 /*
- * Condition.h
+ * Condition.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Sep 5, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _SYSTEM_CONDITION_H_

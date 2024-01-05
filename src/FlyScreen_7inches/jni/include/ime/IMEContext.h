@@ -1,8 +1,10 @@
 /*
- * IMEContext.h
+ * IMEContext.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Oct 30, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _IME_IMECONTEXT_H_
@@ -37,17 +39,17 @@ public:
 		mIMETextUpdateListenerPtr = pListener;
 	}
 
-	void initIME(const SIMETextInfo &info, IIMETextUpdateListener *pListener);
+	void initIME(SIMETextInfo *pInfo, IIMETextUpdateListener *pListener);
 
 protected:
-	virtual void onInitIME(const SIMETextInfo &info) { }
+	virtual void onInitIME(SIMETextInfo *pInfo) { }
 
 	void doneIMETextUpdate(const std::string &text);
 	void cancelIMETextUpdate();
 
 protected:
 	IIMETextUpdateListener *mIMETextUpdateListenerPtr;
-	SIMETextInfo mIMETextInfo;
+	SIMETextInfo *mIMETextInfoPtr;
 };
 
 #endif /* _IME_IMECONTEXT_H_ */

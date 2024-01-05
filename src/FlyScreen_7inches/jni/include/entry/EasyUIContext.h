@@ -1,8 +1,10 @@
 /*
- * EasyUIContext.h
+ * EasyUIContext.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 24, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _ENTRY_EASYUI_CONTEXT_H_
@@ -20,7 +22,6 @@ class BaseApp;
 class IMEBaseApp;
 
 class EasyUIContext {
-	friend int main(int argc, const char *argv[]);
 public:
 	/**
 	 * @brief 全局触摸监听接口
@@ -111,6 +112,8 @@ public:
 	 */
 	bool isStatusBarShow() const;
 
+	BaseApp* getStatusBar() const;
+
 	/**
 	 * @brief 显示导航栏
 	 */
@@ -125,6 +128,8 @@ public:
 	 * @brief 导航栏是否显示
 	 */
 	bool isNaviBarShow() const;
+
+	BaseApp* getNaviBar() const;
 
 	void powerOff();
 	void powerOn();
@@ -178,7 +183,7 @@ public:
 	void performScreensaverOn();
 	void performScreensaverOff();
 
-	void showIME(const IMEContext::SIMETextInfo &info, IMEContext::IIMETextUpdateListener *pListener);
+	void showIME(IMEContext::SIMETextInfo *pInfo, IMEContext::IIMETextUpdateListener *pListener);
 	void hideIME();
 	void performHideIME();
 
@@ -193,13 +198,14 @@ public:
 	 */
 	void updateLocalesCode(const char *code);
 
-private:
-	EasyUIContext();
-	~EasyUIContext();
-
 	bool initEasyUI();
 	void deinitEasyUI();
 	void runEasyUI();
+	void reqExit();
+
+private:
+	EasyUIContext();
+	~EasyUIContext();
 
 	bool initLib();
 	void deinitLib();
@@ -220,6 +226,9 @@ private:
 private:
 	std::vector<ITouchListener *> mGlobalTouchListenerList;
 	mutable Mutex mTouchLock;
+
+	std::vector<IKeyListener *> mKeyListenerList;
+	mutable Mutex mKeyLock;
 
 	BaseApp *mStatusBarPtr;
 	BaseApp *mNaviBarPtr;

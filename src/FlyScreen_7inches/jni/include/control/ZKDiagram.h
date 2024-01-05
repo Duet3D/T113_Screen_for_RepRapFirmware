@@ -1,8 +1,10 @@
 /*
- * ZKDiagram.h
+ * ZKDiagram.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Jul 31, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKDIAGRAM_H_
@@ -14,121 +16,90 @@
 class ZKDiagramPrivate;
 
 /**
- * @brief Waveform chart control
+ * @brief 波形图控件
  */
 class ZKDiagram : public ZKBase {
-    ZK_DECLARE_PRIVATE(ZKDiagram)
+	ZK_DECLARE_PRIVATE(ZKDiagram)
 
 public:
-    typedef enum {
-        E_DIAGRAM_STYLE_LINE,        // Polyline
-        E_DIAGRAM_STYLE_CURVE        // Curve
-    } EDiagramStyle;
+	typedef enum {
+		E_DIAGRAM_STYLE_LINE,		// 折线
+		E_DIAGRAM_STYLE_CURVE		// 曲线
+	} EDiagramStyle;
 
 public:
-    ZKDiagram(HWND hParentWnd);
-    virtual ~ZKDiagram();
+	ZKDiagram(ZKBase *pParent);
+	virtual ~ZKDiagram();
 
-    /**
-     * @brief Set waveform line width
-     * @param index Waveform index
-     * @param width Waveform line width
-     */
-    void setPenWidth(int index, int width);
+	/**
+	 * @brief 设置波形线宽
+	 * @param index 波形索引值
+	 * @param width 波形线宽
+	 */
+	void setPenWidth(int index, uint32_t width);
 
-    /**
-     * @brief Set waveform color
-     * @param index Waveform index
-     * @param color Waveform color value: 0xARGB
-     */
-    void setPenColor(int index, ARGB color);
+	/**
+	 * @brief 设置波形颜色
+	 * @param index 波形索引值
+	 * @param color 波形颜色值：0x RGB
+	 */
+	void setPenColor(int index, uint32_t color);
 
-    /**
-     * @brief Set X-axis scaling factor for the waveform
-     * @param index Waveform index
-     * @param xScale X-axis scaling factor
-     */
-    void setXScale(int index, double xScale);
+	/**
+	 * @brief 设置波形X轴方向缩放比例
+	 * @param index 波形索引值
+	 * @param xScale X轴方向缩放比例
+	 */
+	void setXScale(int index, float xScale);
 
-    /**
-     * @brief Set Y-axis scaling factor for the waveform
-     * @param index Waveform index
-     * @param yScale Y-axis scaling factor
-     */
-    void setYScale(int index, double yScale);
+	/**
+	 * @brief 设置波形Y轴方向缩放比例
+	 * @param index 波形索引值
+	 * @param yScale Y轴方向缩放比例
+	 */
+	void setYScale(int index, float yScale);
 
-    /**
-     * @brief Set waveform data
-     * @param index Waveform index
-     * @param pPoints Coordinate array
-     * @param count Array length
-     */
-    void setData(int index, const MPPOINT *pPoints, int count);
+	/**
+	 * @brief 设置波形步进值
+	 * @param index 波形索引值
+	 * @param step 步进值
+	 */
+	void setStep(int index, float step);
 
-    /**
-     * @brief Add waveform data
-     * @param index Waveform index
-     * @param data Y-axis data value
-     */
-    void addData(int index, float data);
+	/**
+	 * @brief 设置波形数据
+	 * @param index 波形索引值
+	 * @param pPoints 坐标数组
+	 * @param count 数组长度
+	 */
+	void setData(int index, const SZKPoint *pPoints, int count);
 
-    /**
-     * @brief Clear the waveform chart
-     * @param index Waveform index
-     */
-    void clear(int index);
+	/**
+	 * @brief 添加波形数据
+	 * @param index 波形索引值
+	 * @param data Y轴方向数据值
+	 */
+	void addData(int index, float data);
 
-    void addDiagramInfo(int width, ARGB color, EDiagramStyle style,
-            double xScale, double yScale, float step, UINT eraseSpace, bool isAntialiasOn);
+	/**
+	 * @brief 清除波形图
+	 * @param index 波形索引值
+	 */
+	void clear(int index);
+
+	void addDiagramInfo(uint32_t width, uint32_t color, EDiagramStyle style,
+			float xScale, float yScale, float step, uint32_t eraseSpace, bool isAntialiasOn);
 
 protected:
-    ZKDiagram(HWND hParentWnd, ZKBasePrivate *pBP);
+	ZKDiagram(ZKBase *pParent, ZKBasePrivate *pBP);
 
-    virtual void onBeforeCreateWindow(const Json::Value &json);
-    virtual const char* getClassName() const { return ZK_DIAGRAM; }
+	virtual void onBeforeCreateWindow(const Json::Value &json);
+	virtual const char* getClassName() const { return ZK_DIAGRAM; }
 
-    virtual void onDraw(HDC hdc);
-
-    void _section_(zk) drawDiagram(HDC hdc);
+	virtual void onDraw(ZKCanvas *pCanvas);
 
 private:
-    void _section_(zk) parseDiagramAttributeFromJson(const Json::Value &json);
-
-private:
-    typedef struct {
-        float lower;
-        float upper;
-    } SAxisRange;
-
-    typedef struct {
-        HGRAPHICS graphics;
-        HPATH path;
-        HPEN pen;
-        int penWidth;
-        ARGB penColor;
-        EDiagramStyle style;
-        double xScale;
-        double yScale;
-        MPPOINT bufPoints[8];
-        int bufIndex;
-        float step;
-        UINT eraseSpace;
-        MPMatrix matrix;
-    } SDiagramInfo;
-
-    void updateMatrix(SDiagramInfo &info);
-    void transform(const MPMatrix &matrix, float &x, float &y) const;
-
-private:
-    vector<SDiagramInfo *> mDiagramInfoList;
-
-    LayoutPosition mRegionPosition;        // Curve chart drawing area
-
-    SAxisRange mXAxisRange;        // X-axis coordinate range
-    SAxisRange mYAxisRange;        // Y-axis coordinate range
-
-    double mXBaseScale;
-    double mYBaseScale;
+	void parseDiagramAttributeFromJson(const Json::Value &json);
 };
 
 #endif /* _CONTROL_ZKDIAGRAM_H_ */

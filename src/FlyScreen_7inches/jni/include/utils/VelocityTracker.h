@@ -1,14 +1,15 @@
 /*
- * VelocityTracker.h
+ * VelocityTracker.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Jul 19, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _UTILS_VELOCITY_TRACKER_H_
 #define _UTILS_VELOCITY_TRACKER_H_
 
-#include <minigui/common.h>
 #include "control/Common.h"
 
 class VelocityTracker {
@@ -23,7 +24,7 @@ public:
 	float getYVelocity() const;
 
 private:
-	BOOL canComputeVelocity() const;
+	bool canComputeVelocity() const;
 
 private:
 	int mCurIndex;

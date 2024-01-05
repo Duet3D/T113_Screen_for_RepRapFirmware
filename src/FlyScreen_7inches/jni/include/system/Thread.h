@@ -1,8 +1,10 @@
 /*
- * Thread.h
+ * Thread.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 24, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _SYSTEM_THREAD_H_

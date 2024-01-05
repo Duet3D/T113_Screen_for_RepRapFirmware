@@ -1,8 +1,10 @@
 /*
- * SystemProperties.h
+ * SystemProperties.h - Zkswe
  *
- *  Created on: Aug 19, 2017
- *      Author: guoxs
+ * Copyright (C) 2017 Zkswe Technology Corp.
+ *
+ *  Created on: Mar 6, 2017
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _OS_SYSTEM_PROPERTIES_H_

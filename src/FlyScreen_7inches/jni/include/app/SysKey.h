@@ -1,8 +1,10 @@
 /*
- * SysKey.h
+ * SysKey.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 30, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _APP_SYS_KEY_H_

@@ -1,27 +1,28 @@
-#Generally, there is no need to modify the file
-#z6s
+#一般情况无需修改该文件
+
 LOCAL_PATH=$(dir  $(abspath $(lastword $(MAKEFILE_LIST))))
-ZKSW_PREBUILT_LIB_PATH := $(ZKSW_REAL_PREBUILT)/lib
+ZKSW_PREBUILT_LIB_PATH := $(ZKSW_REAL_PREBUILT)/lib/
 ZKSW_PREBUILT_INCLUDE_PATH := $(ZKSW_REAL_PREBUILT)/include
 
 EASYUI_COMMON_INCLUDE := $(LOCAL_PATH)/include
 
-#Configuration source file directory
+#配置源文件目录
 PROJ_ROOT_PATH  :=./
-#Source file extension
+#源文件后缀名
 PROJ_SRC_SUFFIX := %.cpp %.c
-PROJ_HEAD_SUFFIX := %.hpp %.h
-# Recursively traverse all files in the directory
+PROJ_HEAD_SUFFIX := %.h
+# 递归遍历目录下的所有的文件 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))  
-# Obtain the corresponding source file
+# 获取相应的源文件
 PROJ_ALL_FILES := $(foreach src_path,$(PROJ_ROOT_PATH), $(call rwildcard,$(src_path),*.*) )   
 PROJ_SRC_FILES := $(filter $(PROJ_SRC_SUFFIX),$(PROJ_ALL_FILES))   
 PROJ_HEAD_FILES := $(filter $(PROJ_HEAD_SUFFIX),$(PROJ_ALL_FILES))   
 
+# 获取相应的源文件
 LOCAL_SRC_FILES  := $(PROJ_SRC_FILES) 
 LOCAL_HEAD_FILES := $(PROJ_HEAD_FILES) 
 
-#Source file directory structure
+#源文件目录结构
 PROJ_DIR_TREE := $(dir $(foreach src_path, $(LOCAL_SRC_FILES), $(call rwildcard,$(src_path),*/) ) )  
 PROJ_DIR_TREE := $(sort $(PROJ_DIR_TREE))  
 
@@ -32,21 +33,20 @@ OBJS_2 = $(patsubst %.c,%.o,$(OBJS_1))
 OBJS   = $(addprefix $(OBJS_ROOT_DIR),$(OBJS_2))
 OBJS_DIR_TREE=$(addprefix $(OBJS_ROOT_DIR),$(PROJ_DIR_TREE))
 
-CFLAGS=-Os -pipe -march=armv5te -mtune=arm926ej-s -fno-caller-saves -Wno-unused-result -mfloat-abi=soft -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro       -Wl,--warn-common -Wl,--warn-once -Wl,-z,combreloc -Wl,-z,defs -DUSE_ANDROID_LOG
-CXXFLAGS=-Os -pipe -march=armv5te -mtune=arm926ej-s -fno-caller-saves -Wno-unused-result -mfloat-abi=soft -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -Wno-virtual-dtor -Wl,-z,defs -DUSE_ANDROID_LOG
+CFLAGS=-Os -fPIC -pipe -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -Wl,-z,defs -DUSE_ANDROID_LOG
+CXXFLAGS=-Os -fPIC -pipe -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -Wl,-z,defs -DUSE_ANDROID_LOG 
 
-CXXFLAGS+= -fexceptions -fpermissive -Wall -O2
-CXXFLAGS+= -std=c++11
+CXXFLAGS+= -fexceptions -Wall -nostdinc++ -std=c++11
 
 INCLUDE_DIR := -I$(EASYUI_COMMON_INCLUDE) \
-					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/gui \
-					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/uClibc++ \
-					-I$(ZKSW_PREBUILT_INCLUDE_PATH)/system \
-					-I$(LOCAL_PATH)/logic \
-					-I. 
+               -I$(ZKSW_PREBUILT_INCLUDE_PATH) \
+               -I$(ZKSW_PREBUILT_INCLUDE_PATH)/system \
+               -I$(ZKSW_PREBUILT_INCLUDE_PATH)/uClibc++ \
+			   -I$(LOCAL_PATH)/logic \
+               -I.
 
-LDFLAGS = -luClibc++ -leasyui -llog
-LDFLAGS += -L$(ZKSW_PREBUILT_LIB_PATH)/system -L. 
+LDFLAGS += -lzkhardware -lzknet -leasyui -llog -luClibc++
+LDFLAGS += -L$(ZKSW_PREBUILT_LIB_PATH) -L. 
 
 TARGET=../libs/armeabi/libzkgui.so
 
@@ -83,6 +83,7 @@ $(OBJS_ROOT_DIR)%.o: %.c $(LOCAL_HEAD_FILES)
 $(TARGET):$(OBJS) 
 	@$(ECHO) "[armeabi] SharedLibrary  : "$@ 
 	@$(CC) -fPIC -shared $^ -o $@ $(LDFLAGS) $(CXXFLAGS)
+	@$(CROSS_COMPILE)strip $@
 	
 prepare: 
 	@$(ECHO) "[armeabi] GCC            : "$(CC) 

@@ -1,8 +1,10 @@
 /*
- * ConfigManager.h
+ * ConfigManager.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Jun 17, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _MANAGER_CONFIG_MANAGER_H_
@@ -16,11 +18,9 @@ public:
 
 	const char* getVersion() const;
 
-	const std::string& getResFilePath(const std::string &resFileName) const;
-	std::string getResFilePathEx(const std::string &resFileName) const;
+	std::string getResFilePath(const std::string &resFileName) const;
 
 	int getLongClickTimeOut() const;
-
 	int getMinBrightness() const;
 	int getMaxBrightness() const;
 	int getDefBrightness() const;
@@ -38,13 +38,16 @@ public:
 	const std::string& getLanguageInternalPath() const;
 	const std::string& getLanguageCode() const;
 
-	const std::string& getFontFamily() const;
+	const std::string& getTouchDev() const;
 
 	int getScreenRotate() const;
 
 	bool isDebugVersion() const;
 
 	bool isNeedToStartupTouchCalibration() const;
+
+	bool isBeepEnable() const;
+	void setBeepEnable(bool isEnable);
 
 private:
 	ConfigManager();

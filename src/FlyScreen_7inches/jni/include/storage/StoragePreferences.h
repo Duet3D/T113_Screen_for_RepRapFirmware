@@ -1,8 +1,10 @@
 /*
- * StoragePreferences.h
+ * StoragePreferences.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Nov 9, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _STORAGE_STORAGEPREFERENCES_H_

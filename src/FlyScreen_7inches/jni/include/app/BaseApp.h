@@ -1,8 +1,10 @@
 /*
- * BaseApp.h
+ * BaseApp.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 24, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _APP_BASEAPP_H_
@@ -25,9 +27,10 @@ public:
 	void hide();
 	bool isShow() const;
 
-	HDC snapshot() const;
-
 	void updateLocales();
+
+	void setPosition(const LayoutPosition &position);
+	const LayoutPosition& getPosition() const;
 
 protected:
 	virtual const char* getAppName() const { return NULL; }

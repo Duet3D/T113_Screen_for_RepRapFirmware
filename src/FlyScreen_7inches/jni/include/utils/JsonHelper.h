@@ -1,8 +1,10 @@
 /*
- * JsonHelper.h
+ * JsonHelper.h - Zkswe
+ *
+ * Copyright (C) 2017 Zkswe Technology Corp.
  *
  *  Created on: Aug 19, 2017
- *      Author: guoxs
+ *      Author: zkswe@zkswe.com
  */
 
 #ifndef _UTILS_JSON_HELPER_H_
