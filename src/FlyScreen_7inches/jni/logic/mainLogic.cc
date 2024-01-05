@@ -689,3 +689,91 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		break;
 	}
 }
+static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PrintBabystepDecBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PrintBabystepIncBtn !!!\n");
+    return false;
+}
+
+static int getListItemCount_PrintFanList(const ZKListView *pListView) {
+    //LOGD("getListItemCount_PrintFanList !\n");
+    return 4;
+}
+
+static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ PrintFanList  !!!\n");
+}
+
+static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ PrintFanList  !!!\n");
+}
+
+static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PrintPauseBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_PrintCancelBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PrintCancelBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_PrintResumeBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PrintResumeBtn !!!\n");
+    return false;
+}
+
+static int getListItemCount_PrintPositionList(const ZKListView *pListView) {
+    //LOGD("getListItemCount_PrintPositionList !\n");
+    return 5;
+}
+
+static void obtainListItemData_PrintPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ PrintPositionList  !!!\n");
+}
+
+static void onListItemClick_PrintPositionList(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ PrintPositionList  !!!\n");
+}
+
+static int getListItemCount_PrintExtruderPositionList(const ZKListView *pListView) {
+    //LOGD("getListItemCount_PrintExtruderPositionList !\n");
+    return 3;
+}
+
+static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ PrintExtruderPositionList  !!!\n");
+}
+
+static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ PrintExtruderPositionList  !!!\n");
+}
+
+static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
+    //LOGD(" ProgressChanged PrintSpeedMultiplierBar %d !!!\n", progress);
+}
+static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
+    //LOGD("getListItemCount_PrintTemperatureList !\n");
+    return 5;
+}
+
+static void obtainListItemData_PrintTemperatureList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ PrintTemperatureList  !!!\n");
+}
+
+static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ PrintTemperatureList  !!!\n");
+}
+
+static void onProgressChanged_Slider(ZKSeekBar *pSeekBar, int progress) {
+    //LOGD(" ProgressChanged Slider %d !!!\n", progress);
+}
+
+static bool onButtonClick_SliderCloseBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick SliderCloseBtn !!!\n");
+    return false;
+}
