@@ -229,6 +229,14 @@ static bool onButtonClick_MacroBtn(ZKButton *pButton)
 	return false;
 }
 
+static bool onButtonClick_ConsoleBtn(ZKButton *pButton) {
+	if (mMainWindowPtr->isWndShow())
+		UI::WINDOW->CloseWindow(mMainWindowPtr);
+	UI::WINDOW->CloseLastWindow();
+	UI::WINDOW->OpenWindow(mConsoleWindowPtr);
+    return false;
+}
+
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	LOGD(" ButtonClick EStopBtn !!!\n");
@@ -448,9 +456,6 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 	case (int)UI::SlideWindowIndex::extrude:
 		UI::WINDOW->OpenWindow(mExtrudeWindowPtr);
 		break;
-	case (int)UI::SlideWindowIndex::console:
-		UI::WINDOW->OpenWindow(mConsoleWindowPtr);
-		break;
 	case (int)UI::SlideWindowIndex::heightmap:
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;
@@ -658,7 +663,7 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
 	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
 	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
-	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
+//	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
 
 	OM::FileSystemItem* item = OM::GetItem(index);
 	if (item == nullptr)
