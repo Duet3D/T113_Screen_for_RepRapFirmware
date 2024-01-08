@@ -70,8 +70,18 @@ namespace UI
 		dbg("Opening window %d", window->getID());
 		window->showWnd();
 		RemoveFromVector<ZKWindow*>(closedWindows_, window);
-		if (!closedWindows_.empty())
+		if (!InVector<ZKWindow*>(homeWindows_, window))
 			AddToVector<ZKWindow*>(openedWindows_, window);
+	}
+
+	void Window::OpenOverlay(ZKWindow* overlay)
+	{
+		if (overlayWindow_ != nullptr)
+		{
+			overlayWindow_->hideWnd();
+		}
+		overlay->showWnd();
+		overlayWindow_ = overlay;
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)
@@ -105,8 +115,15 @@ namespace UI
 
 	void Window::Back()
 	{
+		if (overlayWindow_ != nullptr)
+		{
+			overlayWindow_->hideWnd();
+			overlayWindow_ = nullptr;
+			return;
+		}
 		if (OM::IsInSubFolder())
 		{
+			dbg("window: Returning to previous folder");
 			OM::RequestFiles(OM::GetParentDirPath());
 			return;
 		}
@@ -435,7 +452,7 @@ namespace UI
 			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
 			break;
 		}
-		WINDOW->OpenWindow(pNumPadWindow_);
+		WINDOW->OpenOverlay(pNumPadWindow_);
 	}
 
 	void ToolsList::CloseNumPad()
