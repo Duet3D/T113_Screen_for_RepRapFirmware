@@ -456,6 +456,9 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 	case (int)UI::SlideWindowIndex::extrude:
 		UI::WINDOW->OpenWindow(mExtrudeWindowPtr);
 		break;
+	case (int)UI::SlideWindowIndex::status:
+		UI::WINDOW->OpenWindow(mPrintWindowPtr);
+		break;
 	case (int)UI::SlideWindowIndex::heightmap:
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;

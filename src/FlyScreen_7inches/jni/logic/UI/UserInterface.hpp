@@ -27,6 +27,7 @@ namespace UI
 	{
 		move = 0,
 		extrude,
+		status,
 		heightmap,
 		fans,
 		print,
