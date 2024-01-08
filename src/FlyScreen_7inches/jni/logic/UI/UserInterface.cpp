@@ -8,6 +8,7 @@
 #define DEBUG (1)
 #include "Debug.hpp"
 #include <algorithm>
+#include <map>
 #include "UserInterface.hpp"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/Files.hpp"
@@ -54,9 +55,14 @@ namespace UI
 		return &window;
 	}
 
-	void Window::SetHome(ZKWindow* home)
+	void Window::AddHome(ZKWindow* home)
 	{
-		home_ = home;
+		homeWindows_.push_back(home);
+	}
+
+	void Window::ClearHome()
+	{
+		homeWindows_.clear();
 	}
 
 	void Window::OpenWindow(ZKWindow* window)
@@ -123,7 +129,10 @@ namespace UI
 		{
 			window->hideWnd();
 		}
-		home_->showWnd();
+		for (auto window : homeWindows_)
+		{
+			window->showWnd();
+		}
 		Clear();
 	}
 
@@ -133,10 +142,24 @@ namespace UI
 		closedWindows_.clear();
 	}
 
-	ToolsList* ToolsList::GetInstance()
+	static std::map<const char *, ToolsList*> sToolsListMap;
+
+	ToolsList::ToolsList(const char* id) :
+					id(id), toolCount_(0), bedCount_(0), chamberCount_(0)
+			{
+				dbg("Registering tool list to id %s", id);
+			}
+
+	ToolsList* ToolsList::Create(const char* id)
 	{
-		static ToolsList instance;
-		return &instance;
+		sToolsListMap[id] = new ToolsList(id);
+		return sToolsListMap[id];
+	}
+
+	ToolsList* ToolsList::Get(const char* id)
+	{
+		auto it = sToolsListMap.find(id);
+		return (it != sToolsListMap.end()) ? it->second : nullptr;
 	}
 
 	void ToolsList::Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput)
@@ -146,52 +169,235 @@ namespace UI
 		pNumPadInput_ = numPadInput;
 	}
 
-	void ToolsList::CalculateTotalHeaterCount(
-				const bool addTools,
-				const bool addBeds,
-				const bool addChambers)
+	void ToolsList::CalculateTotalHeaterCount()
 	{
+		dbg("Bed count %d", OM::GetBedCount());
+		bedCount_ = OM::GetBedCount();
+
+		dbg("Chamber count %d", OM::GetChamberCount());
+		chamberCount_ = OM::GetChamberCount();
+
 		size_t count = 0;
-		if (addBeds)
+		OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t)
 		{
-			dbg("Bed count %d", OM::GetBedCount());
-			count += OM::GetBedCount();
-		}
-		if (addChambers)
+			const bool hasHeater = tool->heaters[0] != nullptr;
+			const bool hasSpindle = tool->spindle != nullptr;
+			// Spindle takes precedence
+			if (hasSpindle)
+			{
+				++count;
+			}
+			else if (hasHeater)
+			{
+				count += tool->GetHeaterCount();
+			}
+			else
+			{
+				// Hides everything by default
+				++count;
+			}
+			return true;
+		});
+
+		dbg("Tool count %d", count);
+		toolCount_ = count;
+	}
+
+	size_t ToolsList::GetTotalHeaterCount(const bool calculate, const bool addTools, const bool addBeds, const bool addChambers)
+			{
+				if (calculate)
+					CalculateTotalHeaterCount();
+
+				size_t count = 0;
+				if (addTools)
+				{
+					count += toolCount_;
+				}
+				if (addBeds)
+				{
+					count += bedCount_;
+				}
+				if (addChambers)
+				{
+					count += chamberCount_;
+				}
+				return count;
+			}
+
+	void ToolsList::ObtainListItemData(
+			ZKListView::ZKListItem* pListItem, int index,
+			ZKListView::ZKListSubItem* pToolName,
+			ZKListView::ZKListSubItem* pCurrentTemperature,
+			ZKListView::ZKListSubItem* pActiveTemperature,
+			ZKListView::ZKListSubItem* pStandbyTemperature,
+			ZKListView::ZKListSubItem* pStatus)
+	{
+		// Check Tools to see if list index is within tool heaters
+		OM::Tool *tool = nullptr;
+		int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
+		if (tool != nullptr)
 		{
-			dbg("Chamber count %d", OM::GetChamberCount());
-			count += OM::GetChamberCount();
+			OM::ToolHeater *toolHeater;
+			toolHeater = tool->GetHeater(toolHeaterIndex);
+			if (toolHeater == nullptr)
+			{
+				dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
+				pToolName->setText(tool->name.c_str());
+				return;
+			}
+			dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
+					index, tool->index, toolHeaterIndex, toolHeater->heater->index,
+					toolHeater->heater->current, toolHeater->activeTemp, toolHeater->standbyTemp);
+			if (tool->GetHeaterCount() > 1)
+			{
+				pToolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex);
+			}
+			else
+			{
+				pToolName->setText(tool->name.c_str());
+			}
+			pActiveTemperature->setText((int)toolHeater->activeTemp);
+			pStandbyTemperature->setText((int)toolHeater->standbyTemp);
+			pCurrentTemperature->setText(toolHeater->heater->current);
+			pStatus->setText(toolHeater->heater->GetHeaterStatusStr());
+			(tool->status == OM::ToolStatus::active) ? pListItem->setSelected(true) : pListItem->setSelected(false);
+
+			return;
 		}
 
-		if (addTools)
+		int8_t bedOrChamberIndex = index - toolHeaterIndex;
+		OM::BedOrChamber *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
+		OM::Heat::Heater *heater;
+		if (bedOrChamber != nullptr)
 		{
-			OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t)
+			heater = OM::Heat::GetHeater(bedOrChamber->heater);
+			if (heater == nullptr)
 			{
-				const bool hasHeater = tool->heaters[0] != nullptr;
-				const bool hasSpindle = tool->spindle != nullptr;
-				// Spindle takes precedence
-				if (hasSpindle)
-				{
-					++count;
-				}
-				else if (hasHeater)
-				{
-					count += tool->GetHeaterCount();
-				}
-				else
-				{
-					// Hides everything by default
-					++count;
-				}
-				return true;
-			});
+				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
+				return;
+			}
+			dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
+					index, bedOrChamber->index, bedOrChamber->heater, heater->index,
+					heater->current, heater->activeTemp, heater->standbyTemp);
+			if (OM::GetBedCount() > 1)
+			{
+				pToolName->setTextf("Bed %d", bedOrChamber->index );
+			}
+			else
+			{
+				pToolName->setText("Bed");
+			}
+			pActiveTemperature->setText((int)heater->activeTemp);
+			pStandbyTemperature->setText((int)heater->standbyTemp);
+			pCurrentTemperature->setText(heater->current);
+			pStatus->setText(heater->GetHeaterStatusStr());
+			pListItem->setSelected(false);
+			return;
 		}
-		if (count > MaxSlots)
+
+		bedOrChamberIndex -= OM::GetBedCount();
+		dbg("Chamber index %d", bedOrChamberIndex);
+		bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
+		if (bedOrChamber != nullptr)
 		{
-			dbg("Total heater items (%d) exceeds MaxSlots (%d)", count, MaxSlots);
-			count = MaxSlots;
+			heater = OM::Heat::GetHeater(bedOrChamber->heater);
+			if (heater == nullptr)
+			{
+				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
+				return;
+			}
+			dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d",
+					index, bedOrChamber->index, bedOrChamber->heater, heater->index,
+					heater->current, heater->activeTemp, heater->standbyTemp);
+			if (OM::GetChamberCount() > 1)
+			{
+				pToolName->setTextf("Chamber %d", bedOrChamber->index );
+			}
+			else
+			{
+				pToolName->setText("Chamber");
+			}
+			pActiveTemperature->setText((int)heater->activeTemp);
+			pStandbyTemperature->setText((int)heater->standbyTemp);
+			pCurrentTemperature->setText(heater->current);
+			pStatus->setText(heater->GetHeaterStatusStr());
+			pListItem->setSelected(false);
+			return;
 		}
-		totalCount_ = count;
+		dbg("Unknown index");
+	}
+
+	void ToolsList::OnListItemClick(int index, int id, const int nameId, int statusId, int activeId, int standbyId)
+	{
+		dbg("index=%d, id=%d", index, id);
+		if (id == NULL)
+			return;
+		UI::NumPadData numPadData;
+
+		CalculateTotalHeaterCount();
+		if ((size_t)index < GetTotalHeaterCount(false, true, false, false))
+		{
+			OM::Tool *tool = nullptr;
+			int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
+			if (tool == nullptr)
+				return;
+			dbg("Tool index=%d", tool->index);
+			numPadData.heaterType = UI::HeaterType::tool;
+			numPadData.toolIndex = tool->index;
+			numPadData.toolHeaterIndex = toolHeaterIndex;
+			if (id == nameId)
+			{
+				tool->ToggleState();
+				return;
+			}
+			if (id == statusId)
+			{
+				tool->ToggleHeaterState(toolHeaterIndex);
+				return;
+			}
+		}
+		else if ((size_t)index < GetTotalHeaterCount(false, true, true, false))
+		{
+			OM::Bed *bed = OM::GetBedBySlot(index - GetTotalHeaterCount(false, true, false, false));
+			if (bed == nullptr)
+				return;
+			dbg("Bed index=%d", bed->index);
+			numPadData.heaterType = UI::HeaterType::bed;
+			numPadData.bedOrChamberIndex = bed->index;
+			if (id == nameId || id == statusId)
+			{
+				bed->ToggleBedState();
+				return;
+			}
+		}
+
+		else if ((size_t)index < GetTotalHeaterCount(false, true, true, true))
+		{
+			OM::Chamber* chamber = OM::GetChamberBySlot(index - GetTotalHeaterCount(false, true, true, false));
+			if (chamber == nullptr)
+				return;
+			dbg("Chamber index=%d", chamber->index);
+			numPadData.heaterType = UI::HeaterType::chamber;
+			numPadData.bedOrChamberIndex = chamber->index;
+			if (id == nameId || id == statusId)
+			{
+				chamber->ToggleChamberState();
+				return;
+			}
+		}
+
+		if (id == activeId)
+		{
+			numPadData.active = true;
+			OpenNumPad(numPadData);
+			return;
+		}
+		if (id == standbyId)
+		{
+			numPadData.active = false;
+			OpenNumPad(numPadData);
+			return;
+		}
 	}
 
 	void ToolsList::RefreshToolList(const bool lengthChanged)
@@ -201,6 +407,14 @@ namespace UI
 			CalculateTotalHeaterCount();
 		}
 		pToolListView_->refreshListView();
+	}
+
+	void ToolsList::RefreshAllToolLists(const bool lengthChanged)
+	{
+		for (auto list : sToolsListMap)
+		{
+			list.second->RefreshToolList(lengthChanged);
+		}
 	}
 
 	void ToolsList::OpenNumPad(const NumPadData data)
@@ -227,7 +441,6 @@ namespace UI
 	void ToolsList::CloseNumPad()
 	{
 		WINDOW->CloseWindow(pNumPadWindow_, false);
-		WINDOW->Home();
 	}
 
 	void ToolsList::NumPadAddOneChar(char ch)

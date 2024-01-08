@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				dbg("Failed to update heater temperature; heater %d = %fC", indices[0], val);
 				return;
 			}
-			UI::TOOLSLIST->RefreshToolList(false);
+			UI::ToolsList::RefreshAllToolLists(false);
 			mTempGraphPtr->addData(indices[0], val);
 		}),	/* Update what tool heaters active temperature */
 	OBSERVER_INT_IF_CHANGED(
@@ -56,7 +56,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				return;
 			}
 			dbg("Updated heater %d active temperature to %d", indices[0], val);
-			UI::TOOLSLIST->RefreshToolList(false);
+			UI::ToolsList::RefreshAllToolLists(false);
 		}),
 	/* Update what tool heaters standby temperature */
 	OBSERVER_INT_IF_CHANGED(
@@ -69,7 +69,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				return;
 			}
 			dbg("Updated heater %d standby temperature to %d", indices[0], val);
-			UI::TOOLSLIST->RefreshToolList(false);
+			UI::ToolsList::RefreshAllToolLists(false);
 		}),
 	OBSERVER_CHAR(
 		"heat:heaters^:state",
@@ -119,7 +119,7 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			if (OM::Heat::RemoveHeater(indices[0], true))
-				UI::TOOLSLIST->RefreshToolList();
+				UI::ToolsList::RefreshAllToolLists();
 		}),
 	OBSERVER_ARRAY_END(
 		"heat:bedHeaters^",
@@ -127,7 +127,7 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 		{
 			OM::RemoveBed(OM::lastBed + 1, true);
 			OM::lastBed = -1;
-			UI::TOOLSLIST->RefreshToolList();
+			UI::ToolsList::RefreshAllToolLists();
 		}),
 	OBSERVER_ARRAY_END(
 		"heat:chamberHeaters^",
@@ -135,7 +135,7 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 		{
 			OM::RemoveChamber(OM::lastChamber + 1, true);
 			OM::lastChamber = -1;
-			UI::TOOLSLIST->RefreshToolList();
+			UI::ToolsList::RefreshAllToolLists();
 		}),
 };
 

@@ -39,7 +39,8 @@ namespace UI
 	{
 	public:
 		static Window * GetInstance();
-		void SetHome(ZKWindow* home);
+		void AddHome(ZKWindow* home);
+		void ClearHome();
 		void OpenWindow(ZKWindow *window);
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
@@ -51,7 +52,7 @@ namespace UI
 	private:
 		std::vector<ZKWindow*> openedWindows_;
 		std::vector<ZKWindow*> closedWindows_;
-		ZKWindow* home_;
+		std::vector<ZKWindow*> homeWindows_;
 	};
 
 	enum class HeaterType
@@ -80,33 +81,35 @@ namespace UI
 	class ToolsList
 	{
 	public:
-		ToolsList() :
-				totalCount_(0)
-		{
-		}
-		static ToolsList* GetInstance();
+		ToolsList(const char* id);
+		static ToolsList* Create(const char* id);
+		static ToolsList* Get(const char* id);
 		void Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput);
-		void CalculateTotalHeaterCount(const bool addTools = true,
-				const bool addBeds = true, const bool addChambers = true);
+		void CalculateTotalHeaterCount();
 		size_t GetTotalHeaterCount(const bool calculate, const bool addTools =
-				true, const bool addBeds = true, const bool addChambers = true)
-		{
-			if (calculate)
-				CalculateTotalHeaterCount(addTools, addBeds, addChambers);
-			return totalCount_;
-		}
+				true, const bool addBeds = true, const bool addChambers = true);
+		void ObtainListItemData(
+				ZKListView::ZKListItem* pListItem, int index,
+				ZKListView::ZKListSubItem* pToolName,
+				ZKListView::ZKListSubItem* pCurrentTemperature,
+				ZKListView::ZKListSubItem* pActiveTemperature,
+				ZKListView::ZKListSubItem* pStandbyTemperature,
+				ZKListView::ZKListSubItem* pStatus);
+		void OnListItemClick(int index, int id, const int nameId, int statusId, int activeId, int standbyId);
 		void RefreshToolList(const bool lengthChanged = true);
+		static void RefreshAllToolLists(const bool lengthChanged = true);
 		void OpenNumPad(const NumPadData data);
 		void CloseNumPad();
 		void NumPadAddOneChar(char ch);
 		void NumPadDelOneChar();
 		bool SendTempTarget();
 	private:
-		size_t totalCount_;
+		const char* id;
+		size_t toolCount_, bedCount_, chamberCount_;
 		NumPadData numPadData_;
-		ZKListView* pToolListView_;
-		ZKWindow* pNumPadWindow_;
-		ZKTextView* pNumPadInput_;
+		ZKListView* pToolListView_ = nullptr;
+		ZKWindow* pNumPadWindow_ = nullptr;
+		ZKTextView* pNumPadInput_ = nullptr;
 	};
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool);
@@ -132,8 +135,8 @@ namespace UI
 		void AddMessage(const char* str);
 
 		CircularBuffer<String<MaxResponseLineLength>, MaxResponseLines> buffer_;
-		ZKListView* pConsole_;
-		ZKEditText* pInput_;
+		ZKListView* pConsole_ = nullptr;
+		ZKEditText* pInput_ = nullptr;
 	};
 
 #define WINDOW Window::GetInstance()

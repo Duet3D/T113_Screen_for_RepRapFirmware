@@ -243,6 +243,11 @@ namespace OM
 		return GetOrCreate<ToolList, Tool>(tools, index, true);
 	}
 
+	const size_t GetToolCount()
+	{
+		return tools.Size();
+	}
+
 	bool IterateToolsWhile(function_ref<bool(Tool*&, size_t)> func, const size_t startAt)
 	{
 		return tools.IterateWhile(func, startAt);

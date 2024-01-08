@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
 				return;
 			}
-			UI::TOOLSLIST->RefreshToolList();
+			UI::ToolsList::RefreshAllToolLists();
 		}),
 	OBSERVER_INT(
 		"tools^:active^",
@@ -55,7 +55,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				return;
 			}
 			dbg("Updated tool %d active temperature[%d] to %d", indices[0], indices[1], val);
-			UI::TOOLSLIST->RefreshToolList(false);
+			UI::ToolsList::RefreshAllToolLists(false);
 		}),
 	/* Update what tool heaters standby temperature */
 	OBSERVER_INT_IF_CHANGED(
@@ -68,7 +68,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				return;
 			}
 			dbg("Updated tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
-			UI::TOOLSLIST->RefreshToolList(false);
+			UI::ToolsList::RefreshAllToolLists(false);
 		}),
 	OBSERVER_CHAR(
 		"tools^:name",
@@ -102,14 +102,14 @@ static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			if (OM::RemoveTool(indices[0], true)){}
-			UI::TOOLSLIST->RefreshToolList();
+			UI::ToolsList::RefreshAllToolLists();
 		}),
 	OBSERVER_ARRAY_END(
 		"tools^:heaters^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
 			if (OM::RemoveToolHeaters(indices[0], indices[1])){}
-			UI::TOOLSLIST->RefreshToolList();
+			UI::ToolsList::RefreshAllToolLists();
 		}),
 };
 

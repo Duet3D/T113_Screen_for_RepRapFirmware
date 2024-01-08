@@ -32,6 +32,8 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		[](OBSERVER_CHAR_ARGS)
 		{
 			OM::SetCurrentDir(val);
+			mFileListViewPtr->setSelection(0);
+			mFileListViewPtr->refreshListView();
 			mFolderIDPtr->setText("Folder: " + OM::GetCurrentDirPath());
 			dbg("Files: current dir = %s", OM::GetCurrentDirPath().c_str());
 		}

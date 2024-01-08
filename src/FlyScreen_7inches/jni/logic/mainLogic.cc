@@ -12,7 +12,10 @@
 #include "UI/Colors.hpp"
 #include "UI/Gcodes.hpp"
 #include "UI/OmObserver.hpp"
-#include "UI/MainMenu.h"
+#include "UI/Observers/FileObservers.hpp"
+#include "UI/Observers/ToolObservers.hpp"
+#include "UI/Observers/HeatObservers.hpp"
+#include "UI/Observers/ResponseObservers.hpp"
 #include "Debug.hpp"
 
 
@@ -96,8 +99,10 @@ static void onUI_init()
 		observerArrayEnd = observerArrayEnd->next;
 	}
 
-	UI::WINDOW->SetHome(mMainWindowPtr);
-	UI::TOOLSLIST->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::WINDOW->AddHome(mMainWindowPtr);
+	UI::WINDOW->AddHome(mWindowSelectWindowPtr);
+	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 }
 
@@ -245,8 +250,7 @@ static bool onButtonClick_EStopBtn(ZKButton *pButton)
 
 static int getListItemCount_ToolListView(const ZKListView *pListView)
 {
-	size_t count = UI::TOOLSLIST->GetTotalHeaterCount(false);
-//	dbg("Setting ToolList length to %d", count);
+	size_t count = UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
 	return count;
 }
 
@@ -258,190 +262,15 @@ static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::Z
 	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_ToolStandbyTemperatureSubItem);
 	ZKListView::ZKListSubItem *pstatus = pListItem->findSubItemByID(ID_MAIN_ToolStatusSubItem);
 
-	// Check Tools to see if list index is within tool heaters
-	OM::Tool *tool = nullptr;
-	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
-	if (tool != nullptr)
-	{
-		OM::ToolHeater *toolHeater;
-		toolHeater = tool->GetHeater(toolHeaterIndex);
-		if (toolHeater == nullptr)
-		{
-			dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
-			ptoolName->setText(tool->name.c_str());
-			return;
-		}
-		dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
-				index, tool->index, toolHeaterIndex, toolHeater->heater->index,
-				toolHeater->heater->current, toolHeater->activeTemp, toolHeater->standbyTemp);
-		if (tool->GetHeaterCount() > 1)
-		{
-			ptoolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex);
-		}
-		else
-		{
-			ptoolName->setText(tool->name.c_str());
-		}
-		pactiveTemperature->setText(toolHeater->activeTemp);
-		pstandbyTemperature->setText(toolHeater->standbyTemp);
-		pcurrentTemperature->setText(toolHeater->heater->current);
-		pstatus->setText(toolHeater->heater->GetHeaterStatusStr());
-		(tool->status == OM::ToolStatus::active) ? pListItem->setSelected(true) : pListItem->setSelected(false);
-
-		return;
-	}
-
-	int8_t bedOrChamberIndex = index - toolHeaterIndex;
-	OM::BedOrChamber *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
-	OM::Heat::Heater *heater;
-	if (bedOrChamber != nullptr)
-	{
-		heater = OM::Heat::GetHeater(bedOrChamber->heater);
-		if (heater == nullptr)
-		{
-			dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
-			return;
-		}
-		dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
-				index, bedOrChamber->index, bedOrChamber->heater, heater->index,
-				heater->current, heater->activeTemp, heater->standbyTemp);
-		if (OM::GetBedCount() > 1)
-		{
-			ptoolName->setTextf("Bed %d", bedOrChamber->index );
-		}
-		else
-		{
-			ptoolName->setText("Bed");
-		}
-		pactiveTemperature->setText(heater->activeTemp);
-		pstandbyTemperature->setText(heater->standbyTemp);
-		pcurrentTemperature->setText(heater->current);
-		pstatus->setText(heater->GetHeaterStatusStr());
-		pListItem->setSelected(false);
-		return;
-	}
-
-	bedOrChamberIndex -= OM::GetBedCount();
-	dbg("Chamber index %d", bedOrChamberIndex);
-	bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
-	if (bedOrChamber != nullptr)
-	{
-		heater = OM::Heat::GetHeater(bedOrChamber->heater);
-		if (heater == nullptr)
-		{
-			dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
-			return;
-		}
-		dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d",
-				index, bedOrChamber->index, bedOrChamber->heater, heater->index,
-				heater->current, heater->activeTemp, heater->standbyTemp);
-		if (OM::GetChamberCount() > 1)
-		{
-			ptoolName->setTextf("Chamber %d", bedOrChamber->index );
-		}
-		else
-		{
-			ptoolName->setText("Chamber");
-		}
-		pactiveTemperature->setText(heater->activeTemp);
-		pstandbyTemperature->setText(heater->standbyTemp);
-		pcurrentTemperature->setText(heater->current);
-		pstatus->setText(heater->GetHeaterStatusStr());
-		pListItem->setSelected(false);
-		return;
-	}
-	dbg("Unknown index");
+	UI::ToolsList::Get("home")->ObtainListItemData(pListItem, index, ptoolName, pcurrentTemperature, pactiveTemperature, pstandbyTemperature, pstatus);
 }
 
 static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id)
 {
-//	LOGD(" onListItemClick_ ToolListView  !!!\n");
-	dbg("index=%d, id=%d", index, id);
-	OM::Tool *tool = nullptr;
-	int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
-	UI::NumPadData numPadData;
-	if (tool != nullptr)
-	{
-		dbg("Tool index=%d", tool->index);
-		numPadData.heaterType = UI::HeaterType::tool;
-		numPadData.toolIndex = tool->index;
-		numPadData.toolHeaterIndex = toolHeaterIndex;
-		switch (id)
-		{
-		case ID_MAIN_ToolActiveTemperatureSubItem:
-			numPadData.active = true;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStandbyTemperatureSubItem:
-			numPadData.active = false;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStatusSubItem:
-			tool->ToggleHeaterState(toolHeaterIndex);
-			break;
-		case ID_MAIN_ToolNameSubItem:
-			tool->ToggleState();
-			break;
-		}
-		return;
-	}
-
-	int8_t bedOrChamberIndex = index - toolHeaterIndex;
-	OM::Bed *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
-	if (bedOrChamber != nullptr)
-	{
-		dbg("Bed index=%d", bedOrChamber->index);
-		numPadData.heaterType = UI::HeaterType::bed;
-		numPadData.bedOrChamberIndex = bedOrChamber->index;
-		switch (id)
-		{
-		case ID_MAIN_ToolActiveTemperatureSubItem:
-			numPadData.active = true;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStandbyTemperatureSubItem:
-			numPadData.active = false;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStatusSubItem:
-		case ID_MAIN_ToolNameSubItem:
-			bedOrChamber->ToggleBedState();
-			break;
-		}
-		return;
-	}
-
-	bedOrChamberIndex -= OM::GetBedCount();
-	bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
-	if (bedOrChamber != nullptr)
-	{
-		dbg("Chamber index=%d", bedOrChamber->index);
-		numPadData.heaterType = UI::HeaterType::chamber;
-		numPadData.bedOrChamberIndex = bedOrChamber->index;
-		switch (id)
-		{
-		case ID_MAIN_ToolActiveTemperatureSubItem:
-			numPadData.active = true;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStandbyTemperatureSubItem:
-			numPadData.active = false;
-			UI::WINDOW->CloseWindow(mWindowSelectWindowPtr);
-			UI::TOOLSLIST->OpenNumPad(numPadData);
-			break;
-		case ID_MAIN_ToolStatusSubItem:
-		case ID_MAIN_ToolNameSubItem:
-			bedOrChamber->ToggleChamberState();
-			break;
-		}
-		return;
-	}
-	dbg("Unknown index");
+	UI::ToolsList::Get("home")->OnListItemClick(
+			index, id,
+			ID_MAIN_ToolNameSubItem, ID_MAIN_ToolStatusSubItem,
+			ID_MAIN_ToolActiveTemperatureSubItem, ID_MAIN_ToolStandbyTemperatureSubItem);
 }
 
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
@@ -494,65 +323,71 @@ static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int in
 	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
 }
 
+static UI::ToolsList* getVisibleToolsList()
+{
+	if (mPrintWindowPtr->isVisible())
+		return UI::ToolsList::Get("print");
+	return UI::ToolsList::Get("home");
+}
 static bool onButtonClick_NumPad1(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('1');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('1');
+	return false;
 }
 
 static bool onButtonClick_NumPad2(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('2');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('2');
+	return false;
 }
 
 static bool onButtonClick_NumPad3(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('3');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('3');
+	return false;
 }
 
 static bool onButtonClick_NumPad4(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('4');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('4');
+	return false;
 }
 
 static bool onButtonClick_NumPad5(ZKButton *pButton) {
-    UI::TOOLSLIST->NumPadAddOneChar('5');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('5');
+	return false;
 }
 
 static bool onButtonClick_NumPad6(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('6');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('6');
+	return false;
 }
 
 static bool onButtonClick_NumPad7(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('7');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('7');
+	return false;
 }
 
 static bool onButtonClick_NumPad8(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('8');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('8');
+	return false;
 }
 
 static bool onButtonClick_NumPad9(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('9');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('9');
+	return false;
 }
 
 static bool onButtonClick_NumPadDel(ZKButton *pButton) {
-    UI::TOOLSLIST->NumPadDelOneChar();
-    return false;
+	getVisibleToolsList()->NumPadDelOneChar();
+	return false;
 }
 
 static bool onButtonClick_NumPad0(ZKButton *pButton) {
-	UI::TOOLSLIST->NumPadAddOneChar('0');
-    return false;
+	getVisibleToolsList()->NumPadAddOneChar('0');
+	return false;
 }
 
 static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
-    UI::TOOLSLIST->SendTempTarget();
-    UI::TOOLSLIST->CloseNumPad();
-    return false;
+	getVisibleToolsList()->SendTempTarget();
+	getVisibleToolsList()->CloseNumPad();
+	return false;
 }
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
     LOGD(" ButtonClick HomeAllBtn !!!\n");
@@ -676,9 +511,11 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	switch (item->GetType())
 	{
 	case OM::FileSystemItemType::file:
+		pListItem->setSelected(false);
 		pFileType->setText("File");
 		break;
 	case OM::FileSystemItemType::folder:
+		pListItem->setSelected(true);
 		pFileType->setText("Folder");
 		break;
 	}
@@ -766,16 +603,25 @@ static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int p
     //LOGD(" ProgressChanged PrintSpeedMultiplierBar %d !!!\n", progress);
 }
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
-    //LOGD("getListItemCount_PrintTemperatureList !\n");
-    return 5;
+	size_t count = UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
+	return count;
 }
 
 static void obtainListItemData_PrintTemperatureList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ PrintTemperatureList  !!!\n");
+	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListNameSubItem);
+	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListCurrentSubItem);
+	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListActiveSubItem);
+	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListStandbySubItem);
+	ZKListView::ZKListSubItem *pstatus = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListStatusSubItem);
+
+	UI::ToolsList::Get("print")->ObtainListItemData(pListItem, index, ptoolName, pcurrentTemperature, pactiveTemperature, pstandbyTemperature, pstatus);
 }
 
 static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ PrintTemperatureList  !!!\n");
+	UI::ToolsList::Get("print")->OnListItemClick(
+			index, id,
+			NULL, NULL,
+			ID_MAIN_PrintTemperatureListActiveSubItem, ID_MAIN_PrintTemperatureListStandbySubItem);
 }
 
 static void onProgressChanged_Slider(ZKSeekBar *pSeekBar, int progress) {
