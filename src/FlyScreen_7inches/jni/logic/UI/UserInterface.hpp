@@ -43,6 +43,7 @@ namespace UI
 		void ClearHome();
 		void OpenWindow(ZKWindow* window);
 		void OpenOverlay(ZKWindow* window);
+		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
 		void CloseWindow(ZKWindow *window, const bool returnable = true);

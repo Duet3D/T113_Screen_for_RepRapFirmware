@@ -67,6 +67,7 @@ namespace UI
 
 	void Window::OpenWindow(ZKWindow* window)
 	{
+		CloseOverlay();
 		dbg("Opening window %d", window->getID());
 		window->showWnd();
 		RemoveFromVector<ZKWindow*>(closedWindows_, window);
@@ -82,6 +83,15 @@ namespace UI
 		}
 		overlay->showWnd();
 		overlayWindow_ = overlay;
+	}
+
+	bool Window::CloseOverlay()
+	{
+		if (overlayWindow_ == nullptr)
+			return false;
+		overlayWindow_->hideWnd();
+		overlayWindow_ = nullptr;
+		return true;
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)
@@ -115,10 +125,8 @@ namespace UI
 
 	void Window::Back()
 	{
-		if (overlayWindow_ != nullptr)
+		if (CloseOverlay())
 		{
-			overlayWindow_->hideWnd();
-			overlayWindow_ = nullptr;
 			return;
 		}
 		if (OM::IsInSubFolder())
@@ -131,7 +139,7 @@ namespace UI
 		{
 			ZKWindow* lastOpened = openedWindows_.back();
 			dbg("Hiding window %d", lastOpened->getID());
-			lastOpened->hideWnd();
+			CloseWindow(lastOpened, false);
 		}
 		if (!closedWindows_.empty())
 		{
