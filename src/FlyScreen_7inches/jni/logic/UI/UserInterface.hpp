@@ -16,8 +16,10 @@
 #include "control/ZKListView.h"
 #include "window/ZKWindow.h"
 #include "Duet3D/General/CircularBuffer.hpp"
+#include "Duet3D/General/StringRef.h"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/BedOrChamber.hpp"
+#include "UI/UserInterfaceConstants.hpp"
 
 namespace UI
 {
@@ -25,7 +27,6 @@ namespace UI
 	{
 		move = 0,
 		extrude,
-		console,
 		heightmap,
 		fans,
 		print,
@@ -120,13 +121,14 @@ namespace UI
 		}
 		void Init(ZKListView* console, ZKEditText* input);
 		void AddCommand(const std::string &command);
-		void AddResponse(String<MaxResponseLineLength> line);
+		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
 		String<MaxResponseLineLength> GetItem(size_t index) { return buffer_.GetItem(index); }
 		void Refresh();
 		void Clear();
 	private:
-		void AddMessage(String<MaxResponseLineLength> line);
+		void AddMessage(const StringRef& ref);
+		void AddMessage(const char* str);
 
 		CircularBuffer<String<MaxResponseLineLength>, MaxResponseLines> buffer_;
 		ZKListView* pConsole_;

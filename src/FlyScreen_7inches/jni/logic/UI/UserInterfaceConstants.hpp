@@ -23,7 +23,7 @@ const unsigned int MaxHeaters = 32;
 constexpr unsigned int MaxDisplayableAxes = 6;
 
 constexpr unsigned int MaxCommandLength = 50;
-constexpr unsigned int MaxResponseLineLength = 45;
+constexpr unsigned int MaxResponseLineLength = 65;
 constexpr unsigned int MaxResponseLines = 50;
 
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */

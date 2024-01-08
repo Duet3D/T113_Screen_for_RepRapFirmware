@@ -9,7 +9,6 @@
 #include "Debug.hpp"
 #include <algorithm>
 #include "UserInterface.hpp"
-#include "UserInterfaceConstants.hpp"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/Files.hpp"
 
@@ -316,29 +315,37 @@ namespace UI
 
 	void Console::AddCommand(const std::string &command)
 	{
-		dbg("AddingCommand %s", command);
+		dbg("AddingCommand %s", command.c_str());
 	    String<MaxResponseLineLength> line;
 	    AddLineBreak();
 	    line.catf("> %s:", command.c_str());
-	    AddMessage(line);
+	    AddMessage(line.GetRef());
 	    AddLineBreak();
 	    Refresh();
 	}
 
-	void Console::AddResponse(String<MaxResponseLineLength> line)
+	void Console::AddResponse(const StringRef& ref)
 	{
-		AddMessage(line);
+		AddMessage(ref);
 	}
 
 	void Console::AddLineBreak()
 	{
-	    String<MaxResponseLineLength> line;
-	    line.copy("");
-	    AddMessage(line);
+	    AddMessage("");
 	}
 
-	void Console::AddMessage(String<MaxResponseLineLength> line)
+	void Console::AddMessage(const char* str)
 	{
+		String<MaxResponseLineLength> line;
+		line.copy(str);
+		buffer_.Push(line);
+		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+	}
+
+	void Console::AddMessage(const StringRef& ref)
+	{
+		String<MaxResponseLineLength> line;
+		line.copy(ref.c_str());
 		buffer_.Push(line);
 		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
 	}

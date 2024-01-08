@@ -44,7 +44,7 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 				substrlen = std::min(str.length() - i, MaxResponseLineLength);
 				dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
 				line.copy(str.substr(i, substrlen).c_str());
-				UI::CONSOLE->AddResponse(line);
+				UI::CONSOLE->AddResponse(line.GetRef());
 			}
 			UI::CONSOLE->Refresh();
 		}
