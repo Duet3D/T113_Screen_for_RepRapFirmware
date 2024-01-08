@@ -462,7 +462,8 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
-		UI::WINDOW->OpenWindow(mNetworkWindowPtr);
+//		UI::WINDOW->OpenWindow(mNetworkWindowPtr);
+		EASYUICONTEXT->openActivity("WifiSettingActivity");
 		break;
 	case (int)UI::SlideWindowIndex::settings:
 		UI::WINDOW->OpenWindow(mSettingsWindowPtr);
