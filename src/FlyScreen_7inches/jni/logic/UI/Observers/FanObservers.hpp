@@ -13,7 +13,7 @@
 #include "UI/OmObserver.hpp"
 #include "UI/UserInterfaceConstants.hpp"
 #include "UI/UserInterface.hpp"
-
+#include "ObjectModel/Fan.hpp"
 
 
 /*
@@ -25,10 +25,47 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
-	OBSERVER_UINT_IF_CHANGED(
-		"",
-		[](OBSERVER_UINT_ARGS)
+	OBSERVER_CHAR(
+		"fans^",
+		[](OBSERVER_CHAR_ARGS)
 		{
+			OM::RemoveFan(indices[0], false);
+			mPrintFanListPtr->refreshListView();
+		}),
+	OBSERVER_FLOAT_IF_CHANGED(
+		"fans^:actualValue",
+		[](OBSERVER_FLOAT_ARGS)
+		{
+			if (!OM::UpdateFanActualVal(indices[0], val))
+			{
+				dbg("Failed to update fan %d actualValue to %.2f", indices[0], val);
+				return;
+			}
+			mPrintFanListPtr->refreshListView();
+		}
+	),
+	OBSERVER_FLOAT_IF_CHANGED(
+		"fans^:requestedValue",
+		[](OBSERVER_FLOAT_ARGS)
+		{
+			if (!OM::UpdateFanRequestedVal(indices[0], val))
+			{
+				dbg("Failed to update fan %d requestedValue to %.2f", indices[0], val);
+				return;
+			}
+			mPrintFanListPtr->refreshListView();
+		}
+	),
+	OBSERVER_INT_IF_CHANGED(
+		"fans^:rpm",
+		[](OBSERVER_INT_ARGS)
+		{
+			if (!OM::UpdateFanRpm(indices[0], val))
+			{
+				dbg("Failed to update fan %d rpm to %.2f", indices[0], val);
+				return;
+			}
+			mPrintFanListPtr->refreshListView();
 		}
 	),
 };
@@ -39,11 +76,14 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
  */
 static UI::Observer<UI::ui_array_end_update_cb> FanObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END(
-		"",
+		"fans^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
-		}
-	),
+			if (OM::RemoveFan(indices[0], true))
+			{
+				mPrintFanListPtr->refreshListView();
+			}
+		}),
 };
 
 

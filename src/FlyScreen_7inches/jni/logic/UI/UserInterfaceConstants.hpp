@@ -18,7 +18,8 @@ static const char* _ecv_array const babystepAmounts[] = { "0.01", "0.02", "0.05"
 static const float _ecv_array babystepAmountsF[] = { 0.01, 0.02, 0.05, 0.1 };
 constexpr int8_t NoTool = -1;
 
-const unsigned int MaxSlots = 7;
+const unsigned int MaxSlots = 32;
+const unsigned int MaxFans = 12;
 const unsigned int MaxHeaters = 32;
 constexpr unsigned int MaxDisplayableAxes = 6;
 

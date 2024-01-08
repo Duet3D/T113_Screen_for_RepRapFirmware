@@ -5,6 +5,7 @@
 #include <string>
 #include "Communication.hpp"
 #include "Hardware/SerialIo.hpp"
+#include "ObjectModel/Fan.hpp"
 #include "ObjectModel/Files.hpp"
 #include "ObjectModel/Utils.hpp"
 #include "UI/UserInterface.hpp"
@@ -12,6 +13,7 @@
 #include "UI/Colors.hpp"
 #include "UI/Gcodes.hpp"
 #include "UI/OmObserver.hpp"
+#include "UI/Observers/FanObservers.hpp"
 #include "UI/Observers/FileObservers.hpp"
 #include "UI/Observers/ToolObservers.hpp"
 #include "UI/Observers/HeatObservers.hpp"
@@ -547,11 +549,16 @@ static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
 
 static int getListItemCount_PrintFanList(const ZKListView *pListView) {
     //LOGD("getListItemCount_PrintFanList !\n");
-    return 4;
+    return OM::GetFanCount();
 }
 
 static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ PrintFanList  !!!\n");
+    OM::Fan* fan = OM::GetFanBySlot(index);
+    if (fan == nullptr)
+    	return;
+    char buf[50];
+    snprintf(buf, 50, "Fan %d: %d %%", fan->index, 100*fan->requestedValue);
+	pListItem->setText(buf);
 }
 
 static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
