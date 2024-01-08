@@ -3,8 +3,8 @@
  *
  * Copyright (C) 2017 Zkswe Technology Corp.
  *
- *  Created on: Jun 10, 2017
- *      Author: zkswe@zkswe.com
+ * Created on: Jun 10, 2017
+ * Author: zkswe@zkswe.com
  */
 
 #ifndef _WINDOW_ZKWINDOW_H_
@@ -16,7 +16,7 @@
 class ZKWindowPrivate;
 
 /**
- * @brief 窗口控件
+ * @brief Window control
  */
 class ZKWindow : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKWindow)
@@ -28,27 +28,27 @@ public:
 	bool isModalWindow() const;
 
 	virtual ZKBase* findControlByID(int id);
-	virtual void getAllControls(vector<ZKBase*> &controlsList);
+	virtual void getAllControls(std::vector<ZKBase*> &controlsList);
 
 	/**
-	 * @brief 显示窗口
+	 * @brief Show the window
 	 */
 	void showWnd();
 
 	/**
-	 * @brief 隐藏窗口
+	 * @brief Hide the window
 	 */
 	void hideWnd();
 
 	/**
-	 * @brief 窗口是否显示
+	 * @brief Check if the window is visible
 	 */
 	bool isWndShow() const;
 
 	/**
-	 * @brief 设置子控件层级位置 (非线程安全接口，只允许在UI线程中调用)
-	 * @param pChild    子控件
-	 * @param index     位置
+	 * @brief Set the child control's z-order position (Non-thread-safe interface, only allowed to be called on the UI thread)
+	 * @param pChild    Child control
+	 * @param index     Position
 	 */
 	void setChildIndex(ZKBase *pChild, int index);
 

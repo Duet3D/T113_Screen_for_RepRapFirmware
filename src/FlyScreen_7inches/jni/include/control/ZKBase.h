@@ -3,8 +3,8 @@
  *
  * Copyright (C) 2017 Zkswe Technology Corp.
  *
- *  Created on: Jun 8, 2017
- *      Author: zkswe@zkswe.com
+ * Created on: Jun 8, 2017
+ * Author: zkswe@zkswe.com
  */
 
 #ifndef _CONTROL_ZKBASE_H_
@@ -28,9 +28,8 @@ public:
 	ZKBase *q_ptr;
 };
 
-
 /**
- * @brief 控件基类
+ * @brief Base control class
  */
 class ZKBase {
 	ZK_DECLARE_PRIVATE(ZKBase)
@@ -42,115 +41,115 @@ public:
 	bool create(const Json::Value &json);
 
 	/**
-	 * @brief 获取控件ID值
+	 * @brief Get the control ID
 	 */
 	int getID() const;
 
 	/**
-	 * @brief 设置控件显示位置
+	 * @brief Set the control display position
 	 */
 	void setPosition(const LayoutPosition &position);
 
 	/**
-	 * @brief 获取控件位置
+	 * @brief Get the control position
 	 */
 	const LayoutPosition& getPosition() const;
 
 	/**
-	 * @brief 设置无效状态
+	 * @brief Set the invalid state
 	 */
 	void setInvalid(bool isInvalid);
 
 	/**
-	 * @brief 是否是无效状态
+	 * @brief Check if the control is in an invalid state
 	 */
 	bool isInvalid() const;
 
 	/**
-	 * @brief 设置显示状态
+	 * @brief Set the visibility state
 	 */
 	void setVisible(bool isVisible);
 
 	/**
-	 * @brief 是否是显示状态
+	 * @brief Check if the control is visible
 	 */
 	bool isVisible() const;
 
 	/**
-	 * @brief 设置选中状态
+	 * @brief Set the selected state
 	 */
 	void setSelected(bool isSelected);
 
 	/**
-	 * @brief 是否是选中状态
+	 * @brief Check if the control is selected
 	 */
 	bool isSelected() const;
 
 	/**
-	 * @brief 设置按下状态
+	 * @brief Set the pressed state
 	 */
 	void setPressed(bool isPressed);
 
 	/**
-	 * @brief 是否是按下状态
+	 * @brief Check if the control is pressed
 	 */
 	bool isPressed() const;
 
 	/**
-	 * @brief 设置触摸状态
+	 * @brief Set the touchable state
 	 */
 	void setTouchable(bool isTouchable);
 
 	/**
-	 * @brief 是否是可触摸状态
+	 * @brief Check if the control is touchable
 	 */
 	bool isTouchable() const;
 
 	/**
-	 * @brief 设置触摸穿透
+	 * @brief Set the touch pass-through
 	 */
 	void setTouchPass(bool isPass);
 
 	/**
-	 * @brief 是否是触摸穿透状态
+	 * @brief Check if the control has touch pass-through enabled
 	 */
 	bool isTouchPass() const;
 
 	bool isWndValid() const;
 
 	/**
-	 * @brief 设置背景图
-	 * @param pPicPath 图片路径
+	 * @brief Set the background image
+	 * @param pPicPath Image path
 	 */
 	void setBackgroundPic(const char *pPicPath);
 	void setBackgroundBmp(struct _bitmap_t *pBmp);
 
 	/**
-	 * @brief 设置背景颜色
-	 * @param color 颜色值为0x ARGB
+	 * @brief Set the background color
+	 * @param color Color value in 0x ARGB format
 	 */
 	void setBackgroundColor(uint32_t color);
 
 	/**
-	 * @brief 设置背景状态颜色
-	 * @param status 状态
-	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
-	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
-	 *    选中状态： ZK_CONTROL_STATUS_SELECTED
-	 *    选中按下状态： ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
-	 *    无效状态： ZK_CONTROL_STATUS_INVALID
-	 * @param color 颜色值为0x ARGB
+	 * @brief Set the background color for different control states
+	 * @param status State
+	 *    Normal state: ZK_CONTROL_STATUS_NORMAL
+	 *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+	 *    Selected state: ZK_CONTROL_STATUS_SELECTED
+	 *    Pressed and selected state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+	 *    Invalid state: ZK_CONTROL_STATUS_INVALID
+	 * @param color Color value in 0x ARGB format
 	 */
 	void setBgStatusColor(int status, uint32_t color);
 
 	/**
-	 * @brief 设置控件透明度
-	 * @param alpha 透明度值，范围：0 ~ 255，0 表示全透， 255 表示不透明
+	 * @brief Set the control opacity
+	 * @param alpha Opacity value, range: 0 to 255, 0 means fully transparent, 255 means opaque
 	 */
 	void setAlpha(uint8_t alpha);
 
 	/**
-	 * @brief 出蜂鸣器声音
+	 * @brief Produce a beep sound
 	 */
 	void beep();
 
@@ -160,7 +159,7 @@ public:
 
 public:
 	/**
-	 * @brief 点击事件监听接口
+	 * @brief Click event listener interface
 	 */
 	class IClickListener {
 	public:
@@ -169,7 +168,7 @@ public:
 	};
 
 	/**
-	 * @brief 长按事件监听接口
+	 * @brief Long-press event listener interface
 	 */
 	class ILongClickListener {
 	public:
@@ -178,7 +177,7 @@ public:
 	};
 
 	/**
-	 * @brief 触摸监听接口
+	 * @brief Touch event listener interface
 	 */
 	class ITouchListener {
 	public:
@@ -216,7 +215,6 @@ private:
 protected:
 	ZKBaseData *d_ptr;
 };
-
 
 #include <vector>
 
