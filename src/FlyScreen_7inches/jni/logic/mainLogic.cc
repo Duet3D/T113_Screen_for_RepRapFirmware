@@ -584,17 +584,17 @@ static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int i
 }
 
 static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PrintPauseBtn !!!\n");
+    OM::FileSystem::PausePrint();
     return false;
 }
 
 static bool onButtonClick_PrintCancelBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PrintCancelBtn !!!\n");
+    OM::FileSystem::StopPrint();
     return false;
 }
 
 static bool onButtonClick_PrintResumeBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PrintResumeBtn !!!\n");
+	OM::FileSystem::ResumePrint();
     return false;
 }
 
@@ -641,8 +641,7 @@ static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int p
     //LOGD(" ProgressChanged PrintSpeedMultiplierBar %d !!!\n", progress);
 }
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
-	size_t count = UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
-	return count;
+	return UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
 }
 
 static void obtainListItemData_PrintTemperatureList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
