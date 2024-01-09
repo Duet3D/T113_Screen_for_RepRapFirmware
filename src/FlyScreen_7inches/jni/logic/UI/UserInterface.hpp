@@ -17,6 +17,7 @@
 #include "window/ZKWindow.h"
 #include "Duet3D/General/CircularBuffer.hpp"
 #include "Duet3D/General/StringRef.h"
+#include "Duet3D/General/function_ref.h"
 #include "ObjectModel/Tool.hpp"
 #include "ObjectModel/BedOrChamber.hpp"
 #include "UI/UserInterfaceConstants.hpp"
@@ -56,6 +57,37 @@ namespace UI
 		std::vector<ZKWindow*> closedWindows_;
 		std::vector<ZKWindow*> homeWindows_;
 		ZKWindow* overlayWindow_ = nullptr;
+	};
+
+	class ConfirmationWindow
+	{
+	public:
+		ConfirmationWindow() : okCb_([](){}), cancelCb_([](){}) {}
+		static ConfirmationWindow* GetInstance(){
+			static ConfirmationWindow cWindow;
+			return &cWindow;
+		}
+		void Init(ZKWindow* window, ZKButton* okBtn, ZKButton* cancelBtn, ZKTextView* text);
+		void Open(function_ref<void(void)> okCb);
+		void Open(function_ref<void(void)> okCb, function_ref<void(void)> cancelCb);
+		void Ok(){
+			okCb_();
+			Close();
+		}
+		void Cancel(){
+			cancelCb_();
+			Close();
+		}
+		void SetText(const char* text);
+		void SetTextf(const char* format, ...);
+		void Close();
+	private:
+		ZKWindow* window_ = nullptr;
+		ZKButton* okBtn_ = nullptr;
+		ZKButton* cancelBtn_ = nullptr;
+		ZKTextView* text_ = nullptr;
+		function_ref<void(void)> okCb_;
+		function_ref<void(void)> cancelCb_;
 	};
 
 	enum class HeaterType
@@ -142,8 +174,12 @@ namespace UI
 		ZKEditText* pInput_ = nullptr;
 	};
 
+	void SetSelectedFile(const std::string& filePath);
+	std::string& GetSelectedFile();
+	void RunSelectedFile();
+
 #define WINDOW Window::GetInstance()
-#define TOOLSLIST ToolsList::GetInstance()
+#define CONF_WINDOW ConfirmationWindow::GetInstance()
 #define CONSOLE Console::GetInstance()
 }
 

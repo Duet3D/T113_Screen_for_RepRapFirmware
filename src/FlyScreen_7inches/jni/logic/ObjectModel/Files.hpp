@@ -73,6 +73,7 @@ namespace OM::FileSystem
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
 	void RequestFiles(const std::string& path);
+	bool IsMacroFolder();
 	void RunFile(const std::string& path);
 	void RunMacro(const std::string& path);
 	void StartPrint(const std::string& path);

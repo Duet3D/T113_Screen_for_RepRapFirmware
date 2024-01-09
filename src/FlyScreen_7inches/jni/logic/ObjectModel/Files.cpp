@@ -189,6 +189,11 @@ namespace OM::FileSystem
 		SerialIo::Sendf("M20 S3 P\"%s\"\n", path.c_str());
 	}
 
+	bool IsMacroFolder()
+	{
+		return sInMacroFolder;
+	}
+
 	void RunFile(const std::string& path)
 	{
 		if (sInMacroFolder)

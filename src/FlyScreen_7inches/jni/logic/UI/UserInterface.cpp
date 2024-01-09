@@ -47,6 +47,8 @@ bool AddToVector(std::vector<T> &vec, T item)
 	return true;
 }
 
+static std::string sSelectedFile;
+
 namespace UI
 {
 	Window* Window::GetInstance()
@@ -158,6 +160,10 @@ namespace UI
 		{
 			window->showWnd();
 		}
+		if (overlayWindow_ != nullptr)
+		{
+			overlayWindow_->hideWnd();
+		}
 		Clear();
 	}
 
@@ -165,6 +171,46 @@ namespace UI
 	{
 		openedWindows_.clear();
 		closedWindows_.clear();
+	}
+
+	void ConfirmationWindow::Init(ZKWindow* window, ZKButton* okBtn, ZKButton* cancelBtn, ZKTextView* text)
+	{
+		window_ = window;
+		okBtn_ = okBtn;
+		cancelBtn_ = cancelBtn;
+		text_ = text;
+	}
+
+	void ConfirmationWindow::Open(function_ref<void(void)> okCb)
+	{
+		WINDOW->OpenOverlay(window_);
+		okCb_ = okCb;
+		cancelCb_ = [](){};
+	}
+
+	void ConfirmationWindow::Open(function_ref<void(void)> okCb, function_ref<void(void)> cancelCb)
+	{
+		WINDOW->OpenOverlay(window_);
+		okCb_ = okCb;
+		cancelCb_ = cancelCb;
+	}
+
+	void ConfirmationWindow::SetText(const char* text)
+	{
+		text_->setText(text);
+	}
+
+	void ConfirmationWindow::SetTextf(const char *format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		text_->setTextf(format, vargs);
+		va_end(vargs);
+	}
+
+	void ConfirmationWindow::Close()
+	{
+		WINDOW->CloseOverlay();
 	}
 
 	static std::map<const char *, ToolsList*> sToolsListMap;
@@ -605,6 +651,21 @@ namespace UI
 		}
 		buffer_.Reset();
 		Refresh();
+	}
+
+	void SetSelectedFile(const std::string& filePath)
+	{
+		sSelectedFile = filePath;
+	}
+
+	std::string& GetSelectedFile()
+	{
+		return sSelectedFile;
+	}
+
+	void RunSelectedFile()
+	{
+		return OM::FileSystem::RunFile(sSelectedFile);
 	}
 }
 

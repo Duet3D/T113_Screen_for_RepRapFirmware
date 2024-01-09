@@ -107,6 +107,7 @@ static void onUI_init()
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
+	UI::CONF_WINDOW->Init(mConfirmationWindowPtr, mConfirmationOkBtnPtr, mConfirmationCancelBtnPtr, mConfirmationTextPtr);
 }
 
 /**
@@ -528,10 +529,26 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	UI::CONF_WINDOW->Cancel();
 	switch (item->GetType())
 	{
 	case OM::FileSystem::FileSystemItemType::file:
-		OM::FileSystem::RunFile(item->GetPath());
+		UI::SetSelectedFile(item->GetPath());
+		if (OM::FileSystem::IsMacroFolder())
+		{
+			UI::CONF_WINDOW->SetTextf("Run macro: %s", item->GetName().c_str());
+		}
+		else
+		{
+			UI::CONF_WINDOW->SetTextf("Start print: %s", item->GetName().c_str());
+		}
+		UI::CONF_WINDOW->Open([](){
+			UI::RunSelectedFile();
+			if (!OM::FileSystem::IsMacroFolder()){
+				UI::WINDOW->CloseLastWindow();
+				UI::WINDOW->OpenWindow(mPrintWindowPtr);
+			}
+		});
 		break;
 	case OM::FileSystem::FileSystemItemType::folder:
 		OM::FileSystem::RequestFiles(item->GetPath());
@@ -556,10 +573,10 @@ static int getListItemCount_PrintFanList(const ZKListView *pListView) {
 static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     OM::Fan* fan = OM::GetFanBySlot(index);
     if (fan == nullptr)
+    {
     	return;
-    char buf[50];
-    snprintf(buf, 50, "Fan %d: %d %%", fan->index, 100*fan->requestedValue);
-	pListItem->setText(buf);
+    }
+	pListItem->setTextf("Fan %d: %d %%", fan->index, 100*fan->requestedValue);
 }
 
 static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
@@ -651,5 +668,14 @@ static void onProgressChanged_Slider(ZKSeekBar *pSeekBar, int progress) {
 
 static bool onButtonClick_SliderCloseBtn(ZKButton *pButton) {
     LOGD(" ButtonClick SliderCloseBtn !!!\n");
+    return false;
+}
+static bool onButtonClick_ConfirmationCancelBtn(ZKButton *pButton) {
+    UI::CONF_WINDOW->Cancel();
+    return false;
+}
+
+static bool onButtonClick_ConfirmationOkBtn(ZKButton *pButton) {
+    UI::CONF_WINDOW->Ok();
     return false;
 }

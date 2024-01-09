@@ -52,6 +52,14 @@ public:
 	 */
 	void setText(int text);
 
+	int setTextf(const char* format, va_list vargs)
+	{
+		char buffer[50];
+		const int ret = SafeVsnprintf(buffer, 50, format, vargs);
+		setText(buffer);
+		return ret;
+	}
+
 	int setTextf(const char *format, ...)
 	{
 		va_list vargs;
