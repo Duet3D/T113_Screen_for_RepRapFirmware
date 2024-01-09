@@ -13,7 +13,7 @@
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/function_ref.h>
 
-namespace OM
+namespace OM::Move
 {
 	enum Workplaces
 	{
@@ -37,7 +37,9 @@ namespace OM
 		uint8_t index;
 		float babystep;
 		char letter[2];
-		float workplaceOffsets[9];
+		float workplaceOffsets[Workplaces::MaxTotalWorkplaces];
+		float userPosition;
+		float machinePosition;
 		uint8_t homed : 1,
 			visible : 1,
 			slot : 6;
@@ -47,8 +49,19 @@ namespace OM
 
 	Axis* GetAxis(const size_t index);
 	Axis* GetOrCreateAxis(const size_t index);
+	size_t GetAxisCount();
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveAxis(const size_t index, const bool allFollowing);
+
+	bool SetBabystepOffset(size_t index, float f);
+	bool SetAxisHomedStatus(size_t index, bool homed);
+	bool SetAxisLetter(size_t index, char letter);
+	bool SetAxisUserPosition(size_t index, float f);
+	bool SetAxisMachinePosition(size_t index, float f);
+	bool SetAxisVisible(size_t index, bool visible);
+	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
+	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
+	const uint8_t GetCurrentWorkplaceNumber();
 }
 
 

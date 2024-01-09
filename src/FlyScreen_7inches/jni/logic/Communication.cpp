@@ -955,7 +955,7 @@ namespace Comm {
 		if (indices[0] == 0 && strcmp(id, "files^") == 0) {
 	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
 		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
-			OM::RemoveAxis(indices[0], true);
+//			OM::RemoveAxis(indices[0], true);
 	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);
 	//		UI::UpdateGeometry(numAxes, isDelta);
 		} else if (currentResponseType == rcvOMKeyVolumes && strcasecmp(id, "volumes^") == 0) {

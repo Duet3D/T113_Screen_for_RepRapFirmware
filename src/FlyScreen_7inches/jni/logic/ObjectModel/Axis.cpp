@@ -14,12 +14,13 @@
 #include "Debug.hpp"
 
 
-typedef Vector<OM::Axis*, MaxTotalAxes> AxisList;
+typedef Vector<OM::Move::Axis*, MaxTotalAxes> AxisList;
 static AxisList axes;
+static uint8_t currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
 
-namespace OM
+namespace OM::Move
 {
-	void OM::Axis::Reset()
+	void Axis::Reset()
 	{
 		index = 0;
 		babystep = 0.0f;
@@ -53,6 +54,11 @@ namespace OM
 		return GetOrCreate<AxisList, Axis>(axes, index, true);
 	}
 
+	size_t GetAxisCount()
+	{
+		return axes.Size();
+	}
+
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt)
 	{
 		return axes.IterateWhile(func, startAt);
@@ -62,4 +68,54 @@ namespace OM
 	{
 		return Remove<AxisList, Axis>(axes, index, allFollowing);
 	}
+
+#define AXIS_SETTER(funcName, valType, varName) \
+	bool funcName(size_t index, valType val) { \
+		if (index >= MaxTotalAxes) \
+			dbg("Index %d greater than MaxTotalAxes", index); \
+			return false; \
+		Axis *axis = GetOrCreateAxis(index); \
+		if (axis == nullptr) { \
+			dbg("Could not get or create axis %d", index); \
+			return false; \
+		} \
+		dbg("Set axis[%d]->%s to %d", index, #varName, val); \
+		axis->varName = val; \
+		return true; \
+	}
+
+	AXIS_SETTER(SetBabystepOffset, float, babystep);
+	// Update the homed status of the specified axis. If the axis is -1 then it represents the "all homed" status.
+	AXIS_SETTER(SetAxisHomedStatus, bool, homed);
+	AXIS_SETTER(SetAxisLetter, char, letter[0]);
+	AXIS_SETTER(SetAxisUserPosition, float, userPosition);
+	AXIS_SETTER(SetAxisMachinePosition, float, machinePosition);
+	AXIS_SETTER(SetAxisVisible, bool, visible);
+
+	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset)
+	{
+		if (axisIndex >= MaxTotalAxes || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
+			return false;
+		Axis *axis = GetOrCreateAxis(axisIndex);
+		if (axis == nullptr)
+			return false;
+		axis->workplaceOffsets[workplaceIndex] = offset;
+		return true;
+	}
+
+	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber)
+	{
+		if (currentWorkplaceNumber == workplaceNumber || workplaceNumber >= Workplaces::MaxTotalWorkplaces)
+		{
+			return false;
+		}
+		currentWorkplaceNumber = workplaceNumber;
+		return true;
+	}
+
+	const uint8_t GetCurrentWorkplaceNumber()
+	{
+		return currentWorkplaceNumber;
+	}
+
 }

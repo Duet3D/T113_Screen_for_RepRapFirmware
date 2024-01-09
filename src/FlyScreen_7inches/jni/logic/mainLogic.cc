@@ -17,6 +17,7 @@
 #include "UI/Observers/FileObservers.hpp"
 #include "UI/Observers/ToolObservers.hpp"
 #include "UI/Observers/HeatObservers.hpp"
+#include "UI/Observers/MoveObservers.hpp"
 #include "UI/Observers/ResponseObservers.hpp"
 #include "Debug.hpp"
 
@@ -581,12 +582,19 @@ static bool onButtonClick_PrintResumeBtn(ZKButton *pButton) {
 }
 
 static int getListItemCount_PrintPositionList(const ZKListView *pListView) {
-    //LOGD("getListItemCount_PrintPositionList !\n");
-    return 5;
+    return OM::Move::GetAxisCount();
 }
 
 static void obtainListItemData_PrintPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ PrintPositionList  !!!\n");
+    ZKListView::ZKListSubItem* pMachinePosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListMachinePositionSubItem);
+    ZKListView::ZKListSubItem* pUserPosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListUserPositionSubItem);
+    OM::Move::Axis* axis = OM::Move::GetAxis(index);
+    if (axis == nullptr)
+    	return;
+
+    pListItem->setText(axis->letter);
+    pMachinePosition->setText(axis->machinePosition);
+    pUserPosition->setText(axis->userPosition);
 }
 
 static void onListItemClick_PrintPositionList(ZKListView *pListView, int index, int id) {
