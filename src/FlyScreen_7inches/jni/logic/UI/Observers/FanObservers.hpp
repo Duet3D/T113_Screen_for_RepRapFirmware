@@ -32,7 +32,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 			OM::RemoveFan(indices[0], false);
 			mPrintFanListPtr->refreshListView();
 		}),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"fans^:actualValue",
 		[](OBSERVER_FLOAT_ARGS)
 		{
@@ -44,7 +44,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 			mPrintFanListPtr->refreshListView();
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"fans^:requestedValue",
 		[](OBSERVER_FLOAT_ARGS)
 		{
@@ -56,7 +56,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 			mPrintFanListPtr->refreshListView();
 		}
 	),
-	OBSERVER_INT_IF_CHANGED(
+	OBSERVER_INT(
 		"fans^:rpm",
 		[](OBSERVER_INT_ARGS)
 		{

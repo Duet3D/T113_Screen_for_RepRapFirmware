@@ -576,7 +576,7 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
     {
     	return;
     }
-	pListItem->setTextf("Fan %d: %d %%", fan->index, 100*fan->requestedValue);
+	pListItem->setTextf("Fan %d: %d %%", fan->index, (int)(100*fan->requestedValue));
 }
 
 static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
