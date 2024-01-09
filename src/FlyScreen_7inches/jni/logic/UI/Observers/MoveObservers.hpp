@@ -35,9 +35,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->babystep = %f", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->babystep = %f", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_BOOL(
 		"move:axes^:homed",
 		[](OBSERVER_BOOL_ARGS)
@@ -47,9 +45,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->homed = %d", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->homed = %d", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_CHAR(
 		"move:axes^:letter",
 		[](OBSERVER_CHAR_ARGS)
@@ -59,9 +55,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->letter = %s", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->letter=%s", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_FLOAT(
 		"move:axes^:machinePosition",
 		[](OBSERVER_FLOAT_ARGS)
@@ -71,21 +65,15 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->machinePosition = %f", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_FLOAT(
 		"move:axes^:min",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-		}
-	),
+		[](OBSERVER_FLOAT_ARGS) {
+		}),
 	OBSERVER_FLOAT(
 		"move:axes^:max",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-		}
-	),
+		[](OBSERVER_FLOAT_ARGS) {
+		}),
 	OBSERVER_FLOAT(
 		"move:axes^:userPosition",
 		[](OBSERVER_FLOAT_ARGS)
@@ -95,9 +83,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->userPosition = %f", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->userPosition = %f", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_BOOL(
 		"move:axes^:visible",
 		[](OBSERVER_BOOL_ARGS)
@@ -107,9 +93,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->visible = %d", indices[0], val);
 				return;
 			}
-			dbg("Set axis[%d]->visible=%d", indices[0], val);
-		}
-	),
+		}),
 	OBSERVER_FLOAT(
 		"move:axes^:workplaceOffsets^",
 		[](OBSERVER_FLOAT_ARGS)
@@ -119,27 +103,42 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
 				return;
 			}
-			dbg("Set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
-		}
-	),
+		}),
 	OBSERVER_FLOAT(
 		"move:extruders^:factor",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-		}
-	),
-	OBSERVER_CHAR(
-		"move:kinematics:name",
-		[](OBSERVER_CHAR_ARGS)
-		{
-		}
-	),
+			if (!OM::Move::SetExtruderFactor(indices[0], val))
+			{
+				dbg("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
+			}
+		}),
 	OBSERVER_FLOAT(
-		"move:speedFactor",
+		"move:extruders^:position",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-		}
-	),
+			if (!OM::Move::SetExtruderPosition(indices[0], val))
+			{
+				dbg("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
+			}
+		}),
+	OBSERVER_FLOAT(
+		"move:extruders^:stepsPerMm",
+		[](OBSERVER_FLOAT_ARGS)
+		{
+			if (!OM::Move::SetExtruderStepsPerMm(indices[0], val))
+			{
+				dbg("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
+			}
+		}),
+	OBSERVER_CHAR(
+		"move:kinematics:name",
+		[](OBSERVER_CHAR_ARGS) {
+		}),
+	OBSERVER_FLOAT(
+		"move:speedFactor",
+		[](OBSERVER_FLOAT_ARGS) {
+		}),
 	OBSERVER_UINT(
 		"move:workplaceNumber",
 		[](OBSERVER_UINT_ARGS)
@@ -149,9 +148,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				dbg("Failed to set workplace number = %d", val);
 				return;
 			}
-			dbg("Set workplace number = %d", val);
-		}
-	),
+		}),
 };
 
 /*
@@ -165,6 +162,14 @@ static UI::Observer<UI::ui_array_end_update_cb> MoveObserversArrayEnd[] = {
 		{
 			OM::Move::RemoveAxis(indices[0], true);
 			mPrintPositionListPtr->refreshListView();
+		}
+	),
+	OBSERVER_ARRAY_END(
+		"move:extruders^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			OM::Move::RemoveExtruderAxis(indices[0], true);
+			mPrintExtruderPositionListPtr->refreshListView();
 		}
 	),
 };

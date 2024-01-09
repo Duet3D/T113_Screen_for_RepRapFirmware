@@ -10,9 +10,10 @@
 
 //#include <cstdint>
 #include <sys/types.h>
+#include "Axis.hpp"
+#include "Fan.hpp"
 #include "Spindle.hpp"
 #include "Heat.hpp"
-#include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
@@ -23,9 +24,6 @@
 
 namespace OM
 {
-	typedef Bitmap<unsigned char> ExtrudersBitmap;		// Type of a bitmap representing a set of extruder drive numbers
-	typedef Bitmap<unsigned short> FansBitmap;			// Type of a bitmap representing a set of fan numbers
-
 	// Status that a tool may report to us.
 	enum class ToolStatus
 	{
@@ -69,8 +67,8 @@ namespace OM
 		uint8_t index;
 		String<TOOL_NAME_MAX_LEN> name;
 		ToolHeater* heaters[MaxHeatersPerTool];
-		ExtrudersBitmap extruders;
-		FansBitmap fans;
+		Move::ExtruderAxis* extruders[MaxExtrudersPerTool];
+		Fan* fans[MaxFans];
 		Spindle* spindle;
 		int32_t spindleRpm;
 		float offsets[MaxTotalAxes];
@@ -79,6 +77,13 @@ namespace OM
 
 		ToolHeater* GetHeater(const uint8_t toolHeaterIndex);
 		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
+
+		Move::ExtruderAxis* GetExtruder(const uint8_t toolExtruderIndex);
+		Move::ExtruderAxis* GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex);
+
+		Fan* GetFan(const uint8_t toolFanIndex);
+		Fan* GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
+
 		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
 		bool SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active);
@@ -86,6 +91,8 @@ namespace OM
 		int8_t HasHeater(const uint8_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
+		size_t RemoveExtrudersFrom(const uint8_t toolExtruderIndex);
+		size_t RemoveFansFrom(const uint8_t toolFanIndex);
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
 		void ToggleState();
 		void ToggleHeaterState(const uint8_t toolHeaterIndex);
@@ -101,6 +108,13 @@ namespace OM
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex);
 	bool RemoveToolHeaters(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+
+	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex);
+	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+	
+	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex);
+	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
 	bool UpdateToolName(const size_t toolIndex, const char *name);
 	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr);

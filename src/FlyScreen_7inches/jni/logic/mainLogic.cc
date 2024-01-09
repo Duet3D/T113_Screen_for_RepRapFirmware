@@ -603,11 +603,17 @@ static void onListItemClick_PrintPositionList(ZKListView *pListView, int index, 
 
 static int getListItemCount_PrintExtruderPositionList(const ZKListView *pListView) {
     //LOGD("getListItemCount_PrintExtruderPositionList !\n");
-    return 3;
+    return OM::Move::GetExtruderAxisCount();
 }
 
 static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ PrintExtruderPositionList  !!!\n");
+    ZKListView::ZKListSubItem* pSubItem = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
+    OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(index);
+    if (extruder == nullptr)
+    	return;
+
+    pListItem->setText(extruder->index);
+    pSubItem->setText(extruder->position);
 }
 
 static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {

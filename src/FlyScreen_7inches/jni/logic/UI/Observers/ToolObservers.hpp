@@ -45,6 +45,28 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 			}
 			UI::ToolsList::RefreshAllToolLists();
 		}),
+	/* Update what extruders are associated with what tool */
+	OBSERVER_UINT(
+		"tools^:extruders^",
+		[](OBSERVER_UINT_ARGS)
+		{
+			if (!OM::UpdateToolExtruder(indices[0], indices[1], (uint8_t)val))
+			{
+				dbg("Failed to update tool %d extruder %d", indices[0], indices[1]);
+				return;
+			}
+		}),
+	/* Update what fans are associated with what tool */
+	OBSERVER_UINT(
+		"tools^:fans^",
+		[](OBSERVER_UINT_ARGS)
+		{
+			if (!OM::UpdateToolFan(indices[0], indices[1], (uint8_t)val))
+			{
+				dbg("Failed to update tool %d fan %d", indices[0], indices[1]);
+				return;
+			}
+		}),
 	OBSERVER_INT(
 		"tools^:active^",
 		[](OBSERVER_INT_ARGS)
@@ -110,6 +132,18 @@ static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 		{
 			if (OM::RemoveToolHeaters(indices[0], indices[1])){}
 			UI::ToolsList::RefreshAllToolLists();
+		}),
+	OBSERVER_ARRAY_END(
+		"tools^:extruders^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			if (OM::RemoveToolExtruders(indices[0], indices[1])){}
+		}),
+	OBSERVER_ARRAY_END(
+		"tools^:fans^",
+		[](OBSERVER_ARRAY_END_ARGS)
+		{
+			if (OM::RemoveToolFans(indices[0], indices[1])){}
 		}),
 };
 

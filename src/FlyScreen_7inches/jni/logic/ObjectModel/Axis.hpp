@@ -47,6 +47,19 @@ namespace OM::Move
 		void Reset();
 	};
 
+	struct ExtruderAxis
+	{
+		void* operator new(size_t) noexcept { return FreelistManager::Allocate<ExtruderAxis>(); }
+		void operator delete(void* p) noexcept { FreelistManager::Release<ExtruderAxis>(p); }
+
+		uint8_t index;
+		float position;
+		float factor;
+		float stepsPerMm;
+
+		void Reset();
+	};
+
 	Axis* GetAxis(const size_t index);
 	Axis* GetOrCreateAxis(const size_t index);
 	size_t GetAxisCount();
@@ -62,6 +75,16 @@ namespace OM::Move
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
 	const uint8_t GetCurrentWorkplaceNumber();
+
+	ExtruderAxis* GetExtruderAxis(const size_t index);
+	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index);
+	size_t GetExtruderAxisCount();
+	bool IterateAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt = 0);
+	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing);
+
+	bool SetExtruderPosition(size_t index, float f);
+	bool SetExtruderFactor(size_t index, float f);
+	bool SetExtruderStepsPerMm(size_t index, float f);
 }
 
 

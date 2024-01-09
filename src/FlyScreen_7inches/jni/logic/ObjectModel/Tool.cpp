@@ -63,6 +63,50 @@ namespace OM
 		return th;
 	}
 
+	Move::ExtruderAxis* Tool::GetExtruder(const uint8_t toolExtruderIndex)
+	{
+		if (toolExtruderIndex >= MaxExtrudersPerTool)
+		{
+			return nullptr;
+		}
+		return extruders[toolExtruderIndex];
+	}
+
+	Move::ExtruderAxis* Tool::GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex)
+	{
+		Move::ExtruderAxis* extruder = GetExtruder(toolExtruderIndex);
+		if (extruder != nullptr && extruder->index == extruderIndex)
+		{
+			return extruder;
+		}
+		extruder = Move::GetOrCreateExtruderAxis(extruderIndex);
+		dbg("Setting tool %d extruder %d=%d", index, toolExtruderIndex, extruderIndex);
+		extruders[toolExtruderIndex] = extruder;
+		return extruder;
+	}
+
+	Fan* Tool::GetFan(const uint8_t toolFanIndex)
+	{
+		if (toolFanIndex >= MaxFans)
+		{
+			return nullptr;
+		}
+		return fans[toolFanIndex];
+	}
+
+	Fan* Tool::GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex)
+	{
+		Fan *fan = GetFan(toolFanIndex);
+		if (fan != nullptr && fan->index == fanIndex)
+		{
+			return fan;
+		}
+		fan = OM::GetOrCreateFan(fanIndex);
+		dbg("Setting tool %d fan %d=%d", index, toolFanIndex, fanIndex);
+		fans[toolFanIndex] = fan;
+		return fan;
+	}
+
 	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
 	{
 		ToolHeater *heater = GetHeater(toolHeaterIndex);
@@ -155,6 +199,36 @@ namespace OM
 		return removed;
 	}
 
+	size_t Tool::RemoveExtrudersFrom(const uint8_t extruderIndex)
+	{
+		if (extruderIndex >= MaxExtrudersPerTool)
+		{
+			return 0;
+		}
+		size_t removed = 0;
+		for (size_t i = extruderIndex; i < MaxExtrudersPerTool && extruders[i] != nullptr; ++i)
+		{
+			extruders[i] = nullptr;
+			++removed;
+		}
+		return removed;
+	}
+
+	size_t Tool::RemoveFansFrom(const uint8_t fanIndex)
+	{
+		if (fanIndex >= MaxFans)
+		{
+			return 0;
+		}
+		size_t removed = 0;
+		for (size_t i = fanIndex; i < MaxFans && fans[i] != nullptr; ++i)
+		{
+			fans[i] = nullptr;
+			++removed;
+		}
+		return removed;
+	}
+
 	void Tool::UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
 		ToolHeater* toolHeater = GetHeater(toolHeaterIndex);
@@ -220,10 +294,16 @@ namespace OM
 		{
 			heaters[i] = nullptr;
 		}
-		extruders.Clear();
+		for (size_t i = 0; i < MaxExtrudersPerTool; ++i)
+		{
+			extruders[i] = nullptr;
+		}
+		for (size_t i = 0; i < MaxFans; ++i)
+		{
+			fans[i] = nullptr;
+		}
 		spindle = nullptr;
 		spindleRpm = 0;
-		fans.Clear();
 		for (size_t i = 0; i < MaxTotalAxes; ++i)
 		{
 			offsets[i] = 0.0f;
@@ -289,6 +369,70 @@ namespace OM
 			return false;
 		}
 		return tool->RemoveHeatersFrom(firstIndexToDelete) > 0;
+	}
+
+	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex)
+	{
+		if (toolExtruderIndex >= MaxExtrudersPerTool)
+		{
+			return false;
+		}
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		Move::ExtruderAxis *extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
+		if (extruder == nullptr)
+		{
+			dbg("Failed to get or create tool %d extruder %d=%d", toolIndex, toolExtruderIndex, extruderIndex);
+			return false;
+		}
+		dbg("Assigned extruder %d to tool %d extruderIndex %d", extruderIndex, toolIndex, toolExtruderIndex);
+		tool->extruders[toolExtruderIndex] = extruder;
+		return true;
+	}
+
+	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	{
+		OM::Tool *tool = OM::GetTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		return tool->RemoveExtrudersFrom(firstIndexToDelete) > 0;
+	}
+
+	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex)
+	{
+		if (toolFanIndex >= MaxFans)
+		{
+			return false;
+		}
+		OM::Tool *tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		Fan *fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
+		if (fan == nullptr)
+		{
+			dbg("Failed to get or create tool %d fan %d=%d", toolIndex, toolFanIndex, fanIndex);
+			return false;
+		}
+		dbg("Assigned fan %d to tool %d fanIndex %d", fanIndex, toolIndex, toolFanIndex);
+		tool->fans[toolFanIndex] = fan;
+		return true;
+	}
+
+	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete)
+	{
+		OM::Tool *tool = OM::GetTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		return tool->RemoveFansFrom(firstIndexToDelete) > 0;
 	}
 
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active)
