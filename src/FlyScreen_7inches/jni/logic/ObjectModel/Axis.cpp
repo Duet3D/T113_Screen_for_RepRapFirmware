@@ -184,5 +184,5 @@ namespace OM::Move
 
 	EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);
-	EXTRUDER_AXIS_SETTER(SetExtruderStepPerMm, float, stepsPerMm);
+	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
 }
