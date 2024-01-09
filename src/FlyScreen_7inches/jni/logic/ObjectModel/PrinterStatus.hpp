@@ -54,6 +54,13 @@ namespace OM {
 		{"starting",		PrinterStatus::configuring },
 		{"updating",		PrinterStatus::flashing },
 	};
+
+	bool IsPrintingStatus(PrinterStatus status);
+	bool PrintInProgress();
+	bool OkToSend();
+	PrinterStatus GetStatus();
+	void SetStatus(const char* status);
+	void SetStatus(const PrinterStatus status);
 }
 
 #endif /* SRC_OBJECTMODEL_PRINTERSTATUS_HPP_ */

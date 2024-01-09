@@ -15,10 +15,12 @@
 #include "UI/OmObserver.hpp"
 #include "UI/Observers/FanObservers.hpp"
 #include "UI/Observers/FileObservers.hpp"
+#include "UI/Observers/JobObservers.hpp"
 #include "UI/Observers/ToolObservers.hpp"
 #include "UI/Observers/HeatObservers.hpp"
 #include "UI/Observers/MoveObservers.hpp"
 #include "UI/Observers/ResponseObservers.hpp"
+#include "UI/Observers/StateObservers.hpp"
 #include "Debug.hpp"
 
 

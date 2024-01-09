@@ -91,8 +91,6 @@ namespace Comm {
 		};
 	} thumbnailContext;
 
-	static OM::PrinterStatus status = OM::PrinterStatus::connecting;
-
 	enum ReceivedDataEvent {
 		rcvUnknown = 0,
 
@@ -516,54 +514,9 @@ namespace Comm {
 		}
 	}
 
-	bool IsPrintingStatus(OM::PrinterStatus status)
-	{
-		return status == OM::PrinterStatus::printing
-				|| status == OM::PrinterStatus::paused
-				|| status == OM::PrinterStatus::pausing
-				|| status == OM::PrinterStatus::resuming
-				|| status == OM::PrinterStatus::simulating;
-	}
-
-	bool PrintInProgress()
-	{
-		return IsPrintingStatus(status);
-	}
-
 	template<typename T>
 	int compare(const void* lp, const void* rp){
 		return strcasecmp(((T*) lp)->key, ((T*) rp)->key);
-	}
-
-	// Return true if sending a command or file list request to the printer now is a good idea.
-	// We don't want to send these when the printer is busy with a previous command, because they will block normal status requests.
-	static bool OkToSend()
-	{
-		return status == OM::PrinterStatus::idle
-				|| status == OM::PrinterStatus::printing
-				|| status == OM::PrinterStatus::paused
-				|| status == OM::PrinterStatus::off;
-	}
-
-	// Return the printer status
-	OM::PrinterStatus GetStatus()
-	{
-		return status;
-	}
-
-	// This is called when the status changes
-	static void SetStatus(OM::PrinterStatus newStatus)
-	{
-		if (newStatus != status)
-		{
-			dbg("printer status %d -> %d\n", status, newStatus);
-	//		UI::ChangeStatus(status, newStatus);
-
-			status = newStatus;
-	//		UI::UpdatePrintingFields();
-
-	//		lastActionTime = SystemTick::GetTickCount();
-		}
 	}
 
 	// Try to get an integer value from a string. If it is actually a floating point value, round it.
@@ -821,25 +774,6 @@ namespace Comm {
 			}
 			break;
 
-		case rcvStateStatus:
-			{
-				const OM::PrinterStatusMapEntry key = (OM::PrinterStatusMapEntry) { .key = data, .val = OM::PrinterStatus::connecting};
-				const OM::PrinterStatusMapEntry * statusFromMap =
-						(OM::PrinterStatusMapEntry *) bsearch(
-								&key,
-								OM::printerStatusMap,
-								ARRAY_SIZE(OM::printerStatusMap),
-								sizeof(OM::PrinterStatusMapEntry),
-								compare<OM::PrinterStatusMapEntry>);
-				if (!statusFromMap) {
-					dbg("unknown status %s", data);
-					break;
-				}
-				SetStatus(statusFromMap->val);
-			}
-			break;
-
-
 		case rcvM36Filename:
 			thumbnailContext.filename.copy(data);
 			break;
@@ -994,7 +928,7 @@ namespace Comm {
 
 			// check if specific info is needed
 			bool sent = false;
-			if (OkToSend()) {
+			if (OM::OkToSend()) {
 				// TODO: uncomment
 				// sent = FileManager::ProcessTimers();
 			}
