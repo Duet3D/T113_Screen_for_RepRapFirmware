@@ -79,7 +79,7 @@ namespace OM::Move
 	ExtruderAxis* GetExtruderAxis(const size_t index);
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index);
 	size_t GetExtruderAxisCount();
-	bool IterateAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt = 0);
+	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing);
 
 	bool SetExtruderPosition(size_t index, float f);

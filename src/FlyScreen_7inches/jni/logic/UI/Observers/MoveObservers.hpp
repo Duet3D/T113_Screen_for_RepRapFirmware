@@ -162,6 +162,15 @@ static UI::Observer<UI::ui_array_end_update_cb> MoveObserversArrayEnd[] = {
 		{
 			OM::Move::RemoveAxis(indices[0], true);
 			mPrintPositionListPtr->refreshListView();
+
+			OM::Move::IterateAxesWhile([](OM::Move::Axis* &axis, size_t){
+				if (axis->letter[0] == 'Z')
+				{
+					mPrintBabystepCurrentOffsetPtr->setTextf("Current Offset: %.2f mm", axis->babystep);
+					return false;
+				}
+				return true;
+			}, 0);
 		}
 	),
 	OBSERVER_ARRAY_END(

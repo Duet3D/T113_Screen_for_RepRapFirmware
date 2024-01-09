@@ -156,7 +156,7 @@ namespace OM::Move
 		return extruderAxes.Size();
 	}
 
-	bool IterateAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt)
+	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt)
 	{
 		return extruderAxes.IterateWhile(func, startAt);
 	}

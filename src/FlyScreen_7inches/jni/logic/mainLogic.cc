@@ -556,12 +556,12 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	}
 }
 static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PrintBabystepDecBtn !!!\n");
+    SerialIo::Sendf("M290 S-0.05");
     return false;
 }
 
 static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PrintBabystepIncBtn !!!\n");
+    SerialIo::Sendf("M290 S0.05");
     return false;
 }
 
