@@ -592,6 +592,7 @@ static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {
 
 static bool onButtonClick_PrintCancelBtn(ZKButton *pButton) {
     OM::FileSystem::StopPrint();
+    UI::WINDOW->Home();
     return false;
 }
 

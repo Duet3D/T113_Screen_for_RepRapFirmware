@@ -49,6 +49,9 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 			case OM::PrinterStatus::idle:
 			case OM::PrinterStatus::configuring:
 			case OM::PrinterStatus::connecting:
+				mPrintFileNamePtr->setText("");
+				mPrintElapsedTimePtr->setText("Elapsed:");
+				mPrintEstimatedTimePtr->setText("Estimated:");
 				mPrintPauseBtnPtr->setVisible(false);
 				mPrintResumeBtnPtr->setVisible(false);
 				mPrintCancelBtnPtr->setVisible(false);
