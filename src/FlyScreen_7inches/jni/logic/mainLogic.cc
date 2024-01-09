@@ -593,8 +593,8 @@ static void obtainListItemData_PrintPositionList(ZKListView *pListView,ZKListVie
     	return;
 
     pListItem->setText(axis->letter);
-    pMachinePosition->setText(axis->machinePosition);
     pUserPosition->setText(axis->userPosition);
+    pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
 }
 
 static void onListItemClick_PrintPositionList(ZKListView *pListView, int index, int id) {

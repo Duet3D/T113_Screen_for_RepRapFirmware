@@ -5,13 +5,14 @@
  *      Author: manuel
  */
 
+#define DEBUG (1)
+#include "Debug.hpp"
+
 #include "Axis.hpp"
 #include "ListHelpers.hpp"
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
-#define DEBUG (1)
-#include "Debug.hpp"
 
 
 typedef Vector<OM::Move::Axis*, MaxTotalAxes> AxisList;
@@ -37,7 +38,7 @@ namespace OM::Move
 
 	Axis* GetAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
+		// dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -47,6 +48,7 @@ namespace OM::Move
 
 	Axis* GetOrCreateAxis(const size_t index)
 	{
+		// dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -71,15 +73,16 @@ namespace OM::Move
 
 #define AXIS_SETTER(funcName, valType, varName) \
 	bool funcName(size_t index, valType val) { \
-		if (index >= MaxTotalAxes) \
-			dbg("Index %d greater than MaxTotalAxes", index); \
+		if (index >= MaxTotalAxes) { \
+			dbg("axis[%d] greater than MaxTotalAxes", index); \
 			return false; \
+		} \
 		Axis *axis = GetOrCreateAxis(index); \
 		if (axis == nullptr) { \
 			dbg("Could not get or create axis %d", index); \
 			return false; \
 		} \
-		dbg("Set axis[%d]->%s to %d", index, #varName, val); \
+		dbg("Set axis->%s", #varName); \
 		axis->varName = val; \
 		return true; \
 	}

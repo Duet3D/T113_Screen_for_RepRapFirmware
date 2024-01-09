@@ -26,68 +26,103 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:babystep",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-			OM::Move::SetBabystepOffset(indices[0], val);
+			if (!OM::Move::SetBabystepOffset(indices[0], val))
+			{
+				dbg("Failed to set axis[%d]->babystep = %f", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->babystep = %f", indices[0], val);
 		}
 	),
-	OBSERVER_BOOL_IF_CHANGED(
+	OBSERVER_BOOL(
 		"move:axes^:homed",
 		[](OBSERVER_BOOL_ARGS)
 		{
-			OM::Move::SetAxisHomedStatus(indices[0], val);
+			if (!OM::Move::SetAxisHomedStatus(indices[0], val))
+			{
+				dbg("Failed to set axis[%d]->homed = %d", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->homed = %d", indices[0], val);
 		}
 	),
 	OBSERVER_CHAR(
 		"move:axes^:letter",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			OM::Move::SetAxisLetter(indices[0], val[0]);
+			if (!OM::Move::SetAxisLetter(indices[0], val[0]))
+			{
+				dbg("Failed to set axis[%d]->letter = %s", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->letter=%s", indices[0], val);
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:machinePosition",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-			OM::Move::SetAxisMachinePosition(indices[0], val);
+			if (!OM::Move::SetAxisMachinePosition(indices[0], val))
+			{
+				dbg("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->machinePosition = %f", indices[0], val);
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:min",
 		[](OBSERVER_FLOAT_ARGS)
 		{
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:max",
 		[](OBSERVER_FLOAT_ARGS)
 		{
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:userPosition",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-			OM::Move::SetAxisUserPosition(indices[0], val);
+			if (!OM::Move::SetAxisUserPosition(indices[0], val))
+			{
+				dbg("Failed to set axis[%d]->userPosition = %f", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->userPosition = %f", indices[0], val);
 		}
 	),
-	OBSERVER_BOOL_IF_CHANGED(
+	OBSERVER_BOOL(
 		"move:axes^:visible",
 		[](OBSERVER_BOOL_ARGS)
 		{
-			OM::Move::SetAxisVisible(indices[0], val);
+			if (!OM::Move::SetAxisVisible(indices[0], val))
+			{
+				dbg("Failed to set axis[%d]->visible = %d", indices[0], val);
+				return;
+			}
+			dbg("Set axis[%d]->visible=%d", indices[0], val);
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:axes^:workplaceOffsets^",
 		[](OBSERVER_FLOAT_ARGS)
 		{
-			OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val);
+			if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val))
+			{
+				dbg("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
+				return;
+			}
+			dbg("Set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:extruders^:factor",
 		[](OBSERVER_FLOAT_ARGS)
 		{
@@ -99,17 +134,22 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 		{
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_FLOAT(
 		"move:speedFactor",
 		[](OBSERVER_FLOAT_ARGS)
 		{
 		}
 	),
-	OBSERVER_FLOAT_IF_CHANGED(
+	OBSERVER_UINT(
 		"move:workplaceNumber",
-		[](OBSERVER_FLOAT_ARGS)
+		[](OBSERVER_UINT_ARGS)
 		{
-			OM::Move::SetCurrentWorkplaceNumber(val);
+			if (!OM::Move::SetCurrentWorkplaceNumber(val))
+			{
+				dbg("Failed to set workplace number = %d", val);
+				return;
+			}
+			dbg("Set workplace number = %d", val);
 		}
 	),
 };
