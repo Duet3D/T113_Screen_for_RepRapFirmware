@@ -31,11 +31,11 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		"dir",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			OM::SetCurrentDir(val);
+			OM::FileSystem::SetCurrentDir(val);
 			mFileListViewPtr->setSelection(0);
 			mFileListViewPtr->refreshListView();
-			mFolderIDPtr->setText("Folder: " + OM::GetCurrentDirPath());
-			dbg("Files: current dir = %s", OM::GetCurrentDirPath().c_str());
+			mFolderIDPtr->setText("Folder: " + OM::FileSystem::GetCurrentDirPath());
+			dbg("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
 		}
 	),
 	OBSERVER_CHAR(
@@ -46,11 +46,11 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 			switch (*val)
 			{
 			case 'd':
-				OM::AddFolderAt(indices[0]);
+				OM::FileSystem::AddFolderAt(indices[0]);
 				dbg("Files: folder at index %d", indices[0]);
 				break;
 			case 'f':
-				OM::AddFileAt(indices[0]);
+				OM::FileSystem::AddFileAt(indices[0]);
 				dbg("Files: file at index %d", indices[0]);
 				break;
 			}
@@ -61,7 +61,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		[](OBSERVER_CHAR_ARGS)
 		{
 			dbg("Files: name assignment, val=%s", val);
-			OM::FileSystemItem* item = OM::GetItem(indices[0]);
+			OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(indices[0]);
 			if (item == nullptr)
 				return;
 
@@ -73,7 +73,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		"files^:size",
 		[](OBSERVER_UINT_ARGS)
 		{
-			OM::FileSystemItem* item = OM::GetItem(indices[0]);
+			OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(indices[0]);
 			if (item == nullptr)
 				return;
 			item->SetSize(val);
@@ -83,7 +83,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 		"files^:date",
 		[](OBSERVER_CHAR_ARGS)
 		{
-			OM::FileSystemItem* item = OM::GetItem(indices[0]);
+			OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(indices[0]);
 			if (item == nullptr)
 				return;
 			item->SetDate(val);
@@ -100,6 +100,7 @@ static UI::Observer<UI::ui_array_end_update_cb> FileObserversArrayEnd[] = {
 		"files^",
 		[](OBSERVER_ARRAY_END_ARGS)
 		{
+			OM::FileSystem::SortFileSystem();
 			mFileListViewPtr->refreshListView();
 		}
 	),

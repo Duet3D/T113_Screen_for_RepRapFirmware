@@ -228,7 +228,7 @@ static bool onButtonClick_BackBtn(ZKButton *pButton)
 
 static bool onButtonClick_MacroBtn(ZKButton *pButton)
 {
-	OM::RequestFiles("0:/macros");
+	OM::FileSystem::RequestFiles("0:/macros");
 	if (mMainWindowPtr->isWndShow())
 		UI::WINDOW->CloseWindow(mMainWindowPtr);
 	UI::WINDOW->CloseLastWindow();
@@ -297,7 +297,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFanWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::print:
-		OM::RequestFiles("0:/gcodes");
+			OM::FileSystem::RequestFiles("0:/gcodes");
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
@@ -490,12 +490,12 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
-	OM::RequestFiles(OM::GetCurrentDirPath());
+	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;
 }
 static int getListItemCount_FileListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_FileListView !\n");
-    return OM::GetItemCount();
+    return OM::FileSystem::GetItemCount();
 }
 
 static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
@@ -505,18 +505,18 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
 //	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
 
-	OM::FileSystemItem* item = OM::GetItem(index);
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
 		return;
 //	dbg("Files: settings list item %d name to %s", index, item->GetName().c_str());
 	pListItem->setText(item->GetName());
 	switch (item->GetType())
 	{
-	case OM::FileSystemItemType::file:
+	case OM::FileSystem::FileSystemItemType::file:
 		pListItem->setSelected(false);
 		pFileType->setText("File");
 		break;
-	case OM::FileSystemItemType::folder:
+	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
 		pFileType->setText("Folder");
 		break;
@@ -526,14 +526,14 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 }
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
-	OM::FileSystemItem* item = OM::GetItem(index);
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	switch (item->GetType())
 	{
-	case OM::FileSystemItemType::file:
-		OM::RunFile(item->GetPath());
+	case OM::FileSystem::FileSystemItemType::file:
+		OM::FileSystem::RunFile(item->GetPath());
 		break;
-	case OM::FileSystemItemType::folder:
-		OM::RequestFiles(item->GetPath());
+	case OM::FileSystem::FileSystemItemType::folder:
+		OM::FileSystem::RequestFiles(item->GetPath());
 		break;
 	}
 }

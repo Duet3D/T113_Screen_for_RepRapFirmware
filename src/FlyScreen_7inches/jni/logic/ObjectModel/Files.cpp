@@ -6,11 +6,12 @@
  */
 
 #define DEBUG (1)
+#include <algorithm>
 #include "Debug.hpp"
 #include "Files.hpp"
 #include "Hardware/SerialIo.hpp"
 
-namespace OM
+namespace OM::FileSystem
 {
 	static std::string sCurrentDirPath;
 	static std::vector<FileSystemItem*> sItems;
@@ -115,6 +116,34 @@ namespace OM
 		ClearFileSystem();
 		sCurrentDirPath = path;
 		dbg("Files: current directory = %s", sCurrentDirPath.c_str());
+	}
+
+	struct
+	{
+		bool operator()(FileSystemItem* L, FileSystemItem* R)
+		{
+			if (L->GetType() == R->GetType())
+				return L->GetDate() > R->GetDate();
+			return L->GetType() < R->GetType();
+		}
+	} SortItem;
+
+	void SortFileSystem()
+	{
+		auto first = sItems.begin();
+		auto last = sItems.end();
+		FileSystemItem** temp;
+		--last;
+		while(last - first > 0){
+			temp = last;
+			while(temp != first){
+				if( SortItem( *temp, *(temp-1) ) ){
+					std::iter_swap( temp-1, temp);
+				}
+				--temp;
+			}
+			++first;
+		}
 	}
 
 	std::string GetParentDirPath()

@@ -129,10 +129,10 @@ namespace UI
 		{
 			return;
 		}
-		if (OM::IsInSubFolder())
+		if (OM::FileSystem::IsInSubFolder())
 		{
 			dbg("window: Returning to previous folder");
-			OM::RequestFiles(OM::GetParentDirPath());
+			OM::FileSystem::RequestFiles(OM::FileSystem::GetParentDirPath());
 			return;
 		}
 		if (!openedWindows_.empty())

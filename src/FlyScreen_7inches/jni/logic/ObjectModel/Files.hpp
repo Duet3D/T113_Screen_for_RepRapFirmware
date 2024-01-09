@@ -12,12 +12,12 @@
 #include <vector>
 #include "Debug.hpp"
 
-namespace OM
+namespace OM::FileSystem
 {
 	enum class FileSystemItemType
 	{
-		file,
 		folder,
+		file,
 	};
 
 	class FileSystemItem
@@ -67,6 +67,7 @@ namespace OM
 	File* GetFile(const std::string& name);
 	Folder* GetSubFolder(const std::string& name);
 	void SetCurrentDir(const std::string& path);
+	void SortFileSystem();
 	std::string GetParentDirPath();
 	std::string GetCurrentDirName();
 	std::string& GetCurrentDirPath();
