@@ -5,3 +5,4 @@ src/*/jni/activity/*
 # libs and obj directories are generated at each compilation
 src/*/libs/*
 src/*/obj/*
+*.img

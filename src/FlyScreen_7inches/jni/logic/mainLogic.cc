@@ -67,7 +67,7 @@
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA,  1000}, // Timer id=0, interval of 500ms
+	{TIMER_UPDATE_DATA,  1000}, // Timer id=0, min interval of 300ms at 115200 baud
 //	{1,  100},
 };
 
