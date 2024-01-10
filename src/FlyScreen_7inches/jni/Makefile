@@ -10,7 +10,7 @@ EASYUI_COMMON_INCLUDE := $(LOCAL_PATH)/include
 PROJ_ROOT_PATH  :=./
 #源文件后缀名
 PROJ_SRC_SUFFIX := %.cpp %.c
-PROJ_HEAD_SUFFIX := %.h
+PROJ_HEAD_SUFFIX := %.h %.hpp
 # 递归遍历目录下的所有的文件 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))  
 # 获取相应的源文件
