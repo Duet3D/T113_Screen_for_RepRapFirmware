@@ -14,6 +14,7 @@
 #include "UI/OmObserver.hpp"
 #include "UI/UserInterface.hpp"
 #include "UI/UserInterfaceConstants.hpp"
+#include <algorithm>
 
 /*
  * These functions are run when the OM field is received.
@@ -38,7 +39,7 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
     OBSERVER_UINT("job:timesLeft:slicer",
                   [](OBSERVER_UINT_ARGS) {
                       OM::SetPrintRemaining(val);
-                      uint32_t percentage = (100 * OM::GetPrintDuration()) / OM::GetPrintTime();
+                      int percentage = std::min<int>((100 * OM::GetPrintDuration()) / OM::GetPrintTime(), 100);
                       mPrintEstimatedTimePtr->setTextf("Estimated: %d", val);
                       mPrintProgressBarPtr->setProgress(percentage);
                   }),
