@@ -1,5 +1,5 @@
 /*
- * Configuration.hpp
+ * Configuration.h
  *
  * Created: 16/01/2015 13:18:16
  *  Author: David

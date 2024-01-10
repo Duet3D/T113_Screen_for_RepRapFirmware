@@ -5,12 +5,12 @@
  *      Author: Loïc & Andy Everitt
  */
 
-#include <ObjectModel/Axis.hpp>
-#include <ObjectModel/Utils.hpp>
-#include "OmObserver.hpp"
+#include <ObjectModel/Axis.h>
+#include <ObjectModel/Utils.h>
+#include "OmObserver.h"
 
 #define DEBUG (1)
-#include "Debug.hpp"
+#include "Debug.h"
 
 namespace UI
 {

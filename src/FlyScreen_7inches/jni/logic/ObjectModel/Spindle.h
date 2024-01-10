@@ -1,5 +1,5 @@
 /*
- * Spindle.hpp
+ * Spindle.h
  *
  *  Created on: 17 Feb 2021
  *      Author: manuel

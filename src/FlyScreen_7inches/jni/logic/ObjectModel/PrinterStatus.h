@@ -1,5 +1,5 @@
 /*
- * PrinterStatus.hpp
+ * PrinterStatus.h
  *
  *  Created on: 6 Jan 2017
  *      Author: David

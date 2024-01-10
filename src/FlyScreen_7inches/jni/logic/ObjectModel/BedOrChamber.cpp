@@ -5,16 +5,16 @@
  *      Author: manuel
  */
 
-#include "BedOrChamber.hpp"
-#include "ListHelpers.hpp"
+#include "BedOrChamber.h"
+#include "ListHelpers.h"
 #include <Duet3D/General/String.h>
-#include <Duet3D/General/Vector.hpp>
-#include "ObjectModel/Heat.hpp"
-#include <UI/UserInterfaceConstants.hpp>
-#include "Hardware/SerialIo.hpp"
+#include <Duet3D/General/Vector.h>
+#include "ObjectModel/Heat.h"
+#include <UI/UserInterfaceConstants.h>
+#include "Hardware/SerialIo.h"
 
 #define DEBUG (1)
-#include "Debug.hpp"
+#include "Debug.h"
 
 typedef Vector<OM::Bed*, MaxSlots> BedList;
 typedef Vector<OM::Chamber*, MaxSlots> ChamberList;

@@ -5,9 +5,9 @@
  *      Author: Andy Everitt
  */
 
-#include "Job.hpp"
+#include "Job.h"
 #include "Duet3D/General/String.h"
-#include "UI/UserInterfaceConstants.hpp"
+#include "UI/UserInterfaceConstants.h"
 
 #define ATTR_SETTR_GETTR(funcName, type, varName)                                                                      \
     void Set##funcName(const type value)                                                                               \

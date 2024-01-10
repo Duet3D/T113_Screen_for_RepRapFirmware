@@ -1,5 +1,5 @@
 /*
- * Vector.hpp
+ * Vector.h
  *
  * Created: 09/11/2014 09:50:41
  *  Author: David

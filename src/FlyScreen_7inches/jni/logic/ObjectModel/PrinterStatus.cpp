@@ -6,11 +6,11 @@
  */
 
 #define DEBUG (1)
-#include "Debug.hpp"
+#include "Debug.h"
 
-#include "PrinterStatus.hpp"
+#include "PrinterStatus.h"
 #include "uart/CommDef.h"
-#include "ObjectModel/Utils.hpp"
+#include "ObjectModel/Utils.h"
 
 
 namespace OM

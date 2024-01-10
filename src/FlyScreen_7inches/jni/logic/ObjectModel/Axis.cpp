@@ -6,13 +6,13 @@
  */
 
 #define DEBUG (1)
-#include "Axis.hpp"
+#include "Axis.h"
 
-#include <Duet3D/General/Vector.hpp>
-#include <UI/UserInterfaceConstants.hpp>
+#include <Duet3D/General/Vector.h>
+#include <UI/UserInterfaceConstants.h>
 
-#include "Debug.hpp"
-#include "ListHelpers.hpp"
+#include "Debug.h"
+#include "ListHelpers.h"
 
 typedef Vector<OM::Move::Axis*, MaxTotalAxes> AxisList;
 typedef Vector<OM::Move::ExtruderAxis*, MaxTotalAxes> ExtruderAxisList;

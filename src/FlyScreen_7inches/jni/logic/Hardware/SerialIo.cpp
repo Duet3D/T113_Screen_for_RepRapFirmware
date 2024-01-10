@@ -9,7 +9,7 @@
  *
  */
 
-#include "SerialIo.hpp"
+#include "SerialIo.h"
 #include "uart/UartContext.h"
 
 #define DEBUG (0)

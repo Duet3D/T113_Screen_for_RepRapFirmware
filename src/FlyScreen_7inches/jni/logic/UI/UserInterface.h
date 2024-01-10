@@ -1,5 +1,5 @@
 /*
- * MainMenuFunc.hpp
+ * MainMenuFunc.h
  *
  *  Created on: 18 Dec 2023
  *      Author: Andy E
@@ -15,12 +15,12 @@
 #include "control/ZKEditText.h"
 #include "control/ZKListView.h"
 #include "window/ZKWindow.h"
-#include "Duet3D/General/CircularBuffer.hpp"
+#include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
 #include "Duet3D/General/function_ref.h"
-#include "ObjectModel/Tool.hpp"
-#include "ObjectModel/BedOrChamber.hpp"
-#include "UI/UserInterfaceConstants.hpp"
+#include "ObjectModel/Tool.h"
+#include "ObjectModel/BedOrChamber.h"
+#include "UI/UserInterfaceConstants.h"
 
 namespace UI
 {

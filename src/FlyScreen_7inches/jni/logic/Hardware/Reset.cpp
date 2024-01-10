@@ -6,7 +6,7 @@
  *
  */
 
-#include "Reset.hpp"
+#include "Reset.h"
 
 #include <unistd.h>
 #include <sys/reboot.h>

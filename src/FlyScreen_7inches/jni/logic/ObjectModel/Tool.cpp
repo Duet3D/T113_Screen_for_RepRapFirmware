@@ -6,16 +6,16 @@
  */
 
 #define DEBUG (1)
+#include "Tool.h"
+#include "Hardware/SerialIo.h"
+#include "ListHelpers.h"
+#include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
-#include "Tool.hpp"
-#include "ListHelpers.hpp"
 #include <Duet3D/General/String.h>
-#include <Duet3D/General/Vector.hpp>
-#include <UI/UserInterfaceConstants.hpp>
-#include "Hardware/SerialIo.hpp"
-#include "ObjectModel/Utils.hpp"
+#include <Duet3D/General/Vector.h>
+#include <UI/UserInterfaceConstants.h>
 
-#include "Debug.hpp"
+#include "Debug.h"
 
 typedef Vector<OM::Tool*, MaxSlots> ToolList;
 static ToolList tools;

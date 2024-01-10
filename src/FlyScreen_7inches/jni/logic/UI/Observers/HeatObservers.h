@@ -1,5 +1,5 @@
 /*
- * HeatObservers.hpp
+ * HeatObservers.h
  *
  *  Created on: 19 Dec 2023
  *      Author: Andy Everitt
@@ -8,13 +8,13 @@
 #ifndef JNI_LOGIC_UI_OBSERVERS_HEATOBSERVERS_HPP_
 #define JNI_LOGIC_UI_OBSERVERS_HEATOBSERVERS_HPP_
 
-#include "Debug.hpp"
+#include "Debug.h"
 
-#include "ObjectModel/BedOrChamber.hpp"
-#include "ObjectModel/Heat.hpp"
-#include "UI/OmObserver.hpp"
-#include "UI/UserInterfaceConstants.hpp"
-#include "UI/UserInterface.hpp"
+#include "ObjectModel/BedOrChamber.h"
+#include "ObjectModel/Heat.h"
+#include "UI/OmObserver.h"
+#include "UI/UserInterfaceConstants.h"
+#include "UI/UserInterface.h"
 
 
 

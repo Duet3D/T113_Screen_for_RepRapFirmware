@@ -1,5 +1,5 @@
 /*
- * BedOrChamber.hpp
+ * BedOrChamber.h
  *
  *  Created on: 17 Feb 2021
  *      Author: manuel

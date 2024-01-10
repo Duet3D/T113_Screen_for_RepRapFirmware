@@ -5,16 +5,16 @@
  *      Author: manuel
  */
 
-#include "Utils.hpp"
-#include "Axis.hpp"
-#include "BedOrChamber.hpp"
-#include "Spindle.hpp"
-#include "Tool.hpp"
-#include "ListHelpers.hpp"
-//#include "FlashData.hpp"
+#include "Utils.h"
+#include "Axis.h"
+#include "BedOrChamber.h"
+#include "Spindle.h"
+#include "Tool.h"
+#include "ListHelpers.h"
+//#include "FlashData.h"
 
 #define DEBUG (1)
-#include "Debug.hpp"
+#include "Debug.h"
 
 namespace OM
 {

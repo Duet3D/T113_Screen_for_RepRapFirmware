@@ -1,5 +1,5 @@
 /*
- * UserInterface.hpp
+ * UserInterface.h
  *
  *  Created on: Nov 19, 2023
  *      Author: Loïc & Andy Everitt
@@ -10,12 +10,12 @@
 
 #include <map>
 #include <vector>
-#include "Communication.hpp"
-#include "ObjectModel/Utils.hpp"
+#include "Communication.h"
+#include "ObjectModel/Utils.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
 
-#include "Debug.hpp"
+#include "Debug.h"
 
 
 #define OBSERVER_CHAR_ARGS const char *val, const size_t indices[]

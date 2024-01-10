@@ -12,7 +12,7 @@
 #include "utils/Log.h"
 
 #define DEBUG (0)
-#include "Debug.hpp"
+#include "Debug.h"
 
 static Mutex sLock;
 static std::vector<OnProtocolDataUpdateFun> sProtocolDataUpdateListenerList;

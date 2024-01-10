@@ -1,5 +1,5 @@
 /*
- * Debug.hpp
+ * Debug.h
  *
  *  Created on: Nov 19, 2023
  *      Author: Loïc

@@ -1,5 +1,5 @@
 /*
- * Files.hpp
+ * Files.h
  *
  *  Created on: 3 Jan 2024
  *      Author: Andy Everitt
@@ -10,7 +10,7 @@
 
 #include <string>
 #include <vector>
-#include "Debug.hpp"
+#include "Debug.h"
 
 namespace OM::FileSystem
 {

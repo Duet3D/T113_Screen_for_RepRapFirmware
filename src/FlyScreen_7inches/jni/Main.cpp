@@ -2,7 +2,7 @@
 #include "uart/UartContext.h"
 #include "manager/ConfigManager.h"
 
-#include "logic/Communication.hpp"
+#include "logic/Communication.h"
 
 #ifdef __cplusplus
 extern "C" {

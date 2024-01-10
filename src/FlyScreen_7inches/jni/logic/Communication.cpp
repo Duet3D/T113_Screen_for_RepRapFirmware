@@ -8,27 +8,27 @@
  *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/PanelDue.cpp
  */
 
-#include "Communication.hpp"
+#include "Communication.h"
 
 #include <stdarg.h>
 
-#include "Hardware/SerialIo.hpp"
-#include "Hardware/Reset.hpp"
+#include "Hardware/SerialIo.h"
+#include "Hardware/Reset.h"
 
 #include "uart/CommDef.h"
-#include "Configuration.hpp"
-#include "UI/OmObserver.hpp"
-#include "ObjectModel/Axis.hpp"
-#include "ObjectModel/BedOrChamber.hpp"
-#include "ObjectModel/PrinterStatus.hpp"
-#include "ObjectModel/Spindle.hpp"
-#include "ObjectModel/Tool.hpp"
-#include "ObjectModel/Utils.hpp"
-#include "ControlCommands.hpp"
-#include "Library/Thumbnail.hpp"
+#include "Configuration.h"
+#include "UI/OmObserver.h"
+#include "ObjectModel/Axis.h"
+#include "ObjectModel/BedOrChamber.h"
+#include "ObjectModel/PrinterStatus.h"
+#include "ObjectModel/Spindle.h"
+#include "ObjectModel/Tool.h"
+#include "ObjectModel/Utils.h"
+#include "ControlCommands.h"
+#include "Library/Thumbnail.h"
 
 #define DEBUG (0)
-#include "Debug.hpp"
+#include "Debug.h"
 #include "utils/Log.h"
 
 // These defines control which detailed M409 requests will be sent

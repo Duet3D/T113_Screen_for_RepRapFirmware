@@ -1,5 +1,5 @@
 /*
- * ToolObservers.hpp
+ * ToolObservers.h
  *
  *  Created on: 19 Dec 2023
  *      Author: Andy Everitt
@@ -8,13 +8,13 @@
 #ifndef JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
 #define JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
 
-#include "ObjectModel/Tool.hpp"
-#include "ObjectModel/Utils.hpp"
-#include "Debug.hpp"
+#include "ObjectModel/Tool.h"
+#include "ObjectModel/Utils.h"
+#include "Debug.h"
 
-#include "UI/OmObserver.hpp"
-#include "UI/UserInterfaceConstants.hpp"
-#include "UI/UserInterface.hpp"
+#include "UI/OmObserver.h"
+#include "UI/UserInterfaceConstants.h"
+#include "UI/UserInterface.h"
 
 
 

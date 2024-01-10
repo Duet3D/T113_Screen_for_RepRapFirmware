@@ -1,4 +1,4 @@
-#include "Library/Thumbnail.hpp"
+#include "Library/Thumbnail.h"
 
 extern "C"
 {

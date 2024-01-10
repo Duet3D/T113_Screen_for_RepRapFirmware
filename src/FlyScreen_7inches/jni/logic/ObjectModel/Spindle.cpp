@@ -5,10 +5,10 @@
  *      Author: manuel
  */
 
-#include "Spindle.hpp"
-#include "ListHelpers.hpp"
-#include <Duet3D/General/Vector.hpp>
-#include <UI/UserInterfaceConstants.hpp>
+#include "Spindle.h"
+#include "ListHelpers.h"
+#include <Duet3D/General/Vector.h>
+#include <UI/UserInterfaceConstants.h>
 
 typedef Vector<OM::Spindle*, MaxSlots> SpindleList;
 static SpindleList spindles;

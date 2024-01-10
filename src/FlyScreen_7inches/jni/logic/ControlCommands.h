@@ -1,11 +1,11 @@
 /*
- * ControlCommands.hpp
+ * ControlCommands.h
  *
  *  Created on: 4 Nov 2020
  *      Author: manuel
  *
- * This file is a modified version of the ControlCommands.hpp source file from PanelDue
- * The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/ControlCommands.hpp
+ * This file is a modified version of the ControlCommands.h source file from PanelDue
+ * The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/ControlCommands.h
  */
 
 #ifndef SRC_CONTROLCOMMANDS_HPP_

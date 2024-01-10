@@ -1,5 +1,5 @@
 /*
- * Heat.hpp
+ * Heat.h
  *
  *  Created on: 19 Dec 2023
  *      Author: Andy Everitt
@@ -9,13 +9,13 @@
 #define JNI_LOGIC_OBJECTMODEL_HEAT_HPP_
 
 #include <sys/types.h>
-#include "Spindle.hpp"
+#include "Spindle.h"
 #include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
-#include <UI/UserInterfaceConstants.hpp>
+#include <UI/UserInterfaceConstants.h>
 
 #define TOOL_NAME_MAX_LEN 10
 

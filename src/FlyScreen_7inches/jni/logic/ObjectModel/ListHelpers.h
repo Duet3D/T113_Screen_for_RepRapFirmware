@@ -1,5 +1,5 @@
 /*
- * ListHelpers.hpp
+ * ListHelpers.h
  *
  *  Created on: 17 Feb 2021
  *      Author: manuel
@@ -11,7 +11,7 @@
 //#include <cstdint>
 #include <sys/types.h>
 #include <Duet3D/General/function_ref.h>
-#include "Debug.hpp"
+#include "Debug.h"
 
 template<typename L, typename T>
 T* GetOrCreate(L& list, const size_t index, const bool create)

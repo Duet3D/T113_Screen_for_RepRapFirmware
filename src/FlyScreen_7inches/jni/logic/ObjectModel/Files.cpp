@@ -7,9 +7,9 @@
 
 #define DEBUG (1)
 #include <algorithm>
-#include "Debug.hpp"
-#include "Files.hpp"
-#include "Hardware/SerialIo.hpp"
+#include "Debug.h"
+#include "Files.h"
+#include "Hardware/SerialIo.h"
 
 namespace OM::FileSystem
 {

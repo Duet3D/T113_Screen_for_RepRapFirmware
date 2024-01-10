@@ -1,11 +1,11 @@
 /*
- * SerialIO.hpp
+ * SerialIO.h
  *
  * Created: 04/02/2023
  *  Author: Loïc G.
  *
- *  This file is a modified version of the SerialIO.hpp source file from PanelDue
- *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/Hardware/SerialIo.hpp
+ *  This file is a modified version of the SerialIO.h source file from PanelDue
+ *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/Hardware/SerialIo.h
  */
 
 #ifndef JNI_LOGIC_SERIALIO_HPP_

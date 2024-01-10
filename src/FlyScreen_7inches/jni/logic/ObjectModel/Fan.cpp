@@ -7,14 +7,14 @@
 
 
 #define DEBUG (1)
-#include "Fan.hpp"
-#include "ListHelpers.hpp"
+#include "Fan.h"
+#include "ListHelpers.h"
 #include "uart/CommDef.h"
-#include <Duet3D/General/Vector.hpp>
-#include <UI/UserInterfaceConstants.hpp>
-#include "ObjectModel/Utils.hpp"
+#include <Duet3D/General/Vector.h>
+#include <UI/UserInterfaceConstants.h>
+#include "ObjectModel/Utils.h"
 
-#include "Debug.hpp"
+#include "Debug.h"
 
 typedef Vector<OM::Fan*, MaxFans> FanList;
 static FanList fans;

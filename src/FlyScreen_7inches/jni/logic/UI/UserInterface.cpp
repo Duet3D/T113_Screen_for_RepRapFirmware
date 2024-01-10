@@ -6,13 +6,12 @@
  */
 
 #define DEBUG (1)
-#include "Debug.hpp"
+#include "UserInterface.h"
+#include "Debug.h"
+#include "ObjectModel/Files.h"
+#include "ObjectModel/Tool.h"
 #include <algorithm>
 #include <map>
-#include "UserInterface.hpp"
-#include "ObjectModel/Tool.hpp"
-#include "ObjectModel/Files.hpp"
-
 
 template<typename T>
 bool InVector(std::vector<T> &vec, T item)

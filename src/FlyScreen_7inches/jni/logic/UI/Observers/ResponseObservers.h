@@ -1,5 +1,5 @@
 /*
- * PushObservers.hpp
+ * PushObservers.h
  *
  *  Created on: 2 Jan 2024
  *      Author: Andy Everitt
@@ -8,13 +8,13 @@
 #ifndef JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
 #define JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
 
-#include "Debug.hpp"
+#include "Debug.h"
 #include <algorithm>
 #include <string>
 #include "Duet3D/General/String.h"
-#include "UI/OmObserver.hpp"
-#include "UI/UserInterfaceConstants.hpp"
-#include "UI/UserInterface.hpp"
+#include "UI/OmObserver.h"
+#include "UI/UserInterfaceConstants.h"
+#include "UI/UserInterface.h"
 
 
 

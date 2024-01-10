@@ -1,5 +1,5 @@
 /*
- * Tool.hpp
+ * Tool.h
  *
  *  Created on: 17 Feb 2021
  *      Author: manuel
@@ -10,15 +10,15 @@
 
 //#include <cstdint>
 #include <sys/types.h>
-#include "Axis.hpp"
-#include "Fan.hpp"
-#include "Spindle.hpp"
-#include "Heat.hpp"
+#include "Axis.h"
+#include "Fan.h"
+#include "Spindle.h"
+#include "Heat.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
-#include <UI/UserInterfaceConstants.hpp>
+#include <UI/UserInterfaceConstants.h>
 
 #define TOOL_NAME_MAX_LEN 10
 

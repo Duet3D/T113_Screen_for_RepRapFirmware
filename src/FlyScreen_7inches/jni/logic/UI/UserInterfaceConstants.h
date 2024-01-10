@@ -1,5 +1,5 @@
 /*
- * UserInterfaceConstants.hpp
+ * UserInterfaceConstants.h
  *
  *  Created on: 10 Jan 2017
  *      Author: David
@@ -8,8 +8,8 @@
 #ifndef SRC_UI_USERINTERFACECONSTANTS_HPP_
 #define SRC_UI_USERINTERFACECONSTANTS_HPP_
 
-//#include <UI/DisplaySize.hpp>
-//#include <Configuration.hpp>
+//#include <UI/DisplaySize.h>
+//#include <Configuration.h>
 
 static const char* _ecv_array const axisNames[] = { "X", "Y", "Z", "U", "V", "W" };
 constexpr size_t MaxTotalAxes = 15;		// This needs to be kept in sync with the maximum in RRF for any build configuration

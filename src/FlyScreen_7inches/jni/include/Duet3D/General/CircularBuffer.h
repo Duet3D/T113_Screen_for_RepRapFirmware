@@ -1,5 +1,5 @@
 /*
- * CircularBuffer.hpp
+ * CircularBuffer.h
  *
  *  Created on: 3 Jan 2024
  *      Author: Andy Everitt
@@ -9,7 +9,7 @@
 #define JNI_INCLUDE_DUET3D_GENERAL_CIRCULARBUFFER_HPP_
 
 #include <cstddef>
-#include "Debug.hpp"
+#include "Debug.h"
 
 template <typename T, size_t Size>
 class CircularBuffer {

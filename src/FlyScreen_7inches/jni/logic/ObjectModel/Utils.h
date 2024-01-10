@@ -1,5 +1,5 @@
 /*
- * ObjectModel.hpp
+ * ObjectModel.h
  *
  *  Created on: 7 Sep 2020
  *      Author: manuel
@@ -11,8 +11,8 @@
 //#include <cstdint>
 #include <sys/types.h>
 #include <string>
-#include <Duet3D/General/Vector.hpp>
-#include <UI/UserInterfaceConstants.hpp>
+#include <Duet3D/General/Vector.h>
+#include <UI/UserInterfaceConstants.h>
 
 // Custom comparator for string literals at compile time
 struct ConstCharComparator
