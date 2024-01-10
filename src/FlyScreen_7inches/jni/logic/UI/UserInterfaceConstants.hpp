@@ -28,4 +28,6 @@ constexpr unsigned int MaxCommandLength = 50;
 constexpr unsigned int MaxResponseLineLength = 65;
 constexpr unsigned int MaxResponseLines = 50;
 
+constexpr unsigned int MaxFileNameLength = 100;
+
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */

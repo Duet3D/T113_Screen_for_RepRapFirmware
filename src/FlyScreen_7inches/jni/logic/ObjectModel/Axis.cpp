@@ -6,14 +6,13 @@
  */
 
 #define DEBUG (1)
-#include "Debug.hpp"
-
 #include "Axis.hpp"
-#include "ListHelpers.hpp"
+
 #include <Duet3D/General/Vector.hpp>
 #include <UI/UserInterfaceConstants.hpp>
 
-
+#include "Debug.hpp"
+#include "ListHelpers.hpp"
 
 typedef Vector<OM::Move::Axis*, MaxTotalAxes> AxisList;
 typedef Vector<OM::Move::ExtruderAxis*, MaxTotalAxes> ExtruderAxisList;
@@ -73,25 +72,29 @@ namespace OM::Move
 		return Remove<AxisList, Axis>(axes, index, allFollowing);
 	}
 
-#define AXIS_SETTER(funcName, valType, varName) \
-	bool funcName(size_t index, valType val) { \
-		if (index >= MaxTotalAxes) { \
-			dbg("axis[%d] greater than MaxTotalAxes", index); \
-			return false; \
-		} \
-		Axis *axis = GetOrCreateAxis(index); \
-		if (axis == nullptr) { \
-			dbg("Could not get or create axis %d", index); \
-			return false; \
-		} \
-		dbg("Set axis->%s", #varName); \
-		axis->varName = val; \
-		return true; \
-	}
+#define AXIS_SETTER(funcName, valType, varName)                                                                        \
+    bool funcName(size_t index, valType val)                                                                           \
+    {                                                                                                                  \
+        if (index >= MaxTotalAxes)                                                                                     \
+        {                                                                                                              \
+            dbg("axis[%d] greater than MaxTotalAxes", index);                                                          \
+            return false;                                                                                              \
+        }                                                                                                              \
+        Axis* axis = GetOrCreateAxis(index);                                                                           \
+        if (axis == nullptr)                                                                                           \
+        {                                                                                                              \
+            dbg("Could not get or create axis %d", index);                                                             \
+            return false;                                                                                              \
+        }                                                                                                              \
+        dbg("Set axis->%s", #varName);                                                                                 \
+        axis->varName = val;                                                                                           \
+        return true;                                                                                                   \
+    }
 
-	AXIS_SETTER(SetBabystepOffset, float, babystep);
-	// Update the homed status of the specified axis. If the axis is -1 then it represents the "all homed" status.
-	AXIS_SETTER(SetAxisHomedStatus, bool, homed);
+    AXIS_SETTER(SetBabystepOffset, float, babystep);
+    // Update the homed status of the specified axis. If the axis is -1 then it
+    // represents the "all homed" status.
+    AXIS_SETTER(SetAxisHomedStatus, bool, homed);
 	AXIS_SETTER(SetAxisLetter, char, letter[0]);
 	AXIS_SETTER(SetAxisUserPosition, float, userPosition);
 	AXIS_SETTER(SetAxisMachinePosition, float, machinePosition);
@@ -101,8 +104,8 @@ namespace OM::Move
 	{
 		if (axisIndex >= MaxTotalAxes || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
 			return false;
-		Axis *axis = GetOrCreateAxis(axisIndex);
-		if (axis == nullptr)
+        Axis* axis = GetOrCreateAxis(axisIndex);
+        if (axis == nullptr)
 			return false;
 		axis->workplaceOffsets[workplaceIndex] = offset;
 		return true;
@@ -156,8 +159,8 @@ namespace OM::Move
 		return extruderAxes.Size();
 	}
 
-	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt)
-	{
+    bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt)
+    {
 		return extruderAxes.IterateWhile(func, startAt);
 	}
 
@@ -166,23 +169,26 @@ namespace OM::Move
 		return Remove<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, allFollowing);
 	}
 
-#define EXTRUDER_AXIS_SETTER(funcName, valType, varName) \
-	bool funcName(size_t index, valType val) { \
-		if (index >= MaxTotalAxes) { \
-			dbg("extruderAxis[%d] greater than MaxTotalAxes", index); \
-			return false; \
-		} \
-		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index); \
-		if (extruder == nullptr) { \
-			dbg("Could not get or create axis %d", index); \
-			return false; \
-		} \
-		dbg("Set extruderAxis->%s", #varName); \
-		extruder->varName = val; \
-		return true; \
-	}
+#define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \
+    bool funcName(size_t index, valType val)                                                                           \
+    {                                                                                                                  \
+        if (index >= MaxTotalAxes)                                                                                     \
+        {                                                                                                              \
+            dbg("extruderAxis[%d] greater than MaxTotalAxes", index);                                                  \
+            return false;                                                                                              \
+        }                                                                                                              \
+        ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                       \
+        if (extruder == nullptr)                                                                                       \
+        {                                                                                                              \
+            dbg("Could not get or create extruderAxis %d", index);                                                     \
+            return false;                                                                                              \
+        }                                                                                                              \
+        dbg("Set extruderAxis->%s", #varName);                                                                         \
+        extruder->varName = val;                                                                                       \
+        return true;                                                                                                   \
+    }
 
-	EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
+    EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);
 	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
-}
+} // namespace OM::Move

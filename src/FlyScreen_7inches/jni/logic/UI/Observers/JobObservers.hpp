@@ -10,11 +10,10 @@
 
 #include "Debug.hpp"
 
+#include "ObjectModel/Job.hpp"
 #include "UI/OmObserver.hpp"
-#include "UI/UserInterfaceConstants.hpp"
 #include "UI/UserInterface.hpp"
-
-
+#include "UI/UserInterfaceConstants.hpp"
 
 /*
  * These functions are run when the OM field is received.
@@ -25,33 +24,24 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
-	OBSERVER_CHAR(
-		"job:file:fileName",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			mPrintFileNamePtr->setText(val);
-		}
-	),
-	OBSERVER_UINT(
-		"job:file:printTime",
-		[](OBSERVER_UINT_ARGS)
-		{
-		}
-	),
-	OBSERVER_UINT(
-		"job:duration",
-		[](OBSERVER_UINT_ARGS)
-		{
-			mPrintElapsedTimePtr->setTextf("Elapsed: %d", val);
-		}
-	),
-	OBSERVER_UINT(
-		"job:timesLeft:slicer",
-		[](OBSERVER_UINT_ARGS)
-		{
-			mPrintEstimatedTimePtr->setTextf("Estimated: %d", val);
-		}
-	),
+    OBSERVER_CHAR("job:file:fileName",
+                  [](OBSERVER_CHAR_ARGS) {
+                      OM::SetJobName(val);
+                      mPrintFileNamePtr->setText(val);
+                  }),
+    OBSERVER_UINT("job:file:printTime", [](OBSERVER_UINT_ARGS) { OM::SetPrintTime(val); }),
+    OBSERVER_UINT("job:duration",
+                  [](OBSERVER_UINT_ARGS) {
+                      OM::SetPrintDuration(val);
+                      mPrintElapsedTimePtr->setTextf("Elapsed: %d", val);
+                  }),
+    OBSERVER_UINT("job:timesLeft:slicer",
+                  [](OBSERVER_UINT_ARGS) {
+                      OM::SetPrintRemaining(val);
+                      uint32_t percentage = (100 * OM::GetPrintDuration()) / OM::GetPrintTime();
+                      mPrintEstimatedTimePtr->setTextf("Estimated: %d", val);
+                      mPrintProgressBarPtr->setProgress(percentage);
+                  }),
 };
 
 /*
@@ -59,14 +49,7 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> JobObserversArrayEnd[] = {
-	OBSERVER_ARRAY_END(
-		"",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-		}
-	),
+    OBSERVER_ARRAY_END("job", [](OBSERVER_ARRAY_END_ARGS) {}),
 };
-
-
 
 #endif /* JNI_LOGIC_UI_OBSERVERS_JOBOBSERVERS_HPP_ */
