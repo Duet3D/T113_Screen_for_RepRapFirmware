@@ -13,21 +13,18 @@
 #include <algorithm>
 #include <map>
 
-template<typename T>
-bool InVector(std::vector<T> &vec, T item)
+template <typename T>
+bool InVector(std::vector<T>& vec, T item)
 {
-	auto it =  std::find(vec.begin(), vec.end(), item);
-	if (it != vec.end())
-	{
-		return true;
-	}
+	auto it = std::find(vec.begin(), vec.end(), item);
+	if (it != vec.end()) { return true; }
 	return false;
 }
 
-template<typename T>
-bool RemoveFromVector(std::vector<T> &vec, T item)
+template <typename T>
+bool RemoveFromVector(std::vector<T>& vec, T item)
 {
-	auto it =  std::find(vec.begin(), vec.end(), item);
+	auto it = std::find(vec.begin(), vec.end(), item);
 	if (it != vec.end())
 	{
 		dbg("Window: removing window %d from vector", item->getID());
@@ -37,8 +34,8 @@ bool RemoveFromVector(std::vector<T> &vec, T item)
 	return false;
 }
 
-template<typename T>
-bool AddToVector(std::vector<T> &vec, T item)
+template <typename T>
+bool AddToVector(std::vector<T>& vec, T item)
 {
 	RemoveFromVector<T>(vec, item);
 	dbg("Window: adding window %d to vector", item->getID());
@@ -72,24 +69,19 @@ namespace UI
 		dbg("Opening window %d", window->getID());
 		window->showWnd();
 		RemoveFromVector<ZKWindow*>(closedWindows_, window);
-		if (!InVector<ZKWindow*>(homeWindows_, window))
-			AddToVector<ZKWindow*>(openedWindows_, window);
+		if (!InVector<ZKWindow*>(homeWindows_, window)) AddToVector<ZKWindow*>(openedWindows_, window);
 	}
 
 	void Window::OpenOverlay(ZKWindow* overlay)
 	{
-		if (overlayWindow_ != nullptr)
-		{
-			overlayWindow_->hideWnd();
-		}
+		if (overlayWindow_ != nullptr) { overlayWindow_->hideWnd(); }
 		overlay->showWnd();
 		overlayWindow_ = overlay;
 	}
 
 	bool Window::CloseOverlay()
 	{
-		if (overlayWindow_ == nullptr)
-			return false;
+		if (overlayWindow_ == nullptr) return false;
 		overlayWindow_->hideWnd();
 		overlayWindow_ = nullptr;
 		return true;
@@ -98,10 +90,9 @@ namespace UI
 	size_t Window::ReOpenLastWindow(size_t numWindows)
 	{
 		size_t count = 0;
-		for (size_t i=0; i < numWindows; ++i)
+		for (size_t i = 0; i < numWindows; ++i)
 		{
-			if (closedWindows_.empty())
-				return count;
+			if (closedWindows_.empty()) return count;
 			auto window = closedWindows_.back();
 			OpenWindow(window);
 		}
@@ -110,8 +101,12 @@ namespace UI
 
 	void Window::CloseLastWindow()
 	{
-		if (openedWindows_.empty())
-			return;
+		for (auto window : homeWindows_)
+		{
+			if (!window->isWndShow()) continue;
+			CloseWindow(window);
+		}
+		if (openedWindows_.empty()) return;
 		CloseWindow(openedWindows_.back());
 	}
 
@@ -120,16 +115,12 @@ namespace UI
 		dbg("Closing window %d", window->getID());
 		window->hideWnd();
 		RemoveFromVector<ZKWindow*>(openedWindows_, window);
-		if (returnable)
-			AddToVector<ZKWindow*>(closedWindows_, window);
+		if (returnable) AddToVector<ZKWindow*>(closedWindows_, window);
 	}
 
 	void Window::Back()
 	{
-		if (CloseOverlay())
-		{
-			return;
-		}
+		if (CloseOverlay()) { return; }
 		if (OM::FileSystem::IsInSubFolder())
 		{
 			dbg("window: Returning to previous folder");
@@ -159,10 +150,7 @@ namespace UI
 		{
 			window->showWnd();
 		}
-		if (overlayWindow_ != nullptr)
-		{
-			overlayWindow_->hideWnd();
-		}
+		if (overlayWindow_ != nullptr) { overlayWindow_->hideWnd(); }
 		Clear();
 	}
 
@@ -182,13 +170,13 @@ namespace UI
 
 	void ConfirmationWindow::Open(function_ref<void(void)> okCb)
 	{
-		WINDOW->OpenOverlay(window_);
-		okCb_ = okCb;
-		cancelCb_ = [](){};
+		Open(okCb, []() {});
 	}
 
 	void ConfirmationWindow::Open(function_ref<void(void)> okCb, function_ref<void(void)> cancelCb)
 	{
+		SetOkBtnText("Ok");
+		SetCancelBtnText("Cancel");
 		WINDOW->OpenOverlay(window_);
 		okCb_ = okCb;
 		cancelCb_ = cancelCb;
@@ -199,7 +187,7 @@ namespace UI
 		text_->setText(text);
 	}
 
-	void ConfirmationWindow::SetTextf(const char *format, ...)
+	void ConfirmationWindow::SetTextf(const char* format, ...)
 	{
 		va_list vargs;
 		va_start(vargs, format);
@@ -207,18 +195,27 @@ namespace UI
 		va_end(vargs);
 	}
 
+	void ConfirmationWindow::SetOkBtnText(const char* text)
+	{
+		okBtn_->setText(text);
+	}
+
+	void ConfirmationWindow::SetCancelBtnText(const char* text)
+	{
+		cancelBtn_->setText(text);
+	}
+
 	void ConfirmationWindow::Close()
 	{
 		WINDOW->CloseOverlay();
 	}
 
-	static std::map<const char *, ToolsList*> sToolsListMap;
+	static std::map<const char*, ToolsList*> sToolsListMap;
 
-	ToolsList::ToolsList(const char* id) :
-					id(id), toolCount_(0), bedCount_(0), chamberCount_(0)
-			{
-				dbg("Registering tool list to id %s", id);
-			}
+	ToolsList::ToolsList(const char* id) : id(id), toolCount_(0), bedCount_(0), chamberCount_(0)
+	{
+		dbg("Registering tool list to id %s", id);
+	}
 
 	ToolsList* ToolsList::Create(const char* id)
 	{
@@ -248,19 +245,12 @@ namespace UI
 		chamberCount_ = OM::GetChamberCount();
 
 		size_t count = 0;
-		OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t)
-		{
+		OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t) {
 			const bool hasHeater = tool->heaters[0] != nullptr;
 			const bool hasSpindle = tool->spindle != nullptr;
 			// Spindle takes precedence
-			if (hasSpindle)
-			{
-				++count;
-			}
-			else if (hasHeater)
-			{
-				count += tool->GetHeaterCount();
-			}
+			if (hasSpindle) { ++count; }
+			else if (hasHeater) { count += tool->GetHeaterCount(); }
 			else
 			{
 				// Hides everything by default
@@ -273,41 +263,31 @@ namespace UI
 		toolCount_ = count;
 	}
 
-	size_t ToolsList::GetTotalHeaterCount(const bool calculate, const bool addTools, const bool addBeds, const bool addChambers)
-			{
-				if (calculate)
-					CalculateTotalHeaterCount();
+	size_t ToolsList::GetTotalHeaterCount(const bool calculate, const bool addTools, const bool addBeds,
+										  const bool addChambers)
+	{
+		if (calculate) CalculateTotalHeaterCount();
 
-				size_t count = 0;
-				if (addTools)
-				{
-					count += toolCount_;
-				}
-				if (addBeds)
-				{
-					count += bedCount_;
-				}
-				if (addChambers)
-				{
-					count += chamberCount_;
-				}
-				return count;
-			}
+		size_t count = 0;
+		if (addTools) { count += toolCount_; }
+		if (addBeds) { count += bedCount_; }
+		if (addChambers) { count += chamberCount_; }
+		return count;
+	}
 
-	void ToolsList::ObtainListItemData(
-			ZKListView::ZKListItem* pListItem, int index,
-			ZKListView::ZKListSubItem* pToolName,
-			ZKListView::ZKListSubItem* pCurrentTemperature,
-			ZKListView::ZKListSubItem* pActiveTemperature,
-			ZKListView::ZKListSubItem* pStandbyTemperature,
-			ZKListView::ZKListSubItem* pStatus)
+	void ToolsList::ObtainListItemData(ZKListView::ZKListItem* pListItem, int index,
+									   ZKListView::ZKListSubItem* pToolName,
+									   ZKListView::ZKListSubItem* pCurrentTemperature,
+									   ZKListView::ZKListSubItem* pActiveTemperature,
+									   ZKListView::ZKListSubItem* pStandbyTemperature,
+									   ZKListView::ZKListSubItem* pStatus)
 	{
 		// Check Tools to see if list index is within tool heaters
-		OM::Tool *tool = nullptr;
+		OM::Tool* tool = nullptr;
 		int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
 		if (tool != nullptr)
 		{
-			OM::ToolHeater *toolHeater;
+			OM::ToolHeater* toolHeater;
 			toolHeater = tool->GetHeater(toolHeaterIndex);
 			if (toolHeater == nullptr)
 			{
@@ -315,17 +295,11 @@ namespace UI
 				pToolName->setText(tool->name.c_str());
 				return;
 			}
-			dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d",
-					index, tool->index, toolHeaterIndex, toolHeater->heater->index,
-					toolHeater->heater->current, toolHeater->activeTemp, toolHeater->standbyTemp);
-			if (tool->GetHeaterCount() > 1)
-			{
-				pToolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex);
-			}
-			else
-			{
-				pToolName->setText(tool->name.c_str());
-			}
+			dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d", index, tool->index,
+				toolHeaterIndex, toolHeater->heater->index, toolHeater->heater->current, toolHeater->activeTemp,
+				toolHeater->standbyTemp);
+			if (tool->GetHeaterCount() > 1) { pToolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex); }
+			else { pToolName->setText(tool->name.c_str()); }
 			pActiveTemperature->setText((int)toolHeater->activeTemp);
 			pStandbyTemperature->setText((int)toolHeater->standbyTemp);
 			pCurrentTemperature->setText(toolHeater->heater->current);
@@ -336,8 +310,8 @@ namespace UI
 		}
 
 		int8_t bedOrChamberIndex = index - toolHeaterIndex;
-		OM::BedOrChamber *bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
-		OM::Heat::Heater *heater;
+		OM::BedOrChamber* bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
+		OM::Heat::Heater* heater;
 		if (bedOrChamber != nullptr)
 		{
 			heater = OM::Heat::GetHeater(bedOrChamber->heater);
@@ -346,17 +320,10 @@ namespace UI
 				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
-			dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d",
-					index, bedOrChamber->index, bedOrChamber->heater, heater->index,
-					heater->current, heater->activeTemp, heater->standbyTemp);
-			if (OM::GetBedCount() > 1)
-			{
-				pToolName->setTextf("Bed %d", bedOrChamber->index );
-			}
-			else
-			{
-				pToolName->setText("Bed");
-			}
+			dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
+				bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
+			if (OM::GetBedCount() > 1) { pToolName->setTextf("Bed %d", bedOrChamber->index); }
+			else { pToolName->setText("Bed"); }
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
@@ -376,17 +343,10 @@ namespace UI
 				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
-			dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d",
-					index, bedOrChamber->index, bedOrChamber->heater, heater->index,
-					heater->current, heater->activeTemp, heater->standbyTemp);
-			if (OM::GetChamberCount() > 1)
-			{
-				pToolName->setTextf("Chamber %d", bedOrChamber->index );
-			}
-			else
-			{
-				pToolName->setText("Chamber");
-			}
+			dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
+				bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
+			if (OM::GetChamberCount() > 1) { pToolName->setTextf("Chamber %d", bedOrChamber->index); }
+			else { pToolName->setText("Chamber"); }
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
@@ -400,17 +360,15 @@ namespace UI
 	void ToolsList::OnListItemClick(int index, int id, const int nameId, int statusId, int activeId, int standbyId)
 	{
 		dbg("index=%d, id=%d", index, id);
-		if (id == NULL)
-			return;
+		if (id == NULL) return;
 		UI::NumPadData numPadData;
 
 		CalculateTotalHeaterCount();
 		if ((size_t)index < GetTotalHeaterCount(false, true, false, false))
 		{
-			OM::Tool *tool = nullptr;
+			OM::Tool* tool = nullptr;
 			int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
-			if (tool == nullptr)
-				return;
+			if (tool == nullptr) return;
 			dbg("Tool index=%d", tool->index);
 			numPadData.heaterType = UI::HeaterType::tool;
 			numPadData.toolIndex = tool->index;
@@ -428,9 +386,8 @@ namespace UI
 		}
 		else if ((size_t)index < GetTotalHeaterCount(false, true, true, false))
 		{
-			OM::Bed *bed = OM::GetBedBySlot(index - GetTotalHeaterCount(false, true, false, false));
-			if (bed == nullptr)
-				return;
+			OM::Bed* bed = OM::GetBedBySlot(index - GetTotalHeaterCount(false, true, false, false));
+			if (bed == nullptr) return;
 			dbg("Bed index=%d", bed->index);
 			numPadData.heaterType = UI::HeaterType::bed;
 			numPadData.bedOrChamberIndex = bed->index;
@@ -444,8 +401,7 @@ namespace UI
 		else if ((size_t)index < GetTotalHeaterCount(false, true, true, true))
 		{
 			OM::Chamber* chamber = OM::GetChamberBySlot(index - GetTotalHeaterCount(false, true, true, false));
-			if (chamber == nullptr)
-				return;
+			if (chamber == nullptr) return;
 			dbg("Chamber index=%d", chamber->index);
 			numPadData.heaterType = UI::HeaterType::chamber;
 			numPadData.bedOrChamberIndex = chamber->index;
@@ -472,10 +428,7 @@ namespace UI
 
 	void ToolsList::RefreshToolList(const bool lengthChanged)
 	{
-		if (lengthChanged)
-		{
-			CalculateTotalHeaterCount();
-		}
+		if (lengthChanged) { CalculateTotalHeaterCount(); }
 		pToolListView_->refreshListView();
 	}
 
@@ -530,8 +483,7 @@ namespace UI
 
 	bool ToolsList::SendTempTarget()
 	{
-		if (numPadData_.numPadStr.empty())
-			return false;
+		if (numPadData_.numPadStr.empty()) return false;
 
 		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
@@ -541,22 +493,19 @@ namespace UI
 		{
 		case HeaterType::tool:
 			tool = OM::GetTool(numPadData_.toolIndex);
-			if (tool == nullptr)
-				return false;
+			if (tool == nullptr) return false;
 
 			tool->SetHeaterTemps(numPadData_.toolHeaterIndex, target, numPadData_.active);
 			break;
 		case HeaterType::bed:
 			bedOrChamber = OM::GetBed(numPadData_.bedOrChamberIndex);
-			if (bedOrChamber == nullptr)
-				return false;
+			if (bedOrChamber == nullptr) return false;
 
 			bedOrChamber->SetBedTemp(target, numPadData_.active);
 			break;
 		case HeaterType::chamber:
 			bedOrChamber = OM::GetChamber(numPadData_.bedOrChamberIndex);
-			if (bedOrChamber == nullptr)
-				return false;
+			if (bedOrChamber == nullptr) return false;
 
 			bedOrChamber->SetChamberTemp(target, numPadData_.active);
 			break;
@@ -565,29 +514,29 @@ namespace UI
 		return true;
 	}
 
-	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool *&tool)
+	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool*& tool)
 	{
 		uint8_t count = 0;
 		int8_t toolHeaterIndex = -1;
-		OM::IterateToolsWhile([&](OM::Tool*& toolIter, size_t)
+		OM::IterateToolsWhile([&](OM::Tool*& toolIter, size_t) {
+			if (listIndex < count + toolIter->GetHeaterCount())
 			{
-				if (listIndex < count + toolIter->GetHeaterCount())
-				{
-					tool = toolIter;
-					toolHeaterIndex = listIndex - count;
-					return false;
-				}
-				count += toolIter->GetHeaterCount();
-				return true;
-			});
+				tool = toolIter;
+				toolHeaterIndex = listIndex - count;
+				return false;
+			}
+			count += toolIter->GetHeaterCount();
+			return true;
+		});
 		if (toolHeaterIndex > -1)
 		{
-//			dbg("List index %d is Tool %d toolHeaterIndex %d=%d", listIndex, tool->index, toolHeaterIndex, tool->GetHeater(toolHeaterIndex)->index);
+			//			dbg("List index %d is Tool %d toolHeaterIndex %d=%d", listIndex, tool->index, toolHeaterIndex,
+			// tool->GetHeater(toolHeaterIndex)->index);
 			return toolHeaterIndex;
 		}
-//		dbg("List index %d is not in tool heaters (total tool heaters %d)", listIndex, count);
+		//		dbg("List index %d is not in tool heaters (total tool heaters %d)", listIndex, count);
 		tool = nullptr;
-		return count;				// list index is greater than all heaters for tools
+		return count; // list index is greater than all heaters for tools
 	}
 
 	void Console::Init(ZKListView* console, ZKEditText* input)
@@ -596,15 +545,15 @@ namespace UI
 		pInput_ = input;
 	}
 
-	void Console::AddCommand(const std::string &command)
+	void Console::AddCommand(const std::string& command)
 	{
 		dbg("AddingCommand %s", command.c_str());
-	    String<MaxResponseLineLength> line;
-	    AddLineBreak();
-	    line.catf("> %s:", command.c_str());
-	    AddMessage(line.GetRef());
-	    AddLineBreak();
-	    Refresh();
+		String<MaxResponseLineLength> line;
+		AddLineBreak();
+		line.catf("> %s:", command.c_str());
+		AddMessage(line.GetRef());
+		AddLineBreak();
+		Refresh();
 	}
 
 	void Console::AddResponse(const StringRef& ref)
@@ -614,7 +563,7 @@ namespace UI
 
 	void Console::AddLineBreak()
 	{
-	    AddMessage("");
+		AddMessage("");
 	}
 
 	void Console::AddMessage(const char* str)
@@ -627,17 +576,13 @@ namespace UI
 
 	void Console::AddMessage(const StringRef& ref)
 	{
-		String<MaxResponseLineLength> line;
-		line.copy(ref.c_str());
-		buffer_.Push(line);
-		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+		AddMessage(ref.c_str());
 	}
 
 	void Console::Refresh()
 	{
 		pConsole_->refreshListView();
-		if (!buffer_.Full())
-			pConsole_->setSelection(buffer_.GetHead() - pConsole_->getRows());
+		if (!buffer_.Full()) pConsole_->setSelection(buffer_.GetHead() - pConsole_->getRows());
 	}
 
 	void Console::Clear()
@@ -666,6 +611,4 @@ namespace UI
 	{
 		return OM::FileSystem::RunFile(sSelectedFile);
 	}
-}
-
-
+} // namespace UI

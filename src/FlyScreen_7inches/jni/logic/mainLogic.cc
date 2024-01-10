@@ -104,7 +104,6 @@ static void onUI_init()
 	}
 
 	UI::WINDOW->AddHome(mMainWindowPtr);
-	UI::WINDOW->AddHome(mWindowSelectWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
@@ -232,16 +231,13 @@ static bool onButtonClick_BackBtn(ZKButton *pButton)
 static bool onButtonClick_MacroBtn(ZKButton *pButton)
 {
 	OM::FileSystem::RequestFiles("0:/macros");
-	if (mMainWindowPtr->isWndShow())
-		UI::WINDOW->CloseWindow(mMainWindowPtr);
 	UI::WINDOW->CloseLastWindow();
 	UI::WINDOW->OpenWindow(mFilesWindowPtr);
 	return false;
 }
 
-static bool onButtonClick_ConsoleBtn(ZKButton *pButton) {
-	if (mMainWindowPtr->isWndShow())
-		UI::WINDOW->CloseWindow(mMainWindowPtr);
+static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
+{
 	UI::WINDOW->CloseLastWindow();
 	UI::WINDOW->OpenWindow(mConsoleWindowPtr);
     return false;

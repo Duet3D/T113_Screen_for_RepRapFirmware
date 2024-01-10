@@ -26,16 +26,16 @@ public:
         IncrementIndex(head_);
     }
 
-    T Pop() {
+    bool Pop(T& ref) {
         if (Empty()) {
             // Handle underflow
-            throw std::out_of_range("Buffer is empty");
+            return false;
         }
 
-        T value = buffer_[tail_];
+        ref = buffer_[tail_];
         tail_ = (tail_ + 1) % Size;
         full_ = false;
-        return value;
+        return true;
     }
 
     bool Empty() const {
