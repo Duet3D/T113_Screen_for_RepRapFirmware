@@ -210,6 +210,78 @@ namespace UI
 		WINDOW->CloseOverlay();
 	}
 
+	void SliderWindow::Init(ZKWindow* window, ZKSeekBar* slider, ZKTextView* header, ZKTextView* value,
+							ZKTextView* prefix, ZKTextView* suffix)
+	{
+		window_ = window;
+		slider_ = slider;
+		header_ = header;
+		value_ = value;
+		prefix_ = prefix;
+		suffix_ = suffix;
+	}
+
+	void SliderWindow::Open(const char* header, const char* prefix, const char* suffix, const int min, const int max,
+							const int progress, function_ref<void(int)> onProgressChanged)
+	{
+		SetRange(min, max);
+		SetHeader(header);
+		SetPrefix(prefix);
+		SetSuffix(suffix);
+		// SetValue(progress);
+		SetOnProgressChanged(onProgressChanged);
+		WINDOW->OpenOverlay(window_);
+	}
+
+	void SliderWindow::Callback() const
+	{
+		value_->setText(GetValue());
+		onProgressChanged_(GetValue());
+	}
+
+	void SliderWindow::SetRange(const int min, const int max)
+	{
+		min_ = min;
+		max_ = max;
+	}
+
+	const int SliderWindow::GetValue() const
+	{
+		int percent = slider_->getProgress();
+		return ((percent * (max_ - min_)) / 100) + min_;
+	}
+
+	void SliderWindow::SetValue(const int val)
+	{
+		int percent = ((val - min_) * 100) / (max_ - min_);
+		slider_->setProgress(percent);
+		value_->setText(val); // this lets you set the displayed value outside the range which may be useful maybe?
+							  // If not, change to GetValue()
+	}
+
+	void SliderWindow::SetHeader(const char* header)
+	{
+		header_->setText(header);
+	}
+
+	void SliderWindow::SetHeaderf(const char* format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		header_->setTextf(format, vargs);
+		va_end(vargs);
+	}
+
+	void SliderWindow::SetPrefix(const char* prefix)
+	{
+		prefix_->setTextf("%s %d", prefix, min_);
+	}
+
+	void SliderWindow::SetSuffix(const char* suffix)
+	{
+		suffix_->setTextf("%d %s", max_, suffix);
+	}
+
 	static std::map<const char*, ToolsList*> sToolsListMap;
 
 	ToolsList::ToolsList(const char* id) : id(id), toolCount_(0), bedCount_(0), chamberCount_(0)

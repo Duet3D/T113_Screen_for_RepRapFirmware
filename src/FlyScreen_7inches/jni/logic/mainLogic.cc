@@ -108,6 +108,8 @@ static void onUI_init()
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::CONF_WINDOW->Init(mConfirmationWindowPtr, mConfirmationOkBtnPtr, mConfirmationCancelBtnPtr, mConfirmationTextPtr);
+	UI::SLIDER_WINDOW->Init(mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr,
+							mSliderSuffixPtr);
 }
 
 /**
@@ -577,7 +579,19 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
 }
 
 static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ PrintFanList  !!!\n");
+	OM::Fan* fan = OM::GetFanBySlot(index);
+	if (fan == nullptr) { return; }
+	char header[32];
+	SafeSnprintf(header, sizeof(header), "Fan %d", fan->index);
+	size_t fanIndex = fan->index;
+	UI::SLIDER_WINDOW->Open(header, "", "%", 0, 255, (int)(fan->requestedValue * 255), [fanIndex](int percent) {
+		dbg("Getting fan %d", fanIndex);
+		// OM::Fan* fan = OM::GetFanBySlot(index);
+		// if (fan == nullptr) { return; }
+		// int fanSpeed = (percent * 255) / 100;
+		// dbg("Setting fan %d", fan->index);
+		// SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
+	});
 }
 
 static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {
@@ -660,12 +674,12 @@ static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int inde
 }
 
 static void onProgressChanged_Slider(ZKSeekBar *pSeekBar, int progress) {
-    //LOGD(" ProgressChanged Slider %d !!!\n", progress);
+	UI::SLIDER_WINDOW->Callback();
 }
 
 static bool onButtonClick_SliderCloseBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick SliderCloseBtn !!!\n");
-    return false;
+	UI::WINDOW->CloseOverlay();
+	return false;
 }
 static bool onButtonClick_ConfirmationCancelBtn(ZKButton *pButton) {
     UI::CONF_WINDOW->Cancel();

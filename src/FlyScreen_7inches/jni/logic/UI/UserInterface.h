@@ -10,6 +10,7 @@
 
 #include "control/ZKEditText.h"
 #include "control/ZKListView.h"
+#include "control/ZKSeekBar.h"
 #include "control/ZKTextView.h"
 #include "window/ZKWindow.h"
 #include <string>
@@ -95,6 +96,44 @@ namespace UI
 		ZKTextView* text_ = nullptr;
 		function_ref<void(void)> okCb_;
 		function_ref<void(void)> cancelCb_;
+	};
+
+	class SliderWindow
+	{
+	  public:
+		SliderWindow()
+			: window_(nullptr), slider_(nullptr), header_(nullptr), value_(nullptr), prefix_(nullptr), suffix_(nullptr),
+			  min_(0), max_(100), onProgressChanged_([](int) {})
+		{
+		}
+		static SliderWindow* GetInstance()
+		{
+			static SliderWindow sliderWindow;
+			return &sliderWindow;
+		}
+		void Init(ZKWindow* window, ZKSeekBar* slider, ZKTextView* header, ZKTextView* value, ZKTextView* prefix,
+				  ZKTextView* suffix);
+		void Open(const char* header, const char* prefix, const char* suffix, const int min, const int max,
+				  const int progress, function_ref<void(int)> onProgressChanged);
+		void Callback() const;
+		void SetOnProgressChanged(function_ref<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
+		void SetRange(const int min, const int max);
+		const int GetValue() const;
+		void SetValue(const int progress);
+		void SetHeader(const char* header);
+		void SetHeaderf(const char* header, ...);
+		void SetPrefix(const char* prefix);
+		void SetSuffix(const char* suffix);
+
+	  private:
+		ZKWindow* window_;
+		ZKSeekBar* slider_;
+		ZKTextView* header_;
+		ZKTextView* value_;
+		ZKTextView* prefix_;
+		ZKTextView* suffix_;
+		int min_, max_;
+		function_ref<void(int)> onProgressChanged_;
 	};
 
 	enum class HeaterType
@@ -188,6 +227,7 @@ namespace UI
 
 #define WINDOW Window::GetInstance()
 #define CONF_WINDOW ConfirmationWindow::GetInstance()
+#define SLIDER_WINDOW SliderWindow::GetInstance()
 #define CONSOLE Console::GetInstance()
 } // namespace UI
 

@@ -6,3 +6,4 @@ src/*/jni/activity/*
 src/*/libs/*
 src/*/obj/*
 *.img
+*Thumbs.db

@@ -101,7 +101,7 @@ namespace OM
 
 	size_t RemoveFan(const size_t index, const bool allFollowing)
 	{
-		dbg("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		// dbg("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<FanList, Fan>(fans, index, allFollowing);
 	}
 }
