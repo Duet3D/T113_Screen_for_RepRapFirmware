@@ -12,6 +12,7 @@
 #include "control/ZKListView.h"
 #include "control/ZKSeekBar.h"
 #include "control/ZKTextView.h"
+#include "std_fixed/functional.h"
 #include "window/ZKWindow.h"
 #include <string>
 #include <sys/types.h>
@@ -113,10 +114,10 @@ namespace UI
 		}
 		void Init(ZKWindow* window, ZKSeekBar* slider, ZKTextView* header, ZKTextView* value, ZKTextView* prefix,
 				  ZKTextView* suffix);
-		void Open(const char* header, const char* prefix, const char* suffix, const int min, const int max,
-				  const int progress, function_ref<void(int)> onProgressChanged);
+		void Open(const char* header, const char* prefix, const char* suffix, const char* unit, const int min,
+				  const int max, const int value, function<void(int)> onProgressChanged, bool displayRaw = false);
 		void Callback() const;
-		void SetOnProgressChanged(function_ref<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
+		void SetOnProgressChanged(function<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
 		void SetRange(const int min, const int max);
 		const int GetValue() const;
 		void SetValue(const int progress);
@@ -124,6 +125,7 @@ namespace UI
 		void SetHeaderf(const char* header, ...);
 		void SetPrefix(const char* prefix);
 		void SetSuffix(const char* suffix);
+		void SetUnit(const char* unit);
 
 	  private:
 		ZKWindow* window_;
@@ -133,7 +135,9 @@ namespace UI
 		ZKTextView* prefix_;
 		ZKTextView* suffix_;
 		int min_, max_;
-		function_ref<void(int)> onProgressChanged_;
+		String<5> unit_;
+		function<void(int)> onProgressChanged_;
+		bool displayRaw_ = false;
 	};
 
 	enum class HeaterType

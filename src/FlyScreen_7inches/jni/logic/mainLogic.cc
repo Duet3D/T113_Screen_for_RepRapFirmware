@@ -579,19 +579,23 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
 }
 
 static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
+	// static size_t fanIndex;
 	OM::Fan* fan = OM::GetFanBySlot(index);
 	if (fan == nullptr) { return; }
 	char header[32];
 	SafeSnprintf(header, sizeof(header), "Fan %d", fan->index);
 	size_t fanIndex = fan->index;
-	UI::SLIDER_WINDOW->Open(header, "", "%", 0, 255, (int)(fan->requestedValue * 255), [fanIndex](int percent) {
-		dbg("Getting fan %d", fanIndex);
-		// OM::Fan* fan = OM::GetFanBySlot(index);
-		// if (fan == nullptr) { return; }
-		// int fanSpeed = (percent * 255) / 100;
-		// dbg("Setting fan %d", fan->index);
-		// SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
-	});
+	UI::SLIDER_WINDOW->Open(
+		header, "", "", "%", 0, 100, (int)(fan->requestedValue * 255),
+		[fanIndex](int percent) {
+			dbg("Getting fan %d", fanIndex);
+			OM::Fan* fan = OM::GetFan(fanIndex);
+			if (fan == nullptr) { return; }
+			int fanSpeed = (percent * 255) / 100;
+			dbg("Setting fan %d", fan->index);
+			SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
+		},
+		true);
 }
 
 static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {

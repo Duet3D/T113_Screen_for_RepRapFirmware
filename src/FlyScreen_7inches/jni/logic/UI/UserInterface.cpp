@@ -221,21 +221,36 @@ namespace UI
 		suffix_ = suffix;
 	}
 
-	void SliderWindow::Open(const char* header, const char* prefix, const char* suffix, const int min, const int max,
-							const int progress, function_ref<void(int)> onProgressChanged)
+	void SliderWindow::Open(const char* header, const char* prefix, const char* suffix, const char* unit, const int min,
+							const int max, const int value, function<void(int)> onProgressChanged, bool displayRaw)
 	{
+		onProgressChanged_ = [](int) {}; // reset callback
+		unit_.copy(unit);
+		displayRaw_ = displayRaw;
 		SetRange(min, max);
 		SetHeader(header);
 		SetPrefix(prefix);
 		SetSuffix(suffix);
-		// SetValue(progress);
+		SetValue(value);
 		SetOnProgressChanged(onProgressChanged);
 		WINDOW->OpenOverlay(window_);
 	}
 
 	void SliderWindow::Callback() const
 	{
-		value_->setText(GetValue());
+		value_->setTextf("%d %s", GetValue(), unit_.c_str());
+		if (displayRaw_)
+		{
+			// Display the raw slider value
+			value_->setTextf("%d %s", slider_->getProgress(), unit_.c_str());
+		}
+		else
+		{
+			// Display the value adjusted by min and max
+			value_->setTextf("%d %s", GetValue(),
+							 unit_.c_str()); // this lets you set the displayed value outside the range
+											 // which may be useful maybe? If not, change to GetValue()
+		}
 		onProgressChanged_(GetValue());
 	}
 
@@ -255,8 +270,6 @@ namespace UI
 	{
 		int percent = ((val - min_) * 100) / (max_ - min_);
 		slider_->setProgress(percent);
-		value_->setText(val); // this lets you set the displayed value outside the range which may be useful maybe?
-							  // If not, change to GetValue()
 	}
 
 	void SliderWindow::SetHeader(const char* header)
@@ -279,7 +292,7 @@ namespace UI
 
 	void SliderWindow::SetSuffix(const char* suffix)
 	{
-		suffix_->setTextf("%d %s", max_, suffix);
+		suffix_->setTextf("%d %s %s", max_, unit_.c_str(), suffix);
 	}
 
 	static std::map<const char*, ToolsList*> sToolsListMap;
@@ -310,10 +323,10 @@ namespace UI
 
 	void ToolsList::CalculateTotalHeaterCount()
 	{
-		dbg("Bed count %d", OM::GetBedCount());
+		// dbg("Bed count %d", OM::GetBedCount());
 		bedCount_ = OM::GetBedCount();
 
-		dbg("Chamber count %d", OM::GetChamberCount());
+		// dbg("Chamber count %d", OM::GetChamberCount());
 		chamberCount_ = OM::GetChamberCount();
 
 		size_t count = 0;
@@ -331,7 +344,7 @@ namespace UI
 			return true;
 		});
 
-		dbg("Tool count %d", count);
+		// dbg("Tool count %d", count);
 		toolCount_ = count;
 	}
 
@@ -367,9 +380,9 @@ namespace UI
 				pToolName->setText(tool->name.c_str());
 				return;
 			}
-			dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d", index, tool->index,
-				toolHeaterIndex, toolHeater->heater->index, toolHeater->heater->current, toolHeater->activeTemp,
-				toolHeater->standbyTemp);
+			// dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d", index, tool->index,
+			// 	toolHeaterIndex, toolHeater->heater->index, toolHeater->heater->current, toolHeater->activeTemp,
+			// 	toolHeater->standbyTemp);
 			if (tool->GetHeaterCount() > 1) { pToolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex); }
 			else { pToolName->setText(tool->name.c_str()); }
 			pActiveTemperature->setText((int)toolHeater->activeTemp);
@@ -392,8 +405,8 @@ namespace UI
 				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
-			dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
-				bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
+			// dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
+			// 	bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
 			if (OM::GetBedCount() > 1) { pToolName->setTextf("Bed %d", bedOrChamber->index); }
 			else { pToolName->setText("Bed"); }
 			pActiveTemperature->setText((int)heater->activeTemp);
@@ -405,7 +418,6 @@ namespace UI
 		}
 
 		bedOrChamberIndex -= OM::GetBedCount();
-		dbg("Chamber index %d", bedOrChamberIndex);
 		bedOrChamber = OM::GetChamberBySlot(bedOrChamberIndex);
 		if (bedOrChamber != nullptr)
 		{
@@ -415,8 +427,9 @@ namespace UI
 				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
-			dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
-				bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
+			// dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d", index,
+			// bedOrChamber->index, 	bedOrChamber->heater, heater->index, heater->current, heater->activeTemp,
+			// heater->standbyTemp);
 			if (OM::GetChamberCount() > 1) { pToolName->setTextf("Chamber %d", bedOrChamber->index); }
 			else { pToolName->setText("Chamber"); }
 			pActiveTemperature->setText((int)heater->activeTemp);
