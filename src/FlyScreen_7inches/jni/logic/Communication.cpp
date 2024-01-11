@@ -926,17 +926,7 @@ namespace Comm {
 				initialized = true;
 			}
 
-			// check if specific info is needed
-			bool sent = false;
-			if (OM::OkToSend()) {
-				// TODO: uncomment
-				// sent = FileManager::ProcessTimers();
-			}
-
-			// if nothing was fetched do a status update
-			if (!sent) {
-				SerialIo::Sendf("M409 F\"d99f\"\n");
-			}
+            SerialIo::Sendf("M409 F\"d99f\"\n");
 		}
 	}
 

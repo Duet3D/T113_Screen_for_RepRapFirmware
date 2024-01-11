@@ -102,8 +102,8 @@ namespace SerialIo {
 	JsonState lastState = jsBegin;
 
 	// fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array index, and a ':' character indicates a field separator.
-	String<100> fieldId;
-	String<1028> fieldVal;
+	String<200> fieldId;
+	String<2048> fieldVal;
 	size_t arrayIndices[MaxArrayNesting];
 	size_t arrayDepth = 0;
 
