@@ -578,8 +578,8 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
 	pListItem->setTextf("Fan %d: %d %%", fan->index, (int)(100*fan->requestedValue));
 }
 
-static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int id) {
-	// static size_t fanIndex;
+static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
+{
 	OM::Fan* fan = OM::GetFanBySlot(index);
 	if (fan == nullptr) { return; }
 	char header[32];
@@ -588,11 +588,9 @@ static void onListItemClick_PrintFanList(ZKListView *pListView, int index, int i
 	UI::SLIDER_WINDOW->Open(
 		header, "", "", "%", 0, 100, (int)(fan->requestedValue * 255),
 		[fanIndex](int percent) {
-			dbg("Getting fan %d", fanIndex);
 			OM::Fan* fan = OM::GetFan(fanIndex);
 			if (fan == nullptr) { return; }
 			int fanSpeed = (percent * 255) / 100;
-			dbg("Setting fan %d", fan->index);
 			SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
 		},
 		true);
@@ -621,18 +619,15 @@ static int getListItemCount_PrintPositionList(const ZKListView *pListView) {
 static void obtainListItemData_PrintPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     ZKListView::ZKListSubItem* pMachinePosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListMachinePositionSubItem);
     ZKListView::ZKListSubItem* pUserPosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListUserPositionSubItem);
-    OM::Move::Axis* axis = OM::Move::GetAxis(index);
-    if (axis == nullptr)
-    	return;
+	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
+	if (axis == nullptr) return;
 
-    pListItem->setText(axis->letter);
-    pUserPosition->setText(axis->userPosition);
-    pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
+	pListItem->setText(axis->letter);
+	pUserPosition->setText(axis->userPosition);
+	pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
 }
 
-static void onListItemClick_PrintPositionList(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ PrintPositionList  !!!\n");
-}
+static void onListItemClick_PrintPositionList(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_PrintExtruderPositionList(const ZKListView *pListView) {
     //LOGD("getListItemCount_PrintExtruderPositionList !\n");
@@ -641,16 +636,24 @@ static int getListItemCount_PrintExtruderPositionList(const ZKListView *pListVie
 
 static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     ZKListView::ZKListSubItem* pSubItem = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
-    OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(index);
-    if (extruder == nullptr)
-    	return;
+	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
+	if (extruder == nullptr) return;
 
-    pListItem->setText(extruder->index);
-    pSubItem->setText(extruder->position);
+	pListItem->setText(extruder->index);
+	pSubItem->setText(extruder->position);
 }
 
 static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ PrintExtruderPositionList  !!!\n");
+	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
+	if (extruder == nullptr) { return; }
+	char header[32];
+	size_t extruderIndex = extruder->index;
+	SafeSnprintf(header, sizeof(header), "Extrusion Factor: Extruder %d", extruderIndex);
+	UI::SLIDER_WINDOW->Open(header, "", "", "%", 0, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
+		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
+		if (extruder == nullptr) { return; }
+		SerialIo::Sendf("M221 D%d S%d\n", extruder->index, percent);
+	});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {

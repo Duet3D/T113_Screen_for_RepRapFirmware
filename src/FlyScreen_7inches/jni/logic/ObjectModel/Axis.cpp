@@ -47,6 +47,12 @@ namespace OM::Move
 		return GetOrCreate<AxisList, Axis>(axes, index, false);
 	}
 
+	Axis* GetAxisBySlot(const size_t slot)
+	{
+		if (slot >= MaxTotalAxes) { return nullptr; }
+		return axes[slot];
+	}
+
 	Axis* GetOrCreateAxis(const size_t index)
 	{
 		// dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
@@ -141,6 +147,12 @@ namespace OM::Move
 			return nullptr;
 		}
 		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, false);
+	}
+
+	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot)
+	{
+		if (slot >= MaxTotalAxes) { return nullptr; }
+		return extruderAxes[slot];
 	}
 
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index)

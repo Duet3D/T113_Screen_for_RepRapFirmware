@@ -61,6 +61,7 @@ namespace OM::Move
 	};
 
 	Axis* GetAxis(const size_t index);
+	Axis* GetAxisBySlot(const size_t slot);
 	Axis* GetOrCreateAxis(const size_t index);
 	size_t GetAxisCount();
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt = 0);
@@ -77,6 +78,7 @@ namespace OM::Move
 	const uint8_t GetCurrentWorkplaceNumber();
 
 	ExtruderAxis* GetExtruderAxis(const size_t index);
+	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot);
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index);
 	size_t GetExtruderAxisCount();
 	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis *&, size_t)> func, const size_t startAt = 0);
