@@ -27,86 +27,64 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
-	OBSERVER_CHAR(
-		"heat:heaters^",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			OM::Heat::RemoveHeater(indices[0], false);
-		}),
+	OBSERVER_CHAR("heat:heaters^", [](OBSERVER_CHAR_ARGS) { OM::Heat::RemoveHeater(indices[0], false); }),
 	/* Update heaters current reading */
-	OBSERVER_FLOAT(
-		"heat:heaters^:current",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Heat::UpdateHeaterTemp(indices[0], val))
-			{
-				dbg("Failed to update heater temperature; heater %d = %fC", indices[0], val);
-				return;
-			}
-			UI::ToolsList::RefreshAllToolLists(false);
-			mTempGraphPtr->addData(indices[0], val);
-		}),	/* Update what tool heaters active temperature */
-	OBSERVER_INT_IF_CHANGED(
-		"heat:heaters^:active",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::Heat::UpdateHeaterTarget(indices[0], val, true))
-			{
-				dbg("Failed to update heater %d active temperature to %d", indices[0], val);
-				return;
-			}
-			dbg("Updated heater %d active temperature to %d", indices[0], val);
-			UI::ToolsList::RefreshAllToolLists(false);
-		}),
+	OBSERVER_FLOAT("heat:heaters^:current",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Heat::UpdateHeaterTemp(indices[0], val))
+					   {
+						   dbg("Failed to update heater temperature; heater %d = %fC", indices[0], val);
+						   return;
+					   }
+					   UI::ToolsList::RefreshAllToolLists(false);
+					   mTempGraphPtr->addData(indices[0], val);
+				   }), /* Update what tool heaters active temperature */
+	OBSERVER_INT("heat:heaters^:active",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::Heat::UpdateHeaterTarget(indices[0], val, true))
+					 {
+						 dbg("Failed to update heater %d active temperature to %d", indices[0], val);
+						 return;
+					 }
+					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
 	/* Update what tool heaters standby temperature */
-	OBSERVER_INT_IF_CHANGED(
-		"heat:heaters^:standby",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::Heat::UpdateHeaterTarget(indices[0], val, false))
-			{
-				dbg("Failed to update heater %d standby temperature to %d", indices[0], val);
-				return;
-			}
-			dbg("Updated heater %d standby temperature to %d", indices[0], val);
-			UI::ToolsList::RefreshAllToolLists(false);
-		}),
-	OBSERVER_CHAR(
-		"heat:heaters^:state",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			OM::Heat::UpdateHeaterStatus(indices[0], val);
-		}),
-	OBSERVER_INT(
-		"heat:bedHeaters^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (val > -1)
-			{
-				OM::SetBedHeater(indices[0], val);
-				for (size_t i = OM::lastBed + 1; i < indices[0]; ++i)
-				{
-					OM::RemoveBed(i, false);
-				}
-				OM::lastBed = indices[0];
-				dbg("lastBed=%d", OM::lastBed);
-			}
-		}),
-	OBSERVER_INT(
-		"heat:chamberHeaters^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (val > -1)
-			{
-				OM::SetChamberHeater(indices[0], val);
-				for (size_t i = OM::lastChamber+ 1; i < indices[0]; ++i)
-				{
-					OM::RemoveChamber(i, false);
-				}
-				OM::lastChamber = indices[0];
-				dbg("lastChamber=%d", OM::lastChamber);
-			}
-		}),
+	OBSERVER_INT("heat:heaters^:standby",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::Heat::UpdateHeaterTarget(indices[0], val, false))
+					 {
+						 dbg("Failed to update heater %d standby temperature to %d", indices[0], val);
+						 return;
+					 }
+					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
+	OBSERVER_CHAR("heat:heaters^:state", [](OBSERVER_CHAR_ARGS) { OM::Heat::UpdateHeaterStatus(indices[0], val); }),
+	OBSERVER_INT("heat:bedHeaters^",
+				 [](OBSERVER_INT_ARGS) {
+					 if (val > -1)
+					 {
+						 OM::SetBedHeater(indices[0], val);
+						 for (size_t i = OM::lastBed + 1; i < indices[0]; ++i)
+						 {
+							 OM::RemoveBed(i, false);
+						 }
+						 OM::lastBed = indices[0];
+						 dbg("lastBed=%d", OM::lastBed);
+					 }
+				 }),
+	OBSERVER_INT("heat:chamberHeaters^",
+				 [](OBSERVER_INT_ARGS) {
+					 if (val > -1)
+					 {
+						 OM::SetChamberHeater(indices[0], val);
+						 for (size_t i = OM::lastChamber + 1; i < indices[0]; ++i)
+						 {
+							 OM::RemoveChamber(i, false);
+						 }
+						 OM::lastChamber = indices[0];
+						 dbg("lastChamber=%d", OM::lastChamber);
+					 }
+				 }),
 };
 
 /*

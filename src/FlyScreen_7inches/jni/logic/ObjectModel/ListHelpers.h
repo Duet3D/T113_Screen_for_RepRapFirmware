@@ -21,14 +21,14 @@ T* GetOrCreate(L& list, const size_t index, const bool create)
 	{
 		if (list[i]->index == index)
 		{
-			dbg("Getting index=%d", index);
+			// dbg("Getting index=%d", index);
 			return list[i];
 		}
 	}
 
 	if (create && !list.Full())
 	{
-		dbg("Creating index=%d", index);
+		// dbg("Creating index=%d", index);
 		T* elem = new T;
 		elem->Reset();
 		elem->index = index;
@@ -61,7 +61,7 @@ size_t Remove(L& list, const size_t index, const bool allFollowing)
 	// if the last element is already smaller than what we look for
 	if (list.IsEmpty() || list[list.Size()-1]->index < index)
 	{
-		dbg("Nothing removed");
+		// dbg("Nothing removed");
 		return 0;
 	}
 
@@ -72,7 +72,7 @@ size_t Remove(L& list, const size_t index, const bool allFollowing)
 		T* elem = list[i];
 		if (elem->index == index || (allFollowing && elem->index > index))
 		{
-			dbg("Removing index=%d", i);
+			// dbg("Removing index=%d", i);
 			list.Erase(i);
 			delete elem;
 			++removed;

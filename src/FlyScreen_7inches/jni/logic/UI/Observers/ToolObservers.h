@@ -27,91 +27,70 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
-	OBSERVER_CHAR(
-		"tools^",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			OM::RemoveTool(indices[0], false);
-		}),
+	OBSERVER_CHAR("tools^", [](OBSERVER_CHAR_ARGS) { OM::RemoveTool(indices[0], false); }),
 	/* Update what heaters are associated with what tool */
-	OBSERVER_UINT(
-		"tools^:heaters^",
-		[](OBSERVER_UINT_ARGS)
-		{
-			if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
-			{
-				dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
-				return;
-			}
-			UI::ToolsList::RefreshAllToolLists();
-		}),
+	OBSERVER_UINT("tools^:heaters^",
+				  [](OBSERVER_UINT_ARGS) {
+					  if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
+					  {
+						  dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
+						  return;
+					  }
+					  UI::ToolsList::RefreshAllToolLists();
+				  }),
 	/* Update what extruders are associated with what tool */
-	OBSERVER_UINT(
-		"tools^:extruders^",
-		[](OBSERVER_UINT_ARGS)
-		{
-			if (!OM::UpdateToolExtruder(indices[0], indices[1], (uint8_t)val))
-			{
-				dbg("Failed to update tool %d extruder %d", indices[0], indices[1]);
-				return;
-			}
-		}),
+	OBSERVER_UINT("tools^:extruders^",
+				  [](OBSERVER_UINT_ARGS) {
+					  if (!OM::UpdateToolExtruder(indices[0], indices[1], (uint8_t)val))
+					  {
+						  dbg("Failed to update tool %d extruder %d", indices[0], indices[1]);
+						  return;
+					  }
+				  }),
 	/* Update what fans are associated with what tool */
-	OBSERVER_UINT(
-		"tools^:fans^",
-		[](OBSERVER_UINT_ARGS)
-		{
-			if (!OM::UpdateToolFan(indices[0], indices[1], (uint8_t)val))
-			{
-				dbg("Failed to update tool %d fan %d", indices[0], indices[1]);
-				return;
-			}
-		}),
-	OBSERVER_INT(
-		"tools^:active^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
-			{
-				dbg("Failed to update tool %d active temperature[%d] to %d", indices[0], indices[1], val);
-				return;
-			}
-			dbg("Updated tool %d active temperature[%d] to %d", indices[0], indices[1], val);
-			UI::ToolsList::RefreshAllToolLists(false);
-		}),
+	OBSERVER_UINT("tools^:fans^",
+				  [](OBSERVER_UINT_ARGS) {
+					  if (!OM::UpdateToolFan(indices[0], indices[1], (uint8_t)val))
+					  {
+						  dbg("Failed to update tool %d fan %d", indices[0], indices[1]);
+						  return;
+					  }
+				  }),
+	OBSERVER_INT("tools^:active^",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
+					 {
+						 dbg("Failed to update tool %d active temperature[%d] to %d", indices[0], indices[1], val);
+						 return;
+					 }
+					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
 	/* Update what tool heaters standby temperature */
-	OBSERVER_INT_IF_CHANGED(
-		"tools^:standby^",
-		[](OBSERVER_INT_ARGS)
-		{
-			if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
-			{
-				dbg("Failed to update tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
-				return;
-			}
-			dbg("Updated tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
-			UI::ToolsList::RefreshAllToolLists(false);
-		}),
-	OBSERVER_CHAR(
-		"tools^:name",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			if (!OM::UpdateToolName(indices[0], val))
-			{
-				dbg("Failed to update tool %d name to %s", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_CHAR(
-		"tools^:state",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			if (!OM::UpdateToolStatus(indices[0], val))
-			{
-				dbg("Failed to update tool %d name to %s", indices[0], val);
-				return;
-			}
-		}),
+	OBSERVER_INT("tools^:standby^",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
+					 {
+						 dbg("Failed to update tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
+						 return;
+					 }
+					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
+	OBSERVER_CHAR("tools^:name",
+				  [](OBSERVER_CHAR_ARGS) {
+					  if (!OM::UpdateToolName(indices[0], val))
+					  {
+						  dbg("Failed to update tool %d name to %s", indices[0], val);
+						  return;
+					  }
+				  }),
+	OBSERVER_CHAR("tools^:state",
+				  [](OBSERVER_CHAR_ARGS) {
+					  if (!OM::UpdateToolStatus(indices[0], val))
+					  {
+						  dbg("Failed to update tool %d name to %s", indices[0], val);
+						  return;
+					  }
+				  }),
 };
 
 /*

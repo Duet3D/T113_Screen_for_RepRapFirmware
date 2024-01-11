@@ -5,7 +5,7 @@
  *      Author: manuel & Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG (0)
 #include "Tool.h"
 #include "Hardware/SerialIo.h"
 #include "ListHelpers.h"

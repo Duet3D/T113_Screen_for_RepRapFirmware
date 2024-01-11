@@ -73,26 +73,25 @@ namespace OM::Move
 	}
 
 #define AXIS_SETTER(funcName, valType, varName)                                                                        \
-    bool funcName(size_t index, valType val)                                                                           \
-    {                                                                                                                  \
-        if (index >= MaxTotalAxes)                                                                                     \
-        {                                                                                                              \
-            dbg("axis[%d] greater than MaxTotalAxes", index);                                                          \
-            return false;                                                                                              \
-        }                                                                                                              \
-        Axis* axis = GetOrCreateAxis(index);                                                                           \
-        if (axis == nullptr)                                                                                           \
-        {                                                                                                              \
-            dbg("Could not get or create axis %d", index);                                                             \
-            return false;                                                                                              \
-        }                                                                                                              \
-        dbg("Set axis->%s", #varName);                                                                                 \
-        axis->varName = val;                                                                                           \
-        return true;                                                                                                   \
-    }
+	bool funcName(size_t index, valType val)                                                                           \
+	{                                                                                                                  \
+		if (index >= MaxTotalAxes)                                                                                     \
+		{                                                                                                              \
+			dbg("axis[%d] greater than MaxTotalAxes", index);                                                          \
+			return false;                                                                                              \
+		}                                                                                                              \
+		Axis* axis = GetOrCreateAxis(index);                                                                           \
+		if (axis == nullptr)                                                                                           \
+		{                                                                                                              \
+			dbg("Could not get or create axis %d", index);                                                             \
+			return false;                                                                                              \
+		}                                                                                                              \
+		axis->varName = val;                                                                                           \
+		return true;                                                                                                   \
+	}
 
-    AXIS_SETTER(SetBabystepOffset, float, babystep);
-    // Update the homed status of the specified axis. If the axis is -1 then it
+	AXIS_SETTER(SetBabystepOffset, float, babystep);
+	// Update the homed status of the specified axis. If the axis is -1 then it
     // represents the "all homed" status.
     AXIS_SETTER(SetAxisHomedStatus, bool, homed);
 	AXIS_SETTER(SetAxisLetter, char, letter[0]);
@@ -170,25 +169,24 @@ namespace OM::Move
 	}
 
 #define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \
-    bool funcName(size_t index, valType val)                                                                           \
-    {                                                                                                                  \
-        if (index >= MaxTotalAxes)                                                                                     \
-        {                                                                                                              \
-            dbg("extruderAxis[%d] greater than MaxTotalAxes", index);                                                  \
-            return false;                                                                                              \
-        }                                                                                                              \
-        ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                       \
-        if (extruder == nullptr)                                                                                       \
-        {                                                                                                              \
-            dbg("Could not get or create extruderAxis %d", index);                                                     \
-            return false;                                                                                              \
-        }                                                                                                              \
-        dbg("Set extruderAxis->%s", #varName);                                                                         \
-        extruder->varName = val;                                                                                       \
-        return true;                                                                                                   \
-    }
+	bool funcName(size_t index, valType val)                                                                           \
+	{                                                                                                                  \
+		if (index >= MaxTotalAxes)                                                                                     \
+		{                                                                                                              \
+			dbg("extruderAxis[%d] greater than MaxTotalAxes", index);                                                  \
+			return false;                                                                                              \
+		}                                                                                                              \
+		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                       \
+		if (extruder == nullptr)                                                                                       \
+		{                                                                                                              \
+			dbg("Could not get or create extruderAxis %d", index);                                                     \
+			return false;                                                                                              \
+		}                                                                                                              \
+		extruder->varName = val;                                                                                       \
+		return true;                                                                                                   \
+	}
 
-    EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
+	EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);
 	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
 } // namespace OM::Move

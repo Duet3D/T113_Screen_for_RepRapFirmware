@@ -5,8 +5,7 @@
  *      Author: Andy Everitt
  */
 
-
-#define DEBUG (1)
+#define DEBUG (0)
 #include "Heat.h"
 #include "ListHelpers.h"
 #include "uart/CommDef.h"
