@@ -657,8 +657,9 @@ static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
-    //LOGD(" ProgressChanged PrintSpeedMultiplierBar %d !!!\n", progress);
+	SerialIo::Sendf("M220 S%d\n", progress);
 }
+
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
 	return UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
 }

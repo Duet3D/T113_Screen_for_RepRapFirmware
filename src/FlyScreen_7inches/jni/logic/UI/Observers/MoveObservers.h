@@ -26,129 +26,100 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
-	OBSERVER_FLOAT(
-		"move:axes^:babystep",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetBabystepOffset(indices[0], val))
-			{
-				dbg("Failed to set axis[%d]->babystep = %f", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_BOOL(
-		"move:axes^:homed",
-		[](OBSERVER_BOOL_ARGS)
-		{
-			if (!OM::Move::SetAxisHomedStatus(indices[0], val))
-			{
-				dbg("Failed to set axis[%d]->homed = %d", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_CHAR(
-		"move:axes^:letter",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			if (!OM::Move::SetAxisLetter(indices[0], val[0]))
-			{
-				dbg("Failed to set axis[%d]->letter = %s", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:axes^:machinePosition",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetAxisMachinePosition(indices[0], val))
-			{
-				dbg("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:axes^:min",
-		[](OBSERVER_FLOAT_ARGS) {
-		}),
-	OBSERVER_FLOAT(
-		"move:axes^:max",
-		[](OBSERVER_FLOAT_ARGS) {
-		}),
-	OBSERVER_FLOAT(
-		"move:axes^:userPosition",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetAxisUserPosition(indices[0], val))
-			{
-				dbg("Failed to set axis[%d]->userPosition = %f", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_BOOL(
-		"move:axes^:visible",
-		[](OBSERVER_BOOL_ARGS)
-		{
-			if (!OM::Move::SetAxisVisible(indices[0], val))
-			{
-				dbg("Failed to set axis[%d]->visible = %d", indices[0], val);
-				return;
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:axes^:workplaceOffsets^",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val))
-			{
-				dbg("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
-				return;
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:extruders^:factor",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetExtruderFactor(indices[0], val))
-			{
-				dbg("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:extruders^:position",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetExtruderPosition(indices[0], val))
-			{
-				dbg("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
-			}
-		}),
-	OBSERVER_FLOAT(
-		"move:extruders^:stepsPerMm",
-		[](OBSERVER_FLOAT_ARGS)
-		{
-			if (!OM::Move::SetExtruderStepsPerMm(indices[0], val))
-			{
-				dbg("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
-			}
-		}),
-	OBSERVER_CHAR(
-		"move:kinematics:name",
-		[](OBSERVER_CHAR_ARGS) {
-		}),
-	OBSERVER_FLOAT(
-		"move:speedFactor",
-		[](OBSERVER_FLOAT_ARGS) {
-		}),
-	OBSERVER_UINT(
-		"move:workplaceNumber",
-		[](OBSERVER_UINT_ARGS)
-		{
-			if (!OM::Move::SetCurrentWorkplaceNumber(val))
-			{
-				dbg("Failed to set workplace number = %d", val);
-				return;
-			}
-		}),
+	OBSERVER_FLOAT("move:axes^:babystep",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetBabystepOffset(indices[0], val))
+					   {
+						   dbg("Failed to set axis[%d]->babystep = %f", indices[0], val);
+						   return;
+					   }
+				   }),
+	OBSERVER_BOOL("move:axes^:homed",
+				  [](OBSERVER_BOOL_ARGS) {
+					  if (!OM::Move::SetAxisHomedStatus(indices[0], val))
+					  {
+						  dbg("Failed to set axis[%d]->homed = %d", indices[0], val);
+						  return;
+					  }
+				  }),
+	OBSERVER_CHAR("move:axes^:letter",
+				  [](OBSERVER_CHAR_ARGS) {
+					  if (!OM::Move::SetAxisLetter(indices[0], val[0]))
+					  {
+						  dbg("Failed to set axis[%d]->letter = %s", indices[0], val);
+						  return;
+					  }
+				  }),
+	OBSERVER_FLOAT("move:axes^:machinePosition",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetAxisMachinePosition(indices[0], val))
+					   {
+						   dbg("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
+						   return;
+					   }
+				   }),
+	OBSERVER_FLOAT("move:axes^:min", [](OBSERVER_FLOAT_ARGS) {}),
+	OBSERVER_FLOAT("move:axes^:max", [](OBSERVER_FLOAT_ARGS) {}),
+	OBSERVER_FLOAT("move:axes^:userPosition",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetAxisUserPosition(indices[0], val))
+					   {
+						   dbg("Failed to set axis[%d]->userPosition = %f", indices[0], val);
+						   return;
+					   }
+				   }),
+	OBSERVER_BOOL("move:axes^:visible",
+				  [](OBSERVER_BOOL_ARGS) {
+					  if (!OM::Move::SetAxisVisible(indices[0], val))
+					  {
+						  dbg("Failed to set axis[%d]->visible = %d", indices[0], val);
+						  return;
+					  }
+				  }),
+	OBSERVER_FLOAT("move:axes^:workplaceOffsets^",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val))
+					   {
+						   dbg("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
+						   return;
+					   }
+				   }),
+	OBSERVER_FLOAT("move:extruders^:factor",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetExtruderFactor(indices[0], val))
+					   {
+						   dbg("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
+					   }
+				   }),
+	OBSERVER_FLOAT("move:extruders^:position",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetExtruderPosition(indices[0], val))
+					   {
+						   dbg("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
+					   }
+				   }),
+	OBSERVER_FLOAT("move:extruders^:stepsPerMm",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetExtruderStepsPerMm(indices[0], val))
+					   {
+						   dbg("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
+					   }
+				   }),
+	OBSERVER_CHAR("move:kinematics:name", [](OBSERVER_CHAR_ARGS) {}),
+	OBSERVER_FLOAT("move:speedFactor",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   int factor = (int)(val * 100);
+					   mPrintSpeedFactorPtr->setTextf("%d %%", factor);
+					   mPrintSpeedMultiplierBarPtr->setMax(factor + 100);
+				   }),
+	OBSERVER_UINT("move:workplaceNumber",
+				  [](OBSERVER_UINT_ARGS) {
+					  if (!OM::Move::SetCurrentWorkplaceNumber(val))
+					  {
+						  dbg("Failed to set workplace number = %d", val);
+						  return;
+					  }
+				  }),
 };
 
 /*
