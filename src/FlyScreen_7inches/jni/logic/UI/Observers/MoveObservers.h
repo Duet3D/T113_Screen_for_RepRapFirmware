@@ -133,6 +133,7 @@ static UI::Observer<UI::ui_array_end_update_cb> MoveObserversArrayEnd[] = {
 		{
 			OM::Move::RemoveAxis(indices[0], true);
 			mPrintPositionListPtr->refreshListView();
+			mAxisControlListViewPtr->refreshListView();
 
 			OM::Move::IterateAxesWhile([](OM::Move::Axis* &axis, size_t){
 				if (axis->letter[0] == 'Z')

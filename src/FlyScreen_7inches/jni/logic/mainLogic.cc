@@ -63,6 +63,8 @@
 
 #define TIMER_UPDATE_DATA 0  // Id of the timer used to update values from data received from serial
 
+static int sFeedRate = 6000;
+
 /**
  * Register timer
  * Fill the array to register the timer
@@ -102,6 +104,8 @@ static void onUI_init()
 				UI::observerMapArrayEnd.GetObservers(observerArrayEnd->GetKey()).size());
 		observerArrayEnd = observerArrayEnd->next;
 	}
+
+	mFeedrateBtn1Ptr->setSelected(true);
 
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
@@ -393,61 +397,131 @@ static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
 	return false;
 }
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick HomeAllBtn !!!\n");
-    return false;
+	SerialIo::Sendf("G28\n");
+	return false;
 }
 
-static int getListItemCount_AxisControlListView(const ZKListView *pListView) {
-    //LOGD("getListItemCount_AxisControlListView !\n");
-    return 5;
+static bool onButtonClick_TrueLevelBtn(ZKButton* pButton)
+{
+	SerialIo::Sendf("G32\n");
+	return false;
 }
 
-static void obtainListItemData_AxisControlListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ AxisControlListView  !!!\n");
+static bool onButtonClick_MeshLevelBtn(ZKButton* pButton)
+{
+	SerialIo::Sendf("G29\n");
+	return false;
 }
 
-static void onListItemClick_AxisControlListView(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ AxisControlListView  !!!\n");
+static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
+{
+	SerialIo::Sendf("M18\n");
+	return false;
 }
 
-static bool onButtonClick_FeedrateBtn1(ZKButton *pButton) {
-    LOGD(" ButtonClick FeedrateBtn1 !!!\n");
-    return false;
+static bool onButtonClick_HeightmapBtn(ZKButton* pButton)
+{
+	UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
+	return false;
 }
 
-static bool onButtonClick_TrueLevelBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick TrueLevelBtn !!!\n");
-    return false;
+static int getListItemCount_AxisControlListView(const ZKListView* pListView)
+{
+	return OM::Move::GetAxisCount();
 }
 
-static bool onButtonClick_MeshLevelBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick MeshLevelBtn !!!\n");
-    return false;
+static void obtainListItemData_AxisControlListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	ZKListView::ZKListSubItem* pHome = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
+	ZKListView::ZKListSubItem* pMachinePosition = pListItem->findSubItemByID(ID_MAIN_AxisControlMachinePositionSubItem);
+	ZKListView::ZKListSubItem* pUserPosition = pListItem->findSubItemByID(ID_MAIN_AxisControlUserPositionSubItem);
+	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
+	if (axis == nullptr) return;
+
+	pHome->setTextf("Home %s", axis->letter);
+	pHome->setSelected(axis->homed);
+	pUserPosition->setText(axis->userPosition);
+	pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
 }
 
-static bool onButtonClick_HeightmapBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick HeightmapBtn !!!\n");
-    return false;
+static void onListItemClick_AxisControlListView(ZKListView* pListView, int index, int id)
+{
+	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
+	if (axis == nullptr) return;
+
+	int distance = 0;
+	switch (id)
+	{
+	case ID_MAIN_AxisControlHomeSubItem:
+		SerialIo::Sendf("G28 %s\n", axis->letter);
+		return;
+	case ID_MAIN_AxisControlSubItem1:
+		distance = -50;
+		break;
+	case ID_MAIN_AxisControlSubItem2:
+		distance = -10;
+		break;
+	case ID_MAIN_AxisControlSubItem3:
+		distance = -1;
+		break;
+	case ID_MAIN_AxisControlSubItem4:
+		distance = -0.1;
+		break;
+	case ID_MAIN_AxisControlSubItem5:
+		distance = 0.1;
+		break;
+	case ID_MAIN_AxisControlSubItem6:
+		distance = 1;
+		break;
+	case ID_MAIN_AxisControlSubItem7:
+		distance = 10;
+		break;
+	case ID_MAIN_AxisControlSubItem8:
+		distance = 50;
+		break;
+	}
+	SerialIo::Sendf("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
+}
+
+static void selectFeedRateBtn(ZKButton* pButton)
+{
+	mFeedrateBtn1Ptr->setSelected(false);
+	mFeedrateBtn2Ptr->setSelected(false);
+	mFeedrateBtn3Ptr->setSelected(false);
+	mFeedrateBtn4Ptr->setSelected(false);
+	mFeedrateBtn5Ptr->setSelected(false);
+	pButton->setSelected(true);
+}
+
+static bool onButtonClick_FeedrateBtn1(ZKButton* pButton)
+{
+	sFeedRate = 100 * 60;
+	selectFeedRateBtn(pButton);
+	return false;
 }
 
 static bool onButtonClick_FeedrateBtn2(ZKButton *pButton) {
-    LOGD(" ButtonClick FeedrateBtn2 !!!\n");
-    return false;
+	sFeedRate = 50 * 60;
+	selectFeedRateBtn(pButton);
+	return false;
 }
 
 static bool onButtonClick_FeedrateBtn3(ZKButton *pButton) {
-    LOGD(" ButtonClick FeedrateBtn3 !!!\n");
-    return false;
+	sFeedRate = 20 * 60;
+	selectFeedRateBtn(pButton);
+	return false;
 }
 
 static bool onButtonClick_FeedrateBtn4(ZKButton *pButton) {
-    LOGD(" ButtonClick FeedrateBtn4 !!!\n");
-    return false;
+	sFeedRate = 10 * 60;
+	selectFeedRateBtn(pButton);
+	return false;
 }
 
 static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
-    LOGD(" ButtonClick FeedrateBtn5 !!!\n");
-    return false;
+	sFeedRate = 1 * 60;
+	selectFeedRateBtn(pButton);
+	return false;
 }
 static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_ConsoleListView !\n");
