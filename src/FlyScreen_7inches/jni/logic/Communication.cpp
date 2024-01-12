@@ -8,6 +8,9 @@
  *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/PanelDue.cpp
  */
 
+#define DEBUG (0)
+#include "Debug.h"
+
 #include "Communication.h"
 
 #include <stdarg.h>
@@ -15,20 +18,19 @@
 #include "Hardware/SerialIo.h"
 #include "Hardware/Reset.h"
 
-#include "uart/CommDef.h"
 #include "Configuration.h"
-#include "UI/OmObserver.h"
+#include "ControlCommands.h"
+#include "Library/Thumbnail.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"
 #include "ObjectModel/Utils.h"
-#include "ControlCommands.h"
-#include "Library/Thumbnail.h"
+#include "UI/OmObserver.h"
+#include "uart/CommDef.h"
+#include "utils/TimeHelper.h"
 
-#define DEBUG (0)
-#include "Debug.h"
 #include "utils/Log.h"
 
 // These defines control which detailed M409 requests will be sent
@@ -52,6 +54,11 @@
 namespace Comm {
 
 	const int parserMinErrors = 2;
+
+	static uint32_t lastResponseTime = 0;
+	constexpr uint32_t defaultPrinterPollInterval = 1000;
+	static uint32_t printerPollInterval = defaultPrinterPollInterval;
+	static uint32_t printerResponseTimeout = 2000;
 
 	static bool outOfBuffers = false;
 
@@ -572,6 +579,20 @@ namespace Comm {
 		return true;
 	}
 
+	static void Reconnect()
+	{
+		dbg("Reconnecting");
+		lastResponseTime = TimeHelper::getCurrentTime();
+		//		lastOutOfBufferResponse = 0;
+		OM::SetStatus(OM::PrinterStatus::connecting);
+		ResetSeqs();
+	}
+
+	const uint32_t GetPollInterval()
+	{
+		return printerPollInterval;
+	}
+
 	static void StartReceivedMessage();
 	static void EndReceivedMessage();
 	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
@@ -601,7 +622,7 @@ namespace Comm {
 
 	static void EndReceivedMessage() {
 
-		//lastResponseTime = SystemTick::GetTickCount();
+		lastResponseTime = TimeHelper::getCurrentTime();
 
 		if (currentRespSeq != nullptr) {
 			currentRespSeq->state = outOfBuffers ? SeqStateError : SeqStateOk;
@@ -915,6 +936,8 @@ namespace Comm {
 //------------------------------------------------------------------------------------------------------------------
 
 	void sendNext() {
+		long long now = TimeHelper::getCurrentTime();
+		if (now > (lastResponseTime + printerPollInterval + printerResponseTimeout)) { Reconnect(); }
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
 			LOGD("requesting %s\n", currentReqSeq->key);

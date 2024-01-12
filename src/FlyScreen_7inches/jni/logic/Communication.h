@@ -23,6 +23,8 @@ namespace Comm
 	bool GetFloat(const char s[], float &rslt);
 	bool GetBool(const char s[], bool &rslt);
 
+	const uint32_t GetPollInterval();
+
 	extern struct Seq* GetNextSeq(struct Seq *current);
 	extern void sendNext();
 	void init();

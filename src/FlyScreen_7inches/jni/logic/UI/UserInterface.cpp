@@ -168,6 +168,11 @@ namespace UI
 		text_ = text;
 	}
 
+	void ConfirmationWindow::Open()
+	{
+		Open([]() {}, []() {});
+	}
+
 	void ConfirmationWindow::Open(function_ref<void(void)> okCb)
 	{
 		Open(okCb, []() {});

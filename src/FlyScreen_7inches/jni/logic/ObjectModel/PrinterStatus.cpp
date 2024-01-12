@@ -15,7 +15,7 @@
 
 namespace OM
 {
-	static PrinterStatus status = PrinterStatus::connecting;
+	static PrinterStatus sStatus = PrinterStatus::connecting;
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
 	{
@@ -28,28 +28,33 @@ namespace OM
 
 	bool PrintInProgress()
 	{
-		return IsPrintingStatus(status);
+		return IsPrintingStatus(sStatus);
 	}
 
 	// Return true if sending a command or file list request to the printer now is a good idea.
 	// We don't want to send these when the printer is busy with a previous command, because they will block normal status requests.
 	bool OkToSend()
 	{
-		return status == OM::PrinterStatus::idle
-				|| status == OM::PrinterStatus::printing
-				|| status == OM::PrinterStatus::paused
-				|| status == OM::PrinterStatus::off;
+		return sStatus == OM::PrinterStatus::idle || sStatus == OM::PrinterStatus::printing ||
+			   sStatus == OM::PrinterStatus::paused || sStatus == OM::PrinterStatus::off;
 	}
 
 	// Return the printer status
 	PrinterStatus GetStatus()
 	{
-		return status;
+		return sStatus;
+	}
+
+	const char* GetStatusText()
+	{
+		if (sStatus > OM::PrinterStatus::unknown && sStatus < OM::PrinterStatus::NumTypes)
+			return printerStatusMap[(int)sStatus].key;
+		return "unknown";
 	}
 
 	void SetStatus(const char * status)
 	{
-		const PrinterStatusMapEntry key = {status, OM::PrinterStatus::connecting};
+		const PrinterStatusMapEntry key = {status, OM::PrinterStatus::unknown};
 		const PrinterStatusMapEntry * statusFromMap =
 				(OM::PrinterStatusMapEntry *) bsearch(
 						&key,
@@ -67,10 +72,10 @@ namespace OM
 	// This is called when the status changes
 	void SetStatus(const PrinterStatus newStatus)
 	{
-		if (newStatus != status)
+		if (newStatus != sStatus)
 		{
-			dbg("printer status %d -> %d\n", status, newStatus);
-			status = newStatus;
+			dbg("printer status %d -> %d\n", sStatus, newStatus);
+			sStatus = newStatus;
 		}
 	}
 }

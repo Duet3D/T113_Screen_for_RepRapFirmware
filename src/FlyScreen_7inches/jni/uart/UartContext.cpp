@@ -11,10 +11,11 @@
 #include <termio.h>
 #include <sys/ioctl.h>
 
+#include "UI/UserInterface.h"
 #include "uart/UartContext.h"
 #include "utils/Log.h"
 
-#define UART_DATA_BUF_LEN			16384	// 16KB
+#define UART_DATA_BUF_LEN 16384 // 16KB
 
 extern int parseProtocol(const BYTE *pData, UINT len);
 
@@ -148,7 +149,12 @@ bool UartContext::threadLoop() {
 
 			// Parse protocol
 			int len = parseProtocol(mDataBufPtr, mDataBufLen);
-			if (len == 0) {
+			if (len == 0) { mDataBufLen = 0; }
+			if (len == UART_DATA_BUF_LEN)
+			{
+				dbg("UART buffer overflow");
+				UI::CONF_WINDOW->Open();
+				UI::CONF_WINDOW->SetText("UART buffer overflow");
 				mDataBufLen = 0;
 			}
 		} else {

@@ -13,30 +13,31 @@
 #include <time.h>
 
 /**
- * @brief 时间操作帮助类
+ * @brief Time manipulation helper class
  */
-class TimeHelper {
-public:
+class TimeHelper
+{
+  public:
 	/**
-	 * @brief 获取当前日期时间，单位为毫秒
+	 * @brief Get the current date and time in milliseconds
 	 */
 	static long long getCurrentTime();
 
 	/**
-	 * @brief 获取当前日期
+	 * @brief Get the current date
 	 */
-	static struct tm * getDateTime();
+	static struct tm* getDateTime();
 
 	/**
-	 * @brief 设置日期
+	 * @brief Set the date
 	 */
-	static bool setDateTime(struct tm *ptm);
+	static bool setDateTime(struct tm* ptm);
 
 	/**
-	 * @brief 设置日期
-	 * @param pDate 格式：2017-09-13 16:00:00
+	 * @brief Set the date
+	 * @param pDate Format: 2017-09-13 16:00:00
 	 */
-	static bool setDateTime(const char *pDate);
+	static bool setDateTime(const char* pDate);
 };
 
 #endif /* _UTILS_TIME_HELPER_H_ */

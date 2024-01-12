@@ -59,8 +59,6 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 			default:
 				break;
 			}
-
-			mStatusTextPtr->setText(val);
 		}
 	),
 };

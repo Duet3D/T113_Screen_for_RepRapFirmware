@@ -72,6 +72,7 @@ namespace UI
 			return &cWindow;
 		}
 		void Init(ZKWindow* window, ZKButton* okBtn, ZKButton* cancelBtn, ZKTextView* text);
+		void Open();
 		void Open(function_ref<void(void)> okCb);
 		void Open(function_ref<void(void)> okCb, function_ref<void(void)> cancelCb);
 		void Ok()

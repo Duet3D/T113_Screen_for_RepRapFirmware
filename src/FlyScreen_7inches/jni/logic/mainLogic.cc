@@ -71,8 +71,8 @@ static int sFeedRate = 6000;
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA,  1000}, // Timer id=0, min interval of 300ms at 115200 baud
-//	{1,  100},
+	{TIMER_UPDATE_DATA, Comm::GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
+												  //	{1,  100},
 };
 
 /**
@@ -176,17 +176,15 @@ static bool onUI_Timer(int id)
 
 	case TIMER_UPDATE_DATA:
 	{
+		static OM::PrinterStatus status = OM::PrinterStatus::unknown;
+		if (status != OM::GetStatus())
+		{
+			status = OM::GetStatus();
+			mStatusTextPtr->setText(OM::GetStatusText());
+		}
 		Comm::sendNext();
 	}
-		break;
-
-	case 1:
-	{
-		float val = (float) (rand() % 100);
-		dbg("rand %f", val);
-		mTempGraphPtr->addData(0, val);
-	}
-		break;
+	break;
 	default:
 		break;
 	}
@@ -421,6 +419,7 @@ static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 
 static bool onButtonClick_HeightmapBtn(ZKButton* pButton)
 {
+	UI::WINDOW->CloseWindow(mMoveWindowPtr);
 	UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 	return false;
 }
