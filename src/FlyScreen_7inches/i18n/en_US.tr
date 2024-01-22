@@ -29,16 +29,50 @@
     <string name="bed">Bed</string>
     <string name="chamber">Chamber</string>
 
+    <!-- Side Bar -->
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="macros">Macros</string>
+    <string name="console">Console</string>
+    <string name="estop">E Stop</string>
+
     <!-- Main Page -->
+    <string name="move">Move</string>
+    <string name="extrude">Extrude</string>
+    <string name="status">Status</string>
+    <string name="heightmap">Heightmap</string>
+    <string name="fans">Fans</string>
+    <string name="files">Files</string>
+    <string name="network">Network</string>
+    <string name="settings">Settings</string>
+
+    <string name="current">Current</string>
+    <string name="active">Active</string>
+    <string name="standby">Standby</string>
 
     <!-- Move Page -->
     <string name="axis_control_home">Home %s</string>
+    <string name="home_all">Home All</string>
+    <string name="true_bed_levelling">True Bed Levelling</string>
+    <string name="mesh_bed_levelling">Mesh Bed Levelling</string>
+    <string name="disable_motors">Disable Motors</string>
+    <string name="tool_position">Tool Position</string>
+    <string name="machine_position">Machine Position</string>
+    <string name="feedrate_label">Feedrate in mm/s</string>
 
     <!-- Extrude Page -->
 
     <!-- Status Page -->
     <string name="fan_status">Fan %d: %d %%</string>
+    <string name="babystepping">Z Babystepping</string>
     <string name="babystepping_offset">Current Offset: %.2f mm</string>
+    <string name="extruder_drives">Extruder Drives</string>
+    <string name="requested_speed">Requested: %.2f mm/s</string>
+    <string name="top_speed">Top: %.2f mm/s</string>
+    <string name="volumetric_flow">Volumetric Flow:&#x000A;%.2f mm^3/s</string>
+    <string name="speed_factor">Speed Factor</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
 
     <!-- Fans Page -->
 
@@ -49,6 +83,7 @@
     <string name="file_date">Date: %s</string>
     <string name="elapsed">Elapsed</string>
     <string name="estimated">Estimated</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Network Page -->
 
@@ -61,10 +96,18 @@
     <string name="cancel">Cancel</string>
     <string name="fan_header">Fan %d</string>
     <string name="extrusion_factor_header">Extrusion Factor: Extruder %d</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="num_pad_del">Del</string>
 
     <!-- Settings Page -->
     <string name="language">Language</string>
     <string name="baud">Baud Rate</string>
+
+    <!-- Console Page -->
+    <string name="gcodes">Gcodes</string>
+    <string name="clear">Clear</string>
+    <string name="send">Send</string>
 
     <!-- Gcode List Descriptions -->
     <string name="G0G1_desc">G0 &amp; G1: Move</string>
