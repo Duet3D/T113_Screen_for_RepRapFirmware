@@ -768,7 +768,31 @@ static bool onButtonClick_ConfirmationOkBtn(ZKButton *pButton) {
     UI::CONF_WINDOW->Ok();
     return false;
 }
-static void onSlideItemClick_SlideWindow2(ZKSlideWindow* pSlideWindow, int index)
+
+static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
 {
-	// LOGD(" onSlideItemClick_ SlideWindow2 %d !!!\n", index);
+	switch (index)
+	{
+	case (int)UI::SettingsSlideWindowIndex::language:
+		EASYUICONTEXT->openActivity("LanguageSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::baud:
+		break;
+	}
+}
+
+static int getListItemCount_BaudRateList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_BaudRateList !\n");
+	return 8;
+}
+
+static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ BaudRateList  !!!\n");
+}
+
+static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ BaudRateList  !!!\n");
 }

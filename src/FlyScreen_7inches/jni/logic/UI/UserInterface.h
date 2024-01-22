@@ -39,6 +39,12 @@ namespace UI
 		settings,
 	};
 
+	enum class SettingsSlideWindowIndex
+	{
+	    language = 0,
+	    baud,
+	};
+
 	class Window
 	{
 	  public:

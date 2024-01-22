@@ -62,6 +62,10 @@
     <string name="fan_header">Fan %d</string>
     <string name="extrusion_factor_header">Extrusion Factor: Extruder %d</string>
 
+    <!-- Settings Page -->
+    <string name="language">Language</string>
+    <string name="baud">Baud Rate</string>
+
     <!-- Gcode List Descriptions -->
     <string name="G0G1_desc">G0 &amp; G1: Move</string>
     <string name="G2G3_desc">G2 &amp; G3: Controlled Arc Move</string>
@@ -275,7 +279,5 @@
     <string name="M998_desc">M998: Request resend of line</string>
     <string name="M999_desc">M999: Restart</string>
     <string name="T_desc">T: Select Tool</string>
-
-    <!-- Settings Page -->
 
 </resources>
