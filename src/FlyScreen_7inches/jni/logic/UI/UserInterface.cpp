@@ -180,11 +180,16 @@ namespace UI
 
 	void ConfirmationWindow::Open(function_ref<void(void)> okCb, function_ref<void(void)> cancelCb)
 	{
-		SetOkBtnText("Ok");
-		SetCancelBtnText("Cancel");
+		SetOkBtnText(LANGUAGEMANAGER->getValue("ok").c_str());
+		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
 		WINDOW->OpenOverlay(window_);
 		okCb_ = okCb;
 		cancelCb_ = cancelCb;
+	}
+
+	void ConfirmationWindow::SetText(const std::string& text)
+	{
+		text_->setText(text);
 	}
 
 	void ConfirmationWindow::SetText(const char* text)
@@ -230,7 +235,7 @@ namespace UI
 							const int max, const int value, function<void(int)> onProgressChanged, bool displayRaw)
 	{
 		onProgressChanged_ = [](int) {}; // reset callback
-		unit_.copy(unit);
+		SetUnit(unit);
 		displayRaw_ = displayRaw;
 		SetRange(min, max);
 		SetHeader(header);
@@ -298,6 +303,11 @@ namespace UI
 	void SliderWindow::SetSuffix(const char* suffix)
 	{
 		suffix_->setTextf("%d %s %s", max_, unit_.c_str(), suffix);
+	}
+
+	void SliderWindow::SetUnit(const char* unit)
+	{
+		unit_.copy(unit);
 	}
 
 	static std::map<const char*, ToolsList*> sToolsListMap;
@@ -393,7 +403,7 @@ namespace UI
 			pActiveTemperature->setText((int)toolHeater->activeTemp);
 			pStandbyTemperature->setText((int)toolHeater->standbyTemp);
 			pCurrentTemperature->setText(toolHeater->heater->current);
-			pStatus->setText(toolHeater->heater->GetHeaterStatusStr());
+			pStatus->setTextTr(toolHeater->heater->GetHeaterStatusStr());
 			(tool->status == OM::ToolStatus::active) ? pListItem->setSelected(true) : pListItem->setSelected(false);
 
 			return;
@@ -412,8 +422,14 @@ namespace UI
 			}
 			// dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
 			// 	bedOrChamber->heater, heater->index, heater->current, heater->activeTemp, heater->standbyTemp);
-			if (OM::GetBedCount() > 1) { pToolName->setTextf("Bed %d", bedOrChamber->index); }
-			else { pToolName->setText("Bed"); }
+			if (OM::GetBedCount() > 1)
+			{
+				pToolName->setTextf("%s %d", LANGUAGEMANAGER->getValue("bed").c_str(), bedOrChamber->index);
+			}
+			else
+			{
+				pToolName->setTextTr("bed");
+			}
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
@@ -435,8 +451,14 @@ namespace UI
 			// dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d", index,
 			// bedOrChamber->index, 	bedOrChamber->heater, heater->index, heater->current, heater->activeTemp,
 			// heater->standbyTemp);
-			if (OM::GetChamberCount() > 1) { pToolName->setTextf("Chamber %d", bedOrChamber->index); }
-			else { pToolName->setText("Chamber"); }
+			if (OM::GetChamberCount() > 1)
+			{
+				pToolName->setTextf("%s %d", LANGUAGEMANAGER->getValue("chamber").c_str(), bedOrChamber->index);
+			}
+			else
+			{
+				pToolName->setTextTr("chamber");
+			}
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);

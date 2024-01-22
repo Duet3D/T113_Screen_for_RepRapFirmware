@@ -85,6 +85,7 @@ namespace UI
 			cancelCb_();
 			Close();
 		}
+        void SetText(const std::string& text);
 		void SetText(const char* text);
 		void SetTextf(const char* format, ...);
 		void SetOkBtnText(const char* text);

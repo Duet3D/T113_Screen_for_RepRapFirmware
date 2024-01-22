@@ -6,6 +6,8 @@
  */
 
 #define DEBUG (0)
+#include "manager/LanguageManager.h"
+
 #include "Tool.h"
 #include "Hardware/SerialIo.h"
 #include "ListHelpers.h"
@@ -461,7 +463,7 @@ namespace OM
 
 		if (strcmp(name, "") == 0)
 		{
-			tool->name.printf("Tool %d", tool->index);
+			tool->name.printf("%s %d", LANGUAGEMANAGER->getValue("tool").c_str(), tool->index);
 		}
 		else
 		{

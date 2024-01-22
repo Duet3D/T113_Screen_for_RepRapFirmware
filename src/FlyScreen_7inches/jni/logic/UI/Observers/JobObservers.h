@@ -10,6 +10,8 @@
 
 #include "Debug.h"
 
+#include "manager/LanguageManager.h"
+
 #include "ObjectModel/Job.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
@@ -34,13 +36,13 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
     OBSERVER_UINT("job:duration",
                   [](OBSERVER_UINT_ARGS) {
                       OM::SetPrintDuration(val);
-                      mPrintElapsedTimePtr->setTextf("Elapsed: %d", val);
+                      mPrintElapsedTimePtr->setTextf("%s: %d", LANGUAGEMANAGER->getValue("elapsed").c_str(), val);
                   }),
     OBSERVER_UINT("job:timesLeft:slicer",
                   [](OBSERVER_UINT_ARGS) {
                       OM::SetPrintRemaining(val);
                       int percentage = std::min<int>((100 * OM::GetPrintDuration()) / OM::GetPrintTime(), 100);
-                      mPrintEstimatedTimePtr->setTextf("Estimated: %d", val);
+                      mPrintEstimatedTimePtr->setTextf("%s: %d", LANGUAGEMANAGER->getValue("estimated").c_str(), val);
                       mPrintProgressBarPtr->setProgress(percentage);
                   }),
 };

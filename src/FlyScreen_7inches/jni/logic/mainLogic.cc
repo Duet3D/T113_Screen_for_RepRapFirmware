@@ -180,7 +180,7 @@ static bool onUI_Timer(int id)
 		if (status != OM::GetStatus())
 		{
 			status = OM::GetStatus();
-			mStatusTextPtr->setText(OM::GetStatusText());
+			mStatusTextPtr->setTextTr(OM::GetStatusText());
 		}
 		Comm::sendNext();
 	}
@@ -188,9 +188,6 @@ static bool onUI_Timer(int id)
 	default:
 		break;
 	}
-	//LOGD("controlTabAxisPos %s", UI::controlTabAxisPos[0]->GetValue());
-
-//	mAxisSlot1_labelPtr->setText(UI::controlTabAxisPos[0]->GetLabel());
 
 	return true;
 }
@@ -437,7 +434,7 @@ static void obtainListItemData_AxisControlListView(ZKListView* pListView, ZKList
 	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
 	if (axis == nullptr) return;
 
-	pHome->setTextf("Home %s", axis->letter);
+	pHome->setTextTrf("axis_control_home", axis->letter);
 	pHome->setSelected(axis->homed);
 	pUserPosition->setText(axis->userPosition);
 	pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
@@ -541,7 +538,7 @@ static int getListItemCount_GcodeListView(const ZKListView *pListView) {
 }
 
 static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-	pListItem->setText(Gcode[index].displayText);
+	pListItem->setTextTr(Gcode[index].displayText);
 }
 
 static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
@@ -588,15 +585,15 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	{
 	case OM::FileSystem::FileSystemItemType::file:
 		pListItem->setSelected(false);
-		pFileType->setText("File");
+		pFileType->setTextTr("file");
 		break;
 	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
-		pFileType->setText("Folder");
+		pFileType->setTextTr("folder");
 		break;
 	}
-	pFileSize->setTextf("Size: %d", item->GetSize());
-	pFileDate->setTextf("Date: %s", item->GetDate().c_str());
+	pFileSize->setTextTrf("file_size", item->GetSize());
+	pFileDate->setTextTrf("file_date", item->GetDate().c_str());
 }
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
@@ -608,11 +605,11 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		UI::SetSelectedFile(item->GetPath());
 		if (OM::FileSystem::IsMacroFolder())
 		{
-			UI::CONF_WINDOW->SetTextf("Run macro: %s", item->GetName().c_str());
+			UI::CONF_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
 		}
 		else
 		{
-			UI::CONF_WINDOW->SetTextf("Start print: %s", item->GetName().c_str());
+			UI::CONF_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 		}
 		UI::CONF_WINDOW->Open([](){
 			UI::RunSelectedFile();
@@ -648,7 +645,7 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
     {
     	return;
     }
-	pListItem->setTextf("Fan %d: %d %%", fan->index, (int)(100*fan->requestedValue));
+	pListItem->setTextTrf("fan_status", fan->index, (int)(100 * fan->requestedValue));
 }
 
 static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
@@ -656,7 +653,7 @@ static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int i
 	OM::Fan* fan = OM::GetFanBySlot(index);
 	if (fan == nullptr) { return; }
 	char header[32];
-	SafeSnprintf(header, sizeof(header), "Fan %d", fan->index);
+	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index);
 	size_t fanIndex = fan->index;
 	UI::SLIDER_WINDOW->Open(
 		header, "", "", "%", 0, 100, (int)(fan->requestedValue * 255),
@@ -721,7 +718,7 @@ static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int
 	if (extruder == nullptr) { return; }
 	char header[32];
 	size_t extruderIndex = extruder->index;
-	SafeSnprintf(header, sizeof(header), "Extrusion Factor: Extruder %d", extruderIndex);
+	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex);
 	UI::SLIDER_WINDOW->Open(header, "", "", "%", 0, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
 		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
 		if (extruder == nullptr) { return; }
@@ -770,4 +767,8 @@ static bool onButtonClick_ConfirmationCancelBtn(ZKButton *pButton) {
 static bool onButtonClick_ConfirmationOkBtn(ZKButton *pButton) {
     UI::CONF_WINDOW->Ok();
     return false;
+}
+static void onSlideItemClick_SlideWindow2(ZKSlideWindow* pSlideWindow, int index)
+{
+	// LOGD(" onSlideItemClick_ SlideWindow2 %d !!!\n", index);
 }

@@ -13,6 +13,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "manager/LanguageManager.h"
 #include <algorithm>
 #include <string>
 
@@ -49,7 +50,7 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 							  UI::WINDOW->OpenWindow(mConsoleWindowPtr);
 						  });
 						  UI::CONF_WINDOW->SetText(val);
-						  UI::CONF_WINDOW->SetOkBtnText("Open Console");
+						  UI::CONF_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
 					  }
 					  UI::CONSOLE->Refresh();
 				  }),

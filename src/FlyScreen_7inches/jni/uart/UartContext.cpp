@@ -13,6 +13,7 @@
 
 #include "UI/UserInterface.h"
 #include "uart/UartContext.h"
+#include "manager/LanguageManager.h"
 #include "utils/Log.h"
 
 #define UART_DATA_BUF_LEN 16384 // 16KB
@@ -154,7 +155,7 @@ bool UartContext::threadLoop() {
 			{
 				dbg("UART buffer overflow");
 				UI::CONF_WINDOW->Open();
-				UI::CONF_WINDOW->SetText("UART buffer overflow");
+				UI::CONF_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
 				mDataBufLen = 0;
 			}
 		} else {

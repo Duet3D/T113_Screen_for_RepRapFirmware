@@ -138,7 +138,7 @@ static UI::Observer<UI::ui_array_end_update_cb> MoveObserversArrayEnd[] = {
 			OM::Move::IterateAxesWhile([](OM::Move::Axis* &axis, size_t){
 				if (axis->letter[0] == 'Z')
 				{
-					mPrintBabystepCurrentOffsetPtr->setTextf("Current Offset: %.2f mm", axis->babystep);
+					mPrintBabystepCurrentOffsetPtr->setTextTrf("babystepping_offset", axis->babystep);
 					return false;
 				}
 				return true;

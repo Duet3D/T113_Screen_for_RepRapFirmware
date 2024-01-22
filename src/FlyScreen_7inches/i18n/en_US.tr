@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Printer Status -->
+    <string name="busy">Busy</string>
+    <string name="cancelling">Cancelling</string>
+    <string name="changingTool">Changing Tool</string>
+    <string name="connecting">Connecting</string>
+    <string name="halted">Halted</string>
+    <string name="idle">Idle</string>
+    <string name="off">Off</string>
+    <string name="paused">Paused</string>
+    <string name="pausing">Pausing</string>
+    <string name="processing">Processing</string>
+    <string name="resuming">Resuming</string>
+    <string name="simulating">Simulating</string>
+    <string name="starting">Starting</string>
+    <string name="updating">Updating</string>
+
+    <!-- Heater Status -->
+    <string name="active">Active</string>
+    <string name="fault">Fault</string>
+    <string name="off">Off</string>
+    <string name="offline">Offline</string>
+    <string name="standby">Standby</string>
+    <string name="tuning">Tuning</string>
+
+    <!-- Tool List -->
+    <string name="tool">Tool</string>
+    <string name="bed">Bed</string>
+    <string name="chamber">Chamber</string>
+
+    <!-- Main Page -->
+
+    <!-- Move Page -->
+    <string name="axis_control_home">Home %s</string>
+
+    <!-- Extrude Page -->
+
+    <!-- Status Page -->
+    <string name="fan_status">Fan %d: %d %%</string>
+    <string name="babystepping_offset">Current Offset: %.2f mm</string>
+
+    <!-- Fans Page -->
+
+    <!-- Files Page -->
+    <string name="file">File</string>
+    <string name="folder">Folder</string>
+    <string name="file_size">Size: %d</string>
+    <string name="file_date">Date: %s</string>
+    <string name="elapsed">Elapsed</string>
+    <string name="estimated">Estimated</string>
+
+    <!-- Network Page -->
+
+    <!-- Popup messages -->
+    <string name="uart_buffer_overflow">UART buffer overflow</string>
+    <string name="run_macro">Run Macro: %s</string>
+    <string name="start_print">Start Print: %s</string>
+    <string name="open_console">Open Console</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="fan_header">Fan %d</string>
+    <string name="extrusion_factor_header">Extrusion Factor: Extruder %d</string>
+
+    <!-- Gcode List Descriptions -->
+    <string name="G0G1_desc">G0 &amp; G1: Move</string>
+    <string name="G2G3_desc">G2 &amp; G3: Controlled Arc Move</string>
+    <string name="G4_desc">G4: Dwell</string>
+    <string name="G10_temperature_desc">G10: Tool Offset and Temperature Setting</string>
+    <string name="G10_workplace_desc">G10: Set workplace coordinate offset or tool offset</string>
+    <string name="G10_retract_desc">G10: Retract</string>
+    <string name="G11_desc">G11: Unretract</string>
+    <string name="G17_desc">G17: Select XY plane for arc moves</string>
+    <string name="G20_desc">G20: Set Units to Inches</string>
+    <string name="G21_desc">G21: Set Units to Millimeters</string>
+    <string name="G28_desc">G28: Home</string>
+    <string name="G29_desc">G29: Mesh bed probe</string>
+    <string name="G30_desc">G30: Single Z-Probe</string>
+    <string name="G31_desc">G31: Set or Report Current Probe status</string>
+    <string name="G32_desc">G32: Run bed.g macro</string>
+    <string name="G38.2_desc">G38.2 to G38.5: Straight Probe</string>
+    <string name="G53_desc">G53 Use machine coordinates</string>
+    <string name="G54_desc">G54 to G59.3: Select coordinate system</string>
+    <string name="G60_desc">G60: Save current position to slot</string>
+    <string name="G90_desc">G90: Set to Absolute Positioning</string>
+    <string name="G91_desc">G91: Set to Relative Positioning</string>
+    <string name="G92_desc">G92: Set Position</string>
+    <string name="M0_desc">M0: Stop or Unconditional stop</string>
+    <string name="M1_desc">M1: Sleep or Conditional stop</string>
+    <string name="M3_desc">M3: Spindle On, Clockwise (CNC specific)/ Laser on (Laser specific)</string>
+    <string name="M4_desc">M4: Spindle On, Counterclockwise (CNC specific)</string>
+    <string name="M5_desc">M5: Spindle Off (CNC specific), laser off (Laser specific)</string>
+    <string name="M18_desc">M18: Disable all stepper motors</string>
+    <string name="M20_desc">M20: List SD card</string>
+    <string name="M21_desc">M21: Initialize SD card</string>
+    <string name="M22_desc">M22: Release SD card</string>
+    <string name="M23_desc">M23: Select SD file</string>
+    <string name="M24_desc">M24: Start/resume SD print</string>
+    <string name="M25_desc">M25: Pause SD print</string>
+    <string name="M26_desc">M26: Set SD position</string>
+    <string name="M27_desc">M27: Report SD print status</string>
+    <string name="M28_desc">M28: Begin write to SD card</string>
+    <string name="M29_desc">M29: Stop writing to SD card</string>
+    <string name="M30_desc">M30: Delete a file on the SD card</string>
+    <string name="M32_desc">M32: Select file and start SD print</string>
+    <string name="M36_desc">M36: Return file information</string>
+    <string name="M37_desc">M37: Simulation mode</string>
+    <string name="M38_desc">M38: Compute SHA1 hash of target file</string>
+    <string name="M39_desc">M39: Report SD card information</string>
+    <string name="M42_desc">M42: Switch I/O pin</string>
+    <string name="M80_desc">M80: ATX Power On</string>
+    <string name="M81_desc">M81: ATX Power Off</string>
+    <string name="M82_desc">M82: Set extruder to absolute mode</string>
+    <string name="M83_desc">M83: Set extruder to relative mode</string>
+    <string name="M84_desc">M84: Stop idle hold</string>
+    <string name="M92_desc">M92: Set axis steps per unit</string>
+    <string name="M98_desc">M98: Call Macro/Subprogram</string>
+    <string name="M99_desc">M99: Return from Macro/Subprogram</string>
+    <string name="M104_desc">M104: Set Extruder Temperature</string>
+    <string name="M105_desc">M105: Get Extruder Temperature</string>
+    <string name="M106_desc">M106: Fan On</string>
+    <string name="M107_desc">M107: Fan Off</string>
+    <string name="M108_desc">M108: Cancel Heating</string>
+    <string name="M109_desc">M109: Set Extruder Temperature and Wait</string>
+    <string name="M110_desc">M110: Set Current Line Number</string>
+    <string name="M111_desc">M111: Set Debug Level</string>
+    <string name="M112_desc">M112: Emergency Stop</string>
+    <string name="M114_desc">M114: Get Current Position</string>
+    <string name="M115_desc">M115: Get Firmware Version and Capabilities</string>
+    <string name="M116_desc">M116: Wait</string>
+    <string name="M117_desc">M117: Display Message</string>
+    <string name="M118_desc">M118: Send Message to Specific Target</string>
+    <string name="M119_desc">M119: Get Endstop Status</string>
+    <string name="M120_desc">M120: Push</string>
+    <string name="M121_desc">M121: Pop</string>
+    <string name="M122_desc">M122: Diagnose</string>
+    <string name="M135_desc">M135: Set PID sample interval</string>
+    <string name="M140_desc">M140: Set Bed Temperature (Fast) or Configure Bed Heater</string>
+    <string name="M141_desc">M141: Set Chamber Temperature (Fast) or Configure Chamber Heater</string>
+    <string name="M143_desc">M143: Maximum heater temperature</string>
+    <string name="M144_desc">M144: Bed Standby</string>
+    <string name="M150_desc">M150: Set LED colours</string>
+    <string name="M190_desc">M190: Wait for bed temperature to reach target temp</string>
+    <string name="M191_desc">M191: Wait for chamber temperature to reach target temp</string>
+    <string name="M200_desc">M200: Set filament diameter</string>
+    <string name="M201_desc">M201: Set max acceleration</string>
+    <string name="M203_desc">M203: Set maximum feedrate</string>
+    <string name="M204_desc">M204: Set printing and travel accelerations</string>
+    <string name="M205_desc">M205: Set max instantaneous speed change in mm/sec</string>
+    <string name="M206_desc">M206: Offset axes</string>
+    <string name="M207_desc">M207: Set retract length</string>
+    <string name="M208_desc">M208: Set axis max travel</string>
+    <string name="M220_desc">M220: Set speed factor override percentage</string>
+    <string name="M221_desc">M221: Set extrude factor override percentage</string>
+    <string name="M226_desc">M226: Synchronous Pause</string>
+    <string name="M260_desc">M260: i2c Send and/or request Data</string>
+    <string name="M261_desc">M261: i2c Request Data</string>
+    <string name="M280_desc">M280: Set servo position</string>
+    <string name="M290_desc">M290: Baby stepping</string>
+    <string name="M291_desc">M291: Display message and optionally wait for response</string>
+    <string name="M292_desc">M292: Acknowledge message</string>
+    <string name="M300_desc">M300: Play beep sound</string>
+    <string name="M301_desc">M301: Set PID parameters</string>
+    <string name="M302_desc">M302: Allow cold extrudes</string>
+    <string name="M303_desc">M303: Run heater tuning</string>
+    <string name="M304_desc">M304: Set PID parameters - Bed</string>
+    <string name="M305_desc">M305: Set temperature sensor parameters</string>
+    <string name="M307_desc">M307: Set or report heating process parameters</string>
+    <string name="M308_desc">M308: Set or report sensor parameters</string>
+    <string name="M350_desc">M350: Set microstepping mode</string>
+    <string name="M374_desc">M374: Save height map</string>
+    <string name="M375_desc">M375: Load height map</string>
+    <string name="M376_desc">M376: Set bed compensation taper</string>
+    <string name="M400_desc">M400: Wait for current moves to finish</string>
+    <string name="M401_desc">M401: Deploy z-probe</string>
+    <string name="M402_desc">M402: Retract z-probe</string>
+    <string name="M404_desc">M404: Filament width and nozzle diameter</string>
+    <string name="M408_desc">M408: Report JSON-style response</string>
+    <string name="M409_desc">M409: Query object model</string>
+    <string name="M450_desc">M450: Report Printer Mode</string>
+    <string name="M451_desc">M451: Select FFF Printer Mode</string>
+    <string name="M452_desc">M452: Select Laser DeviceMode</string>
+    <string name="M453_desc">M453: Select CNC Device Mode</string>
+    <string name="M470_desc">M470: Create Directory on SD-Card</string>
+    <string name="M471_desc">M471: Rename File/Directory on SD-Card</string>
+    <string name="M486_desc">M486: Object cancellation</string>
+    <string name="M500_desc">M500: Store parameters</string>
+    <string name="M501_desc">M501: Read stored parameters</string>
+    <string name="M502_desc">M502: Revert stored parameters</string>
+    <string name="M503_desc">M503: Print settings</string>
+    <string name="M505_desc">M505: Set configuration file folder</string>
+    <string name="M540_desc">M540: Set MAC address</string>
+    <string name="M550_desc">M550: Set Name</string>
+    <string name="M551_desc">M551: Set Password</string>
+    <string name="M552_desc">M552: Set IP address, enable/disable network interface</string>
+    <string name="M553_desc">M553: Set Netmask</string>
+    <string name="M554_desc">M554: Set Gateway</string>
+    <string name="M555_desc">M555: Set compatibility</string>
+    <string name="M556_desc">M556: Axis skew compensation</string>
+    <string name="M557_desc">M557: Set Z probe point or define probing grid</string>
+    <string name="M558_desc">M558: Set Z probe type</string>
+    <string name="M559_desc">M559: Upload file</string>
+    <string name="M560_desc">M560: Upload file</string>
+    <string name="M561_desc">M561: Set Identity Transform</string>
+    <string name="M562_desc">M562: Reset temperature fault</string>
+    <string name="M563_desc">M563: Define or remove a tool</string>
+    <string name="M564_desc">M564: Limit axes</string>
+    <string name="M566_desc">M566: Set allowable instantaneous speed change</string>
+    <string name="M567_desc">M567: Set tool mix ratios</string>
+    <string name="M568_desc">M568: Turn off/on tool mix ratios</string>
+    <string name="M569_desc">M569: Set motor driver direction, enable polarity and step pulse timing</string>
+    <string name="M569.1_desc">M569.1: Stepper driver closed loop control</string>
+    <string name="M570_desc">M570: Configure heater fault detection</string>
+    <string name="M571_desc">M571: Set output on extrude</string>
+    <string name="M572_desc">M572: Set or report extruder pressure advance</string>
+    <string name="M573_desc">M573: Report heater PWM</string>
+    <string name="M574_desc">M574: Set endstop configuration</string>
+    <string name="M575_desc">M575: Set serial comms parameters</string>
+    <string name="M577_desc">M577: Wait until endstop is triggered</string>
+    <string name="M578_desc">M578: Fire inkjet bits</string>
+    <string name="M579_desc">M579: Scale Cartesian axes</string>
+    <string name="M580_desc">M580: Select Roland</string>
+    <string name="M581_desc">M581: Configure external trigger</string>
+    <string name="M582_desc">M582: Check external trigger</string>
+    <string name="M584_desc">M584: Set drive mapping</string>
+    <string name="M585_desc">M585: Probe Tool</string>
+    <string name="M586_desc">M586: Configure network protocols</string>
+    <string name="M587_desc">M587: Add WiFi host network to remembered list, or list remembered networks</string>
+    <string name="M588_desc">M588: Forget WiFi host network</string>
+    <string name="M589_desc">M589: Configure access point parameters</string>
+    <string name="M591_desc">M591: Configure filament sensing</string>
+    <string name="M592_desc">M592: Configure nonlinear extrusion</string>
+    <string name="M593_desc">M593: Configure Dynamic Acceleration Adjustment</string>
+    <string name="M594_desc">M594: Enter/Leave Height Following mode</string>
+    <string name="M600_desc">M600: Filament change pause</string>
+    <string name="M650_desc">M650: Set peel move parameters</string>
+    <string name="M651_desc">M651: Execute peel move</string>
+    <string name="M665_desc">M665: Set delta configuration</string>
+    <string name="M666_desc">M666: Set delta endstop adjustment</string>
+    <string name="M667_desc">M667: Select CoreXY or related mode</string>
+    <string name="M669_desc">M669: Set kinematics type and kinematics parameters</string>
+    <string name="M670_desc">M670: Set IO port bit mapping</string>
+    <string name="M671_desc">M671: Define positions of Z leadscrews or bed leveling screws</string>
+    <string name="M672_desc">M672: Program Z probe</string>
+    <string name="M673_desc">M673: Align plane on rotary axis</string>
+    <string name="M674_desc">M674: Set Z to the center point</string>
+    <string name="M675_desc">M675: Find the center of the cavity</string>
+    <string name="M701_desc">M701: Load filament</string>
+    <string name="M702_desc">M702: Unload filament</string>
+    <string name="M703_desc">M703: Configure filament</string>
+    <string name="M750_desc">M750: Enable 3D scanner extension</string>
+    <string name="M751_desc">M751: Register 3D scanner extension over USB</string>
+    <string name="M752_desc">M752: Start 3D scan</string>
+    <string name="M753_desc">M753: Cancel current 3D scanner action</string>
+    <string name="M754_desc">M754: Calibrate 3D scanner</string>
+    <string name="M755_desc">M755: Set alignment mode for 3D scanner</string>
+    <string name="M756_desc">M756: Shutdown 3D scanner</string>
+    <string name="M851_desc">M851: Set Z-Probe Offset (Marlin Compatibility)</string>
+    <string name="M905_desc">M905: Set local date and time</string>
+    <string name="M906_desc">M906: Set motor currents</string>
+    <string name="M911_desc">M911: Configure auto save on loss of power</string>
+    <string name="M912_desc">M912: Set electronics temperature monitor adjustment</string>
+    <string name="M913_desc">M913: Set motor percentage of normal current</string>
+    <string name="M914_desc">M914: Set/Get Expansion Voltage Level Translator</string>
+    <string name="M915_desc">M915: Configure motor stall detection</string>
+    <string name="M916_desc">M916: Resume print after power failure</string>
+    <string name="M917_desc">M917: Set motor standstill current reduction</string>
+    <string name="M918_desc">M918: Configure direct-connect display</string>
+    <string name="M929_desc">M929: Start/stop event logging to SD card</string>
+    <string name="M950_desc">M950: Create heater, fan or GPIO/servo pin</string>
+    <string name="M951_desc">M951: Set height following mode parameters</string>
+    <string name="M952_desc">M952: Set CAN-FD expansion board address and/or normal data rate</string>
+    <string name="M953_desc">M953: Set CAN-FD bus fast data rate</string>
+    <string name="M997_desc">M997: Perform in-application firmware update</string>
+    <string name="M998_desc">M998: Request resend of line</string>
+    <string name="M999_desc">M999: Restart</string>
+    <string name="T_desc">T: Select Tool</string>
+
+    <!-- Settings Page -->
+
+</resources>

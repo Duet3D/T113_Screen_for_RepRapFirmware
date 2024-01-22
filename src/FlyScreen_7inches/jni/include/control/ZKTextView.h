@@ -11,6 +11,7 @@
 #define _CONTROL_ZKTEXTVIEW_H_
 
 #include "ZKBase.h"
+#include "manager/LanguageManager.h"
 #include <Duet3D/General/SafeVsnprintf.h>
 
 class ZKTextViewPrivate;
@@ -87,6 +88,18 @@ public:
 	 * @brief 支持多国语言设置接口
 	 */
 	void setTextTr(const char *name);
+
+	int setTextTrf(const char *format_id, ...)
+	{
+        va_list vargs;
+        std::string format = LANGUAGEMANAGER->getValue(format_id);
+        va_start(vargs, format.c_str());
+        char buffer[50];
+        const int ret = SafeVsnprintf(buffer, 50, format.c_str(), vargs);
+        va_end(vargs);
+        setText(buffer);
+        return ret;
+	}
 
 	void reloadTextTr();
 

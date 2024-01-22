@@ -15,6 +15,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterfaceConstants.h"
 #include "UI/UserInterface.h"
+#include "manager/LanguageManager.h"
 
 
 
@@ -34,7 +35,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 			OM::FileSystem::SetCurrentDir(val);
 			mFileListViewPtr->setSelection(0);
 			mFileListViewPtr->refreshListView();
-			mFolderIDPtr->setText("Folder: " + OM::FileSystem::GetCurrentDirPath());
+			mFolderIDPtr->setText(LANGUAGEMANAGER->getValue("folder") + ": " + OM::FileSystem::GetCurrentDirPath());
 			dbg("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
 		}
 	),
