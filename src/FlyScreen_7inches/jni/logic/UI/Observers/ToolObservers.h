@@ -83,6 +83,14 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 						  return;
 					  }
 				  }),
+	OBSERVER_FLOAT("tools^:mix^",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::UpdateToolMix(indices[0], indices[1], val))
+					   {
+						   dbg("Failed to update tool %d mix %d to %.2f", indices[0], indices[1], val);
+						   return;
+					   }
+				   }),
 	OBSERVER_CHAR("tools^:state",
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (!OM::UpdateToolStatus(indices[0], val))

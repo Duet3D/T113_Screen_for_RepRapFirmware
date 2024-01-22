@@ -91,6 +91,13 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						   dbg("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
 					   }
 				   }),
+	OBSERVER_FLOAT("move:extruders^:filamentDiameter",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetExtruderFilamentDiameter(indices[0], val))
+					   {
+						   dbg("Failed to set extruderAxis[%d]->filamentDiameter = %f", indices[0], val);
+					   }
+				   }),
 	OBSERVER_FLOAT("move:extruders^:position",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderPosition(indices[0], val))
@@ -120,6 +127,16 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						  return;
 					  }
 				  }),
+	OBSERVER_FLOAT("move:currentMove:requestedSpeed",
+				   [](OBSERVER_FLOAT_ARGS) { mPrintRequestedSpeedPtr->setTextTrf("requested_speed", val); }),
+	OBSERVER_FLOAT("move:currentMove:topSpeed",
+				   [](OBSERVER_FLOAT_ARGS) { mPrintTopSpeedPtr->setTextTrf("top_speed", val); }),
+	OBSERVER_FLOAT("move:currentMove:extrusionRate",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   OM::Move::SetExtrusionRate(val);
+					   float volumetricFlow = OM::Move::GetVolumetricFlow();
+					   mPrintVolFlowPtr->setTextTrf("volumetric_flow", volumetricFlow);
+				   }),
 };
 
 /*

@@ -68,6 +68,7 @@ namespace OM
 		String<TOOL_NAME_MAX_LEN> name;
 		ToolHeater* heaters[MaxHeatersPerTool];
 		Move::ExtruderAxis* extruders[MaxExtrudersPerTool];
+		float mix[MaxExtrudersPerTool];
 		Fan* fans[MaxFans];
 		Spindle* spindle;
 		int32_t spindleRpm;
@@ -90,6 +91,8 @@ namespace OM
 		uint8_t GetHeaterCount() const;
 		int8_t HasHeater(const uint8_t heaterIndex) const;
 		void IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt = 0);
+		void IterateExtruders(function_ref<void(Move::ExtruderAxis*, size_t)> func, const size_t startAt = 0);
+		void IterateFans(function_ref<void(Fan*, size_t)> func, const size_t startAt = 0);
 		size_t RemoveHeatersFrom(const uint8_t toolHeaterIndex);
 		size_t RemoveExtrudersFrom(const uint8_t toolExtruderIndex);
 		size_t RemoveFansFrom(const uint8_t toolFanIndex);
@@ -111,13 +114,17 @@ namespace OM
 
 	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex);
 	bool RemoveToolExtruders(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
-	
+	bool UpdateToolMix(const size_t toolIndex, const size_t toolExtruderIndex, const float mix);
+
 	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex);
 	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
 
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
 	bool UpdateToolName(const size_t toolIndex, const char *name);
 	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr);
+
+	void SetCurrentTool(const size_t toolIndex);
+	Tool* GetCurrentTool();
 }
 
 #endif /* SRC_OBJECTMODEL_TOOL_HPP_ */

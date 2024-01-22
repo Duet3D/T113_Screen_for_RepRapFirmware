@@ -24,6 +24,8 @@ static ToolList tools;
 
 namespace OM
 {
+	static size_t sCurrentTool = 0;
+
 	void ToolHeater::Reset()
 	{
 		activeTemp = 0;
@@ -185,6 +187,22 @@ namespace OM
 		}
 	}
 
+	void Tool::IterateExtruders(function_ref<void(Move::ExtruderAxis*, size_t)> func, const size_t startAt)
+	{
+		for (size_t i = startAt; i < MaxExtrudersPerTool && extruders[i] != nullptr; ++i)
+		{
+			func(extruders[i], i);
+		}
+	}
+
+	void Tool::IterateFans(function_ref<void(Fan*, size_t)> func, const size_t startAt)
+	{
+		for (size_t i = startAt; i < MaxFans && fans[i] != nullptr; ++i)
+		{
+			func(fans[i], i);
+		}
+	}
+
 	size_t Tool::RemoveHeatersFrom(const uint8_t heaterIndex)
 	{
 		if (heaterIndex >= MaxHeatersPerTool)
@@ -310,6 +328,10 @@ namespace OM
 		{
 			offsets[i] = 0.0f;
 		}
+		for (size_t i = 0; i < MaxExtrudersPerTool; ++i)
+		{
+			mix[i] = 0.0f;
+		}
 		status = ToolStatus::off;
 		slot = MaxSlots;
 	}
@@ -405,6 +427,18 @@ namespace OM
 		return tool->RemoveExtrudersFrom(firstIndexToDelete) > 0;
 	}
 
+	bool UpdateToolMix(const size_t toolIndex, const size_t toolExtruderIndex, const float mix)
+	{
+		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		tool->mix[toolExtruderIndex] = mix;
+		return true;
+	}
+
 	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex)
 	{
 		if (toolFanIndex >= MaxFans)
@@ -494,5 +528,16 @@ namespace OM
 		ToolStatus status = (statusFromMap != nullptr) ? statusFromMap->val : ToolStatus::off;
 		tool->status = status;
 		return true;
+	}
+
+	void SetCurrentTool(const size_t toolIndex)
+	{
+		dbg("Setting current tool to %d", toolIndex);
+		sCurrentTool = toolIndex;
+	}
+
+	Tool* GetCurrentTool()
+	{
+		return GetTool(sCurrentTool);
 	}
 }

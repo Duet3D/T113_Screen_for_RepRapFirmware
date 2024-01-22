@@ -8,8 +8,10 @@
 #define DEBUG (1)
 #include "Axis.h"
 
+#include "ObjectModel/Tool.h"
 #include <Duet3D/General/Vector.h>
 #include <UI/UserInterfaceConstants.h>
+#include <math.h>
 
 #include "Debug.h"
 #include "ListHelpers.h"
@@ -22,6 +24,8 @@ static uint8_t currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces
 
 namespace OM::Move
 {
+	static float sExtrusionRate = 0.0f;
+
 	void Axis::Reset()
 	{
 		index = 0;
@@ -49,7 +53,10 @@ namespace OM::Move
 
 	Axis* GetAxisBySlot(const size_t slot)
 	{
-		if (slot >= MaxTotalAxes) { return nullptr; }
+		if (slot >= MaxTotalAxes)
+		{
+			return nullptr;
+		}
 		return axes[slot];
 	}
 
@@ -98,8 +105,8 @@ namespace OM::Move
 
 	AXIS_SETTER(SetBabystepOffset, float, babystep);
 	// Update the homed status of the specified axis. If the axis is -1 then it
-    // represents the "all homed" status.
-    AXIS_SETTER(SetAxisHomedStatus, bool, homed);
+	// represents the "all homed" status.
+	AXIS_SETTER(SetAxisHomedStatus, bool, homed);
 	AXIS_SETTER(SetAxisLetter, char, letter[0]);
 	AXIS_SETTER(SetAxisUserPosition, float, userPosition);
 	AXIS_SETTER(SetAxisMachinePosition, float, machinePosition);
@@ -109,8 +116,8 @@ namespace OM::Move
 	{
 		if (axisIndex >= MaxTotalAxes || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
 			return false;
-        Axis* axis = GetOrCreateAxis(axisIndex);
-        if (axis == nullptr)
+		Axis* axis = GetOrCreateAxis(axisIndex);
+		if (axis == nullptr)
 			return false;
 		axis->workplaceOffsets[workplaceIndex] = offset;
 		return true;
@@ -151,7 +158,10 @@ namespace OM::Move
 
 	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot)
 	{
-		if (slot >= MaxTotalAxes) { return nullptr; }
+		if (slot >= MaxTotalAxes)
+		{
+			return nullptr;
+		}
 		return extruderAxes[slot];
 	}
 
@@ -170,8 +180,8 @@ namespace OM::Move
 		return extruderAxes.Size();
 	}
 
-    bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt)
-    {
+	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt)
+	{
 		return extruderAxes.IterateWhile(func, startAt);
 	}
 
@@ -201,4 +211,41 @@ namespace OM::Move
 	EXTRUDER_AXIS_SETTER(SetExtruderPosition, float, position);
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);
 	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
+	EXTRUDER_AXIS_SETTER(SetExtruderFilamentDiameter, float, filamentDiameter);
+
+	void SetExtrusionRate(float rate)
+	{
+		sExtrusionRate = rate;
+	}
+
+	const float GetExtrusionRate()
+	{
+		return sExtrusionRate;
+	}
+
+	const float GetVolumetricFlow()
+	{
+		OM::Tool* tool = OM::GetCurrentTool();
+		if (tool == nullptr)
+		{
+			return 0.0f;
+		}
+		float filamentArea = 0;
+		float numExtruders = 0;
+		tool->IterateExtruders([&](OM::Move::ExtruderAxis* extruder, size_t index) {
+			if (extruder == nullptr)
+				return;
+			numExtruders++;
+			dbg("Tool %d extruder %d mix %.2f diameter %.2f", tool->index, extruder->index, tool->mix[index], extruder->filamentDiameter);
+			filamentArea += tool->mix[index] * (M_PI * pow(extruder->filamentDiameter / 2, 2));
+		});
+
+		if (numExtruders == 0)
+		{
+			return 0.0f;
+		}
+
+		filamentArea /= numExtruders;
+		return filamentArea * GetExtrusionRate();
+	}
 } // namespace OM::Move

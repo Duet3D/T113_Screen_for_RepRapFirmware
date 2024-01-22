@@ -56,6 +56,7 @@ namespace OM::Move
 		float position;
 		float factor;
 		float stepsPerMm;
+		float filamentDiameter;
 
 		void Reset();
 	};
@@ -87,6 +88,11 @@ namespace OM::Move
 	bool SetExtruderPosition(size_t index, float f);
 	bool SetExtruderFactor(size_t index, float f);
 	bool SetExtruderStepsPerMm(size_t index, float f);
+	bool SetExtruderFilamentDiameter(size_t index, float f);
+
+	void SetExtrusionRate(float rate);
+	const float GetExtrusionRate();
+	const float GetVolumetricFlow();
 }
 
 

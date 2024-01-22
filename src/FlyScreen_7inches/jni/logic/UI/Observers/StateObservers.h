@@ -26,42 +26,39 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
-	OBSERVER_CHAR(
-		"state:status",
-		[](OBSERVER_CHAR_ARGS)
-		{
-			OM::SetStatus(val);
-			switch (OM::GetStatus())
-			{
-			case OM::PrinterStatus::printing:
-			case OM::PrinterStatus::simulating:
-				mPrintPauseBtnPtr->setVisible(true);
-				mPrintResumeBtnPtr->setVisible(false);
-				mPrintCancelBtnPtr->setVisible(false);
-				break;
-			case OM::PrinterStatus::paused:
-			case OM::PrinterStatus::pausing:
-			case OM::PrinterStatus::resuming:
-				mPrintPauseBtnPtr->setVisible(false);
-				mPrintResumeBtnPtr->setVisible(true);
-				mPrintCancelBtnPtr->setVisible(true);
-				break;
-			case OM::PrinterStatus::idle:
-			case OM::PrinterStatus::configuring:
-			case OM::PrinterStatus::connecting:
-				mPrintFileNamePtr->setText("");
-				mPrintElapsedTimePtr->setTextTr("elapsed");
-				mPrintEstimatedTimePtr->setTextTr("estimated");
-				mPrintPauseBtnPtr->setVisible(false);
-				mPrintResumeBtnPtr->setVisible(false);
-				mPrintCancelBtnPtr->setVisible(false);
-				break;
-			default:
-				break;
-			}
-		}
-	),
-};
+	OBSERVER_CHAR("state:status",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::SetStatus(val);
+					  switch (OM::GetStatus())
+					  {
+					  case OM::PrinterStatus::printing:
+					  case OM::PrinterStatus::simulating:
+						  mPrintPauseBtnPtr->setVisible(true);
+						  mPrintResumeBtnPtr->setVisible(false);
+						  mPrintCancelBtnPtr->setVisible(false);
+						  break;
+					  case OM::PrinterStatus::paused:
+					  case OM::PrinterStatus::pausing:
+					  case OM::PrinterStatus::resuming:
+						  mPrintPauseBtnPtr->setVisible(false);
+						  mPrintResumeBtnPtr->setVisible(true);
+						  mPrintCancelBtnPtr->setVisible(true);
+						  break;
+					  case OM::PrinterStatus::idle:
+					  case OM::PrinterStatus::configuring:
+					  case OM::PrinterStatus::connecting:
+						  mPrintFileNamePtr->setText("");
+						  mPrintElapsedTimePtr->setTextTr("elapsed");
+						  mPrintEstimatedTimePtr->setTextTr("estimated");
+						  mPrintPauseBtnPtr->setVisible(false);
+						  mPrintResumeBtnPtr->setVisible(false);
+						  mPrintCancelBtnPtr->setVisible(false);
+						  break;
+					  default:
+						  break;
+					  }
+				  }),
+	OBSERVER_INT("state:currentTool", [](OBSERVER_INT_ARGS) { OM::SetCurrentTool(val); })};
 
 /*
  * These functions are run when the end of an array has been received from the OM
