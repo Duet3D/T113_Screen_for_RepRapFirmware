@@ -8,6 +8,7 @@
 #define DEBUG (1)
 #include "Popup.h"
 #include "Debug.h"
+#include "Hardware/SerialIo.h"
 #include "UserInterface.h"
 #include <algorithm>
 #include <map>
@@ -15,6 +16,7 @@
 namespace UI
 {
 	void PopupWindow::Init(ZKWindow* window,
+						   ZKWindow* noTouchWindow,
 						   ZKButton* okBtn,
 						   ZKButton* cancelBtn,
 						   ZKTextView* title,
@@ -27,6 +29,7 @@ namespace UI
 						   ZKEditText* numberInput)
 	{
 		window_ = window;
+		noTouchWindow_ = noTouchWindow;
 		okBtn_ = okBtn;
 		cancelBtn_ = cancelBtn;
 		title_ = title;
@@ -59,17 +62,25 @@ namespace UI
 		}
 
 		mode_ = OM::currentAlert.mode;
+		seq_ = OM::currentAlert.seq;
 
+		noTouchWindow_->setVisible(false);
 		warningText_->setVisible(false);
 		minText_->setVisible(false);
 		maxText_->setVisible(false);
 		choicesList_->setVisible(false);
 		textInput_->setVisible(false);
 		numberInput_->setVisible(false);
+		cancelBtn_->setVisible(true);
+		okBtn_->setVisible(true);
 
-		if (OM::currentAlert.mode == OM::Alert::Mode::None)
+		if (IsBlocking())
 		{
-			dbg("M291 alert mode is None");
+			noTouchWindow_->setVisible(true);
+		}
+
+		if (mode_ == OM::Alert::Mode::None)
+		{
 			title_->setText("Gcode Response");
 			cancelBtn_->setVisible(true);
 			okBtn_->setVisible(true);
@@ -79,7 +90,7 @@ namespace UI
 			title_->setText(OM::currentAlert.title.c_str());
 			text_->setText(OM::currentAlert.text.c_str());
 
-			switch (OM::currentAlert.mode)
+			switch (mode_)
 			{
 			case OM::Alert::Mode::Info:
 				cancelBtn_->setVisible(false);
@@ -105,29 +116,32 @@ namespace UI
 			case OM::Alert::Mode::NumberInt:
 				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
 				okBtn_->setVisible(true);
-				numberInput_->setVisible(true);
 				minText_->setTextf("Min: %d", OM::currentAlert.limits.numberInt.min);
 				maxText_->setTextf("Max: %d", OM::currentAlert.limits.numberInt.max);
+				numberInput_->setText(OM::currentAlert.limits.numberInt.valueDefault);
 				minText_->setVisible(true);
 				maxText_->setVisible(true);
+				numberInput_->setVisible(true);
 				break;
 			case OM::Alert::Mode::NumberFloat:
 				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
 				okBtn_->setVisible(true);
-				numberInput_->setVisible(true);
 				minText_->setTextf("Min: %.2f", OM::currentAlert.limits.numberFloat.min);
 				maxText_->setTextf("Max: %.2f", OM::currentAlert.limits.numberFloat.max);
+				numberInput_->setText(OM::currentAlert.limits.numberFloat.valueDefault);
 				minText_->setVisible(true);
 				maxText_->setVisible(true);
+				numberInput_->setVisible(true);
 				break;
 			case OM::Alert::Mode::Text:
 				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
 				okBtn_->setVisible(true);
-				textInput_->setVisible(true);
 				minText_->setTextf("Min Length: %d", OM::currentAlert.limits.text.min);
 				maxText_->setTextf("Max Length: %d", OM::currentAlert.limits.text.max);
+				numberInput_->setText(OM::currentAlert.limits.text.valueDefault.c_str());
 				minText_->setVisible(true);
 				maxText_->setVisible(true);
+				textInput_->setVisible(true);
 				break;
 			default:
 				break;
@@ -139,6 +153,41 @@ namespace UI
 		WINDOW->OpenOverlay(window_);
 		okCb_ = okCb;
 		cancelCb_ = cancelCb;
+	}
+
+	void PopupWindow::Ok()
+	{
+		if (!IsResponse())
+		{
+			switch (mode_)
+			{
+			case OM::Alert::Mode::InfoConfirm:
+			case OM::Alert::Mode::ConfirmCancel:
+				SerialIo::Sendf("M292 P0 S%lu\n", seq_);
+				break;
+			case OM::Alert::Mode::NumberInt:
+			case OM::Alert::Mode::NumberFloat:
+				SerialIo::Sendf("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
+				break;
+			case OM::Alert::Mode::Text:
+				SerialIo::Sendf("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
+				break;
+			default:
+				break;
+			}
+		}
+		okCb_();
+		Close();
+	}
+
+	void PopupWindow::Cancel()
+	{
+		if (!IsResponse())
+		{
+			SerialIo::Sendf("M292 P1");
+		}
+		cancelCb_();
+		Close();
 	}
 
 	void PopupWindow::SetText(const std::string& text)
@@ -172,6 +221,8 @@ namespace UI
 	void PopupWindow::Close()
 	{
 		dbg("Closing popup window");
+		mode_ = OM::Alert::Mode::None;
+		noTouchWindow_->setVisible(false);
 		WINDOW->CloseOverlay();
 	}
 
@@ -196,6 +247,11 @@ namespace UI
 	bool PopupWindow::IsResponse() const
 	{
 		return OM::currentAlert.mode == OM::Alert::Mode::None;
+	}
+
+	void PopupWindow::Clear()
+	{
+		mode_ = OM::Alert::Mode::None;
 	}
 
 	void SliderWindow::Init(ZKWindow* window,

@@ -4,6 +4,7 @@
 #include "Communication.h"
 #include "Debug.h"
 #include "Hardware/SerialIo.h"
+#include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Utils.h"
@@ -20,6 +21,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "utils/TimeHelper.h"
 #include <string>
 #include <vector>
 
@@ -112,6 +114,7 @@ static void onUI_init()
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
+						   mNoTouchWindowPtr,
 						   mPopupOkBtnPtr,
 						   mPopupCancelBtnPtr,
 						   mPopupTitlePtr,
@@ -256,7 +259,10 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
-	LOGD(" ButtonClick EStopBtn !!!\n");
+	UI::POPUP_WINDOW->Close();
+	SerialIo::Sendf("M112\n");
+	Thread::sleep(1000);
+	SerialIo::Sendf("M999\n");
 	return false;
 }
 
@@ -814,16 +820,17 @@ static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int i
 static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_PopupSelectionList !\n");
-	return 10;
+	return OM::currentAlert.choices_count;
 }
 
 static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ PopupSelectionList  !!!\n");
+	pListItem->setText(OM::currentAlert.choices[index].c_str());
 }
 
 static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
 {
+	SerialIo::Sendf("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
 	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
 }
 
@@ -834,5 +841,14 @@ static void onEditTextChanged_PopupTextInput(const std::string& text)
 
 static void onEditTextChanged_PopupNumberInput(const std::string& text)
 {
+	switch (OM::currentAlert.mode)
+	{
+	case OM::Alert::Mode::NumberInt:
+		break;
+	case OM::Alert::Mode::NumberFloat:
+		break;
+	default:
+		break;
+	}
 	// LOGD(" onEditTextChanged_ PopupNumberInput %s !!!\n", text.c_str());
 }

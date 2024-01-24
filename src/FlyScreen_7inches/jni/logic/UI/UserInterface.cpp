@@ -81,7 +81,13 @@ namespace UI
 
 	bool Window::CloseOverlay()
 	{
-		if (overlayWindow_ == nullptr) return false;
+		if (overlayWindow_ == nullptr)
+			return false;
+
+		if (POPUP_WINDOW->IsOpen())
+		{
+			POPUP_WINDOW->Clear();
+		}
 		overlayWindow_->hideWnd();
 		overlayWindow_ = nullptr;
 		return true;
@@ -150,7 +156,7 @@ namespace UI
 		{
 			window->showWnd();
 		}
-		if (overlayWindow_ != nullptr) { overlayWindow_->hideWnd(); }
+		CloseOverlay();
 		Clear();
 	}
 

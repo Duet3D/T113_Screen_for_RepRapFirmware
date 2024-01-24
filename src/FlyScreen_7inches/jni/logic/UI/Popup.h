@@ -37,6 +37,7 @@ namespace UI
 			return &cWindow;
 		}
 		void Init(ZKWindow* window,
+				  ZKWindow* noTouchWindow,
 				  ZKButton* okBtn,
 				  ZKButton* cancelBtn,
 				  ZKTextView* title,
@@ -50,16 +51,8 @@ namespace UI
 		void Open();
 		void Open(function<void(void)> okCb);
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
-		void Ok()
-		{
-			okCb_();
-			Close();
-		}
-		void Cancel()
-		{
-			cancelCb_();
-			Close();
-		}
+		void Ok();
+		void Cancel();
 		void SetText(const std::string& text);
 		void SetText(const char* text);
 		void SetTextf(const char* format, ...);
@@ -70,9 +63,13 @@ namespace UI
 		bool IsOpen() const { return window_->isVisible(); }
 		bool IsBlocking() const;
 		bool IsResponse() const;
+		void Clear();
+
+		uint32_t GetSeq() const { return seq_; }
 
 	  private:
 		ZKWindow* window_ = nullptr;
+		ZKWindow* noTouchWindow_ = nullptr;
 		ZKButton* okBtn_ = nullptr;
 		ZKButton* cancelBtn_ = nullptr;
 		ZKTextView* title_ = nullptr;
@@ -86,6 +83,7 @@ namespace UI
 		function<void(void)> okCb_;
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;
+		uint32_t seq_;
 	};
 
 	class SliderWindow
