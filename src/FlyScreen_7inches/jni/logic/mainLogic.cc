@@ -85,6 +85,9 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
+	// Hide clock here so that it is visible when editing the GUI
+	mDigitalClock1Ptr->setVisible(false);
+
 	/* Initialise UI observer updaters that run on each field value that is received from the OM */
 	auto *observer = UI::omFieldObserverHead;
 	while (observer != nullptr)

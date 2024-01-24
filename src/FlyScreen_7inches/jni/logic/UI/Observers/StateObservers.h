@@ -10,6 +10,8 @@
 
 #include "Debug.h"
 
+#include "utils/TimeHelper.h"
+
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/OmObserver.h"
@@ -125,6 +127,26 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 						  return;
 					  OM::currentAlert.choices[indices[0]].copy(val);
 					  OM::currentAlert.choices_count = indices[0] + 1;
+				  }),
+	OBSERVER_CHAR("state:time",
+				  [](OBSERVER_CHAR_ARGS) {
+					  char* timeStr = (char*)val; // remove const
+					  if (timeStr[0] == 0)
+					  {
+						  mDigitalClock1Ptr->setVisible(false);
+						  return;
+					  }
+					  dbg("Setting system time to %s", val);
+					  for (size_t i = 0; timeStr[i] != 0; ++i)
+					  {
+						  if (timeStr[i] == 'T')
+						  {
+							  timeStr[i] = ' ';
+							  break;
+						  }
+					  }
+					  TimeHelper::setDateTime(timeStr);
+					  mDigitalClock1Ptr->setVisible(true);
 				  }),
 };
 
