@@ -7,6 +7,7 @@
 
 #define DEBUG (1)
 #include "Popup.h"
+#include "Communication.h"
 #include "Debug.h"
 #include "Hardware/SerialIo.h"
 #include "UserInterface.h"
@@ -65,13 +66,14 @@ namespace UI
 		seq_ = OM::currentAlert.seq;
 
 		noTouchWindow_->setVisible(false);
-		warningText_->setVisible(false);
+		warningText_->setText("");
 		minText_->setVisible(false);
 		maxText_->setVisible(false);
 		choicesList_->setVisible(false);
 		textInput_->setVisible(false);
 		numberInput_->setVisible(false);
 		cancelBtn_->setVisible(true);
+		okBtn_->setInvalid(false);
 		okBtn_->setVisible(true);
 
 		if (IsBlocking())
@@ -138,7 +140,8 @@ namespace UI
 				okBtn_->setVisible(true);
 				minText_->setTextf("Min Length: %d", OM::currentAlert.limits.text.min);
 				maxText_->setTextf("Max Length: %d", OM::currentAlert.limits.text.max);
-				numberInput_->setText(OM::currentAlert.limits.text.valueDefault.c_str());
+				textInput_->setText(OM::currentAlert.limits.text.valueDefault.c_str());
+				ValidateTextInput(textInput_->getText().c_str());
 				minText_->setVisible(true);
 				maxText_->setVisible(true);
 				textInput_->setVisible(true);
@@ -252,6 +255,117 @@ namespace UI
 	void PopupWindow::Clear()
 	{
 		mode_ = OM::Alert::Mode::None;
+	}
+
+	bool PopupWindow::ValidateIntegerInput(const char* text)
+	{
+		if (!ValidateIntegerInputInner(text))
+		{
+			okBtn_->setInvalid(true);
+			return false;
+		}
+		okBtn_->setInvalid(false);
+		return true;
+	}
+
+	bool PopupWindow::ValidateFloatInput(const char* text)
+	{
+		if (!ValidateFloatInputInner(text))
+		{
+			okBtn_->setInvalid(true);
+			return false;
+		}
+		okBtn_->setInvalid(false);
+		return true;
+	}
+
+	bool PopupWindow::ValidateTextInput(const char* text)
+	{
+		if (!ValidateTextInputInner(text))
+		{
+			okBtn_->setInvalid(true);
+			return false;
+		}
+		okBtn_->setInvalid(false);
+		return true;
+	}
+
+	bool PopupWindow::ValidateIntegerInputInner(const char* text)
+	{
+		if (mode_ != OM::Alert::Mode::NumberInt)
+		{
+			return false;
+		}
+
+		int32_t value;
+		if (!Comm::GetInteger(text, value))
+		{
+			warningText_->setTextTr("invalid_int_malformed");
+			return false;
+		}
+		dbg("input %s, value %d", text, value);
+		if (value < OM::currentAlert.limits.numberInt.min)
+		{
+			warningText_->setTextTr("invalid_int_min");
+			return false;
+		}
+		if (value > OM::currentAlert.limits.numberInt.max)
+		{
+			warningText_->setTextTr("invalid_int_max");
+			return false;
+		}
+
+		warningText_->setText("");
+		numberInput_->setText(value); // This is to convert float to int and revalidate
+		return true;
+	}
+
+	bool PopupWindow::ValidateFloatInputInner(const char* text)
+	{
+		if (mode_ != OM::Alert::Mode::NumberFloat)
+			return false;
+
+		float value;
+		if (!Comm::GetFloat(text, value))
+		{
+			warningText_->setTextTr("invalid_float_malformed");
+			return false;
+		}
+		dbg("input %s, value %.3f", text, value);
+		if (value < OM::currentAlert.limits.numberFloat.min)
+		{
+			warningText_->setTextTr("invalid_float_min");
+			return false;
+		}
+		if (value > OM::currentAlert.limits.numberFloat.max)
+		{
+			warningText_->setTextTr("invalid_float_max");
+			return false;
+		}
+
+		warningText_->setText("");
+		return true;
+	}
+
+	bool PopupWindow::ValidateTextInputInner(const char* text)
+	{
+		if (mode_ != OM::Alert::Mode::Text)
+			return false;
+
+		size_t len = Strnlen(text, OM::alertResponseLength);
+		if (len < OM::currentAlert.limits.text.min)
+		{
+			warningText_->setTextTr("invalid_text_min");
+			return false;
+		}
+		if (len > OM::currentAlert.limits.text.max)
+		{
+			warningText_->setTextTr("invalid_text_max");
+			return false;
+		}
+
+		warningText_->setText("");
+		return true;
 	}
 
 	void SliderWindow::Init(ZKWindow* window,

@@ -839,17 +839,23 @@ static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index,
 
 static void onEditTextChanged_PopupTextInput(const std::string& text)
 {
-	// LOGD(" onEditTextChanged_ PopupTextInput %s !!!\n", text.c_str());
+	if (UI::POPUP_WINDOW->GetMode() != OM::Alert::Mode::Text)
+		return;
+	UI::POPUP_WINDOW->ValidateTextInput(text.c_str());
 }
 
 static void onEditTextChanged_PopupNumberInput(const std::string& text)
 {
-	switch (OM::currentAlert.mode)
+	switch (UI::POPUP_WINDOW->GetMode())
 	{
-	case OM::Alert::Mode::NumberInt:
+	case OM::Alert::Mode::NumberInt: {
+		UI::POPUP_WINDOW->ValidateIntegerInput(text.c_str());
 		break;
-	case OM::Alert::Mode::NumberFloat:
+	}
+	case OM::Alert::Mode::NumberFloat: {
+		UI::POPUP_WINDOW->ValidateFloatInput(text.c_str());
 		break;
+	}
 	default:
 		break;
 	}

@@ -94,11 +94,11 @@ public:
         va_list vargs;
         std::string format = LANGUAGEMANAGER->getValue(format_id);
         va_start(vargs, format.c_str());
-        char buffer[50];
-        const int ret = SafeVsnprintf(buffer, 50, format.c_str(), vargs);
-        va_end(vargs);
-        setText(buffer);
-        return ret;
+		char buffer[255];
+		const int ret = SafeVsnprintf(buffer, 255, format.c_str(), vargs);
+		va_end(vargs);
+		setText(buffer);
+		return ret;
 	}
 
 	void reloadTextTr();

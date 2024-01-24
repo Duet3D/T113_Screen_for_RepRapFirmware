@@ -65,9 +65,18 @@ namespace UI
 		bool IsResponse() const;
 		void Clear();
 
+		bool ValidateIntegerInput(const char* text);
+		bool ValidateFloatInput(const char* text);
+		bool ValidateTextInput(const char* text);
+
 		uint32_t GetSeq() const { return seq_; }
+		const OM::Alert::Mode GetMode() const { return mode_; }
 
 	  private:
+		bool ValidateIntegerInputInner(const char* text);
+		bool ValidateFloatInputInner(const char* text);
+		bool ValidateTextInputInner(const char* text);
+
 		ZKWindow* window_ = nullptr;
 		ZKWindow* noTouchWindow_ = nullptr;
 		ZKButton* okBtn_ = nullptr;

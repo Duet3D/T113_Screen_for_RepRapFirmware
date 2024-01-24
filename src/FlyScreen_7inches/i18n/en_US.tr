@@ -99,6 +99,14 @@
     <string name="close">Close</string>
     <string name="confirm">Confirm</string>
     <string name="num_pad_del">Del</string>
+    <string name="invalid_int_malformed">Value not an integer</string>
+    <string name="invalid_int_min">Value too low</string>
+    <string name="invalid_int_max">Value too high</string>
+    <string name="invalid_float_malformed">Value not a float</string>
+    <string name="invalid_float_min">Value too low</string>
+    <string name="invalid_float_max">Value too high</string>
+    <string name="invalid_text_min">Input too short</string>
+    <string name="invalid_text_max">Input too long</string>
 
     <!-- Settings Page -->
     <string name="language">Language</string>
