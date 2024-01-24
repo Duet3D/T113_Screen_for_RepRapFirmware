@@ -236,7 +236,6 @@ namespace OM::Move
 			if (extruder == nullptr)
 				return;
 			numExtruders++;
-			dbg("Tool %d extruder %d mix %.2f diameter %.2f", tool->index, extruder->index, tool->mix[index], extruder->filamentDiameter);
 			filamentArea += tool->mix[index] * (M_PI * pow(extruder->filamentDiameter / 2, 2));
 		});
 

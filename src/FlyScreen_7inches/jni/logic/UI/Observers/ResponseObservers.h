@@ -45,12 +45,12 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 
 					  if (!mConsoleWindowPtr->isVisible())
 					  {
-						  UI::CONF_WINDOW->Open([]() {
+						  UI::POPUP_WINDOW->Open([]() {
 							  UI::WINDOW->CloseLastWindow();
 							  UI::WINDOW->OpenWindow(mConsoleWindowPtr);
 						  });
-						  UI::CONF_WINDOW->SetText(val);
-						  UI::CONF_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
+						  UI::POPUP_WINDOW->SetText(val);
+						  UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
 					  }
 					  UI::CONSOLE->Refresh();
 				  }),

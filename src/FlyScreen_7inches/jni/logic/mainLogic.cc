@@ -111,7 +111,17 @@ static void onUI_init()
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
-	UI::CONF_WINDOW->Init(mConfirmationWindowPtr, mConfirmationOkBtnPtr, mConfirmationCancelBtnPtr, mConfirmationTextPtr);
+	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
+						   mPopupOkBtnPtr,
+						   mPopupCancelBtnPtr,
+						   mPopupTitlePtr,
+						   mPopupTextPtr,
+						   mPopupWarningPtr,
+						   mPopupMinPtr,
+						   mPopupMaxPtr,
+						   mPopupSelectionListPtr,
+						   mPopupTextInputPtr,
+						   mPopupNumberInputPtr);
 	UI::SLIDER_WINDOW->Init(mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr,
 							mSliderSuffixPtr);
 }
@@ -598,22 +608,25 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 
 static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
-	UI::CONF_WINDOW->Cancel();
+	if (UI::POPUP_WINDOW->IsBlocking())
+		return;
+	UI::POPUP_WINDOW->Cancel();
 	switch (item->GetType())
 	{
 	case OM::FileSystem::FileSystemItemType::file:
 		UI::SetSelectedFile(item->GetPath());
 		if (OM::FileSystem::IsMacroFolder())
 		{
-			UI::CONF_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
 		}
 		else
 		{
-			UI::CONF_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 		}
-		UI::CONF_WINDOW->Open([](){
+		UI::POPUP_WINDOW->Open([]() {
 			UI::RunSelectedFile();
-			if (!OM::FileSystem::IsMacroFolder()){
+			if (!OM::FileSystem::IsMacroFolder())
+			{
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			}
@@ -759,14 +772,16 @@ static bool onButtonClick_SliderCloseBtn(ZKButton *pButton) {
 	UI::WINDOW->CloseOverlay();
 	return false;
 }
-static bool onButtonClick_ConfirmationCancelBtn(ZKButton *pButton) {
-    UI::CONF_WINDOW->Cancel();
-    return false;
+static bool onButtonClick_PopupCancelBtn(ZKButton* pButton)
+{
+	UI::POPUP_WINDOW->Cancel();
+	return false;
 }
 
-static bool onButtonClick_ConfirmationOkBtn(ZKButton *pButton) {
-    UI::CONF_WINDOW->Ok();
-    return false;
+static bool onButtonClick_PopupOkBtn(ZKButton* pButton)
+{
+	UI::POPUP_WINDOW->Ok();
+	return false;
 }
 
 static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
@@ -795,4 +810,29 @@ static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::Z
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
 {
 	// LOGD(" onListItemClick_ BaudRateList  !!!\n");
+}
+static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_PopupSelectionList !\n");
+	return 10;
+}
+
+static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ PopupSelectionList  !!!\n");
+}
+
+static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
+}
+
+static void onEditTextChanged_PopupTextInput(const std::string& text)
+{
+	// LOGD(" onEditTextChanged_ PopupTextInput %s !!!\n", text.c_str());
+}
+
+static void onEditTextChanged_PopupNumberInput(const std::string& text)
+{
+	// LOGD(" onEditTextChanged_ PopupNumberInput %s !!!\n", text.c_str());
 }

@@ -10,12 +10,11 @@
 
 #include "Debug.h"
 
-#include "UI/OmObserver.h"
-#include "UI/UserInterfaceConstants.h"
-#include "UI/UserInterface.h"
+#include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
-
-
+#include "UI/OmObserver.h"
+#include "UI/UserInterface.h"
+#include "UI/UserInterfaceConstants.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -58,21 +57,81 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 						  break;
 					  }
 				  }),
-	OBSERVER_INT("state:currentTool", [](OBSERVER_INT_ARGS) { OM::SetCurrentTool(val); })};
+	OBSERVER_INT("state:currentTool", [](OBSERVER_INT_ARGS) { OM::SetCurrentTool(val); }),
+	OBSERVER_CHAR("state:messageBox",
+				  [](OBSERVER_CHAR_ARGS) {
+					  dbg("messageBox: %s", val);
+					  if (val[0] != 0)
+						  return;
+					  UI::PopupWindow* popup = UI::PopupWindow::GetInstance();
+					  if (!popup->IsOpen() || popup->IsResponse())
+						  return;
+					  popup->Close();
+					  OM::currentAlert.Reset();
+				  }),
+	OBSERVER_UINT("state:messageBox:axisControls",
+				  [](OBSERVER_UINT_ARGS) {
+					  OM::currentAlert.controls = val;
+					  OM::currentAlert.flags.SetBit(OM::Alert::GotControls);
+				  }),
+	OBSERVER_CHAR("state:messageBox:message",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::currentAlert.text.copy(val);
+					  OM::currentAlert.flags.SetBit(OM::Alert::GotText);
+				  }),
+	OBSERVER_INT("state:messageBox:mode",
+				 [](OBSERVER_INT_ARGS) {
+					 OM::currentAlert.mode = static_cast<OM::Alert::Mode>(val);
+					 OM::currentAlert.flags.SetBit(OM::Alert::GotMode);
+				 }),
+	OBSERVER_UINT("state:messageBox:seq",
+				  [](OBSERVER_UINT_ARGS) {
+					  OM::currentAlert.seq = val;
+					  OM::currentAlert.flags.SetBit(OM::Alert::GotSeq);
+				  }),
+	OBSERVER_FLOAT("state:messageBox:timeout",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   OM::currentAlert.timeout = val;
+					   OM::currentAlert.flags.SetBit(OM::Alert::GotTimeout);
+				   }),
+	OBSERVER_CHAR("state:messageBox:title",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::currentAlert.title.copy(val);
+					  OM::currentAlert.flags.SetBit(OM::Alert::GotTitle);
+				  }),
+	OBSERVER_CHAR("state:messageBox:min",
+				  [](OBSERVER_CHAR_ARGS) {
+					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.min);
+					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.min);
+					  Comm::GetInteger(val, OM::currentAlert.limits.text.min);
+				  }),
+	OBSERVER_CHAR("state:messageBox:max",
+				  [](OBSERVER_CHAR_ARGS) {
+					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.max);
+					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.max);
+					  Comm::GetInteger(val, OM::currentAlert.limits.text.max);
+				  }),
+	OBSERVER_CHAR("state:messageBox:default",
+				  [](OBSERVER_CHAR_ARGS) {
+					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.valueDefault);
+					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.valueDefault);
+					  OM::currentAlert.limits.text.valueDefault.copy(val);
+				  }),
+	OBSERVER_CHAR("state:messageBox:cancelButton",
+				  [](OBSERVER_CHAR_ARGS) { Comm::GetBool(val, OM::currentAlert.cancelButton); }),
+	OBSERVER_CHAR("state:messageBox:choices^",
+				  [](OBSERVER_CHAR_ARGS) {
+					  if (indices[0] >= OM::alertMaxChoices)
+						  return;
+					  OM::currentAlert.choices[indices[0]].copy(val);
+					  OM::currentAlert.choices_count = indices[0] + 1;
+				  }),
+};
 
 /*
  * These functions are run when the end of an array has been received from the OM
  * The function needs to take in an array containing the indices of the OM key
  */
-static UI::Observer<UI::ui_array_end_update_cb> StateObserversArrayEnd[] = {
-//	OBSERVER_ARRAY_END(
-//		"",
-//		[](OBSERVER_ARRAY_END_ARGS)
-//		{
-//		}
-//	),
-};
-
-
+static UI::Observer<UI::ui_array_end_update_cb> StateObserversArrayEnd[] = {};
 
 #endif /* JNI_LOGIC_UI_OBSERVERS_STATEOBSERVERS_HPP_ */

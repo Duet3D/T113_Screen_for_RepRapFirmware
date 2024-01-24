@@ -154,8 +154,8 @@ bool UartContext::threadLoop() {
 			if (len >= UART_DATA_BUF_LEN)
 			{
 				dbg("UART buffer overflow");
-				UI::CONF_WINDOW->Open();
-				UI::CONF_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
+				UI::POPUP_WINDOW->Open();
+				UI::POPUP_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
 				mDataBufLen = 0;
 			}
 		} else {

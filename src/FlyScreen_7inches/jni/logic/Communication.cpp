@@ -12,15 +12,17 @@
 #include "Debug.h"
 
 #include "Communication.h"
+#include "UI/UserInterface.h"
 
 #include <stdarg.h>
 
-#include "Hardware/SerialIo.h"
 #include "Hardware/Reset.h"
+#include "Hardware/SerialIo.h"
 
 #include "Configuration.h"
 #include "ControlCommands.h"
 #include "Library/Thumbnail.h"
+#include "ObjectModel/Alert.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/PrinterStatus.h"
@@ -636,6 +638,13 @@ namespace Comm {
 			//MessageLog::DisplayNewMessage();
 		}
 		//FileManager::EndReceivedMessage();
+
+		// Open M291 message box if required
+		if (OM::currentAlert.mode != OM::Alert::Mode::None && OM::currentAlert.seq != OM::lastAlertSeq)
+		{
+			UI::POPUP_WINDOW->Open();
+			OM::lastAlertSeq = OM::currentAlert.seq;
+		}
 
 		if (thumbnailContext.parseErr != 0 || thumbnailContext.err != 0) {
 			dbg("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
