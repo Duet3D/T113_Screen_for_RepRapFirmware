@@ -267,6 +267,7 @@ namespace UI
 		{
 			axis = nullptr;
 		}
+		selectedAxis = 0;
 	}
 
 	bool PopupWindow::ValidateIntegerInput(const char* text)
@@ -411,6 +412,7 @@ namespace UI
 			dbg("Axis %d, count %d", i, count);
 			count++;
 		}
+		axisJogSelection_->setSelection(0);
 	}
 
 	void SliderWindow::Init(ZKWindow* window,

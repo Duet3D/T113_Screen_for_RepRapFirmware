@@ -861,7 +861,6 @@ static void onEditTextChanged_PopupNumberInput(const std::string& text)
 	default:
 		break;
 	}
-	// LOGD(" onEditTextChanged_ PopupNumberInput %s !!!\n", text.c_str());
 }
 
 static int getListItemCount_PopupAxisSelection(const ZKListView* pListView)
@@ -871,12 +870,14 @@ static int getListItemCount_PopupAxisSelection(const ZKListView* pListView)
 
 static void obtainListItemData_PopupAxisSelection(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
+	pListItem->setSelected(index == UI::POPUP_WINDOW->selectedAxis);
 	pListItem->setText(UI::POPUP_WINDOW->GetJogAxis(index)->letter);
 }
 
 static void onListItemClick_PopupAxisSelection(ZKListView* pListView, int index, int id)
 {
-	// LOGD(" onListItemClick_ PopupAxisSelection  !!!\n");
+	dbg("Popup axis selection %d", index);
+	UI::POPUP_WINDOW->selectedAxis = index;
 }
 
 static int getListItemCount_PopupAxisAdjusment(const ZKListView* pListView)

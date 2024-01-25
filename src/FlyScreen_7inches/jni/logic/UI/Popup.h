@@ -76,6 +76,8 @@ namespace UI
 		OM::Move::Axis* GetJogAxis(int listIndex) const;
 		size_t GetJogAxisCount() const;
 
+		int selectedAxis = 0;
+
 	  private:
 		bool ValidateIntegerInputInner(const char* text);
 		bool ValidateFloatInputInner(const char* text);
