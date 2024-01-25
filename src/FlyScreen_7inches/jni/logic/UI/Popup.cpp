@@ -62,8 +62,14 @@ namespace UI
 		dbg("Opening popup window");
 		if (IsOpen() && IsBlocking())
 		{
-			dbg("M291 alert already open");
-			return;
+			/* TODO
+			 * Unsure if returning is needed, it might need adding if response messages clear a blocking M291 popup.
+			 However returning here has an issue that if a blocking M291 is called immediately after clearing a previous
+			 one from DWC. It will not appear on the screen. This is because the screen hasn't received an update from
+			 the OM saying the previous blocking M291 has been cleared.
+			 */
+			dbg("Blocking M291 alert already open, overwriting");
+			// return;
 		}
 
 		Clear();
