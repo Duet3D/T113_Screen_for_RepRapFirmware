@@ -127,7 +127,9 @@ static void onUI_init()
 						   mPopupMaxPtr,
 						   mPopupSelectionListPtr,
 						   mPopupTextInputPtr,
-						   mPopupNumberInputPtr);
+						   mPopupNumberInputPtr,
+						   mPopupAxisSelectionPtr,
+						   mPopupAxisAdjusmentPtr);
 	UI::SLIDER_WINDOW->Init(mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr,
 							mSliderSuffixPtr);
 }
@@ -860,4 +862,35 @@ static void onEditTextChanged_PopupNumberInput(const std::string& text)
 		break;
 	}
 	// LOGD(" onEditTextChanged_ PopupNumberInput %s !!!\n", text.c_str());
+}
+
+static int getListItemCount_PopupAxisSelection(const ZKListView* pListView)
+{
+	return UI::POPUP_WINDOW->GetJogAxisCount();
+}
+
+static void obtainListItemData_PopupAxisSelection(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::POPUP_WINDOW->GetJogAxis(index)->letter);
+}
+
+static void onListItemClick_PopupAxisSelection(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ PopupAxisSelection  !!!\n");
+}
+
+static int getListItemCount_PopupAxisAdjusment(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_PopupAxisAdjusment !\n");
+	return 6;
+}
+
+static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ PopupAxisAdjusment  !!!\n");
+}
+
+static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ PopupAxisAdjusment  !!!\n");
 }

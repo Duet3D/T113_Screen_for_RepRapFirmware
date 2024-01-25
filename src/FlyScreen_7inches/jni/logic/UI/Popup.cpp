@@ -27,7 +27,9 @@ namespace UI
 						   ZKTextView* maxText,
 						   ZKListView* choicesList,
 						   ZKEditText* textInput,
-						   ZKEditText* numberInput)
+						   ZKEditText* numberInput,
+						   ZKListView* axisJogSelection,
+						   ZKListView* axisJogAdjustment)
 	{
 		window_ = window;
 		noTouchWindow_ = noTouchWindow;
@@ -41,6 +43,8 @@ namespace UI
 		choicesList_ = choicesList;
 		textInput_ = textInput;
 		numberInput_ = numberInput;
+		axisJogSelection_ = axisJogSelection;
+		axisJogAdjustment_ = axisJogAdjustment;
 	}
 
 	void PopupWindow::Open()
@@ -62,19 +66,10 @@ namespace UI
 			return;
 		}
 
+		Clear();
+
 		mode_ = OM::currentAlert.mode;
 		seq_ = OM::currentAlert.seq;
-
-		noTouchWindow_->setVisible(false);
-		warningText_->setText("");
-		minText_->setVisible(false);
-		maxText_->setVisible(false);
-		choicesList_->setVisible(false);
-		textInput_->setVisible(false);
-		numberInput_->setVisible(false);
-		cancelBtn_->setVisible(true);
-		okBtn_->setInvalid(false);
-		okBtn_->setVisible(true);
 
 		if (IsBlocking())
 		{
@@ -103,20 +98,22 @@ namespace UI
 				okBtn_->setVisible(false);
 				break;
 			case OM::Alert::Mode::InfoConfirm:
-				cancelBtn_->setVisible(false);
-				okBtn_->setVisible(true);
-				break;
 			case OM::Alert::Mode::ConfirmCancel:
-				cancelBtn_->setVisible(true);
+				cancelBtn_->setVisible(mode_ == OM::Alert::Mode::ConfirmCancel);
 				okBtn_->setVisible(true);
+
+				// Axis jog controls
+				SetAxisJogSelection(OM::currentAlert.controls);
+				axisJogSelection_->setVisible(OM::currentAlert.controls > 0);
+				axisJogAdjustment_->setVisible(OM::currentAlert.controls > 0);
 				break;
 			case OM::Alert::Mode::Choices:
-				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
+				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
 				okBtn_->setVisible(false);
 				choicesList_->setVisible(true);
 				break;
 			case OM::Alert::Mode::NumberInt:
-				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
+				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
 				okBtn_->setVisible(true);
 				minText_->setTextf("Min: %d", OM::currentAlert.limits.numberInt.min);
 				maxText_->setTextf("Max: %d", OM::currentAlert.limits.numberInt.max);
@@ -126,7 +123,7 @@ namespace UI
 				numberInput_->setVisible(true);
 				break;
 			case OM::Alert::Mode::NumberFloat:
-				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
+				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
 				okBtn_->setVisible(true);
 				minText_->setTextf("Min: %.2f", OM::currentAlert.limits.numberFloat.min);
 				maxText_->setTextf("Max: %.2f", OM::currentAlert.limits.numberFloat.max);
@@ -136,7 +133,7 @@ namespace UI
 				numberInput_->setVisible(true);
 				break;
 			case OM::Alert::Mode::Text:
-				OM::currentAlert.cancelButton == true ? cancelBtn_->setVisible(true) : cancelBtn_->setVisible(false);
+				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
 				okBtn_->setVisible(true);
 				minText_->setTextf("Min Length: %d", OM::currentAlert.limits.text.min);
 				maxText_->setTextf("Max Length: %d", OM::currentAlert.limits.text.max);
@@ -224,8 +221,7 @@ namespace UI
 	void PopupWindow::Close()
 	{
 		dbg("Closing popup window");
-		mode_ = OM::Alert::Mode::None;
-		noTouchWindow_->setVisible(false);
+		Clear();
 		WINDOW->CloseOverlay();
 	}
 
@@ -255,6 +251,22 @@ namespace UI
 	void PopupWindow::Clear()
 	{
 		mode_ = OM::Alert::Mode::None;
+		noTouchWindow_->setVisible(false);
+		warningText_->setText("");
+		warningText_->setVisible(true);
+		minText_->setVisible(false);
+		maxText_->setVisible(false);
+		choicesList_->setVisible(false);
+		textInput_->setVisible(false);
+		numberInput_->setVisible(false);
+		cancelBtn_->setVisible(true);
+		okBtn_->setInvalid(false);
+		okBtn_->setVisible(true);
+
+		for (auto& axis : axes_)
+		{
+			axis = nullptr;
+		}
 	}
 
 	bool PopupWindow::ValidateIntegerInput(const char* text)
@@ -366,6 +378,39 @@ namespace UI
 
 		warningText_->setText("");
 		return true;
+	}
+
+	OM::Move::Axis* PopupWindow::GetJogAxis(int listIndex) const
+	{
+		return axes_[listIndex];
+	}
+
+	size_t PopupWindow::GetJogAxisCount() const
+	{
+		size_t count = 0;
+		for (auto axis : axes_)
+		{
+			if (axis != nullptr)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	void PopupWindow::SetAxisJogSelection(uint32_t axisControl)
+	{
+		size_t count = 0;
+		dbg("axisControl %d", axisControl);
+		for (size_t i = 0; i < MaxTotalAxes; ++i)
+		{
+			if (!(axisControl & (1 << i)))
+				continue;
+
+			axes_[count] = OM::Move::GetAxis(i);
+			dbg("Axis %d, count %d", i, count);
+			count++;
+		}
 	}
 
 	void SliderWindow::Init(ZKWindow* window,

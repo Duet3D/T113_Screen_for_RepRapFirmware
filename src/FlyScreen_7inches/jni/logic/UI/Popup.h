@@ -47,7 +47,9 @@ namespace UI
 				  ZKTextView* maxText,
 				  ZKListView* choicesList,
 				  ZKEditText* textInput,
-				  ZKEditText* numberInput);
+				  ZKEditText* numberInput,
+				  ZKListView* axisJogSelection,
+				  ZKListView* axisJogAdjustment);
 		void Open();
 		void Open(function<void(void)> okCb);
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
@@ -71,11 +73,15 @@ namespace UI
 
 		uint32_t GetSeq() const { return seq_; }
 		const OM::Alert::Mode GetMode() const { return mode_; }
+		OM::Move::Axis* GetJogAxis(int listIndex) const;
+		size_t GetJogAxisCount() const;
 
 	  private:
 		bool ValidateIntegerInputInner(const char* text);
 		bool ValidateFloatInputInner(const char* text);
 		bool ValidateTextInputInner(const char* text);
+
+		void SetAxisJogSelection(uint32_t axisControl);
 
 		ZKWindow* window_ = nullptr;
 		ZKWindow* noTouchWindow_ = nullptr;
@@ -89,10 +95,13 @@ namespace UI
 		ZKListView* choicesList_ = nullptr;
 		ZKEditText* textInput_ = nullptr;
 		ZKEditText* numberInput_ = nullptr;
+		ZKListView* axisJogSelection_ = nullptr;
+		ZKListView* axisJogAdjustment_ = nullptr;
 		function<void(void)> okCb_;
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;
 		uint32_t seq_;
+		OM::Move::Axis* axes_[MaxTotalAxes];
 	};
 
 	class SliderWindow

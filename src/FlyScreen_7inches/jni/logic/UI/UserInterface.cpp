@@ -84,6 +84,11 @@ namespace UI
 		if (overlayWindow_ == nullptr)
 			return false;
 
+		// Ensure that you can't close the popup window if it's blocking. To do this, you must first Clear the popup
+		if (POPUP_WINDOW->IsBlocking())
+		{
+			return false;
+		}
 		if (POPUP_WINDOW->IsOpen())
 		{
 			POPUP_WINDOW->Clear();
