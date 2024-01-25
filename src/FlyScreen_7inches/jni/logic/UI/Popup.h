@@ -73,9 +73,11 @@ namespace UI
 
 		uint32_t GetSeq() const { return seq_; }
 		const OM::Alert::Mode GetMode() const { return mode_; }
+
 		OM::Move::Axis* GetJogAxis(int listIndex) const;
 		size_t GetJogAxisCount() const;
 
+		float jogAmounts[6] = {2.0f, 0.2f, 0.02f, -0.02f, -0.2f, -2.0f};
 		int selectedAxis = 0;
 
 	  private:

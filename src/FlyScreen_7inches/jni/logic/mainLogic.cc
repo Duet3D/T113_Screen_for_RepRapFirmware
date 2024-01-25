@@ -883,15 +883,21 @@ static void onListItemClick_PopupAxisSelection(ZKListView* pListView, int index,
 static int getListItemCount_PopupAxisAdjusment(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_PopupAxisAdjusment !\n");
-	return 6;
+	return ARRAY_SIZE(UI::POPUP_WINDOW->jogAmounts);
 }
 
 static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ PopupAxisAdjusment  !!!\n");
+	pListItem->setText(UI::POPUP_WINDOW->jogAmounts[index]);
 }
 
 static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
 {
-	// LOGD(" onListItemClick_ PopupAxisAdjusment  !!!\n");
+	SerialIo::Sendf("M120\n"); // Push
+	SerialIo::Sendf("G91\n");  // Relative move
+	SerialIo::Sendf("G1 %s%.3f F%d\n",
+					UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
+					UI::POPUP_WINDOW->jogAmounts[index],
+					300);
+	SerialIo::Sendf("M121\n"); // Pop
 }
