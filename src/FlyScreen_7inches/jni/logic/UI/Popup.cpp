@@ -262,6 +262,8 @@ namespace UI
 		cancelBtn_->setVisible(true);
 		okBtn_->setInvalid(false);
 		okBtn_->setVisible(true);
+		axisJogSelection_->setVisible(false);
+		axisJogAdjustment_->setVisible(false);
 
 		for (auto& axis : axes_)
 		{
