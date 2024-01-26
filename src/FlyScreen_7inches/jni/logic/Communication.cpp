@@ -16,6 +16,7 @@
 
 #include <stdarg.h>
 
+#include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
 #include "Hardware/SerialIo.h"
 
@@ -58,9 +59,6 @@ namespace Comm {
 	const int parserMinErrors = 2;
 
 	static uint32_t lastResponseTime = 0;
-	constexpr uint32_t defaultPrinterPollInterval = 1000;
-	static uint32_t printerPollInterval = defaultPrinterPollInterval;
-	static uint32_t printerResponseTimeout = 2000;
 
 	static bool outOfBuffers = false;
 

@@ -9,6 +9,7 @@
 #define SRC_GENERAL_STRING_H_
 
 #include "StringRef.h"
+#include <sys/types.h>
 
 // Class to describe a string which we can access directly or get a StringRef reference to
 template<size_t Len> class String

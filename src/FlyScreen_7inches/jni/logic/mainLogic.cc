@@ -3,6 +3,7 @@
 
 #include "Communication.h"
 #include "Debug.h"
+#include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
@@ -84,6 +85,9 @@ static void onUI_init()
 {
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
+
+	Comm::duet.SetCommunicationType(Comm::Duet::CommunicationType::network);
+	Comm::duet.SetIPAddress("192.168.0.24");
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -565,16 +569,17 @@ static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::Z
 static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
 }
 
-static void onEditTextChanged_EditText1(const std::string &text) {
-    //LOGD(" onEditTextChanged_ EditText1 %s !!!\n", text.c_str());
-	SerialIo::Sendf("%s\n", text.c_str());
-    UI::CONSOLE->AddCommand(text);
+static void onEditTextChanged_EditText1(const std::string& text)
+{
+	UI::CONSOLE->AddCommand(text);
+	Comm::duet.SendGcode(text.c_str());
 }
 
-static bool onButtonClick_SendBtn(ZKButton *pButton) {
-    SerialIo::Sendf(mEditText1Ptr->getText().c_str());
-    UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
-    return true;
+static bool onButtonClick_SendBtn(ZKButton* pButton)
+{
+	UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
+	Comm::duet.SendGcode(mEditText1Ptr->getText().c_str());
+	return true;
 }
 static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
     UI::CONSOLE->Clear();

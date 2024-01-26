@@ -47,7 +47,7 @@
 #define old				_ecv_old
 #define out				_ecv_out
 #define over			_ecv_over
-#define post			_ecv_post
+//#define post			_ecv_post
 #define pre				_ecv_pre
 #define result			_ecv_result
 #define returns			_ecv_returns

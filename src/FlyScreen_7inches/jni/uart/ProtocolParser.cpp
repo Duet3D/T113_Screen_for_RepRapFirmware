@@ -4,12 +4,13 @@
  *  Created on: Sep 7, 2017
  *      Author: guoxs
  */
-#include <vector>
+#include "uart/ProtocolParser.h"
+#include "CommDef.h"
+#include "Hardware/Duet.h"
+#include "utils/Log.h"
 #include <string.h>
 #include <system/Mutex.h>
-#include "CommDef.h"
-#include "uart/ProtocolParser.h"
-#include "utils/Log.h"
+#include <vector>
 
 #define DEBUG (0)
 #include "Debug.h"
@@ -72,6 +73,10 @@ static void procParse(const unsigned char *pData, unsigned int len) {
  * Return value: the length of the actual resolution protocol
  */
 int parseProtocol(const unsigned char *pData, unsigned int len) {
+	if (Comm::duet.GetCommunicationType() != Comm::Duet::CommunicationType::uart)
+	{
+		return 0;
+	}
 	dbg("uart.ProtocolParser.parseProtocol: Received %d bytes of data: %.*s", len, len, pData);
 	if (pData[len-1] == '\n') {  // a serial message ends with \n
 		procParse(pData, len);

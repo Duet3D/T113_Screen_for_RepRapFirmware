@@ -26,7 +26,7 @@ constexpr unsigned int MaxDisplayableAxes = 6;
 
 constexpr unsigned int MaxCommandLength = 50;
 constexpr unsigned int MaxResponseLineLength = 65;
-constexpr unsigned int MaxResponseLines = 50;
+constexpr unsigned int MaxResponseLines = 200;
 
 constexpr unsigned int MaxFileNameLength = 100;
 
