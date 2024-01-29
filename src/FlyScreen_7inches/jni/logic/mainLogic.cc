@@ -87,6 +87,7 @@ static void onUI_init()
 	srand(0);
 
 	Comm::duet.SetCommunicationType(Comm::Duet::CommunicationType::network);
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	Comm::duet.SetIPAddress("192.168.0.24");
 
 	// Hide clock here so that it is visible when editing the GUI
@@ -809,6 +810,8 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		break;
 	case (int)UI::SettingsSlideWindowIndex::baud:
 		break;
+	case (int)UI::SettingsSlideWindowIndex::duet:
+		UI::WINDOW->OpenOverlay(mDuetCommListPtr);
 	}
 }
 
@@ -905,4 +908,23 @@ static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index,
 						 UI::POPUP_WINDOW->jogAmounts[index],
 						 300);
 	Comm::duet.SendGcode("M121\n"); // Pop
+}
+
+static int getListItemCount_DuetCommList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_DuetCommList !\n");
+	return (int)Comm::Duet::CommunicationType::COUNT;
+}
+
+static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
+	pListItem->setSelected(index == (int)Comm::duet.GetCommunicationType());
+}
+
+static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
+{
+	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)index);
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
+	UI::WINDOW->CloseOverlay();
 }

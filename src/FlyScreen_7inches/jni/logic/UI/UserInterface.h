@@ -43,29 +43,30 @@ namespace UI
 	{
 	    language = 0,
 	    baud,
+		duet,
 	};
 
 	class Window
 	{
 	  public:
 		static Window* GetInstance();
-		void AddHome(ZKWindow* home);
+		void AddHome(ZKBase* home);
 		void ClearHome();
-		void OpenWindow(ZKWindow* window);
-		void OpenOverlay(ZKWindow* window);
+		void OpenWindow(ZKBase* window);
+		void OpenOverlay(ZKBase* window);
 		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
-		void CloseWindow(ZKWindow* window, const bool returnable = true);
+		void CloseWindow(ZKBase* window, const bool returnable = true);
 		void Back();
 		void Home();
 		void Clear();
 
 	  private:
-		std::vector<ZKWindow*> openedWindows_;
-		std::vector<ZKWindow*> closedWindows_;
-		std::vector<ZKWindow*> homeWindows_;
-		ZKWindow* overlayWindow_ = nullptr;
+		std::vector<ZKBase*> openedWindows_;
+		std::vector<ZKBase*> closedWindows_;
+		std::vector<ZKBase*> homeWindows_;
+		ZKBase* overlayWindow_ = nullptr;
 	};
 
 	enum class HeaterType

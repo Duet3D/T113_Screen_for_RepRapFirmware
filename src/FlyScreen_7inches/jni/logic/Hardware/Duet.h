@@ -25,6 +25,9 @@ namespace Comm
 	constexpr size_t maxIpLength = 50;
 	constexpr size_t maxHostnameLength = 64;
 
+    constexpr const char* const duetCommunicationTypeNames[] = {
+        "UART", "Network", "USB"};
+
 	class Duet
 	{
 	  public:
@@ -33,6 +36,7 @@ namespace Comm
 			uart,
 			network,
 			usb,
+			COUNT
 		};
 
 		enum BaudRate : unsigned int
@@ -65,6 +69,7 @@ namespace Comm
 			SendGcode(utils::format(fmt, args...).c_str());
 		}
 		void SendGcode(const char* gcode);
+		const RestClient::Response* RequestReply();
 		void ProcessReply();
 
 		void RequestModel(const char* flags = "d99f");
@@ -90,8 +95,6 @@ namespace Comm
 		// USB methods
 
 	  private:
-		const RestClient::Response* RequestReply();
-
 		CommunicationType m_communicationType;
 		String<maxIpLength> m_ipAddress;
 		String<maxHostnameLength> m_hostname;

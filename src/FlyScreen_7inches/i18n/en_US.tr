@@ -111,6 +111,7 @@
     <!-- Settings Page -->
     <string name="language">Language</string>
     <string name="baud">Baud Rate</string>
+    <string name="duet">Duet</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

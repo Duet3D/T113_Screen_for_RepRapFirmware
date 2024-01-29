@@ -43,7 +43,8 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 						  UI::CONSOLE->AddResponse(line.GetRef());
 					  }
 
-					  if (!mConsoleWindowPtr->isVisible() && !UI::POPUP_WINDOW->IsBlocking())
+					  // Only show if console is not visible and a M291 message box is not showing
+					  if (!mConsoleWindowPtr->isVisible() && UI::POPUP_WINDOW->IsResponse())
 					  {
 						  UI::POPUP_WINDOW->Open([]() {
 							  UI::WINDOW->CloseLastWindow();
@@ -56,6 +57,15 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 				  }),
 	OBSERVER_CHAR("message", [](OBSERVER_CHAR_ARGS) { dbg("message: %s", val); }),
 	OBSERVER_CHAR("seq", [](OBSERVER_CHAR_ARGS) { dbg("seq: %s", val); }),
+	OBSERVER_INT_IF_CHANGED("seqs.reply",
+							[](OBSERVER_INT_ARGS) {
+								dbg("seqs.reply: %s", val);
+								if (Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::network)
+								{
+									Comm::duet.RequestReply();
+									Comm::duet.ProcessReply();
+								}
+							}),
 };
 
 /*
