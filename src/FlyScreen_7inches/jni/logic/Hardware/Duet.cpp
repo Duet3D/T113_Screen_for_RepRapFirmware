@@ -11,6 +11,7 @@
 #include "Debug.h"
 #include "Hardware/SerialIo.h"
 #include "manager/ConfigManager.h"
+#include "storage/StoragePreferences.h"
 #include "utils.h"
 #include <map>
 #include <string>
@@ -29,6 +30,7 @@ namespace Comm
 
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
+		StoragePreferences::putInt("communication_type", (int)type);
 		m_communicationType = type;
 	}
 

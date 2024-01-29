@@ -22,6 +22,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "storage/StoragePreferences.h"
 #include "utils/TimeHelper.h"
 #include <string>
 #include <vector>
@@ -86,7 +87,7 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
-	Comm::duet.SetCommunicationType(Comm::Duet::CommunicationType::network);
+	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	Comm::duet.SetIPAddress("192.168.0.24");
 
