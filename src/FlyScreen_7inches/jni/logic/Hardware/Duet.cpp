@@ -12,6 +12,7 @@
 #include "Hardware/SerialIo.h"
 #include "manager/ConfigManager.h"
 #include "utils.h"
+#include <map>
 #include <string>
 
 namespace Comm
@@ -41,6 +42,43 @@ namespace Comm
 		SetPollInterval(static_cast<uint32_t>(m_pollInterval * scale));
 	}
 
+	bool Get(std::string& url, RestClient::Response& r, std::map<const char*, std::string>& queryParameters)
+	{
+		if (queryParameters.size() > 0)
+			url += "?";
+
+		bool first = true;
+		for (auto& query : queryParameters)
+		{
+			utils::replaceSubstring(query.second, " ", "%20");
+			utils::replaceSubstring(query.second, "\"", "%22");
+			utils::replaceSubstring(query.second, ":", "%3A");
+			utils::replaceSubstring(query.second, "\\", "%5C");
+			utils::replaceSubstring(query.second, "/", "%2F");
+			utils::removeCharFromString(query.second, '\n');
+			utils::removeCharFromString(query.second, '\r');
+
+			if (!first)
+			{
+				url += "&";
+			}
+			url += query.first;
+			url += "=";
+			url += query.second;
+
+			first = false;
+		}
+
+		r = RestClient::get(url);
+		if (r.code != 200)
+		{
+			dbg("%s failed, returned response %d", url.c_str(), r.code);
+			return false;
+		}
+		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
+		return true;
+	}
+
 	void Duet::SendGcode(const char* gcode)
 	{
 		switch (m_communicationType)
@@ -49,25 +87,12 @@ namespace Comm
 			SerialIo::Sendf("%s\n", gcode);
 			break;
 		case CommunicationType::network: {
-			std::string gcodeString = std::string(gcode);
-			utils::replaceSubstring(gcodeString, " ", "%20");
-			utils::replaceSubstring(gcodeString, "\"", "%22");
-			utils::replaceSubstring(gcodeString, ":", "%3A");
-			utils::replaceSubstring(gcodeString, "\\", "%5C");
-			utils::replaceSubstring(gcodeString, "/", "%2F");
-			utils::removeCharFromString(gcodeString, '\n');
-			utils::removeCharFromString(gcodeString, '\r');
-
-			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_gcode?gcode=" + gcodeString;
-			RestClient::Response r = RestClient::get(requestString);
-
-			if (r.code != 200)
-			{
-				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_gcode";
+			RestClient::Response r;
+			std::map<const char*, std::string> query;
+			query["gcode"] = gcode;
+			if (!Get(requestString, r, query))
 				break;
-			}
-
-			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
 			RequestReply();
 			ProcessReply();
 			break;
@@ -86,16 +111,12 @@ namespace Comm
 			SendGcodef("M409 F\"%s\"\n", flags);
 			break;
 		case CommunicationType::network: {
-			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_model?flags=" + flags;
-			RestClient::Response r = RestClient::get(requestString);
-
-			if (r.code != 200)
-			{
-				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_model";
+			RestClient::Response r;
+			std::map<const char*, std::string> query;
+			query["flags"] = flags;
+			if (!Get(requestString, r, query))
 				break;
-			}
-
-			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}
@@ -110,17 +131,37 @@ namespace Comm
 			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
 			break;
 		case CommunicationType::network: {
-			std::string requestString =
-				std::string("http://") + m_ipAddress.c_str() + "/rr_model?flags=" + flags + "&key=" + key;
-			RestClient::Response r = RestClient::get(requestString);
-
-			if (r.code != 200)
-			{
-				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_model";
+			RestClient::Response r;
+			std::map<const char*, std::string> query;
+			query["key"] = key;
+			query["flags"] = flags;
+			if (!Get(requestString, r, query))
 				break;
-			}
+			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			break;
+		}
+		default:
+			break;
+		}
+		return;
+	}
 
-			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
+	void Duet::RequestFileList(const char* dir, const size_t first)
+	{
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
+			break;
+		case CommunicationType::network: {
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_filelist";
+			RestClient::Response r;
+			std::map<const char*, std::string> query;
+			query["dir"] = dir;
+			query["first"] = utils::format("%d", first);
+			if (!Get(requestString, r, query))
+				break;
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}

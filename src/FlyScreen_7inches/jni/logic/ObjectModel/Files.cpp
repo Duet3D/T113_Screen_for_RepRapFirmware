@@ -186,7 +186,7 @@ namespace OM::FileSystem
 	void RequestFiles(const std::string& path)
 	{
 		sInMacroFolder = path.find("macro") != std::string::npos;
-		Comm::duet.SendGcodef("M20 S3 P\"%s\"\n", path.c_str());
+		Comm::duet.RequestFileList(path.c_str());
 	}
 
 	bool IsMacroFolder()

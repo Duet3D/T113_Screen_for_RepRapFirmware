@@ -69,8 +69,8 @@ namespace Comm
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
-		const char* RequestFileList(const char* dir, const size_t first = 0);
-		const char* RequestFileInfo(const char* filename);
+		void RequestFileList(const char* dir, const size_t first = 0);
+		void RequestFileInfo(const char* filename);
 		void RequestThumbnail();
 
 		// UART methods
