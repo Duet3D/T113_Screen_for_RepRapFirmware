@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 						  UI::CONSOLE->AddResponse(line.GetRef());
 					  }
 
-					  if (!mConsoleWindowPtr->isVisible())
+					  if (!mConsoleWindowPtr->isVisible() && !UI::POPUP_WINDOW->IsBlocking())
 					  {
 						  UI::POPUP_WINDOW->Open([]() {
 							  UI::WINDOW->CloseLastWindow();

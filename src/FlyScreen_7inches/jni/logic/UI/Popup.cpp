@@ -258,6 +258,8 @@ namespace UI
 	{
 		mode_ = OM::Alert::Mode::None;
 		noTouchWindow_->setVisible(false);
+		title_->setText("");
+		text_->setText("");
 		warningText_->setText("");
 		warningText_->setVisible(true);
 		minText_->setVisible(false);
