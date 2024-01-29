@@ -948,7 +948,7 @@ namespace Comm {
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
 			LOGD("requesting %s\n", currentReqSeq->key);
-			SerialIo::Sendf("M409 K\"%s\" F\"%s\"\n", currentReqSeq->key, currentReqSeq->flags);
+			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
@@ -956,7 +956,7 @@ namespace Comm {
 				initialized = true;
 			}
 
-            SerialIo::Sendf("M409 F\"d99f\"\n");
+			Comm::duet.RequestModel("d99f");
 		}
 	}
 

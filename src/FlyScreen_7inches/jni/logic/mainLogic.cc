@@ -269,9 +269,9 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	UI::POPUP_WINDOW->Close();
-	SerialIo::Sendf("M112\n");
+	Comm::duet.SendGcode("M112\n");
 	Thread::sleep(1000);
-	SerialIo::Sendf("M999\n");
+	Comm::duet.SendGcode("M999\n");
 	return false;
 }
 
@@ -417,25 +417,25 @@ static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
 	return false;
 }
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
-	SerialIo::Sendf("G28\n");
+	Comm::duet.SendGcode("G28\n");
 	return false;
 }
 
 static bool onButtonClick_TrueLevelBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("G32\n");
+	Comm::duet.SendGcode("G32\n");
 	return false;
 }
 
 static bool onButtonClick_MeshLevelBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("G29\n");
+	Comm::duet.SendGcode("G29\n");
 	return false;
 }
 
 static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("M18\n");
+	Comm::duet.SendGcode("M18\n");
 	return false;
 }
 
@@ -474,7 +474,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 	switch (id)
 	{
 	case ID_MAIN_AxisControlHomeSubItem:
-		SerialIo::Sendf("G28 %s\n", axis->letter);
+		Comm::duet.SendGcodef("G28 %s\n", axis->letter);
 		return;
 	case ID_MAIN_AxisControlSubItem1:
 		distance = -50;
@@ -501,7 +501,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 		distance = 50;
 		break;
 	}
-	SerialIo::Sendf("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
+	Comm::duet.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
 }
 
 static void selectFeedRateBtn(ZKButton* pButton)
@@ -654,13 +654,13 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	}
 }
 static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
-    SerialIo::Sendf("M290 S-0.05");
-    return false;
+	Comm::duet.SendGcode("M290 S-0.05");
+	return false;
 }
 
 static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
-    SerialIo::Sendf("M290 S0.05");
-    return false;
+	Comm::duet.SendGcode("M290 S0.05");
+	return false;
 }
 
 static int getListItemCount_PrintFanList(const ZKListView *pListView) {
@@ -690,7 +690,7 @@ static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int i
 			OM::Fan* fan = OM::GetFan(fanIndex);
 			if (fan == nullptr) { return; }
 			int fanSpeed = (percent * 255) / 100;
-			SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
+			Comm::duet.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
 		},
 		true);
 }
@@ -751,12 +751,12 @@ static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int
 	UI::SLIDER_WINDOW->Open(header, "", "", "%", 0, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
 		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
 		if (extruder == nullptr) { return; }
-		SerialIo::Sendf("M221 D%d S%d\n", extruder->index, percent);
+		Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
 	});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
-	SerialIo::Sendf("M220 S%d\n", progress);
+	Comm::duet.SendGcodef("M220 S%d\n", progress);
 }
 
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
@@ -840,7 +840,7 @@ static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListV
 
 static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
 {
-	SerialIo::Sendf("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
+	Comm::duet.SendGcodef("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
 	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
 }
 
@@ -898,11 +898,11 @@ static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListV
 
 static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
 {
-	SerialIo::Sendf("M120\n"); // Push
-	SerialIo::Sendf("G91\n");  // Relative move
-	SerialIo::Sendf("G1 %s%.3f F%d\n",
-					UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
-					UI::POPUP_WINDOW->jogAmounts[index],
-					300);
-	SerialIo::Sendf("M121\n"); // Pop
+	Comm::duet.SendGcode("M120\n"); // Push
+	Comm::duet.SendGcode("G91\n");	// Relative move
+	Comm::duet.SendGcodef("G1 %s%.3f F%d\n",
+						 UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
+						 UI::POPUP_WINDOW->jogAmounts[index],
+						 300);
+	Comm::duet.SendGcode("M121\n"); // Pop
 }

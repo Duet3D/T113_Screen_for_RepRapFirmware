@@ -6,10 +6,10 @@
  */
 
 #define DEBUG (1)
-#include <algorithm>
-#include "Debug.h"
 #include "Files.h"
-#include "Hardware/SerialIo.h"
+#include "Debug.h"
+#include "Hardware/Duet.h"
+#include <algorithm>
 
 namespace OM::FileSystem
 {
@@ -186,7 +186,7 @@ namespace OM::FileSystem
 	void RequestFiles(const std::string& path)
 	{
 		sInMacroFolder = path.find("macro") != std::string::npos;
-		SerialIo::Sendf("M20 S3 P\"%s\"\n", path.c_str());
+		Comm::duet.SendGcodef("M20 S3 P\"%s\"\n", path.c_str());
 	}
 
 	bool IsMacroFolder()
@@ -204,28 +204,28 @@ namespace OM::FileSystem
 
 	void RunMacro(const std::string& path)
 	{
-		SerialIo::Sendf("M98 P\"%s\"\n", path.c_str());
+		Comm::duet.SendGcodef("M98 P\"%s\"\n", path.c_str());
 	}
 
 	void StartPrint(const std::string& path)
 	{
-		SerialIo::Sendf("M23 \"%s\"\n", path.c_str());
-		SerialIo::Sendf("M24\n");
+		Comm::duet.SendGcodef("M23 \"%s\"\n", path.c_str());
+		Comm::duet.SendGcode("M24\n");
 	}
 
 	void ResumePrint()
 	{
-		SerialIo::Sendf("M24\n");
+		Comm::duet.SendGcode("M24\n");
 	}
 
 	void PausePrint()
 	{
-		SerialIo::Sendf("M25\n");
+		Comm::duet.SendGcode("M25\n");
 	}
 
 	void StopPrint()
 	{
-		SerialIo::Sendf("M0\n");
+		Comm::duet.SendGcode("M0\n");
 	}
 
 	void ClearFileSystem()

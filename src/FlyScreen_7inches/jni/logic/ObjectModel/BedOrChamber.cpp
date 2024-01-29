@@ -6,12 +6,12 @@
  */
 
 #include "BedOrChamber.h"
+#include "Hardware/Duet.h"
 #include "ListHelpers.h"
+#include "ObjectModel/Heat.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
-#include "ObjectModel/Heat.h"
 #include <UI/UserInterfaceConstants.h>
-#include "Hardware/SerialIo.h"
 
 #define DEBUG (1)
 #include "Debug.h"
@@ -45,7 +45,7 @@ namespace OM
 		String<MaxCommandLength> command;
 		command.catf("M140 P%d %s%d", index, active ? "S" : "R", temp);
 
-		SerialIo::Sendf(command.c_str());
+		Comm::duet.SendGcode(command.c_str());
 		return true;
 	}
 
@@ -58,7 +58,7 @@ namespace OM
 		String<MaxCommandLength> command;
 		command.catf("M141 P%d %s%d", index, active ? "S" : "R", temp);
 
-		SerialIo::Sendf(command.c_str());
+		Comm::duet.SendGcode(command.c_str());
 		return true;
 	}
 
@@ -71,16 +71,16 @@ namespace OM
 		switch (pheater->status)
 		{
 		case Heat::HeaterStatus::active:
-			SerialIo::Sendf("M144 P%d", index);
+			Comm::duet.SendGcodef("M144 P%d", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			SerialIo::Sendf("M140 P%d S-273.15", index);
+			Comm::duet.SendGcodef("M140 P%d S-273.15", index);
 			break;
 		case Heat::HeaterStatus::off:
-			SerialIo::Sendf("M140 P%d S%d", index, pheater->activeTemp);
+			Comm::duet.SendGcodef("M140 P%d S%d", index, pheater->activeTemp);
 			break;
 		case Heat::HeaterStatus::fault:
-			SerialIo::Sendf("M562 P%d", pheater->index);
+			Comm::duet.SendGcodef("M562 P%d", pheater->index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -99,13 +99,13 @@ namespace OM
 		{
 		case Heat::HeaterStatus::active:
 		case Heat::HeaterStatus::standby:
-			SerialIo::Sendf("M141 P%d S-273.15", index);
+			Comm::duet.SendGcodef("M141 P%d S-273.15", index);
 			break;
 		case Heat::HeaterStatus::off:
-			SerialIo::Sendf("M141 P%d S%d", index, pheater->activeTemp);
+			Comm::duet.SendGcodef("M141 P%d S%d", index, pheater->activeTemp);
 			break;
 		case Heat::HeaterStatus::fault:
-			SerialIo::Sendf("M562 P%d", pheater->index);
+			Comm::duet.SendGcodef("M562 P%d", pheater->index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:

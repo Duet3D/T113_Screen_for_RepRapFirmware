@@ -49,13 +49,25 @@ namespace Comm
 			SerialIo::Sendf("%s\n", gcode);
 			break;
 		case CommunicationType::network: {
-			RestClient::Response r = RestClient::get(std::string(m_ipAddress.c_str()) + "/rr_gcode?gcode=" + gcode);
+			std::string gcodeString = std::string(gcode);
+			utils::replaceSubstring(gcodeString, " ", "%20");
+			utils::replaceSubstring(gcodeString, "\"", "%22");
+			utils::replaceSubstring(gcodeString, ":", "%3A");
+			utils::replaceSubstring(gcodeString, "\\", "%5C");
+			utils::replaceSubstring(gcodeString, "/", "%2F");
+			utils::removeCharFromString(gcodeString, '\n');
+			utils::removeCharFromString(gcodeString, '\r');
+
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_gcode?gcode=" + gcodeString;
+			RestClient::Response r = RestClient::get(requestString);
 
 			if (r.code != 200)
 			{
-				dbg("rr_gcode?gcode=%s failed, returned response %d", gcode, r.code);
+				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
 				break;
 			}
+
+			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
 			RequestReply();
 			ProcessReply();
 			break;
@@ -64,6 +76,58 @@ namespace Comm
 			// TODO
 			break;
 		}
+	}
+
+	void Duet::RequestModel(const char* flags)
+	{
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M409 F\"%s\"\n", flags);
+			break;
+		case CommunicationType::network: {
+			std::string requestString = std::string("http://") + m_ipAddress.c_str() + "/rr_model?flags=" + flags;
+			RestClient::Response r = RestClient::get(requestString);
+
+			if (r.code != 200)
+			{
+				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
+				break;
+			}
+
+			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
+			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			break;
+		}
+		}
+	}
+
+	void Duet::RequestModel(const char* key, const char* flags)
+	{
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M409 K\"%s\" F\"%s\"\n", key, flags);
+			break;
+		case CommunicationType::network: {
+			std::string requestString =
+				std::string("http://") + m_ipAddress.c_str() + "/rr_model?flags=" + flags + "&key=" + key;
+			RestClient::Response r = RestClient::get(requestString);
+
+			if (r.code != 200)
+			{
+				dbg("%s failed, returned response %d", requestString.c_str(), r.code);
+				break;
+			}
+
+			dbg("%s succeeded, returned response %d", requestString.c_str(), r.code);
+			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			break;
+		}
+		default:
+			break;
+		}
+		return;
 	}
 
 	void Duet::ProcessReply()

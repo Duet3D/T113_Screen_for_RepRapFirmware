@@ -9,7 +9,7 @@
 #include "Popup.h"
 #include "Communication.h"
 #include "Debug.h"
-#include "Hardware/SerialIo.h"
+#include "Hardware/Duet.h"
 #include "UserInterface.h"
 #include <algorithm>
 #include <map>
@@ -169,14 +169,14 @@ namespace UI
 			{
 			case OM::Alert::Mode::InfoConfirm:
 			case OM::Alert::Mode::ConfirmCancel:
-				SerialIo::Sendf("M292 P0 S%lu\n", seq_);
+				Comm::duet.SendGcodef("M292 P0 S%lu\n", seq_);
 				break;
 			case OM::Alert::Mode::NumberInt:
 			case OM::Alert::Mode::NumberFloat:
-				SerialIo::Sendf("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
+				Comm::duet.SendGcodef("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
 				break;
 			case OM::Alert::Mode::Text:
-				SerialIo::Sendf("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
+				Comm::duet.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
 				break;
 			default:
 				break;
@@ -190,7 +190,7 @@ namespace UI
 	{
 		if (!IsResponse())
 		{
-			SerialIo::Sendf("M292 P1");
+			Comm::duet.SendGcode("M292 P1");
 		}
 		cancelCb_();
 		Close();
