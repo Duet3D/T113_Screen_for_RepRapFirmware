@@ -88,13 +88,13 @@ namespace Comm
 		const error_code Connect();
 		const error_code Disconnect();
 
-		void SetIPAddress(const char* ipAddress) { m_ipAddress = ipAddress; };
+		void SetIPAddress(const std::string& ipAddress);
 		const std::string GetIPAddress() const;
 
-		void SetHostname(std::string& hostname);
+		void SetHostname(const std::string& hostname);
 		const std::string GetHostname() const;
 
-		void SetPassword(const char* password) { m_password = password; };
+		void SetPassword(const std::string& password);
 		const std::string GetPassword() const;
 
 		void SetSessionKey(const int32_t sessionKey);

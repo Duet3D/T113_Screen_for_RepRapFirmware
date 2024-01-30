@@ -87,9 +87,12 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
-	Comm::duet.SetIPAddress("192.168.0.24");
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
+	mIpAddressInputPtr->setText(StoragePreferences::getString("ip_address", "192.168.0."));
+	mHostnameInputPtr->setText(StoragePreferences::getString("hostname", ""));
+	mPasswordInputPtr->setText(StoragePreferences::getString("password", ""));
+	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", 1000));
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -809,10 +812,12 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::language:
 		EASYUICONTEXT->openActivity("LanguageSettingActivity");
 		break;
-	case (int)UI::SettingsSlideWindowIndex::baud:
-		break;
 	case (int)UI::SettingsSlideWindowIndex::duet:
-		UI::WINDOW->OpenOverlay(mDuetCommListPtr);
+		mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+												  Comm::Duet::CommunicationType::uart);
+		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+													 Comm::Duet::CommunicationType::network);
+		UI::WINDOW->OpenOverlay(mDuetCommSettingWindowPtr);
 	}
 }
 
@@ -926,6 +931,27 @@ static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::Z
 static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
 {
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)index);
+	mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
+	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+												 Comm::Duet::CommunicationType::network);
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
-	UI::WINDOW->CloseOverlay();
+}
+
+static void onEditTextChanged_PollIntervalInput(const std::string& text)
+{
+	Comm::duet.SetPollInterval(atoi(text.c_str()));
+}
+static void onEditTextChanged_IpAddressInput(const std::string& text)
+{
+	Comm::duet.SetIPAddress(text);
+}
+
+static void onEditTextChanged_HostnameInput(const std::string& text)
+{
+	Comm::duet.SetHostname(text);
+}
+
+static void onEditTextChanged_PasswordInput(const std::string& text)
+{
+	Comm::duet.SetPassword(text);
 }

@@ -44,6 +44,8 @@ namespace Comm
 
 	void Duet::SetPollInterval(uint32_t interval)
 	{
+		dbg("Setting poll interval to %d", interval);
+		StoragePreferences::putInt("poll_interval", (int)interval);
 		m_pollInterval = interval;
 	}
 
@@ -223,14 +225,27 @@ namespace Comm
 		return 0;
 	}
 
-	void Duet::SetHostname(std::string& hostname)
+	void Duet::SetIPAddress(const std::string& ipAddress)
 	{
+		StoragePreferences::putString("ip_address", ipAddress);
+		m_ipAddress = ipAddress;
+	}
+
+	void Duet::SetHostname(const std::string& hostname)
+	{
+		StoragePreferences::putString("hostname", hostname);
 		m_hostname.clear();
 		if (!m_hostname.rfind("http://", 0))
 		{
 			m_hostname += "http://";
 		}
 		m_hostname += hostname;
+	}
+
+	void Duet::SetPassword(const std::string& password)
+	{
+		StoragePreferences::putString("password", password);
+		m_password = password;
 	}
 
 	void Duet::SetSessionKey(const int32_t key)

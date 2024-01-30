@@ -41,8 +41,7 @@ namespace UI
 
 	enum class SettingsSlideWindowIndex
 	{
-	    language = 0,
-	    baud,
+		language = 0,
 		duet,
 	};
 
