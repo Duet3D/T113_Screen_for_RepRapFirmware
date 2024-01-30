@@ -54,6 +54,8 @@ namespace Comm
 			b921600 = 921600,
 		};
 
+		typedef int32_t error_code;
+
 		Duet();
 		void Reset();
 
@@ -69,8 +71,8 @@ namespace Comm
 			SendGcode(utils::format(fmt, args...).c_str());
 		}
 		void SendGcode(const char* gcode);
-		const RestClient::Response* RequestReply();
-		void ProcessReply();
+		void RequestReply(RestClient::Response& r);
+		void ProcessReply(const RestClient::Response& r);
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
@@ -79,30 +81,35 @@ namespace Comm
 		void RequestThumbnail();
 
 		// UART methods
-		void SetBaudRate(BaudRate baudRate);
-		const int GetBaudRate() const;
+		void SetBaudRate(BaudRate baudRate) { m_baudRate = baudRate; }
+		const int GetBaudRate() const { return m_baudRate; }
 
 		// Network methods
-		const int Connect(const char* password = nullptr);
-		const int Disconnect();
+		const error_code Connect();
+		const error_code Disconnect();
 
-		void SetIPAddress(const char* ipAddress) { m_ipAddress.copy(ipAddress); }
-		const StringRef GetIPAddress() const;
+		void SetIPAddress(const char* ipAddress) { m_ipAddress = ipAddress; };
+		const std::string GetIPAddress() const;
 
-		void SetHostname(const char* hostname);
-		const StringRef GetHostname() const;
+		void SetHostname(std::string& hostname);
+		const std::string GetHostname() const;
+
+		void SetPassword(const char* password) { m_password = password; };
+		const std::string GetPassword() const;
+
+		void SetSessionKey(const int32_t sessionKey) { m_sessionKey = sessionKey; };
 
 		// USB methods
 
 	  private:
 		CommunicationType m_communicationType;
-		String<maxIpLength> m_ipAddress;
-		String<maxHostnameLength> m_hostname;
+		std::string m_ipAddress;
+		std::string m_hostname;
+		std::string m_password;
 
 		uint32_t m_pollInterval;
 		BaudRate m_baudRate;
-		RestClient::Response m_reply;
-		int m_sessionKey;
+		int32_t m_sessionKey;
 	};
 
 	extern Duet duet;

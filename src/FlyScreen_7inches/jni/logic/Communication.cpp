@@ -11,9 +11,9 @@
 #define DEBUG (0)
 #include "Debug.h"
 
-#include "Communication.h"
 #include "UI/UserInterface.h"
 
+#include "Communication.h"
 #include <stdarg.h>
 
 #include "Hardware/Duet.h"
@@ -595,7 +595,6 @@ namespace Comm {
 
 	static void StartReceivedMessage();
 	static void EndReceivedMessage();
-	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
 	static void ProcessArrayEnd(const char id[], const size_t indices[]);
 	static void ParserErrorEncountered(int currentState, const char*, int errors);
 
@@ -714,7 +713,8 @@ namespace Comm {
 	}
 */
 	// Public functions called by the SerialIo module
-	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]) {
+	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
+	{
 		ReceivedDataEvent currentResponseType = ReceivedDataEvent::rcvUnknown;
 		dbg("id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
 		if (StringStartsWith(id.c_str(), "result")) {
@@ -930,7 +930,7 @@ namespace Comm {
 
 		if (errors > parserMinErrors) {
 			//MessageLog::AppendMessageF("Warning: received %d malformed responses.", errors);
-			dbg("Warning: received %d malformed responses.", errors);
+			LOGE("Warning: received %d malformed responses.", errors);
 		}
 		if (currentRespSeq == nullptr) {
 			return;

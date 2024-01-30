@@ -75,8 +75,8 @@ static int sFeedRate = 6000;
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA, Comm::GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
-												  //	{1,  100},
+	{TIMER_UPDATE_DATA, (int)Comm::GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
+													   //	{1,  100},
 };
 
 /**
@@ -87,9 +87,9 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
+	Comm::duet.SetIPAddress("192.168.0.24");
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
-	Comm::duet.SetIPAddress("192.168.0.24");
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);

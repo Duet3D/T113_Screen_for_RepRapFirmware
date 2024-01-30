@@ -10,6 +10,7 @@
 
 #include<stdint.h>
 #include <string>
+#include "Duet3D/General/StringRef.h"
 
 namespace Comm
 {
@@ -22,6 +23,8 @@ namespace Comm
 	bool GetUnsignedInteger(const char s[], unsigned int &rslt);
 	bool GetFloat(const char s[], float &rslt);
 	bool GetBool(const char s[], bool &rslt);
+
+	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
 
 	const uint32_t GetPollInterval();
 

@@ -376,12 +376,12 @@ namespace UI
 			return false;
 
 		size_t len = Strnlen(text, OM::alertResponseLength);
-		if (len < OM::currentAlert.limits.text.min)
+		if (len < (size_t)OM::currentAlert.limits.text.min)
 		{
 			warningText_->setTextTr("invalid_text_min");
 			return false;
 		}
-		if (len > OM::currentAlert.limits.text.max)
+		if (len > (size_t)OM::currentAlert.limits.text.max)
 		{
 			warningText_->setTextTr("invalid_text_max");
 			return false;

@@ -8,8 +8,8 @@
 #ifndef JNI_LOGIC_DEBUG_HPP_
 #define JNI_LOGIC_DEBUG_HPP_
 
+#include "utils/Log.h"
 #if DEBUG
-# include "utils/Log.h"
 #define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
 
 #else
