@@ -655,8 +655,7 @@ namespace Comm {
 				thumbnail.imageFormat,
 				thumbnail.width, thumbnail.height);
 		}
-	#endif
-		int ret;
+#endif
 
 		switch (thumbnailContext.state) {
 		case ThumbnailState::Init:
@@ -715,7 +714,6 @@ namespace Comm {
 	// Public functions called by the SerialIo module
 	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		ReceivedDataEvent currentResponseType = ReceivedDataEvent::rcvUnknown;
 		dbg("id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
 		if (StringStartsWith(id.c_str(), "result")) {
 			// We might either get something like:
@@ -725,10 +723,12 @@ namespace Comm {
 			// else replace "result" by "key" (do NOT replace anything beyond "result" as there might be an _ecv_array modifier)
 
 			id.Erase(0, 6);
-			if (currentRespSeq != nullptr) {
-				currentResponseType = currentRespSeq->seqid;
+			if (currentRespSeq != nullptr)
+			{
 				id.Prepend(currentRespSeq->key);
-			} else {
+			}
+			else
+			{
 				// if empty key also erase the colon
 				id.Erase(0);
 			}
@@ -911,17 +911,6 @@ namespace Comm {
 			{
 				observer.Update(indices);
 			}
-		}
-		ReceivedDataEvent currentResponseType = currentRespSeq != nullptr ? currentRespSeq->event : ReceivedDataEvent::rcvUnknown;
-		// TODO: uncomment stuff below related to UI/OM
-		if (indices[0] == 0 && strcmp(id, "files^") == 0) {
-	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
-		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
-//			OM::RemoveAxis(indices[0], true);
-	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);
-	//		UI::UpdateGeometry(numAxes, isDelta);
-		} else if (currentResponseType == rcvOMKeyVolumes && strcasecmp(id, "volumes^") == 0) {
-	//		FileManager::SetNumVolumes(indices[0]);
 		}
 	}
 

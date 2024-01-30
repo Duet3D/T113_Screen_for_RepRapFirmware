@@ -163,7 +163,7 @@ namespace OM
 
 	uint8_t Tool::GetHeaterCount() const
 	{
-		int8_t count;
+		uint8_t count;
 		for (count = 0; count < MaxHeatersPerTool && heaters[count] != nullptr; ++count){}
 		return count;
 	}

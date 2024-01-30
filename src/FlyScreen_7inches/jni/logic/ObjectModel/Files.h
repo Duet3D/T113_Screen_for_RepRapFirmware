@@ -24,7 +24,7 @@ namespace OM::FileSystem
 	{
 	public:
 		FileSystemItem(const FileSystemItemType type) : type_(type), size_(0) {
-			dbg("Files: Creating item of type %d", type_);
+			dbg("Files: Creating item of type %d", (int)type_);
 		}
 		FileSystemItem(const FileSystemItemType type, const std::string& name) : name_(name), type_(type), size_(0) {}
 

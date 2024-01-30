@@ -19,8 +19,8 @@
 namespace Comm
 {
 	constexpr uint32_t defaultPrinterPollInterval = 1000;
-	static uint32_t printerPollInterval = defaultPrinterPollInterval;
-	static uint32_t printerResponseTimeout = 2000;
+	constexpr uint32_t printerPollInterval = defaultPrinterPollInterval;
+	constexpr uint32_t printerResponseTimeout = 2000;
 
 	constexpr size_t maxIpLength = 50;
 	constexpr size_t maxHostnameLength = 64;
@@ -97,7 +97,7 @@ namespace Comm
 		void SetPassword(const char* password) { m_password = password; };
 		const std::string GetPassword() const;
 
-		void SetSessionKey(const int32_t sessionKey) { m_sessionKey = sessionKey; };
+		void SetSessionKey(const int32_t sessionKey);
 
 		// USB methods
 

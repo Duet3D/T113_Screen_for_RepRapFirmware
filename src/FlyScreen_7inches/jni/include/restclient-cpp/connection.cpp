@@ -287,7 +287,7 @@ RestClient::Connection::SetProxy(const std::string& uriProxy) {
 RestClient::Response
 RestClient::Connection::performCurlRequest(const std::string& uri, const std::string method_type) {
   // init return type
-  RestClient::Response ret = {};
+  RestClient::Response ret;
 
   std::string url = std::string(this->baseUrl + uri);
   std::string headerString;

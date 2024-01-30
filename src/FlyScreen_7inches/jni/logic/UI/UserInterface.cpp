@@ -467,7 +467,7 @@ namespace UI
 		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
-		dbg("onListItemClick heaterType=%d", numPadData_.heaterType);
+		dbg("onListItemClick heaterType=%d", (int)numPadData_.heaterType);
 		switch (numPadData_.heaterType)
 		{
 		case HeaterType::tool:

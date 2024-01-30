@@ -72,6 +72,8 @@ namespace Comm
 		case CommunicationType::usb:
 			// TODO
 			break;
+        default:
+            break;
 		}
 	}
 
@@ -91,6 +93,8 @@ namespace Comm
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}
+		default:
+		    break;
 		}
 	}
 
@@ -158,7 +162,7 @@ namespace Comm
 
 			while (position != std::string::npos)
 			{
-				StringRef ref("resp", 5);
+				StringRef ref((char*)"resp", 5);
 				std::string line = reply.body.substr(prevPosition, position - prevPosition);
 				dbg("line: %s", line.c_str());
 				prevPosition = position + 1;
@@ -181,25 +185,22 @@ namespace Comm
 
 	const Duet::error_code Duet::Connect()
 	{
-		switch (m_communicationType)
-		{
-		case CommunicationType::network: {
-			RestClient::Response r;
-			QueryParameters_t query;
-			query["password"] = m_password;
-			if (!Get(m_ipAddress, "/rr_connect", r, query))
-			{
-				dbg("rr_connect failed, returned response %d", r.code);
-				return r.code;
-			}
+		if (m_communicationType != CommunicationType::network)
+		    return 0;
 
-			// Session key parsed in "UI/Observers/HttpObservers.h"
-			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
-			return r.code;
-		}
-		default:
-			break;
-		}
+        RestClient::Response r;
+        QueryParameters_t query;
+        query["password"] = m_password;
+        if (!Get(m_ipAddress, "/rr_connect", r, query))
+        {
+            dbg("rr_connect failed, returned response %d", r.code);
+            return r.code;
+        }
+
+        // Session key parsed in "UI/Observers/HttpObservers.h"
+        StringRef ref((char*)"sessionKey", 12);
+        Comm::ProcessReceivedValue(ref, r.body.c_str(), {});
+        return r.code;
 	}
 
 	const Duet::error_code Duet::Disconnect()
@@ -232,4 +233,9 @@ namespace Comm
 		m_hostname += hostname;
 	}
 
+	void Duet::SetSessionKey(const int32_t key)
+	{
+	    dbg("Setting Duet session key = %d", key);
+	    m_sessionKey = key;
+	}
 } // namespace Comm
