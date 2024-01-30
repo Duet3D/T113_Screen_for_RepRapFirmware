@@ -588,11 +588,6 @@ namespace Comm {
 		ResetSeqs();
 	}
 
-	const uint32_t GetPollInterval()
-	{
-		return printerPollInterval;
-	}
-
 	static void StartReceivedMessage();
 	static void EndReceivedMessage();
 	static void ProcessArrayEnd(const char id[], const size_t indices[]);
@@ -928,12 +923,14 @@ namespace Comm {
 		currentRespSeq->state = SeqStateError;
 	}
 
-
 //------------------------------------------------------------------------------------------------------------------
 
 	void sendNext() {
 		long long now = TimeHelper::getCurrentTime();
-		if (now > (lastResponseTime + printerPollInterval + printerResponseTimeout)) { Reconnect(); }
+		if (now > (lastResponseTime + duet.GetPollInterval() + printerResponseTimeout))
+		{
+			Reconnect();
+		}
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
 			LOGD("requesting %s\n", currentReqSeq->key);

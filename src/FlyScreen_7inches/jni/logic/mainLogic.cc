@@ -3,6 +3,7 @@
 
 #include "Communication.h"
 #include "Debug.h"
+#include "timer.h"
 #include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/Alert.h"
@@ -65,8 +66,6 @@
  * In Eclipse IDE, use the "alt + /" shortcut key to open the smart prompt
  */
 
-#define TIMER_UPDATE_DATA 0  // Id of the timer used to update values from data received from serial
-
 static int sFeedRate = 6000;
 
 /**
@@ -75,8 +74,8 @@ static int sFeedRate = 6000;
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA, (int)Comm::GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
-													   //	{1,  100},
+	{TIMER_UPDATE_DATA, (int)Comm::duet.GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
+															//	{1,  100},
 };
 
 /**
@@ -87,12 +86,14 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
+	initTimer(mActivityPtr);
+
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	mIpAddressInputPtr->setText(StoragePreferences::getString("ip_address", "192.168.0."));
 	mHostnameInputPtr->setText(StoragePreferences::getString("hostname", ""));
 	mPasswordInputPtr->setText(StoragePreferences::getString("password", ""));
-	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", 1000));
+	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -939,8 +940,10 @@ static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int i
 
 static void onEditTextChanged_PollIntervalInput(const std::string& text)
 {
+//	mActivityPtr->resetUserTimer(TIMER_UPDATE_DATA, atoi(text.c_str()));
 	Comm::duet.SetPollInterval(atoi(text.c_str()));
 }
+
 static void onEditTextChanged_IpAddressInput(const std::string& text)
 {
 	Comm::duet.SetIPAddress(text);

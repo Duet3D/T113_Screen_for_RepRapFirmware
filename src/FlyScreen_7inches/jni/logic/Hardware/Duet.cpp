@@ -6,6 +6,7 @@
  */
 
 #define DEBUG (1)
+#include "timer.h"
 
 #include "Duet.h"
 #include "Communication.h"
@@ -22,8 +23,9 @@ namespace Comm
 {
 	Duet duet;
 
-	Duet::Duet() : m_communicationType(CommunicationType::uart), m_pollInterval(defaultPrinterPollInterval)
+	Duet::Duet() : m_communicationType(CommunicationType::uart)
 	{
+		m_pollInterval = (uint32_t)StoragePreferences::getInt("poll_interval", (int)defaultPrinterPollInterval);
 		SetBaudRate((BaudRate)CONFIGMANAGER->getUartBaudRate());
 		Reset();
 	}
@@ -46,6 +48,7 @@ namespace Comm
 	{
 		dbg("Setting poll interval to %d", interval);
 		StoragePreferences::putInt("poll_interval", (int)interval);
+		resetUserTimer(TIMER_UPDATE_DATA, (int)interval);
 		m_pollInterval = interval;
 	}
 

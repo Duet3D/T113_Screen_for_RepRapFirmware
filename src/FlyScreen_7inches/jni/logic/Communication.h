@@ -26,8 +26,6 @@ namespace Comm
 
 	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
 
-	const uint32_t GetPollInterval();
-
 	extern struct Seq* GetNextSeq(struct Seq *current);
 	extern void sendNext();
 	void init();

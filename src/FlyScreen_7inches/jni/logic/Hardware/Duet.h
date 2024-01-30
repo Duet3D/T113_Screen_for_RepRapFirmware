@@ -18,8 +18,7 @@
 
 namespace Comm
 {
-	constexpr uint32_t defaultPrinterPollInterval = 1000;
-	constexpr uint32_t printerPollInterval = defaultPrinterPollInterval;
+	constexpr uint32_t defaultPrinterPollInterval = 500;
 	constexpr uint32_t printerResponseTimeout = 2000;
 
 	constexpr size_t maxIpLength = 50;
