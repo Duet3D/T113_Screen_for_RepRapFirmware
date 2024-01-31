@@ -25,8 +25,8 @@ namespace Comm
 
 	Duet::Duet() : m_communicationType(CommunicationType::uart)
 	{
-		m_pollInterval = (uint32_t)StoragePreferences::getInt("poll_interval", (int)defaultPrinterPollInterval);
-		SetBaudRate((BaudRate)CONFIGMANAGER->getUartBaudRate());
+		m_pollInterval = defaultPrinterPollInterval;
+		m_baudRate = CONFIGMANAGER->getUartBaudRate();
 		Reset();
 	}
 
@@ -34,10 +34,11 @@ namespace Comm
 
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
+		dbg("Setting communication type to %d", (int)type);
 		StoragePreferences::putInt("communication_type", (int)type);
-		m_communicationType = type;
-
 		Disconnect();
+
+		m_communicationType = type;
 		if (type == CommunicationType::network)
 		{
 			Connect();
@@ -226,6 +227,13 @@ namespace Comm
 			break;
 		}
 		return 0;
+	}
+
+	void Duet::SetBaudRate(int baudRate)
+	{
+		dbg("Setting baud rate to %d", baudRate);
+		StoragePreferences::putInt("baud_rate", baudRate);
+		m_baudRate = baudRate;
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)

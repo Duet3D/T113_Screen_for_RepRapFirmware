@@ -74,8 +74,7 @@ static int sFeedRate = 6000;
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA, (int)Comm::duet.GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
-															//	{1,  100},
+	{TIMER_UPDATE_DATA, (int)Comm::defaultPrinterPollInterval}, // Timer id=0, min interval of 300ms at 115200 baud
 };
 
 /**
@@ -89,11 +88,12 @@ static void onUI_init()
 	initTimer(mActivityPtr);
 
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
+	Comm::duet.SetBaudRate(StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	mIpAddressInputPtr->setText(StoragePreferences::getString("ip_address", "192.168.0."));
 	mHostnameInputPtr->setText(StoragePreferences::getString("hostname", ""));
 	mPasswordInputPtr->setText(StoragePreferences::getString("password", ""));
-	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
+//	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", (int)Comm::defaultPrinterPollInterval));
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -332,7 +332,8 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
-//		UI::WINDOW->OpenWindow(mNetworkWindowPtr);
+		UI::WINDOW->Home();
+		// UI::WINDOW->OpenWindow(mNetworkWindowPtr);
 		EASYUICONTEXT->openActivity("WifiSettingActivity");
 		break;
 	case (int)UI::SlideWindowIndex::settings:
@@ -824,18 +825,18 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 
 static int getListItemCount_BaudRateList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_BaudRateList !\n");
-	return 8;
+	return ARRAY_SIZE(Comm::baudRates);
 }
 
 static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ BaudRateList  !!!\n");
+	pListItem->setSelected(Comm::baudRates[index] == Comm::duet.GetBaudRate());
+	pListItem->setText(Comm::baudRates[index]);
 }
 
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
 {
-	// LOGD(" onListItemClick_ BaudRateList  !!!\n");
+	Comm::duet.SetBaudRate(Comm::baudRates[index]);
 }
 static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
 {

@@ -13,6 +13,8 @@
 
 #include "UI/UserInterface.h"
 #include "uart/UartContext.h"
+
+#include "Communication.h"
 #include "manager/LanguageManager.h"
 #include "utils/Log.h"
 
@@ -154,9 +156,11 @@ bool UartContext::threadLoop() {
 			if (len >= UART_DATA_BUF_LEN)
 			{
 				dbg("UART buffer overflow");
+				dbg("Buffer: %s", mDataBufPtr);
 				UI::POPUP_WINDOW->Open();
 				UI::POPUP_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
 				mDataBufLen = 0;
+				Comm::Reconnect();
 			}
 		} else {
 			Thread::sleep(50);

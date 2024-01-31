@@ -23,6 +23,7 @@ namespace Comm
 	bool GetUnsignedInteger(const char s[], unsigned int &rslt);
 	bool GetFloat(const char s[], float &rslt);
 	bool GetBool(const char s[], bool &rslt);
+	void Reconnect();
 
 	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
 

@@ -27,6 +27,8 @@ namespace Comm
     constexpr const char* const duetCommunicationTypeNames[] = {
         "UART", "Network", "USB"};
 
+	constexpr int baudRates[] = {1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+
 	class Duet
 	{
 	  public:
@@ -36,21 +38,6 @@ namespace Comm
 			network,
 			usb,
 			COUNT
-		};
-
-		enum BaudRate : unsigned int
-		{
-			b1200 = 1200,
-			b2400 = 2400,
-			b4800 = 4800,
-			b9600 = 9600,
-			b19200 = 19200,
-			b38400 = 38400,
-			b57600 = 57600,
-			b115200 = 115200,
-			b230400 = 230400,
-			b460800 = 460800,
-			b921600 = 921600,
 		};
 
 		typedef int32_t error_code;
@@ -80,7 +67,7 @@ namespace Comm
 		void RequestThumbnail();
 
 		// UART methods
-		void SetBaudRate(BaudRate baudRate) { m_baudRate = baudRate; }
+		void SetBaudRate(int baudRate);
 		const int GetBaudRate() const { return m_baudRate; }
 
 		// Network methods
@@ -107,7 +94,7 @@ namespace Comm
 		std::string m_password;
 
 		uint32_t m_pollInterval;
-		BaudRate m_baudRate;
+		int m_baudRate;
 		int32_t m_sessionKey;
 	};
 
