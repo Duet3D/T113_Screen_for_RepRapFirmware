@@ -47,6 +47,11 @@ namespace Comm
 
 	void Duet::SetPollInterval(uint32_t interval)
 	{
+		if (interval < minPrinterPollInterval)
+		{
+			dbg("Poll interval too low, setting to %d", minPrinterPollInterval);
+			interval = minPrinterPollInterval;
+		}
 		dbg("Setting poll interval to %d", interval);
 		StoragePreferences::putInt("poll_interval", (int)interval);
 		resetUserTimer(TIMER_UPDATE_DATA, (int)interval);

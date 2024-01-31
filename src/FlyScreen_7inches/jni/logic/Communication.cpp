@@ -934,7 +934,7 @@ namespace Comm {
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
 			LOGD("requesting %s\n", currentReqSeq->key);
-			// Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
+			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
@@ -942,7 +942,7 @@ namespace Comm {
 				initialized = true;
 			}
 
-			// Comm::duet.RequestModel("d99f");
+			Comm::duet.RequestModel("d99f");
 		}
 	}
 

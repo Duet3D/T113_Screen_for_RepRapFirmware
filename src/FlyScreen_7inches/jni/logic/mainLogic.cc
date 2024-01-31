@@ -73,9 +73,7 @@ static int sFeedRate = 6000;
  * Fill the array to register the timer
  * Note: id cannot be repeated
  */
-static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA, (int)Comm::defaultPrinterPollInterval}, // Timer id=0, min interval of 300ms at 115200 baud
-};
+static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {};
 
 /**
  * Triggered when the interface is constructed
@@ -86,6 +84,9 @@ static void onUI_init()
 	srand(0);
 
 	initTimer(mActivityPtr);
+	registerUserTimer(
+		TIMER_UPDATE_DATA,
+		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	Comm::duet.SetBaudRate(StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
@@ -93,7 +94,7 @@ static void onUI_init()
 	mIpAddressInputPtr->setText(StoragePreferences::getString("ip_address", "192.168.0."));
 	mHostnameInputPtr->setText(StoragePreferences::getString("hostname", ""));
 	mPasswordInputPtr->setText(StoragePreferences::getString("password", ""));
-//	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", (int)Comm::defaultPrinterPollInterval));
+	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", (int)Comm::defaultPrinterPollInterval));
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -941,7 +942,11 @@ static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int i
 
 static void onEditTextChanged_PollIntervalInput(const std::string& text)
 {
-//	mActivityPtr->resetUserTimer(TIMER_UPDATE_DATA, atoi(text.c_str()));
+	if (text.empty() || atoi(text.c_str()) < (int)Comm::minPrinterPollInterval)
+	{
+		mPollIntervalInputPtr->setText((int)Comm::minPrinterPollInterval);
+		return;
+	}
 	Comm::duet.SetPollInterval(atoi(text.c_str()));
 }
 
