@@ -1,6 +1,7 @@
+#include "activity/mainActivity.h"
 #include "entry/EasyUIContext.h"
-#include "uart/UartContext.h"
 #include "manager/ConfigManager.h"
+#include "uart/UartContext.h"
 
 #include "logic/Communication.h"
 #include "logic/Hardware/Duet.h"
@@ -13,7 +14,6 @@ void onEasyUIInit(EasyUIContext *pContext) {
 	//设置时区为东八区
     setenv("TZ", "CST-8", 1);
 
-	Comm::duet.Init();
 	Comm::init();
 }
 

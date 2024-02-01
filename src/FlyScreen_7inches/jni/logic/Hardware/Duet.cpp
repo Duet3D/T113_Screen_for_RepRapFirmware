@@ -263,8 +263,8 @@ namespace Comm
 				SetBaudRate(baudRates[i]);
 				return;
 			}
-			dbg("Baud rate %u not found", baudRateCode);
 		}
+		dbg("Baud rate %u not found", baudRateCode);
 	}
 
 	void Duet::SetBaudRate(const baudrate_t& baudRate)

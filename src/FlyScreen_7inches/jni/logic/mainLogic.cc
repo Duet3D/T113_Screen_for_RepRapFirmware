@@ -73,7 +73,9 @@ static int sFeedRate = 6000;
  * Fill the array to register the timer
  * Note: id cannot be repeated
  */
-static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {};
+static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
+	{TIMER_DELAYED_TASK, 50},
+};
 
 /**
  * Triggered when the interface is constructed
@@ -88,11 +90,35 @@ static void onUI_init()
 		TIMER_UPDATE_DATA,
 		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
+	Comm::duet.Init();
+	UI::WINDOW->AddHome(mMainWindowPtr);
+	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
+	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
+						   mNoTouchWindowPtr,
+						   mPopupOkBtnPtr,
+						   mPopupCancelBtnPtr,
+						   mPopupTitlePtr,
+						   mPopupTextPtr,
+						   mPopupWarningPtr,
+						   mPopupMinPtr,
+						   mPopupMaxPtr,
+						   mPopupSelectionListPtr,
+						   mPopupTextInputPtr,
+						   mPopupNumberInputPtr,
+						   mPopupAxisSelectionPtr,
+						   mPopupAxisAdjusmentPtr);
+	UI::SLIDER_WINDOW->Init(
+		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
+
+	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	mIpAddressInputPtr->setText(Comm::duet.GetIPAddress());
 	mHostnameInputPtr->setText(Comm::duet.GetHostname());
 	mPasswordInputPtr->setText(Comm::duet.GetPassword());
 	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
+	mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -120,27 +146,6 @@ static void onUI_init()
 	}
 
 	mFeedrateBtn1Ptr->setSelected(true);
-
-	UI::WINDOW->AddHome(mMainWindowPtr);
-	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
-	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
-	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
-	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
-						   mNoTouchWindowPtr,
-						   mPopupOkBtnPtr,
-						   mPopupCancelBtnPtr,
-						   mPopupTitlePtr,
-						   mPopupTextPtr,
-						   mPopupWarningPtr,
-						   mPopupMinPtr,
-						   mPopupMaxPtr,
-						   mPopupSelectionListPtr,
-						   mPopupTextInputPtr,
-						   mPopupNumberInputPtr,
-						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr);
-	UI::SLIDER_WINDOW->Init(mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr,
-							mSliderSuffixPtr);
 }
 
 /**
@@ -210,8 +215,11 @@ static bool onUI_Timer(int id)
 			mStatusTextPtr->setTextTr(OM::GetStatusText());
 		}
 		Comm::sendNext();
+		break;
 	}
-	break;
+	case TIMER_DELAYED_TASK: {
+		runDelayedCallbacks();
+	}
 	default:
 		break;
 	}
@@ -979,4 +987,15 @@ static void onEditTextChanged_HostnameInput(const std::string& text)
 static void onEditTextChanged_PasswordInput(const std::string& text)
 {
 	Comm::duet.SetPassword(text);
+}
+
+static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
+{
+	int32_t timeout = -1;
+	if (text.empty() || !Comm::GetInteger(text.c_str(), timeout) || timeout < 0)
+	{
+		mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
+		return;
+	}
+	UI::POPUP_WINDOW->SetTimeout((uint32_t)timeout);
 }

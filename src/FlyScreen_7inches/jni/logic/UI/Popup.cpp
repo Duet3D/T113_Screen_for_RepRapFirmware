@@ -11,11 +11,15 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "UserInterface.h"
+#include "storage/StoragePreferences.h"
+#include "timer.h"
 #include <algorithm>
 #include <map>
 
 namespace UI
 {
+	static constexpr uint32_t defaultTimeout = 5000;
+
 	void PopupWindow::Init(ZKWindow* window,
 						   ZKWindow* noTouchWindow,
 						   ZKButton* okBtn,
@@ -45,6 +49,8 @@ namespace UI
 		numberInput_ = numberInput;
 		axisJogSelection_ = axisJogSelection;
 		axisJogAdjustment_ = axisJogAdjustment;
+
+		SetTimeout(StoragePreferences::getInt("info_timeout", defaultTimeout));
 	}
 
 	void PopupWindow::Open()
@@ -84,9 +90,16 @@ namespace UI
 
 		if (mode_ == OM::Alert::Mode::None)
 		{
+			if (timeout_ <= 0)
+				return;
+
 			title_->setText("Gcode Response");
 			cancelBtn_->setVisible(true);
 			okBtn_->setVisible(true);
+			registerDelayedCallback("popup_timeout", timeout_, []() {
+				UI::POPUP_WINDOW->Close();
+				return false;
+			});
 		}
 		else
 		{
@@ -229,6 +242,13 @@ namespace UI
 		dbg("Closing popup window");
 		Clear();
 		WINDOW->CloseOverlay();
+	}
+
+	void PopupWindow::SetTimeout(uint32_t timeout)
+	{
+		dbg("Setting info timeout to %u", timeout);
+		StoragePreferences::putInt("info_timeout", (int)timeout);
+		timeout_ = timeout;
 	}
 
 	bool PopupWindow::IsBlocking() const

@@ -122,6 +122,7 @@
     <string name="power_off">Power Off</string>
     <string name="zk_setting">ZK Settings</string>
     <string name="touch_calibration">Touch Calibration</string>
+    <string name="info_timeout">Info Timeout</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

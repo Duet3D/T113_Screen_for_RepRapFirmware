@@ -62,6 +62,9 @@ namespace UI
 		void SetCancelBtnText(const char* text);
 		void Close();
 
+		void SetTimeout(uint32_t timeout);
+		const uint32_t GetTimeout() const { return timeout_; }
+
 		bool IsOpen() const { return window_->isVisible(); }
 		bool IsBlocking() const;
 		bool IsResponse() const;
@@ -106,6 +109,7 @@ namespace UI
 		OM::Alert::Mode mode_;
 		uint32_t seq_;
 		OM::Move::Axis* axes_[MaxTotalAxes];
+		uint32_t timeout_;
 	};
 
 	class SliderWindow
