@@ -8,13 +8,14 @@
 #define DEBUG (1)
 #include "timer.h"
 
-#include "Duet.h"
 #include "Communication.h"
 #include "Debug.h"
+#include "Duet.h"
 #include "Hardware/Network.h"
 #include "Hardware/SerialIo.h"
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
+#include "uart/UartContext.h"
 #include "utils.h"
 #include <map>
 #include <string>
@@ -23,22 +24,40 @@ namespace Comm
 {
 	Duet duet;
 
-	Duet::Duet() : m_communicationType(CommunicationType::uart)
+	Duet::Duet()
+		: m_communicationType(CommunicationType::none), m_ipAddress(""), m_hostname(""), m_password(""),
+		  m_sessionKey(-1), m_pollInterval(defaultPrinterPollInterval)
 	{
-		m_pollInterval = defaultPrinterPollInterval;
-		m_baudRate = CONFIGMANAGER->getUartBaudRate();
-		Reset();
+	}
+
+	void Duet::Init()
+	{
+		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", defaultPrinterPollInterval));
+		SetBaudRate((unsigned int)StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
+		SetIPAddress(StoragePreferences::getString("ip_address", "192.168.0."));
+		SetHostname(StoragePreferences::getString("hostname", ""));
+		SetPassword(StoragePreferences::getString("password", ""));
+		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	}
 
 	void Duet::Reset() {}
 
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
+		if (type == m_communicationType)
+			return;
 		dbg("Setting communication type to %d", (int)type);
 		StoragePreferences::putInt("communication_type", (int)type);
 		Disconnect();
+		UARTCONTEXT->closeUart();
 
 		m_communicationType = type;
+		if (type == CommunicationType::uart)
+		{
+			dbg("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
+			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
+		}
+
 		if (type == CommunicationType::network)
 		{
 			Connect();
@@ -234,17 +253,36 @@ namespace Comm
 		return 0;
 	}
 
-	void Duet::SetBaudRate(int baudRate)
+	void Duet::SetBaudRate(const unsigned int baudRateCode)
 	{
-		dbg("Setting baud rate to %d", baudRate);
-		StoragePreferences::putInt("baud_rate", baudRate);
+		for (unsigned int i = 0; i < ARRAY_SIZE(baudRates); i++)
+		{
+			if (baudRates[i].internal == baudRateCode)
+			{
+				SetBaudRate(baudRates[i]);
+				return;
+			}
+			dbg("Baud rate %u not found", baudRateCode);
+		}
+	}
+
+	void Duet::SetBaudRate(const baudrate_t& baudRate)
+	{
+		dbg("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
+		StoragePreferences::putInt("baud_rate", baudRate.internal);
 		m_baudRate = baudRate;
+		UARTCONTEXT->closeUart();
+		UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), baudRate.internal);
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
 	{
+		if (m_communicationType == CommunicationType::network)
+			Disconnect();
+
 		StoragePreferences::putString("ip_address", ipAddress);
 		m_ipAddress = ipAddress;
+		Connect();
 	}
 
 	void Duet::SetHostname(const std::string& hostname)

@@ -88,13 +88,11 @@ static void onUI_init()
 		TIMER_UPDATE_DATA,
 		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
-	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)StoragePreferences::getInt("communication_type", 0));
-	Comm::duet.SetBaudRate(StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
-	mIpAddressInputPtr->setText(StoragePreferences::getString("ip_address", "192.168.0."));
-	mHostnameInputPtr->setText(StoragePreferences::getString("hostname", ""));
-	mPasswordInputPtr->setText(StoragePreferences::getString("password", ""));
-	mPollIntervalInputPtr->setText(StoragePreferences::getInt("poll_interval", (int)Comm::defaultPrinterPollInterval));
+	mIpAddressInputPtr->setText(Comm::duet.GetIPAddress());
+	mHostnameInputPtr->setText(Comm::duet.GetHostname());
+	mPasswordInputPtr->setText(Comm::duet.GetPassword());
+	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -831,8 +829,8 @@ static int getListItemCount_BaudRateList(const ZKListView* pListView)
 
 static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setSelected(Comm::baudRates[index] == Comm::duet.GetBaudRate());
-	pListItem->setText(Comm::baudRates[index]);
+	pListItem->setSelected(Comm::baudRates[index].rate == Comm::duet.GetBaudRate().rate);
+	pListItem->setText((int)Comm::baudRates[index].rate);
 }
 
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)

@@ -11,8 +11,8 @@ extern "C" {
 void onEasyUIInit(EasyUIContext *pContext) {
 	//设置时区为东八区
     setenv("TZ", "CST-8", 1);
-	// 初始化时打开串口
-	UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), CONFIGMANAGER->getUartBaudRate());
+
+	Comm::duet.Init();
 	Comm::init();
 }
 

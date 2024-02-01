@@ -15,6 +15,7 @@
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "manager/ConfigManager.h"
+#include "termio.h"
 
 namespace Comm
 {
@@ -28,13 +29,30 @@ namespace Comm
     constexpr const char* const duetCommunicationTypeNames[] = {
         "UART", "Network", "USB"};
 
-	constexpr int baudRates[] = {1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+	typedef struct
+	{
+		unsigned int rate;
+		unsigned int internal;
+	} baudrate_t;
+
+	constexpr baudrate_t baudRates[] = {{1200, B1200},
+										{2400, B2400},
+										{4800, B4800},
+										{9600, B9600},
+										{19200, B19200},
+										{38400, B38400},
+										{57600, B57600},
+										{115200, B115200},
+										{230400, B230400},
+										{460800, B460800},
+										{921600, B921600}};
 
 	class Duet
 	{
 	  public:
 		enum class CommunicationType
 		{
+			none = -1,
 			uart,
 			network,
 			usb,
@@ -44,6 +62,7 @@ namespace Comm
 		typedef int32_t error_code;
 
 		Duet();
+		void Init();
 		void Reset();
 
 		void SetCommunicationType(CommunicationType type);
@@ -68,21 +87,22 @@ namespace Comm
 		void RequestThumbnail();
 
 		// UART methods
-		void SetBaudRate(int baudRate);
-		const int GetBaudRate() const { return m_baudRate; }
+		void SetBaudRate(const unsigned int baudRateCode);
+		void SetBaudRate(const baudrate_t& baudRate);
+		const baudrate_t& GetBaudRate() const { return m_baudRate; }
 
 		// Network methods
 		const error_code Connect();
 		const error_code Disconnect();
 
 		void SetIPAddress(const std::string& ipAddress);
-		const std::string GetIPAddress() const;
+		const std::string GetIPAddress() const { return m_ipAddress; }
 
 		void SetHostname(const std::string& hostname);
-		const std::string GetHostname() const;
+		const std::string GetHostname() const { return m_hostname; }
 
 		void SetPassword(const std::string& password);
-		const std::string GetPassword() const;
+		const std::string GetPassword() const { return m_password; }
 
 		void SetSessionKey(const int32_t sessionKey);
 
@@ -93,10 +113,10 @@ namespace Comm
 		std::string m_ipAddress;
 		std::string m_hostname;
 		std::string m_password;
+		int32_t m_sessionKey;
 
 		uint32_t m_pollInterval;
-		int m_baudRate;
-		int32_t m_sessionKey;
+		baudrate_t m_baudRate;
 	};
 
 	extern Duet duet;
