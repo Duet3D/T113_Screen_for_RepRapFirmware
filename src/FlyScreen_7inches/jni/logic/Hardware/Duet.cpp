@@ -50,6 +50,7 @@ namespace Comm
 		StoragePreferences::putInt("communication_type", (int)type);
 		Disconnect();
 		UARTCONTEXT->closeUart();
+		Thread::sleep(50);
 
 		m_communicationType = type;
 		if (type == CommunicationType::uart)
@@ -271,8 +272,12 @@ namespace Comm
 		dbg("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
 		StoragePreferences::putInt("baud_rate", baudRate.internal);
 		m_baudRate = baudRate;
-		UARTCONTEXT->closeUart();
-		UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), baudRate.internal);
+		if (UARTCONTEXT->isOpen())
+		{
+			UARTCONTEXT->closeUart();
+			Thread::sleep(50);
+			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), baudRate.internal);
+		}
 	}
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
