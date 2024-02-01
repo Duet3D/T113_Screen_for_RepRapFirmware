@@ -3,6 +3,7 @@
 #include "manager/ConfigManager.h"
 
 #include "logic/Communication.h"
+#include "logic/Hardware/Duet.h"
 
 #ifdef __cplusplus
 extern "C" {
