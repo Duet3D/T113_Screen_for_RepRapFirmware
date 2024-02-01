@@ -43,6 +43,12 @@ namespace UI
 	{
 		language = 0,
 		duet,
+		update,
+		restart,
+		dev,
+		power_off,
+		zk_setting,
+		touch_calibration,
 	};
 
 	class Window

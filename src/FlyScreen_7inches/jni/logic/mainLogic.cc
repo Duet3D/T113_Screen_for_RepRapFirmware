@@ -819,6 +819,24 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
 													 Comm::Duet::CommunicationType::network);
 		UI::WINDOW->OpenOverlay(mDuetCommSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::update:
+		EASYUICONTEXT->openActivity("UpgradeActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::dev:
+		EASYUICONTEXT->openActivity("DeveloperSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::power_off:
+		EASYUICONTEXT->openActivity("PowerOffActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::zk_setting:
+		EASYUICONTEXT->openActivity("ZKSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
+		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
+		break;
+	default:
+		break;
 	}
 }
 
