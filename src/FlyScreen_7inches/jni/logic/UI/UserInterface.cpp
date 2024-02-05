@@ -532,7 +532,11 @@ namespace UI
 		line.catf("> %s:", command.c_str());
 		AddMessage(line.GetRef());
 		AddLineBreak();
-		Refresh();
+	}
+
+	void Console::AddResponse(const char* str)
+	{
+		AddMessage(str);
 	}
 
 	void Console::AddResponse(const StringRef& ref)
@@ -551,6 +555,7 @@ namespace UI
 		line.copy(str);
 		buffer_.Push(line);
 		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+		Refresh();
 	}
 
 	void Console::AddMessage(const StringRef& ref)

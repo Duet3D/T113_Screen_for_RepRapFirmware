@@ -13,6 +13,7 @@
 #include "Duet.h"
 #include "Hardware/Network.h"
 #include "Hardware/SerialIo.h"
+#include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
 #include "uart/UartContext.h"
@@ -95,7 +96,11 @@ namespace Comm
 			QueryParameters_t query;
 			query["gcode"] = gcode;
 			if (!Get(m_ipAddress, "/rr_gcode", r, query, m_sessionKey))
+			{
+				UI::CONSOLE->AddResponse(
+					utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
 				break;
+			}
 			RequestReply(r);
 			ProcessReply(r);
 			break;
@@ -120,7 +125,11 @@ namespace Comm
 			QueryParameters_t query;
 			query["flags"] = flags;
 			if (!Get(m_ipAddress, "/rr_model", r, query, m_sessionKey))
+			{
+				UI::CONSOLE->AddResponse(
+					utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags).c_str());
 				break;
+			}
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}
@@ -142,7 +151,13 @@ namespace Comm
 			query["key"] = key;
 			query["flags"] = flags;
 			if (!Get(m_ipAddress, "/rr_model", r, query, m_sessionKey))
+			{
+				UI::CONSOLE->AddResponse(
+					utils::format(
+						"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags)
+						.c_str());
 				break;
+			}
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}

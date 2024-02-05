@@ -144,6 +144,7 @@ namespace UI
 		}
 		void Init(ZKListView* console, ZKEditText* input);
 		void AddCommand(const std::string& command);
+		void AddResponse(const char* str);
 		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
 		String<MaxResponseLineLength> GetItem(size_t index) { return buffer_.GetItem(index); }
