@@ -91,6 +91,7 @@ static void onUI_init()
 		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.Init();
+	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
@@ -601,6 +602,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
+	OM::FileSystem::ClearFileSystem();
 	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;
 }
@@ -644,25 +646,33 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	switch (item->GetType())
 	{
 	case OM::FileSystem::FileSystemItemType::file:
-		UI::SetSelectedFile(item->GetPath());
+		UI::SetSelectedFile((OM::FileSystem::File*)item);
 		if (OM::FileSystem::IsMacroFolder())
 		{
+			UI::POPUP_WINDOW->Open([]() { UI::RunSelectedFile(); });
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
+		}
+		else if (OM::FileSystem::IsUsbFolder())
+		{
+			UI::POPUP_WINDOW->Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upload_file").c_str(), item->GetName().c_str());
 		}
 		else
 		{
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
-		}
-		UI::POPUP_WINDOW->Open([]() {
-			UI::RunSelectedFile();
-			if (!OM::FileSystem::IsMacroFolder())
-			{
+			UI::POPUP_WINDOW->Open([]() {
+				UI::RunSelectedFile();
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
-			}
-		});
+			});
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+		}
 		break;
 	case OM::FileSystem::FileSystemItemType::folder:
+		if (OM::FileSystem::IsUsbFolder())
+		{
+			OM::FileSystem::RequestUsbFiles(item->GetPath());
+			break;
+		}
 		OM::FileSystem::RequestFiles(item->GetPath());
 		break;
 	}
@@ -998,4 +1008,11 @@ static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
 		return;
 	}
 	UI::POPUP_WINDOW->SetTimeout((uint32_t)timeout);
+}
+
+static bool onButtonClick_UsbFiles(ZKButton* pButton)
+{
+	LOGD(" ButtonClick UsbFiles !!!\n");
+	OM::FileSystem::RequestUsbFiles("");
+	return false;
 }

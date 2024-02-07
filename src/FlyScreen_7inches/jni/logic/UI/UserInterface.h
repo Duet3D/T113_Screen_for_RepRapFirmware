@@ -21,6 +21,7 @@
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
 #include "ObjectModel/BedOrChamber.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Popup.h"
 #include "UI/UserInterfaceConstants.h"
@@ -160,8 +161,8 @@ namespace UI
 		ZKEditText* pInput_ = nullptr;
 	};
 
-	void SetSelectedFile(const std::string& filePath);
-	std::string& GetSelectedFile();
+	void SetSelectedFile(const OM::FileSystem::File* file);
+	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
 
 #define WINDOW Window::GetInstance()

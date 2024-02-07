@@ -13,6 +13,7 @@
 
 #include "SerialIo.h"
 #include "uart/UartContext.h"
+#include <string>
 
 # include "utils/Log.h"
 
@@ -59,14 +60,23 @@ namespace SerialIo {
 		// TODO: Set baudrate
 	}
 
+	bool Send(const char* data, size_t len)
+	{
+		return UARTCONTEXT->send((unsigned char*)data, len);
+	}
+
 	size_t Sendf(const char *fmt, ...) {
 		va_list vargs;
 		va_start(vargs, fmt);
 
-		char buf[128];
-		int ret = vsprintf(buf, fmt, vargs);
-		LOGD("Sending %s", buf);
-		UARTCONTEXT->send((unsigned char*)buf, ret);
+		std::string buf;
+		size_t ret = vsnprintf(0, 0, fmt, vargs);
+		if (ret >= buf.capacity())
+			buf.reserve(ret + sizeof(char));
+		buf.resize(ret);
+		vsnprintf((char*)buf.data(), buf.capacity(), fmt, vargs);
+		LOGD("Sending %s", buf.c_str());
+		UARTCONTEXT->send((unsigned char*)buf.c_str(), ret);
 
 		va_end(vargs);
 

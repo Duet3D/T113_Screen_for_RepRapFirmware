@@ -34,7 +34,7 @@
 #define holds			_ecv_holds
 #define idiv			_ecv_idiv
 #define imod			_ecv_imod
-#define in				_ecv_in
+// #define in				_ecv_in
 #define integer			_ecv_integer
 #define invariant		_ecv_invariant
 #define keep			_ecv_keep
@@ -47,7 +47,7 @@
 #define old				_ecv_old
 #define out				_ecv_out
 #define over			_ecv_over
-//#define post			_ecv_post
+// #define post			_ecv_post
 #define pre				_ecv_pre
 #define result			_ecv_result
 #define returns			_ecv_returns

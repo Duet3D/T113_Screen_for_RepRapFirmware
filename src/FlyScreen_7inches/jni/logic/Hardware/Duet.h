@@ -80,6 +80,8 @@ namespace Comm
 		void RequestReply(RestClient::Response& r);
 		void ProcessReply(const RestClient::Response& r);
 
+		bool UploadFile(const char* filename, std::string& contents);
+
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
 		void RequestFileList(const char* dir, const size_t first = 0);

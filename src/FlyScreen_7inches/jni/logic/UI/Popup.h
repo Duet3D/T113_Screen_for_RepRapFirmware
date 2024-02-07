@@ -62,6 +62,7 @@ namespace UI
 		void SetCancelBtnText(const char* text);
 		void Close();
 
+		void CancelTimeout();
 		void SetTimeout(uint32_t timeout);
 		const uint32_t GetTimeout() const { return timeout_; }
 

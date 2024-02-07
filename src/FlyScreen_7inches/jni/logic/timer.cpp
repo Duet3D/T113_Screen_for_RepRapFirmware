@@ -96,7 +96,6 @@ void runDelayedCallbacks()
 	auto cb = s_delayedCallbacks.begin();
 	while (cb != s_delayedCallbacks.end())
 	{
-		dbg("Checking delayed callback %s %ld", cb->id, cb->lastRun);
 		if (TimeHelper::getCurrentTime() - cb->lastRun >= cb->delay)
 		{
 			if (cb->callback())

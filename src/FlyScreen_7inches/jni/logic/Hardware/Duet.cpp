@@ -39,6 +39,8 @@ namespace Comm
 		SetHostname(StoragePreferences::getString("hostname", ""));
 		SetPassword(StoragePreferences::getString("password", ""));
 		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
+
+		SendGcode("M29");
 	}
 
 	void Duet::Reset() {}
@@ -113,6 +115,46 @@ namespace Comm
 		}
 	}
 
+	bool Duet::UploadFile(const char* filename, std::string& contents)
+	{
+		dbg("Uploading file %s: %d bytes", filename, contents.size());
+		UI::POPUP_WINDOW->Open();
+		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("uploading_file").c_str(), filename);
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart: {
+			SendGcodef("M28 \"%s\"", filename);
+			size_t prevPosition = 0;
+			size_t position = contents.find("\n"); // Find the first occurrence of \n
+			std::string line;
+			while (position != std::string::npos)
+			{
+				line = contents.substr(prevPosition, position - prevPosition);
+				prevPosition = position + 1;
+				position = contents.find("\n", position + 1); // Find the next occurrence, if any
+				SendGcode(line.c_str());
+			}
+			SendGcode("M29");
+			break;
+		}
+		case CommunicationType::network: {
+			RestClient::Response r;
+			QueryParameters_t query;
+			query["name"] = filename;
+			if (!Post(m_ipAddress, "/rr_upload", r, query, contents, m_sessionKey))
+			{
+				UI::CONSOLE->AddResponse(
+					utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
+				return false;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		return true;
+	}
+
 	void Duet::RequestModel(const char* flags)
 	{
 		switch (m_communicationType)
@@ -134,7 +176,7 @@ namespace Comm
 			break;
 		}
 		default:
-		    break;
+			break;
 		}
 	}
 
@@ -232,21 +274,21 @@ namespace Comm
 	const Duet::error_code Duet::Connect()
 	{
 		if (m_communicationType != CommunicationType::network)
-		    return 0;
+			return 0;
 
-        RestClient::Response r;
-        QueryParameters_t query;
-        query["password"] = m_password;
-        if (!Get(m_ipAddress, "/rr_connect", r, query))
-        {
-            dbg("rr_connect failed, returned response %d", r.code);
-            return r.code;
-        }
+		RestClient::Response r;
+		QueryParameters_t query;
+		query["password"] = m_password;
+		if (!Get(m_ipAddress, "/rr_connect", r, query))
+		{
+			dbg("rr_connect failed, returned response %d", r.code);
+			return r.code;
+		}
 
-        // Session key parsed in "UI/Observers/HttpObservers.h"
-        StringRef ref((char*)"sessionKey", 12);
-        Comm::ProcessReceivedValue(ref, r.body.c_str(), {});
-        return r.code;
+		// Session key parsed in "UI/Observers/HttpObservers.h"
+		StringRef ref((char*)"sessionKey", 12);
+		Comm::ProcessReceivedValue(ref, r.body.c_str(), {});
+		return r.code;
 	}
 
 	const Duet::error_code Duet::Disconnect()
@@ -324,7 +366,7 @@ namespace Comm
 
 	void Duet::SetSessionKey(const int32_t key)
 	{
-	    dbg("Setting Duet session key = %d", key);
-	    m_sessionKey = key;
+		dbg("Setting Duet session key = %d", key);
+		m_sessionKey = key;
 	}
 } // namespace Comm

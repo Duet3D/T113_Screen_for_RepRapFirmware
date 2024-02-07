@@ -585,6 +585,7 @@ namespace Comm {
 		lastResponseTime = TimeHelper::getCurrentTime();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
+		duet.SendGcode("M29");
 		ResetSeqs();
 	}
 

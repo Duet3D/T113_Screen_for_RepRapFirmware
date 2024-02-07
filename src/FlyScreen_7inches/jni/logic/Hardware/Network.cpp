@@ -15,14 +15,8 @@
 
 namespace Comm
 {
-	bool Get(std::string url,
-			 const char* subUrl,
-			 RestClient::Response& r,
-			 QueryParameters_t& queryParameters,
-			 int32_t sessionKey)
+	static void AddQueryParameters(std::string& url, QueryParameters_t& queryParameters)
 	{
-		url += subUrl;
-
 		if (queryParameters.size() > 0)
 			url += "?";
 
@@ -47,6 +41,17 @@ namespace Comm
 
 			first = false;
 		}
+	}
+
+	bool Get(std::string url,
+			 const char* subUrl,
+			 RestClient::Response& r,
+			 QueryParameters_t& queryParameters,
+			 int32_t sessionKey)
+	{
+		url += subUrl;
+
+		AddQueryParameters(url, queryParameters);
 
 		// get a connection object
 		RestClient::Connection* conn = new RestClient::Connection(url);
@@ -70,6 +75,47 @@ namespace Comm
 		if (r.code != 200)
 		{
 			dbg("%s failed, returned response %d", url.c_str(), r.code);
+			return false;
+		}
+		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
+		// dbg("Response body: %s", r.body.c_str());
+		return true;
+	}
+
+	bool Post(std::string url,
+			  const char* subUrl,
+			  RestClient::Response& r,
+			  QueryParameters_t& queryParameters,
+			  const std::string& data,
+			  int32_t sessionKey)
+	{
+		url += subUrl;
+
+		AddQueryParameters(url, queryParameters);
+
+		// get a connection object
+		RestClient::Connection* conn = new RestClient::Connection(url);
+
+		// set connection timeout in seconds
+		conn->SetTimeout(180);
+
+		// enable following of redirects (default is off)
+		conn->FollowRedirects(true);
+		// and limit the number of redirects (default is -1, unlimited)
+		conn->FollowRedirects(true, 3);
+
+		// set headers
+		if (sessionKey != -1)
+			conn->AppendHeader("X-Session-Key", utils::format("%d", sessionKey));
+
+		conn->AppendHeader("Content-Type", "text/plain");
+		// if using a non-standard Certificate Authority (CA) trust file
+		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
+
+		r = conn->post("", data);
+		if (r.code != 200)
+		{
+			dbg("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());
 			return false;
 		}
 		dbg("%s succeeded, returned response %d", url.c_str(), r.code);

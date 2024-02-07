@@ -43,7 +43,7 @@ bool AddToVector(std::vector<T>& vec, T item)
 	return true;
 }
 
-static std::string sSelectedFile;
+const OM::FileSystem::File* sSelectedFile;
 
 namespace UI
 {
@@ -141,6 +141,11 @@ namespace UI
 		if (OM::FileSystem::IsInSubFolder())
 		{
 			dbg("window: Returning to previous folder");
+			if (OM::FileSystem::IsUsbFolder())
+			{
+				OM::FileSystem::RequestUsbFiles(OM::FileSystem::GetParentDirPath());
+				return;
+			}
 			OM::FileSystem::RequestFiles(OM::FileSystem::GetParentDirPath());
 			return;
 		}
@@ -581,12 +586,12 @@ namespace UI
 		Refresh();
 	}
 
-	void SetSelectedFile(const std::string& filePath)
+	void SetSelectedFile(const OM::FileSystem::File* file)
 	{
-		sSelectedFile = filePath;
+		sSelectedFile = file;
 	}
 
-	std::string& GetSelectedFile()
+	const OM::FileSystem::File* GetSelectedFile()
 	{
 		return sSelectedFile;
 	}

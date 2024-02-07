@@ -8,9 +8,10 @@
 #ifndef JNI_LOGIC_OBJECTMODEL_FILES_HPP_
 #define JNI_LOGIC_OBJECTMODEL_FILES_HPP_
 
+#include "Debug.h"
+#include "control/ZKListView.h"
 #include <string>
 #include <vector>
-#include "Debug.h"
 
 namespace OM::FileSystem
 {
@@ -60,6 +61,7 @@ namespace OM::FileSystem
 		Folder(const std::string& name) : FileSystemItem(FileSystemItemType::folder, name) {}
 	};
 
+	void Init(ZKTextView* folderId, ZKListView* listView);
 	File* AddFileAt(const size_t index);
 	Folder* AddFolderAt(const size_t index);
 	const size_t GetItemCount();
@@ -73,9 +75,12 @@ namespace OM::FileSystem
 	std::string& GetCurrentDirPath();
 	bool IsInSubFolder();
 	void RequestFiles(const std::string& path);
+	void RequestUsbFiles(const std::string& path);
 	bool IsMacroFolder();
-	void RunFile(const std::string& path);
+	bool IsUsbFolder();
+	void RunFile(const File* file);
 	void RunMacro(const std::string& path);
+	void UploadFile(const File* file);
 	void StartPrint(const std::string& path);
 	void ResumePrint();
 	void PausePrint();

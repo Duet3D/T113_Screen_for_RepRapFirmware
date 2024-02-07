@@ -244,6 +244,24 @@ namespace UI
 		WINDOW->CloseOverlay();
 	}
 
+	void PopupWindow::CancelTimeout()
+	{
+
+		if (!IsOpen())
+		{
+			dbg("Cannot cancel timeout when popup is not open");
+			return;
+		}
+
+		if (!IsResponse())
+		{
+			dbg("Cannot cancel timeout for non-response alerts");
+			return;
+		}
+
+		unregisterDelayedCallback("popup_timeout");
+	}
+
 	void PopupWindow::SetTimeout(uint32_t timeout)
 	{
 		dbg("Setting info timeout to %u", timeout);

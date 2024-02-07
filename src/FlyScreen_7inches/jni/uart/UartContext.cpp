@@ -10,11 +10,13 @@
 #include <memory.h>
 #include <termio.h>
 #include <sys/ioctl.h>
+#include <math.h>
 
 #include "UI/UserInterface.h"
 #include "uart/UartContext.h"
 
 #include "Communication.h"
+#include "Hardware/Duet.h"
 #include "manager/LanguageManager.h"
 #include "utils/Log.h"
 
@@ -113,15 +115,15 @@ bool UartContext::send(const BYTE *pData, UINT len) {
 	if (!mIsOpen) {
 		return false;
 	}
+	int delay = (int)ceilf((float)(1e4 * len) / Comm::duet.GetBaudRate().rate);
 
-	if (write(mUartID, pData, len) != (int) len) {	// fail
+	int ret = write(mUartID, pData, len);
+    Thread::sleep(delay);   // Ensure we don't accidentally send data while previous data is still being sent
+    LOGE("delay %d", delay);
+	if (ret != (int) len) {	// fail
 		LOGD("send Fail\n");
 		return false;
 	}
-
-	// success
-//	LOGD("send Success\n");
-
 	return true;
 }
 
