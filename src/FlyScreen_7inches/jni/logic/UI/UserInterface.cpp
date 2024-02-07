@@ -43,7 +43,7 @@ bool AddToVector(std::vector<T>& vec, T item)
 	return true;
 }
 
-static std::string sSelectedFile;
+const OM::FileSystem::File* sSelectedFile;
 
 namespace UI
 {
@@ -53,7 +53,7 @@ namespace UI
 		return &window;
 	}
 
-	void Window::AddHome(ZKWindow* home)
+	void Window::AddHome(ZKBase* home)
 	{
 		homeWindows_.push_back(home);
 	}
@@ -63,19 +63,23 @@ namespace UI
 		homeWindows_.clear();
 	}
 
-	void Window::OpenWindow(ZKWindow* window)
+	void Window::OpenWindow(ZKBase* window)
 	{
 		CloseOverlay();
 		dbg("Opening window %d", window->getID());
-		window->showWnd();
-		RemoveFromVector<ZKWindow*>(closedWindows_, window);
-		if (!InVector<ZKWindow*>(homeWindows_, window)) AddToVector<ZKWindow*>(openedWindows_, window);
+		window->setVisible(true);
+		RemoveFromVector<ZKBase*>(closedWindows_, window);
+		if (!InVector<ZKBase*>(homeWindows_, window))
+			AddToVector<ZKBase*>(openedWindows_, window);
 	}
 
-	void Window::OpenOverlay(ZKWindow* overlay)
+	void Window::OpenOverlay(ZKBase* overlay)
 	{
-		if (overlayWindow_ != nullptr) { overlayWindow_->hideWnd(); }
-		overlay->showWnd();
+		if (overlayWindow_ != nullptr)
+		{
+			overlayWindow_->setVisible(false);
+		}
+		overlay->setVisible(true);
 		overlayWindow_ = overlay;
 	}
 
@@ -93,7 +97,7 @@ namespace UI
 		{
 			POPUP_WINDOW->Clear();
 		}
-		overlayWindow_->hideWnd();
+		overlayWindow_->setVisible(false);
 		overlayWindow_ = nullptr;
 		return true;
 	}
@@ -114,19 +118,21 @@ namespace UI
 	{
 		for (auto window : homeWindows_)
 		{
-			if (!window->isWndShow()) continue;
+			if (!window->isVisible())
+				continue;
 			CloseWindow(window);
 		}
 		if (openedWindows_.empty()) return;
 		CloseWindow(openedWindows_.back());
 	}
 
-	void Window::CloseWindow(ZKWindow* window, const bool returnable)
+	void Window::CloseWindow(ZKBase* window, const bool returnable)
 	{
 		dbg("Closing window %d", window->getID());
-		window->hideWnd();
-		RemoveFromVector<ZKWindow*>(openedWindows_, window);
-		if (returnable) AddToVector<ZKWindow*>(closedWindows_, window);
+		window->setVisible(false);
+		RemoveFromVector<ZKBase*>(openedWindows_, window);
+		if (returnable)
+			AddToVector<ZKBase*>(closedWindows_, window);
 	}
 
 	void Window::Back()
@@ -135,18 +141,23 @@ namespace UI
 		if (OM::FileSystem::IsInSubFolder())
 		{
 			dbg("window: Returning to previous folder");
+			if (OM::FileSystem::IsUsbFolder())
+			{
+				OM::FileSystem::RequestUsbFiles(OM::FileSystem::GetParentDirPath());
+				return;
+			}
 			OM::FileSystem::RequestFiles(OM::FileSystem::GetParentDirPath());
 			return;
 		}
 		if (!openedWindows_.empty())
 		{
-			ZKWindow* lastOpened = openedWindows_.back();
+			ZKBase* lastOpened = openedWindows_.back();
 			dbg("Hiding window %d", lastOpened->getID());
 			CloseWindow(lastOpened, false);
 		}
 		if (!closedWindows_.empty())
 		{
-			ZKWindow* lastClosed = closedWindows_.back();
+			ZKBase* lastClosed = closedWindows_.back();
 			OpenWindow(lastClosed);
 		}
 	}
@@ -155,11 +166,11 @@ namespace UI
 	{
 		for (auto window : openedWindows_)
 		{
-			window->hideWnd();
+			window->setVisible(false);
 		}
 		for (auto window : homeWindows_)
 		{
-			window->showWnd();
+			window->setVisible(true);
 		}
 		CloseOverlay();
 		Clear();
@@ -461,7 +472,7 @@ namespace UI
 		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
-		dbg("onListItemClick heaterType=%d", numPadData_.heaterType);
+		dbg("onListItemClick heaterType=%d", (int)numPadData_.heaterType);
 		switch (numPadData_.heaterType)
 		{
 		case HeaterType::tool:
@@ -526,7 +537,11 @@ namespace UI
 		line.catf("> %s:", command.c_str());
 		AddMessage(line.GetRef());
 		AddLineBreak();
-		Refresh();
+	}
+
+	void Console::AddResponse(const char* str)
+	{
+		AddMessage(str);
 	}
 
 	void Console::AddResponse(const StringRef& ref)
@@ -545,6 +560,7 @@ namespace UI
 		line.copy(str);
 		buffer_.Push(line);
 		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+		Refresh();
 	}
 
 	void Console::AddMessage(const StringRef& ref)
@@ -570,12 +586,12 @@ namespace UI
 		Refresh();
 	}
 
-	void SetSelectedFile(const std::string& filePath)
+	void SetSelectedFile(const OM::FileSystem::File* file)
 	{
-		sSelectedFile = filePath;
+		sSelectedFile = file;
 	}
 
-	std::string& GetSelectedFile()
+	const OM::FileSystem::File* GetSelectedFile()
 	{
 		return sSelectedFile;
 	}

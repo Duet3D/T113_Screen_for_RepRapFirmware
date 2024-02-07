@@ -74,7 +74,7 @@ namespace OM
 	{
 		if (newStatus != sStatus)
 		{
-			dbg("printer status %d -> %d\n", sStatus, newStatus);
+			dbg("printer status %d -> %d\n", (int)sStatus, (int)newStatus);
 			sStatus = newStatus;
 		}
 	}

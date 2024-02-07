@@ -21,6 +21,7 @@
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
 #include "ObjectModel/BedOrChamber.h"
+#include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Popup.h"
 #include "UI/UserInterfaceConstants.h"
@@ -41,31 +42,37 @@ namespace UI
 
 	enum class SettingsSlideWindowIndex
 	{
-	    language = 0,
-	    baud,
+		language = 0,
+		duet,
+		update,
+		restart,
+		dev,
+		power_off,
+		zk_setting,
+		touch_calibration,
 	};
 
 	class Window
 	{
 	  public:
 		static Window* GetInstance();
-		void AddHome(ZKWindow* home);
+		void AddHome(ZKBase* home);
 		void ClearHome();
-		void OpenWindow(ZKWindow* window);
-		void OpenOverlay(ZKWindow* window);
+		void OpenWindow(ZKBase* window);
+		void OpenOverlay(ZKBase* window);
 		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
-		void CloseWindow(ZKWindow* window, const bool returnable = true);
+		void CloseWindow(ZKBase* window, const bool returnable = true);
 		void Back();
 		void Home();
 		void Clear();
 
 	  private:
-		std::vector<ZKWindow*> openedWindows_;
-		std::vector<ZKWindow*> closedWindows_;
-		std::vector<ZKWindow*> homeWindows_;
-		ZKWindow* overlayWindow_ = nullptr;
+		std::vector<ZKBase*> openedWindows_;
+		std::vector<ZKBase*> closedWindows_;
+		std::vector<ZKBase*> homeWindows_;
+		ZKBase* overlayWindow_ = nullptr;
 	};
 
 	enum class HeaterType
@@ -138,6 +145,7 @@ namespace UI
 		}
 		void Init(ZKListView* console, ZKEditText* input);
 		void AddCommand(const std::string& command);
+		void AddResponse(const char* str);
 		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
 		String<MaxResponseLineLength> GetItem(size_t index) { return buffer_.GetItem(index); }
@@ -153,8 +161,8 @@ namespace UI
 		ZKEditText* pInput_ = nullptr;
 	};
 
-	void SetSelectedFile(const std::string& filePath);
-	std::string& GetSelectedFile();
+	void SetSelectedFile(const OM::FileSystem::File* file);
+	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
 
 #define WINDOW Window::GetInstance()

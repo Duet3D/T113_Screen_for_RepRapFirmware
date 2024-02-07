@@ -14,6 +14,7 @@
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
 #include "manager/LanguageManager.h"
+#include "restclient-cpp/restclient.h"
 #include <algorithm>
 #include <string>
 
@@ -29,11 +30,11 @@
 static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_CHAR("resp",
 				  [](OBSERVER_CHAR_ARGS) {
-					  static string str;
+					  dbg("resp: %s", val);
+					  static std::string str;
 					  size_t substrlen;
 
 					  str = val;
-					  dbg("resp: %s", val);
 					  for (size_t i = 0; i < str.length(); i += MaxResponseLineLength)
 					  {
 						  String<MaxResponseLineLength> line;
@@ -43,7 +44,8 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 						  UI::CONSOLE->AddResponse(line.GetRef());
 					  }
 
-					  if (!mConsoleWindowPtr->isVisible())
+					  // Only show if console is not visible and a M291 message box is not showing
+					  if (!mConsoleWindowPtr->isVisible() && UI::POPUP_WINDOW->IsResponse())
 					  {
 						  UI::POPUP_WINDOW->Open([]() {
 							  UI::WINDOW->CloseLastWindow();
@@ -56,6 +58,17 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 				  }),
 	OBSERVER_CHAR("message", [](OBSERVER_CHAR_ARGS) { dbg("message: %s", val); }),
 	OBSERVER_CHAR("seq", [](OBSERVER_CHAR_ARGS) { dbg("seq: %s", val); }),
+	OBSERVER_INT_IF_CHANGED("seqs:reply",
+							[](OBSERVER_INT_ARGS) {
+								LOGD("seqs.reply: %d", val);
+								if (Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::network)
+								{
+									dbg("New reply available");
+									RestClient::Response r;
+									Comm::duet.RequestReply(r);
+									Comm::duet.ProcessReply(r);
+								}
+							}),
 };
 
 /*

@@ -11,11 +11,12 @@
 #define DEBUG (0)
 #include "Debug.h"
 
-#include "Communication.h"
 #include "UI/UserInterface.h"
 
+#include "Communication.h"
 #include <stdarg.h>
 
+#include "Hardware/Duet.h"
 #include "Hardware/Reset.h"
 #include "Hardware/SerialIo.h"
 
@@ -58,9 +59,6 @@ namespace Comm {
 	const int parserMinErrors = 2;
 
 	static uint32_t lastResponseTime = 0;
-	constexpr uint32_t defaultPrinterPollInterval = 1000;
-	static uint32_t printerPollInterval = defaultPrinterPollInterval;
-	static uint32_t printerResponseTimeout = 2000;
 
 	static bool outOfBuffers = false;
 
@@ -581,23 +579,18 @@ namespace Comm {
 		return true;
 	}
 
-	static void Reconnect()
+	void Reconnect()
 	{
 		dbg("Reconnecting");
 		lastResponseTime = TimeHelper::getCurrentTime();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
+		duet.SendGcode("M29");
 		ResetSeqs();
-	}
-
-	const uint32_t GetPollInterval()
-	{
-		return printerPollInterval;
 	}
 
 	static void StartReceivedMessage();
 	static void EndReceivedMessage();
-	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]);
 	static void ProcessArrayEnd(const char id[], const size_t indices[]);
 	static void ParserErrorEncountered(int currentState, const char*, int errors);
 
@@ -658,8 +651,7 @@ namespace Comm {
 				thumbnail.imageFormat,
 				thumbnail.width, thumbnail.height);
 		}
-	#endif
-		int ret;
+#endif
 
 		switch (thumbnailContext.state) {
 		case ThumbnailState::Init:
@@ -716,8 +708,8 @@ namespace Comm {
 	}
 */
 	// Public functions called by the SerialIo module
-	static void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[]) {
-		ReceivedDataEvent currentResponseType = ReceivedDataEvent::rcvUnknown;
+	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
+	{
 		dbg("id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
 		if (StringStartsWith(id.c_str(), "result")) {
 			// We might either get something like:
@@ -727,10 +719,12 @@ namespace Comm {
 			// else replace "result" by "key" (do NOT replace anything beyond "result" as there might be an _ecv_array modifier)
 
 			id.Erase(0, 6);
-			if (currentRespSeq != nullptr) {
-				currentResponseType = currentRespSeq->seqid;
+			if (currentRespSeq != nullptr)
+			{
 				id.Prepend(currentRespSeq->key);
-			} else {
+			}
+			else
+			{
 				// if empty key also erase the colon
 				id.Erase(0);
 			}
@@ -914,17 +908,6 @@ namespace Comm {
 				observer.Update(indices);
 			}
 		}
-		ReceivedDataEvent currentResponseType = currentRespSeq != nullptr ? currentRespSeq->event : ReceivedDataEvent::rcvUnknown;
-		// TODO: uncomment stuff below related to UI/OM
-		if (indices[0] == 0 && strcmp(id, "files^") == 0) {
-	//		FileManager::BeginReceivingFiles();				// received an empty file list - need to tell the file manager about it
-		} else if (currentResponseType == rcvOMKeyMove && strcasecmp(id, "move:axes^") == 0) {
-//			OM::RemoveAxis(indices[0], true);
-	//		numAxes = constrain<unsigned int>(visibleAxesCounted, MIN_AXES, MaxDisplayableAxes);
-	//		UI::UpdateGeometry(numAxes, isDelta);
-		} else if (currentResponseType == rcvOMKeyVolumes && strcasecmp(id, "volumes^") == 0) {
-	//		FileManager::SetNumVolumes(indices[0]);
-		}
 	}
 
 	static void ParserErrorEncountered(int currentState, const char*, int errors) {
@@ -932,7 +915,7 @@ namespace Comm {
 
 		if (errors > parserMinErrors) {
 			//MessageLog::AppendMessageF("Warning: received %d malformed responses.", errors);
-			dbg("Warning: received %d malformed responses.", errors);
+			LOGE("Warning: received %d malformed responses.", errors);
 		}
 		if (currentRespSeq == nullptr) {
 			return;
@@ -941,16 +924,18 @@ namespace Comm {
 		currentRespSeq->state = SeqStateError;
 	}
 
-
 //------------------------------------------------------------------------------------------------------------------
 
 	void sendNext() {
 		long long now = TimeHelper::getCurrentTime();
-		if (now > (lastResponseTime + printerPollInterval + printerResponseTimeout)) { Reconnect(); }
+		if (now > (lastResponseTime + duet.GetPollInterval() + printerResponseTimeout))
+		{
+			Reconnect();
+		}
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
 			LOGD("requesting %s\n", currentReqSeq->key);
-			SerialIo::Sendf("M409 K\"%s\" F\"%s\"\n", currentReqSeq->key, currentReqSeq->flags);
+			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
@@ -958,7 +943,7 @@ namespace Comm {
 				initialized = true;
 			}
 
-            SerialIo::Sendf("M409 F\"d99f\"\n");
+			Comm::duet.RequestModel("d99f");
 		}
 	}
 

@@ -45,6 +45,7 @@ INCLUDE_DIR := -I$(EASYUI_COMMON_INCLUDE) \
 			   -I$(LOCAL_PATH)/logic \
                -I.
 
+LDFLAGS += -lcurl -lssl -lcrypto  -lz -Linclude/libs/network
 LDFLAGS += -lzkhardware -lzknet -leasyui -llog -luClibc++
 LDFLAGS += -L$(ZKSW_PREBUILT_LIB_PATH) -L. 
 

@@ -6,19 +6,25 @@
  */
 
 #define DEBUG (1)
-#include <algorithm>
-#include "Debug.h"
 #include "Files.h"
-#include "Hardware/SerialIo.h"
+#include "Debug.h"
+#include "Hardware/Duet.h"
+#include "Hardware/Usb.h"
+#include <algorithm>
 
 namespace OM::FileSystem
 {
 	static std::string sCurrentDirPath;
 	static std::vector<FileSystemItem*> sItems;
 	static bool sInMacroFolder = false;
+	static bool sUsbFolder = false;
+	static ZKTextView* sFolderId = nullptr;
+	static ZKListView* sListView = nullptr;
 
 	std::string FileSystemItem::GetPath() const
 	{
+		if (sCurrentDirPath.empty())
+			return name_;
 		return sCurrentDirPath + "/" + name_;
 	}
 
@@ -41,6 +47,12 @@ namespace OM::FileSystem
 	FileSystemItem::~FileSystemItem()
 	{
 		dbg("Files: destructing item %s", GetPath().c_str());
+	}
+
+	void Init(ZKTextView* folderId, ZKListView* listView)
+	{
+		sFolderId = folderId;
+		sListView = listView;
 	}
 
 	File* AddFileAt(const size_t index)
@@ -148,11 +160,14 @@ namespace OM::FileSystem
 
 	std::string GetParentDirPath()
 	{
+		if (!IsInSubFolder())
+			return sCurrentDirPath;
+
 		std::string path;
 		size_t i = sCurrentDirPath.find_last_of('/');
 
 		if (i == std::string::npos)
-			return sCurrentDirPath;
+			return "";
 		return sCurrentDirPath.substr(0, i);
 	}
 
@@ -173,6 +188,11 @@ namespace OM::FileSystem
 
 	bool IsInSubFolder()
 	{
+		if (IsUsbFolder())
+		{
+			return sCurrentDirPath.empty() ? false : true;
+		}
+
 		size_t count = 0;
 		for (auto c : sCurrentDirPath)
 		{
@@ -180,13 +200,40 @@ namespace OM::FileSystem
 				count++;
 		}
 		dbg("Files: %d", count);
+
 		return count > 1;
 	}
 
 	void RequestFiles(const std::string& path)
 	{
+		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
-		SerialIo::Sendf("M20 S3 P\"%s\"\n", path.c_str());
+		Comm::duet.RequestFileList(path.c_str());
+	}
+
+	void RequestUsbFiles(const std::string& path)
+	{
+		ClearFileSystem();
+		sUsbFolder = true;
+		sCurrentDirPath = path;
+		std::vector<dirent> entries = USB::ListEntriesInDirectory(std::string("/mnt/usb1/") + path);
+		size_t index = 0;
+		for (auto& entry : entries)
+		{
+			if (entry.d_type == DT_DIR)
+			{
+				Folder* folder = AddFolderAt(index);
+				folder->SetName(entry.d_name);
+			}
+			else if (entry.d_type == DT_REG)
+			{
+				File* file = AddFileAt(index);
+				file->SetName(entry.d_name);
+			}
+			index++;
+		}
+		sFolderId->setText(LANGUAGEMANAGER->getValue("usb") + ": " + OM::FileSystem::GetCurrentDirPath());
+		sListView->refreshListView();
 	}
 
 	bool IsMacroFolder()
@@ -194,38 +241,51 @@ namespace OM::FileSystem
 		return sInMacroFolder;
 	}
 
-	void RunFile(const std::string& path)
+	bool IsUsbFolder()
+	{
+		return sUsbFolder;
+	}
+
+	void RunFile(const File* file)
 	{
 		if (sInMacroFolder)
-			RunMacro(path);
+			RunMacro(file->GetPath());
 		else
-			StartPrint(path);
+			StartPrint(file->GetPath());
 	}
 
 	void RunMacro(const std::string& path)
 	{
-		SerialIo::Sendf("M98 P\"%s\"\n", path.c_str());
+		Comm::duet.SendGcodef("M98 P\"%s\"\n", path.c_str());
+	}
+
+	void UploadFile(const File* file)
+	{
+		std::string contents;
+		if (!USB::ReadFileContents(file->GetPath(), contents))
+			return;
+		Comm::duet.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
 	}
 
 	void StartPrint(const std::string& path)
 	{
-		SerialIo::Sendf("M23 \"%s\"\n", path.c_str());
-		SerialIo::Sendf("M24\n");
+		Comm::duet.SendGcodef("M23 \"%s\"\n", path.c_str());
+		Comm::duet.SendGcode("M24\n");
 	}
 
 	void ResumePrint()
 	{
-		SerialIo::Sendf("M24\n");
+		Comm::duet.SendGcode("M24\n");
 	}
 
 	void PausePrint()
 	{
-		SerialIo::Sendf("M25\n");
+		Comm::duet.SendGcode("M25\n");
 	}
 
 	void StopPrint()
 	{
-		SerialIo::Sendf("M0\n");
+		Comm::duet.SendGcode("M0\n");
 	}
 
 	void ClearFileSystem()

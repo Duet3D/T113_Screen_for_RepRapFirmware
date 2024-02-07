@@ -9,10 +9,12 @@
  *
  */
 
+#define DEBUG (0)
+
 #include "SerialIo.h"
 #include "uart/UartContext.h"
+#include <string>
 
-#define DEBUG (0)
 # include "utils/Log.h"
 
 #if DEBUG
@@ -58,14 +60,23 @@ namespace SerialIo {
 		// TODO: Set baudrate
 	}
 
+	bool Send(const char* data, size_t len)
+	{
+		return UARTCONTEXT->send((unsigned char*)data, len);
+	}
+
 	size_t Sendf(const char *fmt, ...) {
 		va_list vargs;
 		va_start(vargs, fmt);
 
-		char buf[128];
-		int ret = vsprintf(buf, fmt, vargs);
-		LOGD("Sending %s", buf);
-		UARTCONTEXT->send((unsigned char*)buf, ret);
+		std::string buf;
+		size_t ret = vsnprintf(0, 0, fmt, vargs);
+		if (ret >= buf.capacity())
+			buf.reserve(ret + sizeof(char));
+		buf.resize(ret);
+		vsnprintf((char*)buf.data(), buf.capacity(), fmt, vargs);
+		LOGD("Sending %s", buf.c_str());
+		UARTCONTEXT->send((unsigned char*)buf.c_str(), ret);
 
 		va_end(vargs);
 
@@ -314,16 +325,27 @@ namespace SerialIo {
 		}
 	}
 
+#define dbg_if(cond, fmt, args...)                                                                                     \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		if (cond)                                                                                                      \
+		{                                                                                                              \
+			LOGD("%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                                      \
+		}                                                                                                              \
+	} while (0)
+
 	// This is the JSON parser state machine
-	void CheckInput(const unsigned char *rxBuffer, unsigned int len) {
+	void CheckInput(const unsigned char* rxBuffer, unsigned int len, bool log)
+	{
 		nextOut = 0;
+		dbg_if(log, "CheckInput[%d]: %s", len, rxBuffer);
 		while (len != nextOut) {
 			char c = rxBuffer[nextOut];
 			// LOGD("char %d: %c", nextOut, c);
 			nextOut = (nextOut + 1) % (len + 1);
 			if (c == '\n') {
 				if (state == jsError) {
-					dbg("ParserErrorEncountered");
+					dbg_if(log, "ParserErrorEncountered @ %d", nextOut);
 
 					serialIoErrors++;
 
@@ -373,7 +395,7 @@ namespace SerialIo {
 					default:
 						state = jsError;
 
-						dbg("jsError: jsExpectId");
+						dbg_if(log, "jsError: jsExpectId");
 						break;
 					}
 					break;
@@ -387,12 +409,12 @@ namespace SerialIo {
 						if (c < ' ') {
 							state = jsError;
 
-							dbg("jsError: jsId 1");
+							dbg_if(log, "jsError: jsId 1");
 						} else if (c != ':' && c != '^') {
 							if (fieldId.cat(c)) {
 								state = jsError;
 
-								dbg("jsError: jsId 2");
+								dbg_if(log, "jsError: jsId 2");
 							}
 						}
 						break;
@@ -409,7 +431,7 @@ namespace SerialIo {
 					default:
 						state = jsError;
 
-						dbg("jsError: jsHadId");
+						dbg_if(log, "jsError: jsHadId");
 						break;
 					}
 					break;
@@ -429,7 +451,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;
 
-							dbg("jsError: [");
+							dbg_if(log, "jsError: [");
 						}
 						break;
 					case ']':
@@ -439,7 +461,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;	// ']' received without a matching '[' first
 
-							dbg("jsError: ]");
+							dbg_if(log, "jsError: ]");
 						}
 						break;
 					case '-':
@@ -451,7 +473,7 @@ namespace SerialIo {
 						state = (!fieldId.cat(':')) ? jsExpectId : jsError;
 
 						if (state == jsError) {
-							dbg("jsError: {");
+							dbg_if(log, "jsError: {");
 						}
 						break;
 					default:
@@ -467,7 +489,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;
 
-							dbg("jsError: jsVal default");
+							dbg_if(log, "jsError: jsVal default");
 						}
 					}
 					break;
@@ -486,7 +508,7 @@ namespace SerialIo {
 						if (c < ' ') {
 							state = jsError;
 
-							dbg("jsError: jsStringVal");
+							dbg_if(log, "jsError: jsStringVal");
 						} else {
 							fieldVal.cat(c);	// ignore any error so that long string parameters just get truncated
 						}
@@ -503,7 +525,7 @@ namespace SerialIo {
 							if (fieldVal.cat(c)) {
 								state = jsError;
 
-								dbg("jsError: jsStringEscape 1");
+								dbg_if(log, "jsError: jsStringEscape 1");
 							}
 							break;
 						case 'n':
@@ -511,7 +533,7 @@ namespace SerialIo {
 							if (fieldVal.cat(' ')) {		// replace newline and tab by space
 								state = jsError;
 
-								dbg("jsError: jsStringEscape 2");
+								dbg_if(log, "jsError: jsStringEscape 2");
 							}
 							break;
 						case 'b':
@@ -528,7 +550,7 @@ namespace SerialIo {
 					state = (c >= '0' && c <= '9' && !fieldVal.cat(c)) ? jsIntVal : jsError;
 
 						if (state == jsError) {
-							dbg("jsError: jsNegIntVal");
+							dbg_if(log, "jsError: jsNegIntVal");
 						}
 					break;
 
@@ -541,13 +563,13 @@ namespace SerialIo {
 						state = (!fieldVal.cat(c)) ? jsFracVal : jsError;
 
 						if (state == jsError) {
-							dbg("jsError: jsIntVal");
+							dbg_if(log, "jsError: jsIntVal");
 						}
 					}
 					else if (!(c >= '0' && c <= '9' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg("jsError: jsIntVal");
+						dbg_if(log, "jsError @ %d: jsIntVal", nextOut);
 					}
 					break;
 
@@ -559,7 +581,7 @@ namespace SerialIo {
 					if (!(c >= '0' && c <= '9' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg("jsError: jsFracVal");
+						dbg_if(log, "jsError: jsFracVal");
 					}
 					break;
 
@@ -571,7 +593,7 @@ namespace SerialIo {
 					if (!(c >= 'a' && c <= 'z' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg("jsError: jsCharsVal");
+						dbg_if(log, "jsError: jsCharsVal");
 					}
 					break;
 
@@ -582,7 +604,7 @@ namespace SerialIo {
 
 					state = jsError;
 
-					dbg("jsError: jsEndVal");
+					dbg_if(log, "jsError: jsEndVal");
 					break;
 
 				case jsError:
@@ -590,9 +612,9 @@ namespace SerialIo {
 					break;
 				}
 
+				if (lastState != state)
+					dbg_if(log, "state %d -> %d", lastState, state);
 #if DEBUG
-//				if (lastState != state)
-//					dbg("state %d -> %d", lastState, state);
 #endif
 			}
 		}

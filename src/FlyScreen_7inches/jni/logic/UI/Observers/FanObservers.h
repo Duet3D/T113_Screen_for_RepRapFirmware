@@ -62,7 +62,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 		{
 			if (!OM::UpdateFanRpm(indices[0], val))
 			{
-				dbg("Failed to update fan %d rpm to %.2f", indices[0], val);
+				dbg("Failed to update fan %d rpm to %d", indices[0], val);
 				return;
 			}
 			mPrintFanListPtr->refreshListView();

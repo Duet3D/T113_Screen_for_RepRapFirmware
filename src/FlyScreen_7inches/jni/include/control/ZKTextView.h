@@ -91,7 +91,8 @@ public:
 
 	int setTextTrf(const char *format_id, ...)
 	{
-        va_list vargs;
+		// TODO: implement this so it doesn't give a compiler warning
+		va_list vargs;
         std::string format = LANGUAGEMANAGER->getValue(format_id);
         va_start(vargs, format.c_str());
 		char buffer[255];

@@ -3,6 +3,8 @@
 
 #include "Communication.h"
 #include "Debug.h"
+#include "timer.h"
+#include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
@@ -21,6 +23,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "storage/StoragePreferences.h"
 #include "utils/TimeHelper.h"
 #include <string>
 #include <vector>
@@ -63,8 +66,6 @@
  * In Eclipse IDE, use the "alt + /" shortcut key to open the smart prompt
  */
 
-#define TIMER_UPDATE_DATA 0  // Id of the timer used to update values from data received from serial
-
 static int sFeedRate = 6000;
 
 /**
@@ -73,8 +74,7 @@ static int sFeedRate = 6000;
  * Note: id cannot be repeated
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
-	{TIMER_UPDATE_DATA, Comm::GetPollInterval()}, // Timer id=0, min interval of 300ms at 115200 baud
-												  //	{1,  100},
+	{TIMER_DELAYED_TASK, 50},
 };
 
 /**
@@ -84,6 +84,42 @@ static void onUI_init()
 {
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
+
+	initTimer(mActivityPtr);
+	registerUserTimer(
+		TIMER_UPDATE_DATA,
+		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
+
+	Comm::duet.Init();
+	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
+	UI::WINDOW->AddHome(mMainWindowPtr);
+	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
+	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
+						   mNoTouchWindowPtr,
+						   mPopupOkBtnPtr,
+						   mPopupCancelBtnPtr,
+						   mPopupTitlePtr,
+						   mPopupTextPtr,
+						   mPopupWarningPtr,
+						   mPopupMinPtr,
+						   mPopupMaxPtr,
+						   mPopupSelectionListPtr,
+						   mPopupTextInputPtr,
+						   mPopupNumberInputPtr,
+						   mPopupAxisSelectionPtr,
+						   mPopupAxisAdjusmentPtr);
+	UI::SLIDER_WINDOW->Init(
+		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
+
+	// Duet communication settings
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
+	mIpAddressInputPtr->setText(Comm::duet.GetIPAddress());
+	mHostnameInputPtr->setText(Comm::duet.GetHostname());
+	mPasswordInputPtr->setText(Comm::duet.GetPassword());
+	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
+	mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -111,27 +147,6 @@ static void onUI_init()
 	}
 
 	mFeedrateBtn1Ptr->setSelected(true);
-
-	UI::WINDOW->AddHome(mMainWindowPtr);
-	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
-	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
-	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
-	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
-						   mNoTouchWindowPtr,
-						   mPopupOkBtnPtr,
-						   mPopupCancelBtnPtr,
-						   mPopupTitlePtr,
-						   mPopupTextPtr,
-						   mPopupWarningPtr,
-						   mPopupMinPtr,
-						   mPopupMaxPtr,
-						   mPopupSelectionListPtr,
-						   mPopupTextInputPtr,
-						   mPopupNumberInputPtr,
-						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr);
-	UI::SLIDER_WINDOW->Init(mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr,
-							mSliderSuffixPtr);
 }
 
 /**
@@ -201,8 +216,11 @@ static bool onUI_Timer(int id)
 			mStatusTextPtr->setTextTr(OM::GetStatusText());
 		}
 		Comm::sendNext();
+		break;
 	}
-	break;
+	case TIMER_DELAYED_TASK: {
+		runDelayedCallbacks();
+	}
 	default:
 		break;
 	}
@@ -265,9 +283,9 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	UI::POPUP_WINDOW->Close();
-	SerialIo::Sendf("M112\n");
+	Comm::duet.SendGcode("M112\n");
 	Thread::sleep(1000);
-	SerialIo::Sendf("M999\n");
+	Comm::duet.SendGcode("M999\n");
 	return false;
 }
 
@@ -322,7 +340,8 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
-//		UI::WINDOW->OpenWindow(mNetworkWindowPtr);
+		UI::WINDOW->Home();
+		// UI::WINDOW->OpenWindow(mNetworkWindowPtr);
 		EASYUICONTEXT->openActivity("WifiSettingActivity");
 		break;
 	case (int)UI::SlideWindowIndex::settings:
@@ -413,25 +432,25 @@ static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
 	return false;
 }
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
-	SerialIo::Sendf("G28\n");
+	Comm::duet.SendGcode("G28\n");
 	return false;
 }
 
 static bool onButtonClick_TrueLevelBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("G32\n");
+	Comm::duet.SendGcode("G32\n");
 	return false;
 }
 
 static bool onButtonClick_MeshLevelBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("G29\n");
+	Comm::duet.SendGcode("G29\n");
 	return false;
 }
 
 static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 {
-	SerialIo::Sendf("M18\n");
+	Comm::duet.SendGcode("M18\n");
 	return false;
 }
 
@@ -470,7 +489,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 	switch (id)
 	{
 	case ID_MAIN_AxisControlHomeSubItem:
-		SerialIo::Sendf("G28 %s\n", axis->letter);
+		Comm::duet.SendGcodef("G28 %s\n", axis->letter);
 		return;
 	case ID_MAIN_AxisControlSubItem1:
 		distance = -50;
@@ -497,7 +516,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 		distance = 50;
 		break;
 	}
-	SerialIo::Sendf("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
+	Comm::duet.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
 }
 
 static void selectFeedRateBtn(ZKButton* pButton)
@@ -565,16 +584,17 @@ static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::Z
 static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
 }
 
-static void onEditTextChanged_EditText1(const std::string &text) {
-    //LOGD(" onEditTextChanged_ EditText1 %s !!!\n", text.c_str());
-	SerialIo::Sendf("%s\n", text.c_str());
-    UI::CONSOLE->AddCommand(text);
+static void onEditTextChanged_EditText1(const std::string& text)
+{
+	UI::CONSOLE->AddCommand(text);
+	Comm::duet.SendGcode(text.c_str());
 }
 
-static bool onButtonClick_SendBtn(ZKButton *pButton) {
-    SerialIo::Sendf(mEditText1Ptr->getText().c_str());
-    UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
-    return true;
+static bool onButtonClick_SendBtn(ZKButton* pButton)
+{
+	UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
+	Comm::duet.SendGcode(mEditText1Ptr->getText().c_str());
+	return true;
 }
 static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
     UI::CONSOLE->Clear();
@@ -582,6 +602,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
+	OM::FileSystem::ClearFileSystem();
 	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;
 }
@@ -625,37 +646,45 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	switch (item->GetType())
 	{
 	case OM::FileSystem::FileSystemItemType::file:
-		UI::SetSelectedFile(item->GetPath());
+		UI::SetSelectedFile((OM::FileSystem::File*)item);
 		if (OM::FileSystem::IsMacroFolder())
 		{
+			UI::POPUP_WINDOW->Open([]() { UI::RunSelectedFile(); });
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
+		}
+		else if (OM::FileSystem::IsUsbFolder())
+		{
+			UI::POPUP_WINDOW->Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upload_file").c_str(), item->GetName().c_str());
 		}
 		else
 		{
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
-		}
-		UI::POPUP_WINDOW->Open([]() {
-			UI::RunSelectedFile();
-			if (!OM::FileSystem::IsMacroFolder())
-			{
+			UI::POPUP_WINDOW->Open([]() {
+				UI::RunSelectedFile();
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
-			}
-		});
+			});
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+		}
 		break;
 	case OM::FileSystem::FileSystemItemType::folder:
+		if (OM::FileSystem::IsUsbFolder())
+		{
+			OM::FileSystem::RequestUsbFiles(item->GetPath());
+			break;
+		}
 		OM::FileSystem::RequestFiles(item->GetPath());
 		break;
 	}
 }
 static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
-    SerialIo::Sendf("M290 S-0.05");
-    return false;
+	Comm::duet.SendGcode("M290 S-0.05");
+	return false;
 }
 
 static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
-    SerialIo::Sendf("M290 S0.05");
-    return false;
+	Comm::duet.SendGcode("M290 S0.05");
+	return false;
 }
 
 static int getListItemCount_PrintFanList(const ZKListView *pListView) {
@@ -685,7 +714,7 @@ static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int i
 			OM::Fan* fan = OM::GetFan(fanIndex);
 			if (fan == nullptr) { return; }
 			int fanSpeed = (percent * 255) / 100;
-			SerialIo::Sendf("M106 P%d S%d\n", fan->index, fanSpeed);
+			Comm::duet.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
 		},
 		true);
 }
@@ -746,12 +775,12 @@ static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int
 	UI::SLIDER_WINDOW->Open(header, "", "", "%", 0, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
 		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
 		if (extruder == nullptr) { return; }
-		SerialIo::Sendf("M221 D%d S%d\n", extruder->index, percent);
+		Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
 	});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
-	SerialIo::Sendf("M220 S%d\n", progress);
+	Comm::duet.SendGcodef("M220 S%d\n", progress);
 }
 
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
@@ -802,25 +831,47 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::language:
 		EASYUICONTEXT->openActivity("LanguageSettingActivity");
 		break;
-	case (int)UI::SettingsSlideWindowIndex::baud:
+	case (int)UI::SettingsSlideWindowIndex::duet:
+		mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+												  Comm::Duet::CommunicationType::uart);
+		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+													 Comm::Duet::CommunicationType::network);
+		UI::WINDOW->OpenOverlay(mDuetCommSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::update:
+		EASYUICONTEXT->openActivity("UpgradeActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::dev:
+		EASYUICONTEXT->openActivity("DeveloperSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::power_off:
+		EASYUICONTEXT->openActivity("PowerOffActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::zk_setting:
+		EASYUICONTEXT->openActivity("ZKSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
+		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
+		break;
+	default:
 		break;
 	}
 }
 
 static int getListItemCount_BaudRateList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_BaudRateList !\n");
-	return 8;
+	return ARRAY_SIZE(Comm::baudRates);
 }
 
 static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ BaudRateList  !!!\n");
+	pListItem->setSelected(Comm::baudRates[index].rate == Comm::duet.GetBaudRate().rate);
+	pListItem->setText((int)Comm::baudRates[index].rate);
 }
 
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
 {
-	// LOGD(" onListItemClick_ BaudRateList  !!!\n");
+	Comm::duet.SetBaudRate(Comm::baudRates[index]);
 }
 static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
 {
@@ -835,7 +886,7 @@ static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListV
 
 static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
 {
-	SerialIo::Sendf("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
+	Comm::duet.SendGcodef("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
 	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
 }
 
@@ -893,11 +944,75 @@ static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListV
 
 static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
 {
-	SerialIo::Sendf("M120\n"); // Push
-	SerialIo::Sendf("G91\n");  // Relative move
-	SerialIo::Sendf("G1 %s%.3f F%d\n",
-					UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
-					UI::POPUP_WINDOW->jogAmounts[index],
-					300);
-	SerialIo::Sendf("M121\n"); // Pop
+	Comm::duet.SendGcode("M120\n"); // Push
+	Comm::duet.SendGcode("G91\n");	// Relative move
+	Comm::duet.SendGcodef("G1 %s%.3f F%d\n",
+						 UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
+						 UI::POPUP_WINDOW->jogAmounts[index],
+						 300);
+	Comm::duet.SendGcode("M121\n"); // Pop
+}
+
+static int getListItemCount_DuetCommList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_DuetCommList !\n");
+	return (int)Comm::Duet::CommunicationType::COUNT;
+}
+
+static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
+	pListItem->setSelected(index == (int)Comm::duet.GetCommunicationType());
+}
+
+static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
+{
+	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)index);
+	mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
+	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+												 Comm::Duet::CommunicationType::network);
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
+}
+
+static void onEditTextChanged_PollIntervalInput(const std::string& text)
+{
+	if (text.empty() || atoi(text.c_str()) < (int)Comm::minPrinterPollInterval)
+	{
+		mPollIntervalInputPtr->setText((int)Comm::minPrinterPollInterval);
+		return;
+	}
+	Comm::duet.SetPollInterval(atoi(text.c_str()));
+}
+
+static void onEditTextChanged_IpAddressInput(const std::string& text)
+{
+	Comm::duet.SetIPAddress(text);
+}
+
+static void onEditTextChanged_HostnameInput(const std::string& text)
+{
+	Comm::duet.SetHostname(text);
+}
+
+static void onEditTextChanged_PasswordInput(const std::string& text)
+{
+	Comm::duet.SetPassword(text);
+}
+
+static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
+{
+	int32_t timeout = -1;
+	if (text.empty() || !Comm::GetInteger(text.c_str(), timeout) || timeout < 0)
+	{
+		mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
+		return;
+	}
+	UI::POPUP_WINDOW->SetTimeout((uint32_t)timeout);
+}
+
+static bool onButtonClick_UsbFiles(ZKButton* pButton)
+{
+	LOGD(" ButtonClick UsbFiles !!!\n");
+	OM::FileSystem::RequestUsbFiles("");
+	return false;
 }

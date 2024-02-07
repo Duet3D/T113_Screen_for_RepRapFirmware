@@ -9,7 +9,8 @@
 #include "manager/LanguageManager.h"
 
 #include "Tool.h"
-#include "Hardware/SerialIo.h"
+
+#include "Hardware/Duet.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
@@ -155,14 +156,14 @@ namespace OM
 		if (command.IsEmpty())
 			return false;
 
-		SerialIo::Sendf("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
+		Comm::duet.SendGcodef("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
 
 		return true;
 	}
 
 	uint8_t Tool::GetHeaterCount() const
 	{
-		int8_t count;
+		uint8_t count;
 		for (count = 0; count < MaxHeatersPerTool && heaters[count] != nullptr; ++count){}
 		return count;
 	}
@@ -271,11 +272,11 @@ namespace OM
 		switch (status)
 		{
 		case ToolStatus::active:
-			SerialIo::Sendf("T-1", index);
+			Comm::duet.SendGcode("T-1");
 			break;
 		case ToolStatus::standby:
 		case ToolStatus::off:
-			SerialIo::Sendf("T%d", index);
+			Comm::duet.SendGcodef("T%d", index);
 			break;
 		}
 	}
@@ -290,16 +291,16 @@ namespace OM
 		switch (toolHeater->heater->status)
 		{
 		case Heat::HeaterStatus::active:
-			SerialIo::Sendf("M568 P%d A1", index);
+			Comm::duet.SendGcodef("M568 P%d A1", index);
 			break;
 		case Heat::HeaterStatus::fault:
-			SerialIo::Sendf("M562 P%d", toolHeater->heater->index);
+			Comm::duet.SendGcodef("M562 P%d", toolHeater->heater->index);
 			break;
 		case Heat::HeaterStatus::off:
-			SerialIo::Sendf("M568 P%d A2", index);
+			Comm::duet.SendGcodef("M568 P%d A2", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			SerialIo::Sendf("M568 P%d A0", index);
+			Comm::duet.SendGcodef("M568 P%d A0", index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:

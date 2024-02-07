@@ -9,13 +9,17 @@
 #include "Popup.h"
 #include "Communication.h"
 #include "Debug.h"
-#include "Hardware/SerialIo.h"
+#include "Hardware/Duet.h"
 #include "UserInterface.h"
+#include "storage/StoragePreferences.h"
+#include "timer.h"
 #include <algorithm>
 #include <map>
 
 namespace UI
 {
+	static constexpr uint32_t defaultTimeout = 5000;
+
 	void PopupWindow::Init(ZKWindow* window,
 						   ZKWindow* noTouchWindow,
 						   ZKButton* okBtn,
@@ -45,6 +49,8 @@ namespace UI
 		numberInput_ = numberInput;
 		axisJogSelection_ = axisJogSelection;
 		axisJogAdjustment_ = axisJogAdjustment;
+
+		SetTimeout(StoragePreferences::getInt("info_timeout", defaultTimeout));
 	}
 
 	void PopupWindow::Open()
@@ -84,9 +90,16 @@ namespace UI
 
 		if (mode_ == OM::Alert::Mode::None)
 		{
+			if (timeout_ <= 0)
+				return;
+
 			title_->setText("Gcode Response");
 			cancelBtn_->setVisible(true);
 			okBtn_->setVisible(true);
+			registerDelayedCallback("popup_timeout", timeout_, []() {
+				UI::POPUP_WINDOW->Close();
+				return false;
+			});
 		}
 		else
 		{
@@ -169,14 +182,14 @@ namespace UI
 			{
 			case OM::Alert::Mode::InfoConfirm:
 			case OM::Alert::Mode::ConfirmCancel:
-				SerialIo::Sendf("M292 P0 S%lu\n", seq_);
+				Comm::duet.SendGcodef("M292 P0 S%lu\n", seq_);
 				break;
 			case OM::Alert::Mode::NumberInt:
 			case OM::Alert::Mode::NumberFloat:
-				SerialIo::Sendf("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
+				Comm::duet.SendGcodef("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
 				break;
 			case OM::Alert::Mode::Text:
-				SerialIo::Sendf("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
+				Comm::duet.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
 				break;
 			default:
 				break;
@@ -190,7 +203,7 @@ namespace UI
 	{
 		if (!IsResponse())
 		{
-			SerialIo::Sendf("M292 P1");
+			Comm::duet.SendGcode("M292 P1");
 		}
 		cancelCb_();
 		Close();
@@ -231,6 +244,31 @@ namespace UI
 		WINDOW->CloseOverlay();
 	}
 
+	void PopupWindow::CancelTimeout()
+	{
+
+		if (!IsOpen())
+		{
+			dbg("Cannot cancel timeout when popup is not open");
+			return;
+		}
+
+		if (!IsResponse())
+		{
+			dbg("Cannot cancel timeout for non-response alerts");
+			return;
+		}
+
+		unregisterDelayedCallback("popup_timeout");
+	}
+
+	void PopupWindow::SetTimeout(uint32_t timeout)
+	{
+		dbg("Setting info timeout to %u", timeout);
+		StoragePreferences::putInt("info_timeout", (int)timeout);
+		timeout_ = timeout;
+	}
+
 	bool PopupWindow::IsBlocking() const
 	{
 		switch (mode_)
@@ -258,6 +296,8 @@ namespace UI
 	{
 		mode_ = OM::Alert::Mode::None;
 		noTouchWindow_->setVisible(false);
+		title_->setText("");
+		text_->setText("");
 		warningText_->setText("");
 		warningText_->setVisible(true);
 		minText_->setVisible(false);
@@ -374,12 +414,12 @@ namespace UI
 			return false;
 
 		size_t len = Strnlen(text, OM::alertResponseLength);
-		if (len < OM::currentAlert.limits.text.min)
+		if (len < (size_t)OM::currentAlert.limits.text.min)
 		{
 			warningText_->setTextTr("invalid_text_min");
 			return false;
 		}
-		if (len > OM::currentAlert.limits.text.max)
+		if (len > (size_t)OM::currentAlert.limits.text.max)
 		{
 			warningText_->setTextTr("invalid_text_max");
 			return false;
