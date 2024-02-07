@@ -36,7 +36,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 			mFileListViewPtr->setSelection(0);
 			mFileListViewPtr->refreshListView();
 			mFolderIDPtr->setText(LANGUAGEMANAGER->getValue("folder") + ": " + OM::FileSystem::GetCurrentDirPath());
-			dbg("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
+			info("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
 		}
 	),
 	OBSERVER_CHAR(
@@ -67,7 +67,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 				return;
 
 			item->SetName(val);
-			dbg("Files: item[%d] name=%s", indices[0], item->GetName().c_str());
+			info("Files: item[%d] name=%s", indices[0], item->GetName().c_str());
 		}
 	),
 	OBSERVER_UINT(

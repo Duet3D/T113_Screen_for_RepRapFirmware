@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 #include "Popup.h"
 #include "Communication.h"
 #include "Debug.h"
@@ -65,7 +65,7 @@ namespace UI
 
 	void PopupWindow::Open(function<void(void)> okCb, function<void(void)> cancelCb)
 	{
-		dbg("Opening popup window");
+		info("Opening popup window");
 		if (IsOpen() && IsBlocking())
 		{
 			/* TODO
@@ -74,7 +74,7 @@ namespace UI
 			 one from DWC. It will not appear on the screen. This is because the screen hasn't received an update from
 			 the OM saying the previous blocking M291 has been cleared.
 			 */
-			dbg("Blocking M291 alert already open, overwriting");
+			warn("Blocking M291 alert already open, overwriting");
 			// return;
 		}
 
@@ -239,7 +239,7 @@ namespace UI
 
 	void PopupWindow::Close()
 	{
-		dbg("Closing popup window");
+		info("Closing popup window");
 		Clear();
 		WINDOW->CloseOverlay();
 	}
@@ -249,13 +249,13 @@ namespace UI
 
 		if (!IsOpen())
 		{
-			dbg("Cannot cancel timeout when popup is not open");
+			warn("Cannot cancel timeout when popup is not open");
 			return;
 		}
 
 		if (!IsResponse())
 		{
-			dbg("Cannot cancel timeout for non-response alerts");
+			warn("Cannot cancel timeout for non-response alerts");
 			return;
 		}
 
@@ -264,7 +264,7 @@ namespace UI
 
 	void PopupWindow::SetTimeout(uint32_t timeout)
 	{
-		dbg("Setting info timeout to %u", timeout);
+		info("Setting info timeout to %u", timeout);
 		StoragePreferences::putInt("info_timeout", (int)timeout);
 		timeout_ = timeout;
 	}

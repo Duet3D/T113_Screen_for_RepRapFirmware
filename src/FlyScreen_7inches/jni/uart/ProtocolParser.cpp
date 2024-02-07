@@ -4,6 +4,8 @@
  *  Created on: Sep 7, 2017
  *      Author: guoxs
  */
+#define DEBUG_LEVEL 5
+
 #include "uart/ProtocolParser.h"
 #include "CommDef.h"
 #include "Hardware/Duet.h"
@@ -12,7 +14,6 @@
 #include <system/Mutex.h>
 #include <vector>
 
-#define DEBUG (0)
 #include "Debug.h"
 
 static Mutex sLock;
@@ -20,7 +21,7 @@ static std::vector<OnProtocolDataUpdateFun> sProtocolDataUpdateListenerList;
 
 void registerProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
 	Mutex::Autolock _l(sLock);
-	LOGD("registerProtocolDataUpdateListener\n");
+	dbg();
 	if (pListener != NULL) {
 		sProtocolDataUpdateListenerList.push_back(pListener);
 	}
@@ -28,7 +29,7 @@ void registerProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
 
 void unregisterProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
 	Mutex::Autolock _l(sLock);
-	LOGD("unregisterProtocolDataUpdateListener\n");
+	dbg();
 	if (pListener != NULL) {
 		std::vector<OnProtocolDataUpdateFun>::iterator iter = sProtocolDataUpdateListenerList.begin();
 		for (; iter != sProtocolDataUpdateListenerList.end(); iter++) {

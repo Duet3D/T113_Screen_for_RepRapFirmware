@@ -9,7 +9,7 @@
 #include <ObjectModel/Utils.h>
 #include "OmObserver.h"
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 #include "Debug.h"
 
 namespace UI

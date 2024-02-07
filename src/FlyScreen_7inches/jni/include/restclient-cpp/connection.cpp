@@ -4,6 +4,9 @@
  * @author Daniel Schauenberg <d@unwiredcouch.com>
  */
 
+#define DEBUG_LEVEL 5
+#include "Debug.h"
+
 #include "restclient-cpp/connection.h"
 
 #include <curl/curl.h>
@@ -543,9 +546,9 @@ RestClient::Connection::download(const std::string& uri,
 	Response ret;
     FILE* fp = fopen(file_to_save.c_str(), "wb");
     if (!fp) {
-        LOGD("!!! Failed to create file on the disk\n");
-        ret.body = "!!! Failed to create file on the disk";
-        return ret;
+		error("!!! Failed to create file on the disk\n");
+		ret.body = "!!! Failed to create file on the disk";
+		return ret;
     }
 
     /** set callback function */

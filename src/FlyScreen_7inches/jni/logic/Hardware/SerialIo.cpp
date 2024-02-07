@@ -9,21 +9,13 @@
  *
  */
 
-#define DEBUG (0)
+#define DEBUG_LEVEL 4
 
 #include "SerialIo.h"
 #include "uart/UartContext.h"
 #include <string>
 
-# include "utils/Log.h"
-
-#if DEBUG
-#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
-
-#else
-# define dbg(fmt, args...)		do {} while(0)
-
-#endif
+#include "Debug.h"
 
 const size_t MaxArrayNesting = 4;
 
@@ -75,7 +67,7 @@ namespace SerialIo {
 			buf.reserve(ret + sizeof(char));
 		buf.resize(ret);
 		vsnprintf((char*)buf.data(), buf.capacity(), fmt, vargs);
-		LOGD("Sending %s", buf.c_str());
+		info("Sending %s", buf.c_str());
 		UARTCONTEXT->send((unsigned char*)buf.c_str(), ret);
 
 		va_end(vargs);
@@ -119,18 +111,18 @@ namespace SerialIo {
 	size_t arrayDepth = 0;
 
 	static void RemoveLastId() {
-		//dbg("%s, len: %d", fieldId.c_str(), fieldId.strlen());
+		verbose("%s, len: %d", fieldId.c_str(), fieldId.strlen());
 		size_t index = fieldId.strlen();
 		while (index != 0 && fieldId[index - 1] != '^' && fieldId[index - 1] != ':') {
 			--index;
 		}
 		fieldId.Truncate(index);
 
-		//dbg("RemoveLastId: %s, len: %d", fieldId.c_str(), fieldId.strlen());
+		verbose("RemoveLastId: %s, len: %d", fieldId.c_str(), fieldId.strlen());
 	}
 
 	static void RemoveLastIdChar() {
-		//dbg();
+		verbose();
 
 		if (fieldId.strlen() != 0) {
 			fieldId.Truncate(fieldId.strlen() - 1);
@@ -138,7 +130,7 @@ namespace SerialIo {
 	}
 
 	static bool InArray() {
-		//dbg();
+		verbose();
 
 		return fieldId.strlen() > 0 && fieldId[fieldId.strlen() - 1] == '^';
 	}
@@ -151,20 +143,27 @@ namespace SerialIo {
 			}
 		}
 		if (cbs && cbs->ProcessReceivedValue) {
-			dbg("%s: %s", fieldId.c_str(), fieldVal.c_str());
+			verbose("%s: %s", fieldId.c_str(), fieldVal.c_str());
 			cbs->ProcessReceivedValue(fieldId.GetRef(), fieldVal.c_str(), arrayIndices);
 		}
 		fieldVal.Clear();
 	}
 
 	static void EndArray() {
-		//dbg();
+		verbose();
 
 		if (cbs && cbs->ProcessArrayEnd) {
 			cbs->ProcessArrayEnd(fieldId.c_str(), arrayIndices);
 		}
 		if (arrayDepth != 0) {			// should always be true
-			dbg("id %s (%s), arrayIndices [%d|%d|%d|%d], arrayDepth %d", fieldId.c_str(), fieldVal.c_str(), arrayIndices[0], arrayIndices[1], arrayIndices[2], arrayIndices[3], arrayDepth);
+			verbose("id %s (%s), arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+					fieldId.c_str(),
+					fieldVal.c_str(),
+					arrayIndices[0],
+					arrayIndices[1],
+					arrayIndices[2],
+					arrayIndices[3],
+					arrayDepth);
 			arrayIndices[arrayDepth - 1] = 0;
 			--arrayDepth;
 			RemoveLastIdChar();
@@ -263,7 +262,7 @@ namespace SerialIo {
 
 	// Check whether the incoming character signals the end of the value. If it does, process it and return true.
 	static bool CheckValueCompleted(char c, bool doProcess) {
-		//dbg();
+		verbose();
 
 		switch(c)
 		{
@@ -292,7 +291,7 @@ namespace SerialIo {
 			} else {
 				state = jsError;
 
-				dbg("jsError: CheckValueCompleted: ]");
+				verbose("jsError: CheckValueCompleted: ]");
 			}
 			return true;
 
@@ -300,7 +299,7 @@ namespace SerialIo {
 			if (InArray()) {
 				state = jsError;
 
-				dbg("jsError: CheckValueCompleted: }");
+				verbose("jsError: CheckValueCompleted: }");
 			} else {
 				if (doProcess) {
 					ProcessField();
@@ -330,7 +329,7 @@ namespace SerialIo {
 	{                                                                                                                  \
 		if (cond)                                                                                                      \
 		{                                                                                                              \
-			LOGD("%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                                      \
+			dbg(fmt, ##args);                                                                                          \
 		}                                                                                                              \
 	} while (0)
 
@@ -341,7 +340,7 @@ namespace SerialIo {
 		dbg_if(log, "CheckInput[%d]: %s", len, rxBuffer);
 		while (len != nextOut) {
 			char c = rxBuffer[nextOut];
-			// LOGD("char %d: %c", nextOut, c);
+			dbg("char %d: %c", nextOut, c);
 			nextOut = (nextOut + 1) % (len + 1);
 			if (c == '\n') {
 				if (state == jsError) {

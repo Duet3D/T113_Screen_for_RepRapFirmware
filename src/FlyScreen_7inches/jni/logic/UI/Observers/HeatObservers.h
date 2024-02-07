@@ -33,7 +33,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Heat::UpdateHeaterTemp(indices[0], val))
 					   {
-						   dbg("Failed to update heater temperature; heater %d = %fC", indices[0], val);
+						   error("Failed to update heater temperature; heater %d = %fC", indices[0], val);
 						   return;
 					   }
 					   UI::ToolsList::RefreshAllToolLists(false);
@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::Heat::UpdateHeaterTarget(indices[0], val, true))
 					 {
-						 dbg("Failed to update heater %d active temperature to %d", indices[0], val);
+						 error("Failed to update heater %d active temperature to %d", indices[0], val);
 						 return;
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);
@@ -53,7 +53,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::Heat::UpdateHeaterTarget(indices[0], val, false))
 					 {
-						 dbg("Failed to update heater %d standby temperature to %d", indices[0], val);
+						 error("Failed to update heater %d standby temperature to %d", indices[0], val);
 						 return;
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);

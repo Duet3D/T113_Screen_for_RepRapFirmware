@@ -5,7 +5,7 @@
  *      Author: andy
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 
 #include "Usb.h"
 #include "UI/UserInterface.h"
@@ -22,7 +22,7 @@ namespace USB
 		DIR* dir = opendir(directoryPath.c_str());
 		if (dir == nullptr)
 		{
-			dbg("Error opening directory %s", directoryPath.c_str());
+			error("Error opening directory %s", directoryPath.c_str());
 			return dirents;
 		}
 
@@ -53,13 +53,13 @@ namespace USB
 	{
 		std::string fullPath = std::string("/mnt/usb1/") + filePath;
 
-		dbg("Reading file %s", fullPath.c_str());
+		info("Reading file %s", fullPath.c_str());
 		std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::ate);
 
 		if (!file.is_open())
 		{
 			UI::CONSOLE->AddResponse(utils::format("Unable to open file %s", fullPath.c_str()).c_str());
-			dbg("Unable to open file %s", fullPath.c_str());
+			error("Unable to open file %s", fullPath.c_str());
 			return false;
 		}
 
@@ -70,12 +70,10 @@ namespace USB
 		if (!file.read(contents.begin(), size))
 		{
 			UI::CONSOLE->AddResponse(utils::format("Failed to read file %s", fullPath.c_str()).c_str());
-			dbg("Failed to read file %s", fullPath.c_str());
+			error("Failed to read file %s", fullPath.c_str());
 			return false;
 		}
-//		dbg("Read %d bytes", buffer.size());
-//		contents = buffer;
-		dbg("Copied to string %d", contents.size());
+		dbg("Read %d bytes", contents.size());
 		return true;
 	}
 } // namespace USB

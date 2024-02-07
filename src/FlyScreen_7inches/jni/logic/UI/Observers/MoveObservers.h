@@ -30,7 +30,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetBabystepOffset(indices[0], val))
 					   {
-						   dbg("Failed to set axis[%d]->babystep = %f", indices[0], val);
+						   error("Failed to set axis[%d]->babystep = %f", indices[0], val);
 						   return;
 					   }
 				   }),
@@ -38,7 +38,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				  [](OBSERVER_BOOL_ARGS) {
 					  if (!OM::Move::SetAxisHomedStatus(indices[0], val))
 					  {
-						  dbg("Failed to set axis[%d]->homed = %d", indices[0], val);
+						  error("Failed to set axis[%d]->homed = %d", indices[0], val);
 						  return;
 					  }
 				  }),
@@ -46,7 +46,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (!OM::Move::SetAxisLetter(indices[0], val[0]))
 					  {
-						  dbg("Failed to set axis[%d]->letter = %s", indices[0], val);
+						  error("Failed to set axis[%d]->letter = %s", indices[0], val);
 						  return;
 					  }
 				  }),
@@ -54,7 +54,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetAxisMachinePosition(indices[0], val))
 					   {
-						   dbg("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
+						   error("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
 						   return;
 					   }
 				   }),
@@ -64,7 +64,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetAxisUserPosition(indices[0], val))
 					   {
-						   dbg("Failed to set axis[%d]->userPosition = %f", indices[0], val);
+						   error("Failed to set axis[%d]->userPosition = %f", indices[0], val);
 						   return;
 					   }
 				   }),
@@ -72,7 +72,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				  [](OBSERVER_BOOL_ARGS) {
 					  if (!OM::Move::SetAxisVisible(indices[0], val))
 					  {
-						  dbg("Failed to set axis[%d]->visible = %d", indices[0], val);
+						  error("Failed to set axis[%d]->visible = %d", indices[0], val);
 						  return;
 					  }
 				  }),
@@ -80,7 +80,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val))
 					   {
-						   dbg("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
+						   error("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
 						   return;
 					   }
 				   }),
@@ -88,28 +88,28 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderFactor(indices[0], val))
 					   {
-						   dbg("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
+						   error("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:filamentDiameter",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderFilamentDiameter(indices[0], val))
 					   {
-						   dbg("Failed to set extruderAxis[%d]->filamentDiameter = %f", indices[0], val);
+						   error("Failed to set extruderAxis[%d]->filamentDiameter = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:position",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderPosition(indices[0], val))
 					   {
-						   dbg("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
+						   error("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:stepsPerMm",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderStepsPerMm(indices[0], val))
 					   {
-						   dbg("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
+						   error("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_CHAR("move:kinematics:name", [](OBSERVER_CHAR_ARGS) {}),
@@ -121,9 +121,9 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   }),
 	OBSERVER_UINT("move:workplaceNumber",
 				  [](OBSERVER_UINT_ARGS) {
-					  if (!OM::Move::SetCurrentWorkplaceNumber(val))
+					  if (!OM::Move::SetCurrentWorkplaceNumber((uint8_t)val))
 					  {
-						  dbg("Failed to set workplace number = %d", val);
+						  error("Failed to set workplace number = %d", val);
 						  return;
 					  }
 				  }),

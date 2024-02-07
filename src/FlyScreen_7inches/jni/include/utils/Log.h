@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef USE_ANDROID_LOG
+#define USE_ANDROID_LOG
+#endif
+
 #ifdef USE_ANDROID_LOG
 #include <android/log.h>
 

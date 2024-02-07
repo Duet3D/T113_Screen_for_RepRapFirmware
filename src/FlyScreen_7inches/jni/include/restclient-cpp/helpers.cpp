@@ -4,6 +4,9 @@
  * @author Daniel Schauenberg <d@unwiredcouch.com>
  */
 
+#define DEBUG_LEVEL 5
+#include "Debug.h"
+
 #include "restclient-cpp/helpers.h"
 
 #include <cstring>
@@ -93,8 +96,8 @@ size_t RestClient::Helpers::download_callback(void *data, size_t size,
                                           size_t nmemb, void *userdata) {
     FILE* stream = (FILE*)userdata;
     if (!stream) {
-        LOGD("!!! No stream\n");
-        return 0;
+		error("!!! No stream\n");
+		return 0;
     }
 
     size_t written = fwrite(/*(FILE*)*/data, size, nmemb, stream);

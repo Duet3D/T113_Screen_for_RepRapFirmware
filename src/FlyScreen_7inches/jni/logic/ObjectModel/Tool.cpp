@@ -5,7 +5,7 @@
  *      Author: manuel & Andy Everitt
  */
 
-#define DEBUG (0)
+#define DEBUG_LEVEL 5
 #include "manager/LanguageManager.h"
 
 #include "Tool.h"
@@ -378,7 +378,7 @@ namespace OM
 		ToolHeater *heater = tool->GetOrCreateHeater(toolHeaterIndex, heaterIndex);
 		if (heater == nullptr)
 		{
-			dbg("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
+			error("Failed to get or create tool %d heater %d=%d", toolIndex, toolHeaterIndex, heaterIndex);
 			return false;
 		}
 		dbg("Assigned heater %d to tool %d heaterIndex %d", heaterIndex, toolIndex, toolHeaterIndex);
@@ -410,7 +410,7 @@ namespace OM
 		Move::ExtruderAxis *extruder = tool->GetOrCreateExtruder(toolExtruderIndex, extruderIndex);
 		if (extruder == nullptr)
 		{
-			dbg("Failed to get or create tool %d extruder %d=%d", toolIndex, toolExtruderIndex, extruderIndex);
+			error("Failed to get or create tool %d extruder %d=%d", toolIndex, toolExtruderIndex, extruderIndex);
 			return false;
 		}
 		dbg("Assigned extruder %d to tool %d extruderIndex %d", extruderIndex, toolIndex, toolExtruderIndex);
@@ -454,7 +454,7 @@ namespace OM
 		Fan *fan = tool->GetOrCreateFan(toolFanIndex, fanIndex);
 		if (fan == nullptr)
 		{
-			dbg("Failed to get or create tool %d fan %d=%d", toolIndex, toolFanIndex, fanIndex);
+			error("Failed to get or create tool %d fan %d=%d", toolIndex, toolFanIndex, fanIndex);
 			return false;
 		}
 		dbg("Assigned fan %d to tool %d fanIndex %d", fanIndex, toolIndex, toolFanIndex);
@@ -533,7 +533,7 @@ namespace OM
 
 	void SetCurrentTool(const size_t toolIndex)
 	{
-		dbg("Setting current tool to %d", toolIndex);
+		info("Setting current tool to %d", toolIndex);
 		sCurrentTool = toolIndex;
 	}
 

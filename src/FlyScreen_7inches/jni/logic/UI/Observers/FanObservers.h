@@ -38,7 +38,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 		{
 			if (!OM::UpdateFanActualVal(indices[0], val))
 			{
-				dbg("Failed to update fan %d actualValue to %.2f", indices[0], val);
+				error("Failed to update fan %d actualValue to %.2f", indices[0], val);
 				return;
 			}
 			mPrintFanListPtr->refreshListView();
@@ -50,7 +50,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 		{
 			if (!OM::UpdateFanRequestedVal(indices[0], val))
 			{
-				dbg("Failed to update fan %d requestedValue to %.2f", indices[0], val);
+				error("Failed to update fan %d requestedValue to %.2f", indices[0], val);
 				return;
 			}
 			mPrintFanListPtr->refreshListView();
@@ -62,7 +62,7 @@ static UI::Observer<UI::ui_field_update_cb> FanObserversField[] = {
 		{
 			if (!OM::UpdateFanRpm(indices[0], val))
 			{
-				dbg("Failed to update fan %d rpm to %d", indices[0], val);
+				error("Failed to update fan %d rpm to %d", indices[0], val);
 				return;
 			}
 			mPrintFanListPtr->refreshListView();

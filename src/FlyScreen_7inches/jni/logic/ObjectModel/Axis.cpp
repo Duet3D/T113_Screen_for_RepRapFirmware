@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 5
 #include "Axis.h"
 
 #include "ObjectModel/Tool.h"
@@ -43,7 +43,7 @@ namespace OM::Move
 
 	Axis* GetAxis(const size_t index)
 	{
-		// dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
+		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -62,7 +62,7 @@ namespace OM::Move
 
 	Axis* GetOrCreateAxis(const size_t index)
 	{
-		// dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
+		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -90,13 +90,13 @@ namespace OM::Move
 	{                                                                                                                  \
 		if (index >= MaxTotalAxes)                                                                                     \
 		{                                                                                                              \
-			dbg("axis[%d] greater than MaxTotalAxes", index);                                                          \
+			error("axis[%d] greater than MaxTotalAxes", index);                                                        \
 			return false;                                                                                              \
 		}                                                                                                              \
 		Axis* axis = GetOrCreateAxis(index);                                                                           \
 		if (axis == nullptr)                                                                                           \
 		{                                                                                                              \
-			dbg("Could not get or create axis %d", index);                                                             \
+			error("Could not get or create axis %d", index);                                                           \
 			return false;                                                                                              \
 		}                                                                                                              \
 		axis->varName = val;                                                                                           \
@@ -125,7 +125,7 @@ namespace OM::Move
 
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber)
 	{
-		if (currentWorkplaceNumber == workplaceNumber || workplaceNumber >= Workplaces::MaxTotalWorkplaces)
+		if (workplaceNumber >= Workplaces::MaxTotalWorkplaces)
 		{
 			return false;
 		}
@@ -148,7 +148,7 @@ namespace OM::Move
 
 	ExtruderAxis* GetExtruderAxis(const size_t index)
 	{
-		// dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
+		dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -167,7 +167,7 @@ namespace OM::Move
 
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index)
 	{
-		// dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
+		dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
 			return nullptr;
@@ -195,13 +195,13 @@ namespace OM::Move
 	{                                                                                                                  \
 		if (index >= MaxTotalAxes)                                                                                     \
 		{                                                                                                              \
-			dbg("extruderAxis[%d] greater than MaxTotalAxes", index);                                                  \
+			error("extruderAxis[%d] greater than MaxTotalAxes", index);                                                \
 			return false;                                                                                              \
 		}                                                                                                              \
 		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                       \
 		if (extruder == nullptr)                                                                                       \
 		{                                                                                                              \
-			dbg("Could not get or create extruderAxis %d", index);                                                     \
+			error("Could not get or create extruderAxis %d", index);                                                   \
 			return false;                                                                                              \
 		}                                                                                                              \
 		extruder->varName = val;                                                                                       \

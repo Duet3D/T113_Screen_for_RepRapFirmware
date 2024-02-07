@@ -60,28 +60,33 @@
 #define OBSERVER_UINT(key, callback) OBSERVER_TEMPLATE(key, callback, uint32_t, Comm::GetUnsignedInteger)
 #define OBSERVER_BOOL(key, callback) OBSERVER_TEMPLATE(key, callback, bool, Comm::GetBool)
 
-#define OBSERVER_IF_CHANGED_TEMPLATE(key, callback, type, convertor) \
-	OBSERVER_TEMPLATE(key, \
-		([](const type val, const size_t indices[]) \
-		{ \
-			int32_t packedIndex = 0; \
-			packedIndex |= (static_cast<int32_t>(indices[0]) & 0xFF) << 24; \
-			packedIndex |= (static_cast<int32_t>(indices[1]) & 0xFF) << 16; \
-			packedIndex |= (static_cast<int32_t>(indices[2]) & 0xFF) << 8; \
-			packedIndex |= (static_cast<int32_t>(indices[3]) & 0xFF); \
-			static std::map<int32_t, type> prevValMap; \
-			auto &prevVal = prevValMap[packedIndex]; \
-			if (val != prevVal) \
-			{ \
-				prevVal = val; \
-				callback(val, indices); \
-			} \
-			else \
-			{ \
-				LOGD("key %s[%d|%d|%d|%d] hasn't changed, skipping update", key, indices[0], indices[1], indices[2], indices[3]); \
-			} \
-		}), type, convertor \
-	)
+#define OBSERVER_IF_CHANGED_TEMPLATE(key, callback, type, convertor)                                                   \
+	OBSERVER_TEMPLATE(key,                                                                                             \
+					  ([](const type val, const size_t indices[]) {                                                    \
+						  int32_t packedIndex = 0;                                                                     \
+						  packedIndex |= (static_cast<int32_t>(indices[0]) & 0xFF) << 24;                              \
+						  packedIndex |= (static_cast<int32_t>(indices[1]) & 0xFF) << 16;                              \
+						  packedIndex |= (static_cast<int32_t>(indices[2]) & 0xFF) << 8;                               \
+						  packedIndex |= (static_cast<int32_t>(indices[3]) & 0xFF);                                    \
+						  static std::map<int32_t, type> prevValMap;                                                   \
+						  auto& prevVal = prevValMap[packedIndex];                                                     \
+						  if (val != prevVal)                                                                          \
+						  {                                                                                            \
+							  prevVal = val;                                                                           \
+							  callback(val, indices);                                                                  \
+						  }                                                                                            \
+						  else                                                                                         \
+						  {                                                                                            \
+							  verbose("key %s[%d|%d|%d|%d] hasn't changed, skipping update",                           \
+									  key,                                                                             \
+									  indices[0],                                                                      \
+									  indices[1],                                                                      \
+									  indices[2],                                                                      \
+									  indices[3]);                                                                     \
+						  }                                                                                            \
+					  }),                                                                                              \
+					  type,                                                                                            \
+					  convertor)
 
 #define OBSERVER_FLOAT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, float, Comm::GetFloat)
 #define OBSERVER_INT_IF_CHANGED(key, callback) OBSERVER_IF_CHANGED_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
@@ -107,15 +112,7 @@ namespace UI
 			next = head;
 			head = this;
 		}
-		void Init(ObserverMap<cbType> &observerMap)
-		{
-			dbg("Registering observer against key %s", key);
-			observerMap.RegisterObserver(key, *this);
-	#if DEBUG
-			int size = observerMap.GetObservers(key).size();
-			dbg("%d observers registered against key %s", size, key);
-	#endif
-		}
+		void Init(ObserverMap<cbType>& observerMap) { observerMap.RegisterObserver(key, *this); }
 		void Update(const size_t arrayIndices[])
 		{
 			if (cb != nullptr)
@@ -147,6 +144,8 @@ namespace UI
 		{
 			auto& observerList = observersMap[key];
 			observerList.push_back(observer);
+
+			dbg("%d observers registered against key %s", observerList.size(), key);
 		}
 		const std::vector<Observer<cbType>>& GetObservers(const char* key) const
 			{

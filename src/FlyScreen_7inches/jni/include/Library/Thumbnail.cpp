@@ -1,3 +1,6 @@
+#define DEBUG_LEVEL 5
+#include "Debug.h"
+
 #include "Library/Thumbnail.h"
 
 extern "C"
@@ -9,17 +12,6 @@ extern "C"
 
 #define QOI_IMPLEMENTATION 1
 #include "qoi.h"
-
-#define DEBUG 0
-
-#if DEBUG
-# include "utils/Log.h"
-#define dbg(fmt, args...)		do { LOGD("%s(%d): " fmt , __FUNCTION__, __LINE__, ##args); } while(0)
-
-#else
-# define dbg(fmt, args...)		do {} while(0)
-
-#endif
 
 bool ThumbnailIsValid(struct Thumbnail &thumbnail)
 {
@@ -65,25 +57,24 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 {
 	if (!ThumbnailIsValid(thumbnail))
 	{
-		dbg("meta invalid.\n");
+		error("meta invalid.\n");
 		return -1;
 	}
 
 	if (!ThumbnailDataIsValid(data))
 	{
-		dbg("data invalid.\n");
+		error("data invalid.\n");
 		return -2;
 	}
 
 	int ret = base64_decode((const char *)data.buffer, data.size, data.buffer);
 	if (ret < 0)
 	{
-		dbg("decode error %d size %d data\n%s\n",
-			ret, data.size, data.buffer);
+		error("decode error %d size %d data\n%s\n", ret, data.size, data.buffer);
 		return -3;
 	}
 
-	dbg("*** received size %d decoded size %d\n", data.size, ret);
+	info("*** received size %d decoded size %d\n", data.size, ret);
 
 	data.size = ret;
 
@@ -93,12 +84,16 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 
 	do
 	{
-		dbg("buffer %08x size %d/%d pixbuf %08x pixbuf size %d decoded %08x\n",
-			data.buffer, data.size, size_done, rgba_buffer, &pixel_decoded);
+		info("buffer %08x size %d/%d pixbuf %08x pixbuf size %d decoded %08x\n",
+			 data.buffer,
+			 data.size,
+			 size_done,
+			 rgba_buffer,
+			 &pixel_decoded);
 		ret = qoi_decode_chunked(&thumbnail.qoi, (data.buffer) + size_done, data.size - size_done, rgba_buffer, sizeof(rgba_buffer), &pixel_decoded);
 		if (ret < 0)
 		{
-			dbg("failed qoi decoding state %d %d.\n", qoi_decode_state_get(&thumbnail.qoi), ret);
+			error("failed qoi decoding state %d %d.\n", qoi_decode_state_get(&thumbnail.qoi), ret);
 			return -4;
 		}
 
@@ -112,7 +107,7 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 
 		if (callback)
 		{
-			//dbg("calling callback\n");
+			dbg("calling callback\n");
 			bool cont = callback(thumbnail, thumbnail.pixel_count, rgba_buffer, pixel_decoded);
 			if (!cont)
 				return -6;
@@ -120,15 +115,20 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 
 		thumbnail.pixel_count += pixel_decoded;
 
-		dbg("ret %d done %d/%d decoded %d missing %d(%02x) count %d/%d/%d\n",
-			ret, size_done, data.size, pixel_decoded, thumbnail.qoi.last_bytes_size, thumbnail.qoi.last_bytes[0] & 0xc0,
-			thumbnail.qoi.pixels_count, thumbnail.pixel_count, thumbnail.height * thumbnail.width);
-
+		info("ret %d done %d/%d decoded %d missing %d(%02x) count %d/%d/%d\n",
+			 ret,
+			 size_done,
+			 data.size,
+			 pixel_decoded,
+			 thumbnail.qoi.last_bytes_size,
+			 thumbnail.qoi.last_bytes[0] & 0xc0,
+			 thumbnail.qoi.pixels_count,
+			 thumbnail.pixel_count,
+			 thumbnail.height * thumbnail.width);
 
 	} while (size_done < data.size && qoi_decode_state_get(&thumbnail.qoi) == qoi_decoder_body);
 
-	dbg("done %d/%d pixels %d/%d\n",
-		size_done, data.size, thumbnail.pixel_count, thumbnail.height * thumbnail.width);
+	info("done %d/%d pixels %d/%d\n", size_done, data.size, thumbnail.pixel_count, thumbnail.height * thumbnail.width);
 
 	return qoi_decode_state_get(&thumbnail.qoi) != qoi_decoder_done;
 }

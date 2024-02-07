@@ -5,8 +5,7 @@
  *      Author: Andy Everitt
  */
 
-
-#define DEBUG (1)
+#define DEBUG_LEVEL 5
 #include "Fan.h"
 #include "ListHelpers.h"
 #include "uart/CommDef.h"
@@ -101,7 +100,7 @@ namespace OM
 
 	size_t RemoveFan(const size_t index, const bool allFollowing)
 	{
-		// dbg("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+		info("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 		return Remove<FanList, Fan>(fans, index, allFollowing);
 	}
 }

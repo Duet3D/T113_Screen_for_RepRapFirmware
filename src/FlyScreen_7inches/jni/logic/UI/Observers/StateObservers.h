@@ -62,7 +62,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 	OBSERVER_INT("state:currentTool", [](OBSERVER_INT_ARGS) { OM::SetCurrentTool(val); }),
 	OBSERVER_CHAR("state:messageBox",
 				  [](OBSERVER_CHAR_ARGS) {
-					  dbg("messageBox: %s", val);
+					  info("messageBox: %s", val);
 					  if (val[0] != 0)
 						  return;
 					  UI::PopupWindow* popup = UI::PopupWindow::GetInstance();

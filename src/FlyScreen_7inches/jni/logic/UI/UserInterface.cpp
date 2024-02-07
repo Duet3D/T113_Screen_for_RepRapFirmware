@@ -5,7 +5,7 @@
  *      Author: andy
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 #include "UserInterface.h"
 #include "Debug.h"
 #include "ObjectModel/Files.h"
@@ -27,7 +27,7 @@ bool RemoveFromVector(std::vector<T>& vec, T item)
 	auto it = std::find(vec.begin(), vec.end(), item);
 	if (it != vec.end())
 	{
-		dbg("Window: removing window %d from vector", item->getID());
+		dbg("Removing window %d from vector", item->getID());
 		vec.erase(it);
 		return true;
 	}
@@ -38,7 +38,7 @@ template <typename T>
 bool AddToVector(std::vector<T>& vec, T item)
 {
 	RemoveFromVector<T>(vec, item);
-	dbg("Window: adding window %d to vector", item->getID());
+	dbg("Adding window %d to vector", item->getID());
 	vec.push_back(item);
 	return true;
 }
@@ -66,7 +66,7 @@ namespace UI
 	void Window::OpenWindow(ZKBase* window)
 	{
 		CloseOverlay();
-		dbg("Opening window %d", window->getID());
+		info("Opening window %d", window->getID());
 		window->setVisible(true);
 		RemoveFromVector<ZKBase*>(closedWindows_, window);
 		if (!InVector<ZKBase*>(homeWindows_, window))
@@ -128,7 +128,7 @@ namespace UI
 
 	void Window::CloseWindow(ZKBase* window, const bool returnable)
 	{
-		dbg("Closing window %d", window->getID());
+		info("Closing window %d", window->getID());
 		window->setVisible(false);
 		RemoveFromVector<ZKBase*>(openedWindows_, window);
 		if (returnable)
@@ -140,7 +140,7 @@ namespace UI
 		if (CloseOverlay()) { return; }
 		if (OM::FileSystem::IsInSubFolder())
 		{
-			dbg("window: Returning to previous folder");
+			info("Returning to previous folder");
 			if (OM::FileSystem::IsUsbFolder())
 			{
 				OM::FileSystem::RequestUsbFiles(OM::FileSystem::GetParentDirPath());
@@ -152,7 +152,6 @@ namespace UI
 		if (!openedWindows_.empty())
 		{
 			ZKBase* lastOpened = openedWindows_.back();
-			dbg("Hiding window %d", lastOpened->getID());
 			CloseWindow(lastOpened, false);
 		}
 		if (!closedWindows_.empty())
@@ -210,10 +209,10 @@ namespace UI
 
 	void ToolsList::CalculateTotalHeaterCount()
 	{
-		// dbg("Bed count %d", OM::GetBedCount());
+		verbose("Bed count %d", OM::GetBedCount());
 		bedCount_ = OM::GetBedCount();
 
-		// dbg("Chamber count %d", OM::GetChamberCount());
+		verbose("Chamber count %d", OM::GetChamberCount());
 		chamberCount_ = OM::GetChamberCount();
 
 		size_t count = 0;
@@ -231,7 +230,7 @@ namespace UI
 			return true;
 		});
 
-		// dbg("Tool count %d", count);
+		verbose("Tool count %d", count);
 		toolCount_ = count;
 	}
 
@@ -263,7 +262,7 @@ namespace UI
 			toolHeater = tool->GetHeater(toolHeaterIndex);
 			if (toolHeater == nullptr)
 			{
-				dbg("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
+				warn("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
 				pToolName->setText(tool->name.c_str());
 				return;
 			}
@@ -289,7 +288,7 @@ namespace UI
 			heater = OM::Heat::GetHeater(bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
+				warn("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
 			// dbg("List index %d: Updating Bed %d heater %d=%d temperatures %.2f:%d:%d", index, bedOrChamber->index,
@@ -317,7 +316,7 @@ namespace UI
 			heater = OM::Heat::GetHeater(bedOrChamber->heater);
 			if (heater == nullptr)
 			{
-				dbg("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
+				warn("List index %d: Bed %d heater %d is null", index, bedOrChamber->index, bedOrChamber->heater);
 				return;
 			}
 			// dbg("List index %d: Updating Chamber %d heater %d=%d temperatures %.2f:%d:%d", index,
@@ -338,7 +337,7 @@ namespace UI
 			pListItem->setSelected(false);
 			return;
 		}
-		dbg("Unknown index");
+		warn("Unknown index");
 	}
 
 	void ToolsList::OnListItemClick(int index, int id, const int nameId, int statusId, int activeId, int standbyId)
@@ -472,7 +471,7 @@ namespace UI
 		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
-		dbg("onListItemClick heaterType=%d", (int)numPadData_.heaterType);
+		dbg("heaterType=%d", (int)numPadData_.heaterType);
 		switch (numPadData_.heaterType)
 		{
 		case HeaterType::tool:
@@ -559,7 +558,7 @@ namespace UI
 		String<MaxResponseLineLength> line;
 		line.copy(str);
 		buffer_.Push(line);
-		dbg("resp: adding line to Console buffer_[%d] = %s", buffer_.GetHead(), line.c_str());
+		info("Adding line to Console buffer[%d] = %s", buffer_.GetHead(), line.c_str());
 		Refresh();
 	}
 

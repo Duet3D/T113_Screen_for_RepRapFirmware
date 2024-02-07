@@ -5,6 +5,8 @@
  *      Author: manuel
  */
 
+#define DEBUG_LEVEL 5
+
 #include "BedOrChamber.h"
 #include "Hardware/Duet.h"
 #include "ListHelpers.h"
@@ -13,7 +15,6 @@
 #include <Duet3D/General/Vector.h>
 #include <UI/UserInterfaceConstants.h>
 
-#define DEBUG (1)
 #include "Debug.h"
 
 typedef Vector<OM::Bed*, MaxSlots> BedList;
@@ -151,7 +152,7 @@ namespace OM
 
 	size_t RemoveBed(const size_t index, const bool allFollowing)
 	{
-		dbg("Removing bed %d allFollowing=%s", index, allFollowing? "true" : "false");
+		info("Removing bed %d allFollowing=%s", index, allFollowing ? "true" : "false");
 		return Remove<BedList, Bed>(beds, index, allFollowing);
 	}
 
@@ -200,11 +201,11 @@ namespace OM
 		auto bed = OM::GetOrCreateBed(bedIndex);
 		if (bed == nullptr)
 		{
-			dbg("Failed to get or create bed %d", bedIndex);
+			error("Failed to get or create bed %d", bedIndex);
 			return false;
 		}
 		bed->heater = heaterNumber;
-		dbg("Created bed %d, heater number %d", bedIndex, heaterNumber);
+		info("Created bed %d, heater number %d", bedIndex, heaterNumber);
 		return true;
 
 	}

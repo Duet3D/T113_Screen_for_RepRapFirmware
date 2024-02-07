@@ -4,6 +4,7 @@
  *  Created on: 7 Sep 2020
  *      Author: manuel
  */
+#define DEBUG_LEVEL 3
 
 #include "Utils.h"
 #include "Axis.h"
@@ -13,7 +14,6 @@
 #include "ListHelpers.h"
 //#include "FlashData.h"
 
-#define DEBUG (1)
 #include "Debug.h"
 
 namespace OM

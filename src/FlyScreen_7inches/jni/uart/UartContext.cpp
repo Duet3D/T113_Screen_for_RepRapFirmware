@@ -4,6 +4,8 @@
  *  Created on: Sep 5, 2017
  *      Author: guoxs
  */
+#define DEBUG_LEVEL 5
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -66,7 +68,7 @@ UartContext::~UartContext() {
 }
 
 bool UartContext::openUart(const char *pFileName, UINT baudRate) {
-	LOGD("openUart pFileName = %s, baudRate = %s\n", pFileName, getBaudRate(baudRate));
+	info("openUart pFileName = %s, baudRate = %s\n", pFileName, getBaudRate(baudRate));
 	mUartID = open(pFileName, O_RDWR|O_NOCTTY);
 
 	if (mUartID <= 0) {
@@ -90,19 +92,21 @@ bool UartContext::openUart(const char *pFileName, UINT baudRate) {
 
 		mIsOpen = run("uart");
 		if (!mIsOpen) {
+			error("Failed to open UART\n");
 			close(mUartID);
 			mUartID = 0;
 		}
 
-		LOGD("openUart mIsOpen = %d\n", mIsOpen);
+		info("openUart mIsOpen = %d\n", mIsOpen);
 	}
 
 	return mIsOpen;
 }
 
 void UartContext::closeUart() {
-	LOGD("closeUart mIsOpen: %d...\n", mIsOpen);
+	dbg("closeUart mIsOpen: %d...\n", mIsOpen);
 	if (mIsOpen) {
+		info("Closing UART");
 		requestExit();
 
 		close(mUartID);
@@ -119,9 +123,9 @@ bool UartContext::send(const BYTE *pData, UINT len) {
 
 	int ret = write(mUartID, pData, len);
     Thread::sleep(delay);   // Ensure we don't accidentally send data while previous data is still being sent
-    LOGE("delay %d", delay);
+	verbose("delay %d", delay);
 	if (ret != (int) len) {	// fail
-		LOGD("send Fail\n");
+		error("send Fail\n");
 		return false;
 	}
 	return true;
@@ -157,8 +161,8 @@ bool UartContext::threadLoop() {
 			if (len == 0) { mDataBufLen = 0; }
 			if (len >= UART_DATA_BUF_LEN)
 			{
-				dbg("UART buffer overflow");
-				dbg("Buffer: %s", mDataBufPtr);
+				error("UART buffer overflow");
+				warn("Buffer: %s", mDataBufPtr);
 				UI::POPUP_WINDOW->Open();
 				UI::POPUP_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
 				mDataBufLen = 0;

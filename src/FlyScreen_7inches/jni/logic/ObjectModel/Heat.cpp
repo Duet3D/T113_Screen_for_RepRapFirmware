@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (0)
+#define DEBUG_LEVEL 5
 #include "Heat.h"
 #include "ListHelpers.h"
 #include "uart/CommDef.h"
@@ -128,7 +128,7 @@ namespace OM
 
 		size_t RemoveHeater(const size_t index, const bool allFollowing)
 		{
-			dbg("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
+			info("Removing heater %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
 			return Remove<HeaterList, Heater>(heaters, index, allFollowing);
 		}
 	}

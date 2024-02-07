@@ -33,7 +33,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				  [](OBSERVER_UINT_ARGS) {
 					  if (!OM::UpdateToolHeater(indices[0], indices[1], (uint8_t)val))
 					  {
-						  dbg("Failed to update tool %d heater %d", indices[0], indices[1]);
+						  error("Failed to update tool %d heater %d", indices[0], indices[1]);
 						  return;
 					  }
 					  UI::ToolsList::RefreshAllToolLists();
@@ -43,7 +43,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				  [](OBSERVER_UINT_ARGS) {
 					  if (!OM::UpdateToolExtruder(indices[0], indices[1], (uint8_t)val))
 					  {
-						  dbg("Failed to update tool %d extruder %d", indices[0], indices[1]);
+						  error("Failed to update tool %d extruder %d", indices[0], indices[1]);
 						  return;
 					  }
 				  }),
@@ -52,7 +52,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				  [](OBSERVER_UINT_ARGS) {
 					  if (!OM::UpdateToolFan(indices[0], indices[1], (uint8_t)val))
 					  {
-						  dbg("Failed to update tool %d fan %d", indices[0], indices[1]);
+						  error("Failed to update tool %d fan %d", indices[0], indices[1]);
 						  return;
 					  }
 				  }),
@@ -60,7 +60,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
 					 {
-						 dbg("Failed to update tool %d active temperature[%d] to %d", indices[0], indices[1], val);
+						 error("Failed to update tool %d active temperature[%d] to %d", indices[0], indices[1], val);
 						 return;
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);
@@ -70,7 +70,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::UpdateToolTemp(indices[0], indices[1], val, false))
 					 {
-						 dbg("Failed to update tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
+						 error("Failed to update tool %d standby temperature[%d] to %d", indices[0], indices[1], val);
 						 return;
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);
@@ -79,7 +79,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (!OM::UpdateToolName(indices[0], val))
 					  {
-						  dbg("Failed to update tool %d name to %s", indices[0], val);
+						  error("Failed to update tool %d name to %s", indices[0], val);
 						  return;
 					  }
 				  }),
@@ -87,7 +87,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::UpdateToolMix(indices[0], indices[1], val))
 					   {
-						   dbg("Failed to update tool %d mix %d to %.2f", indices[0], indices[1], val);
+						   error("Failed to update tool %d mix %d to %.2f", indices[0], indices[1], val);
 						   return;
 					   }
 				   }),
@@ -95,7 +95,7 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (!OM::UpdateToolStatus(indices[0], val))
 					  {
-						  dbg("Failed to update tool %d name to %s", indices[0], val);
+						  error("Failed to update tool %d name to %s", indices[0], val);
 						  return;
 					  }
 				  }),

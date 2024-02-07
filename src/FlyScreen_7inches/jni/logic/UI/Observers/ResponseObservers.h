@@ -30,7 +30,7 @@
 static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_CHAR("resp",
 				  [](OBSERVER_CHAR_ARGS) {
-					  dbg("resp: %s", val);
+					  info("resp: %s", val);
 					  static std::string str;
 					  size_t substrlen;
 
@@ -56,14 +56,14 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 					  }
 					  UI::CONSOLE->Refresh();
 				  }),
-	OBSERVER_CHAR("message", [](OBSERVER_CHAR_ARGS) { dbg("message: %s", val); }),
-	OBSERVER_CHAR("seq", [](OBSERVER_CHAR_ARGS) { dbg("seq: %s", val); }),
+	OBSERVER_CHAR("message", [](OBSERVER_CHAR_ARGS) { info("message: %s", val); }),
+	OBSERVER_CHAR("seq", [](OBSERVER_CHAR_ARGS) { info("seq: %s", val); }),
 	OBSERVER_INT_IF_CHANGED("seqs:reply",
 							[](OBSERVER_INT_ARGS) {
-								LOGD("seqs.reply: %d", val);
+								dbg("seqs.reply: %d", val);
 								if (Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::network)
 								{
-									dbg("New reply available");
+									info("New reply available");
 									RestClient::Response r;
 									Comm::duet.RequestReply(r);
 									Comm::duet.ProcessReply(r);

@@ -4,8 +4,7 @@
  *  Created on: 26 Jan 2024
  *      Author: Andy Everitt
  */
-
-#define DEBUG (1)
+#define DEBUG_LEVEL 5
 #include "timer.h"
 
 #include "Communication.h"
@@ -49,7 +48,7 @@ namespace Comm
 	{
 		if (type == m_communicationType)
 			return;
-		dbg("Setting communication type to %d", (int)type);
+		info("Setting communication type to %d", (int)type);
 		StoragePreferences::putInt("communication_type", (int)type);
 		Disconnect();
 		UARTCONTEXT->closeUart();
@@ -58,7 +57,7 @@ namespace Comm
 		m_communicationType = type;
 		if (type == CommunicationType::uart)
 		{
-			dbg("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
+			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
 			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
 		}
 
@@ -72,10 +71,10 @@ namespace Comm
 	{
 		if (interval < minPrinterPollInterval)
 		{
-			dbg("Poll interval too low, setting to %d", minPrinterPollInterval);
+			info("Poll interval too low, setting to %d", minPrinterPollInterval);
 			interval = minPrinterPollInterval;
 		}
-		dbg("Setting poll interval to %d", interval);
+		info("Setting poll interval to %d", interval);
 		StoragePreferences::putInt("poll_interval", (int)interval);
 		resetUserTimer(TIMER_UPDATE_DATA, (int)interval);
 		m_pollInterval = interval;
@@ -117,7 +116,7 @@ namespace Comm
 
 	bool Duet::UploadFile(const char* filename, std::string& contents)
 	{
-		dbg("Uploading file %s: %d bytes", filename, contents.size());
+		info("Uploading file %s: %d bytes", filename, contents.size());
 		UI::POPUP_WINDOW->Open();
 		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("uploading_file").c_str(), filename);
 		switch (m_communicationType)
@@ -239,7 +238,7 @@ namespace Comm
 
 		if (reply.body.empty())
 		{
-			dbg("Empty reply received");
+			warn("Empty reply received");
 			return;
 		}
 		if (reply.body[0] != '{')
@@ -281,7 +280,7 @@ namespace Comm
 		query["password"] = m_password;
 		if (!Get(m_ipAddress, "/rr_connect", r, query))
 		{
-			dbg("rr_connect failed, returned response %d", r.code);
+			error("rr_connect failed, returned response %d", r.code);
 			return r.code;
 		}
 
@@ -300,7 +299,7 @@ namespace Comm
 			QueryParameters_t query;
 			if (!Get(m_ipAddress, "/rr_disconnect", r, query, m_sessionKey))
 			{
-				dbg("rr_disconnect failed, returned response %d", r.code);
+				error("rr_disconnect failed, returned response %d", r.code);
 				return r.code;
 			}
 			return r.code;
@@ -321,12 +320,12 @@ namespace Comm
 				return;
 			}
 		}
-		dbg("Baud rate %u not found", baudRateCode);
+		warn("Baud rate %u not found", baudRateCode);
 	}
 
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
-		dbg("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
+		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
 		StoragePreferences::putInt("baud_rate", baudRate.internal);
 		m_baudRate = baudRate;
 		if (UARTCONTEXT->isOpen())
@@ -366,7 +365,7 @@ namespace Comm
 
 	void Duet::SetSessionKey(const int32_t key)
 	{
-		dbg("Setting Duet session key = %d", key);
+		info("Setting Duet session key = %d", key);
 		m_sessionKey = key;
 	}
 } // namespace Comm

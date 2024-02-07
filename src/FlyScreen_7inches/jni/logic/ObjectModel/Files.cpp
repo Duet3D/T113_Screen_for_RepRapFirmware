@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 #include "Files.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
@@ -31,7 +31,7 @@ namespace OM::FileSystem
 	void FileSystemItem::SetName(const std::string name)
 	{
 		name_ = name.c_str();
-#ifdef DEBUG
+#if DEBUG_LEVEL > 2
 		switch (type_)
 		{
 		case FileSystemItemType::file:
@@ -127,7 +127,7 @@ namespace OM::FileSystem
 	{
 		ClearFileSystem();
 		sCurrentDirPath = path;
-		dbg("Files: current directory = %s", sCurrentDirPath.c_str());
+		info("Files: current directory = %s", sCurrentDirPath.c_str());
 	}
 
 	struct
@@ -290,7 +290,7 @@ namespace OM::FileSystem
 
 	void ClearFileSystem()
 	{
-		dbg("Files: clearing items");
+		info("Files: clearing items");
 		for (auto item : sItems)
 		{
 			if (item == nullptr)

@@ -1,5 +1,5 @@
 #pragma once
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 
 #include "Communication.h"
 #include "Debug.h"
@@ -129,9 +129,6 @@ static void onUI_init()
 	while (observer != nullptr)
 	{
 		observer->Init(UI::observerMap);
-		dbg("Initialised field observer against key %s (%d)",
-				observer->GetKey(),
-				UI::observerMap.GetObservers(observer->GetKey()).size());
 		observer = observer->next;
 	}
 
@@ -140,9 +137,6 @@ static void onUI_init()
 	while (observerArrayEnd != nullptr)
 	{
 		observerArrayEnd->Init(UI::observerMapArrayEnd);
-		dbg("Initialised array end observer against key %s (%d)",
-				observerArrayEnd->GetKey(),
-				UI::observerMapArrayEnd.GetObservers(observerArrayEnd->GetKey()).size());
 		observerArrayEnd = observerArrayEnd->next;
 	}
 
@@ -254,7 +248,7 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev)
 }
 static bool onButtonClick_HomeBtn(ZKButton *pButton)
 {
-	LOGD(" ButtonClick HomeBtn !!!\n");
+	dbg(" ButtonClick HomeBtn !!!\n");
 	UI::WINDOW->Home();
 	return false;
 }
@@ -316,7 +310,7 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
 {
-	LOGD(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
+	dbg(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
 	UI::WINDOW->CloseWindow(mMainWindowPtr);
 	switch (index)
 	{
@@ -1012,7 +1006,7 @@ static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
 
 static bool onButtonClick_UsbFiles(ZKButton* pButton)
 {
-	LOGD(" ButtonClick UsbFiles !!!\n");
+	dbg(" ButtonClick UsbFiles !!!\n");
 	OM::FileSystem::RequestUsbFiles("");
 	return false;
 }

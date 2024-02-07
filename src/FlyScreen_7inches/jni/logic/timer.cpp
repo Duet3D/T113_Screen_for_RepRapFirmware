@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 
 #include "timer.h"
 #include "Debug.h"
@@ -24,10 +24,10 @@ void registerUserTimer(int id, int time)
 {
 	if (s_mainActivity == nullptr)
 	{
-		dbg("Cannot register user timer, mainActivity is null");
+		error("Cannot register user timer, mainActivity is null");
 		return;
 	}
-	dbg("%d, %d", id, time);
+	info("%d, %d", id, time);
 	s_mainActivity->registerUserTimer(id, time);
 }
 
@@ -35,10 +35,10 @@ void unregisterUserTimer(int id)
 {
 	if (s_mainActivity == nullptr)
 	{
-		dbg("Cannot unregister user timer, mainActivity is null");
+		error("Cannot unregister user timer, mainActivity is null");
 		return;
 	}
-	dbg("%d", id);
+	info("%d", id);
 	s_mainActivity->unregisterUserTimer(id);
 }
 
@@ -46,10 +46,10 @@ void resetUserTimer(int id, int time)
 {
 	if (s_mainActivity == nullptr)
 	{
-		dbg("Cannot reset user timer, mainActivity is null");
+		error("Cannot reset user timer, mainActivity is null");
 		return;
 	}
-	dbg("%d, %d", id, time);
+	info("%d, %d", id, time);
 	s_mainActivity->resetUserTimer(id, time);
 }
 
@@ -73,7 +73,7 @@ void registerDelayedCallback(const char* id, long long delay, function<bool()> c
 {
 	unregisterDelayedCallback(id);
 	s_delayedCallbacks.push_back(DelayedCallback(id, delay, callback));
-	dbg("Registered delayed callback %s", id);
+	info("Registered delayed callback %s", id);
 }
 
 void unregisterDelayedCallback(const char* id)
@@ -84,7 +84,7 @@ void unregisterDelayedCallback(const char* id)
 		if (strcmp(cb.id, id) == 0)
 		{
 			s_delayedCallbacks.erase(s_delayedCallbacks.begin() + index);
-			dbg("Unregistered delayed callback %s", id);
+			info("Unregistered delayed callback %s", id);
 			return;
 		}
 		index++;
@@ -100,12 +100,12 @@ void runDelayedCallbacks()
 		{
 			if (cb->callback())
 			{
-				dbg("Running delayed callback %s", cb->id);
+				info("Running delayed callback %s", cb->id);
 				cb->lastRun = TimeHelper::getCurrentTime();
 			}
 			else
 			{
-				dbg("Unregistering delayed callback %s", cb->id);
+				info("Unregistering delayed callback %s", cb->id);
 				cb = s_delayedCallbacks.erase(cb);
 				continue;
 			}

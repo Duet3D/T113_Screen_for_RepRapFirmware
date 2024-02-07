@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 
 #include "Network.h"
 #include "Debug.h"
@@ -74,11 +74,11 @@ namespace Comm
 		r = conn->get("");
 		if (r.code != 200)
 		{
-			dbg("%s failed, returned response %d", url.c_str(), r.code);
+			error("%s failed, returned response %d", url.c_str(), r.code);
 			return false;
 		}
 		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
-		// dbg("Response body: %s", r.body.c_str());
+		verbose("Response body: %s", r.body.c_str());
 		return true;
 	}
 
@@ -115,11 +115,11 @@ namespace Comm
 		r = conn->post("", data);
 		if (r.code != 200)
 		{
-			dbg("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());
+			error("%s failed, returned response %d %s", url.c_str(), r.code, r.body.c_str());
 			return false;
 		}
 		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
-		// dbg("Response body: %s", r.body.c_str());
+		verbose("Response body: %s", r.body.c_str());
 		return true;
 	}
 } // namespace Comm

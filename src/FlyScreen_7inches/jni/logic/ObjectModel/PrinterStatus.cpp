@@ -5,7 +5,7 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG (1)
+#define DEBUG_LEVEL 3
 #include "Debug.h"
 
 #include "PrinterStatus.h"
@@ -63,7 +63,7 @@ namespace OM
 						sizeof(OM::PrinterStatusMapEntry),
 						compareKey<OM::PrinterStatusMapEntry>);
 		if (!statusFromMap) {
-			dbg("unknown status %s", status);
+			error("unknown status %s", status);
 			return;
 		}
 		SetStatus(statusFromMap->val);
@@ -74,7 +74,7 @@ namespace OM
 	{
 		if (newStatus != sStatus)
 		{
-			dbg("printer status %d -> %d\n", (int)sStatus, (int)newStatus);
+			info("printer status %d -> %d\n", (int)sStatus, (int)newStatus);
 			sStatus = newStatus;
 		}
 	}

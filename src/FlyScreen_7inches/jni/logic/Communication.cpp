@@ -8,7 +8,7 @@
  *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/PanelDue.cpp
  */
 
-#define DEBUG (0)
+#define DEBUG_LEVEL 5
 #include "Debug.h"
 
 #include "UI/UserInterface.h"
@@ -581,7 +581,7 @@ namespace Comm {
 
 	void Reconnect()
 	{
-		dbg("Reconnecting");
+		warn("Reconnecting");
 		lastResponseTime = TimeHelper::getCurrentTime();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
@@ -640,7 +640,7 @@ namespace Comm {
 		}
 
 		if (thumbnailContext.parseErr != 0 || thumbnailContext.err != 0) {
-			dbg("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
+			error("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
 			thumbnailContext.state = ThumbnailState::Init;
 		}
 	#if 0 // && DEBUG
@@ -660,22 +660,22 @@ namespace Comm {
 			break;
 		case ThumbnailState::Header:
 			if (!ThumbnailIsValid(thumbnail)) {
-				dbg("thumbnail meta invalid.\n");
+				error("thumbnail meta invalid.\n");
 				break;
 			}
 			thumbnailContext.state = ThumbnailState::DataRequest;
 			break;
 		case ThumbnailState::Data:
 			if (!ThumbnailDataIsValid(thumbnailData)) {
-				dbg("thumbnail meta or data invalid.\n");
+				error("thumbnail meta or data invalid.\n");
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
-			}/*
-			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0) {
-				dbg("failed to decode thumbnail chunk %d.\n", ret);
-				thumbnailContext.state = ThumbnailState::Init;
-				break;
-			}*/
+			} /*
+			 if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0) {
+				 error("failed to decode thumbnail chunk %d.\n", ret);
+				 thumbnailContext.state = ThumbnailState::Init;
+				 break;
+			 }*/
 			if (thumbnailContext.next == 0) {
 				thumbnailContext.state = ThumbnailState::Init;
 			} else {
@@ -710,7 +710,8 @@ namespace Comm {
 	// Public functions called by the SerialIo module
 	void ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		dbg("id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
+		verbose(
+			"id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
 		if (StringStartsWith(id.c_str(), "result")) {
 			// We might either get something like:
 			// * "result[optional modified]:[key]:[field]" for a live response or
@@ -750,7 +751,7 @@ namespace Comm {
 
 		// no matching key found
 		if (!searchResult) {
-			//dbg("no matching key found for %s\n", id.c_str());
+			dbg("no matching key found for %s\n", id.c_str());
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
@@ -934,12 +935,12 @@ namespace Comm {
 		}
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr) {
-			LOGD("requesting %s\n", currentReqSeq->key);
+			info("requesting %s\n", currentReqSeq->key);
 			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
 		} else {
 			// Once we get here the first time we will have work all seqs once
 			if (!initialized) {
-				dbg("seqs init DONE\n");
+				info("seqs init DONE\n");
 				initialized = true;
 			}
 
