@@ -216,19 +216,21 @@ namespace OM::FileSystem
 		ClearFileSystem();
 		sUsbFolder = true;
 		sCurrentDirPath = path;
-		std::vector<dirent> entries = USB::ListEntriesInDirectory(std::string("/mnt/usb1/") + path);
+		std::vector<USB::FileInfo> files = USB::ListEntriesInDirectory(std::string("/mnt/usb1/") + path);
 		size_t index = 0;
-		for (auto& entry : entries)
+		for (auto& fileInfo : files)
 		{
-			if (entry.d_type == DT_DIR)
+			if (fileInfo.d_type == DT_DIR)
 			{
 				Folder* folder = AddFolderAt(index);
-				folder->SetName(entry.d_name);
+				folder->SetName(fileInfo.d_name);
 			}
-			else if (entry.d_type == DT_REG)
+			else if (fileInfo.d_type == DT_REG)
 			{
 				File* file = AddFileAt(index);
-				file->SetName(entry.d_name);
+				file->SetName(fileInfo.d_name);
+				file->SetSize(fileInfo.st_size);
+				file->SetDate(utils::format("%d", fileInfo.st_mtim));
 			}
 			index++;
 		}

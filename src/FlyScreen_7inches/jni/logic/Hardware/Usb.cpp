@@ -9,21 +9,22 @@
 
 #include "Usb.h"
 #include "UI/UserInterface.h"
+#include "sys/stat.h"
 #include "utils.h"
 #include <fstream>
 
 namespace USB
 {
-	std::vector<dirent> ListEntriesInDirectory(const std::string& directoryPath)
+	std::vector<FileInfo> ListEntriesInDirectory(const std::string& directoryPath)
 	{
-		std::vector<dirent> dirents;
+		std::vector<FileInfo> files;
 
 		// Open the directory
 		DIR* dir = opendir(directoryPath.c_str());
 		if (dir == nullptr)
 		{
 			error("Error opening directory %s", directoryPath.c_str());
-			return dirents;
+			return files;
 		}
 
 		// Read the directory entries
@@ -39,19 +40,42 @@ namespace USB
 			// Add files to the vector
 			if (entry->d_type == DT_REG || entry->d_type == DT_DIR)
 			{ // Regular file or folder
-				dirents.push_back(*entry);
+				FileInfo info;
+				struct stat sb;
+				if (stat((directoryPath + "/" + entry->d_name).c_str(), &sb) == -1)
+				{
+					error("Failed to get file stats for %s", (directoryPath + entry->d_name).c_str());
+				}
+				strncpy(info.d_name, entry->d_name, 256);
+				info.d_type = entry->d_type;
+				info.st_size = sb.st_size;
+				info.st_blksize = sb.st_blksize;
+				info.st_blocks = sb.st_blocks;
+				info.st_atim = sb.st_atim;
+				info.st_ctim = sb.st_ctim;
+				info.st_mtim = sb.st_mtim;
+				files.push_back(info);
 			}
 		}
 
 		// Close the directory
 		closedir(dir);
 
-		return dirents;
+		return files;
 	}
 
 	bool ReadFileContents(const std::string& filePath, std::string& contents)
 	{
-		std::string fullPath = std::string("/mnt/usb1/") + filePath;
+	    std::string fullPath;
+	    if (filePath.rfind("/mnt/usb1") == 0)
+	    {
+	        fullPath = filePath;
+	    }
+	    else
+	    {
+	        fullPath = std::string("/mnt/usb1/") + filePath;
+	    }
+
 
 		info("Reading file %s", fullPath.c_str());
 		std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::ate);
