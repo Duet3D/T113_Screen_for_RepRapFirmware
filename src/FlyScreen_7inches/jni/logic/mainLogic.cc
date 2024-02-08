@@ -3,7 +3,6 @@
 
 #include "Communication.h"
 #include "Debug.h"
-#include "timer.h"
 #include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/Alert.h"
@@ -23,9 +22,15 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "Upgrade.h"
+#include "os/MountMonitor.h"
+#include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
+#include "timer.h"
 #include "utils/TimeHelper.h"
 #include <string>
+#include <sys/reboot.h>
+#include <unistd.h>
 #include <vector>
 
 /*
@@ -85,6 +90,8 @@ static void onUI_init()
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
 
+	InitUpgradeMountListener();
+
 	initTimer(mActivityPtr);
 	registerUserTimer(
 		TIMER_UPDATE_DATA,
@@ -125,7 +132,7 @@ static void onUI_init()
 	mDigitalClock1Ptr->setVisible(false);
 
 	/* Initialise UI observer updaters that run on each field value that is received from the OM */
-	auto *observer = UI::omFieldObserverHead;
+	auto* observer = UI::omFieldObserverHead;
 	while (observer != nullptr)
 	{
 		observer->Init(UI::observerMap);
@@ -834,6 +841,11 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		break;
 	case (int)UI::SettingsSlideWindowIndex::update:
 		EASYUICONTEXT->openActivity("UpgradeActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::restart:
+		// Synchronise data and save cached data to prevent data loss
+		sync();
+		reboot(RB_AUTOBOOT);
 		break;
 	case (int)UI::SettingsSlideWindowIndex::dev:
 		EASYUICONTEXT->openActivity("DeveloperSettingActivity");

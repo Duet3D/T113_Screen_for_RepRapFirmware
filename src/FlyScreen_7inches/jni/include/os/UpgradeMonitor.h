@@ -29,7 +29,7 @@ public:
 	bool needUpgrade() const;
 
 	bool checkUpgrade();
-	bool checkUpgradeFile(const char *pPath);
+	bool checkUpgradeFile(const char *pPath);   // This will open UpdateActivity is `update.img` is found
 
 	static UpgradeMonitor* getInstance();
 
@@ -169,7 +169,10 @@ private:
 		UpgradeMonitor *mUMPtr;
 	};
 
-private:
+  public:
+	UpgradeMountListener& getUpgradeMountListener() { return mUpgradeMountListener; }
+
+  private:
 	UpgradeMountListener mUpgradeMountListener;
 	IUpgradeStatusListener *mUpgradeStatusListenerPtr;
 
