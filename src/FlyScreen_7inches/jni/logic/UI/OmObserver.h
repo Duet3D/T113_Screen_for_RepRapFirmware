@@ -145,7 +145,7 @@ namespace UI
 			auto& observerList = observersMap[key];
 			observerList.push_back(observer);
 
-			dbg("%d observers registered against key %s", observerList.size(), key);
+			dbg("%d observers registered against key \"%s\"", observerList.size(), key);
 		}
 		const std::vector<Observer<cbType>>& GetObservers(const char* key) const
 			{
