@@ -303,6 +303,14 @@ namespace OM::FileSystem
 		sItems.clear();
 	}
 
-
+	std::string GetFileExtension(const std::string& filename)
+	{
+		size_t dot = file->GetName().find_last_of('.');
+		if (dot != std::string::npos)
+		{
+			return file->GetName().substr(dot + 1);
+		}
+		return "";
+	}
 } /* namespace OM */
 

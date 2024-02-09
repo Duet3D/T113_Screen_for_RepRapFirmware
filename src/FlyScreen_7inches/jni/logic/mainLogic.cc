@@ -5,6 +5,7 @@
 #include "Debug.h"
 #include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
+#include "Hardware/Usb.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
@@ -646,8 +647,9 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	UI::POPUP_WINDOW->Cancel();
 	switch (item->GetType())
 	{
-	case OM::FileSystem::FileSystemItemType::file:
-		UI::SetSelectedFile((OM::FileSystem::File*)item);
+	case OM::FileSystem::FileSystemItemType::file: {
+		OM::FileSystem::File* file = (OM::FileSystem::File*)item;
+		UI::SetSelectedFile(file);
 		if (OM::FileSystem::IsMacroFolder())
 		{
 			UI::POPUP_WINDOW->Open([]() { UI::RunSelectedFile(); });
@@ -655,8 +657,17 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else if (OM::FileSystem::IsUsbFolder())
 		{
-			UI::POPUP_WINDOW->Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upload_file").c_str(), item->GetName().c_str());
+			std::string ext = OM::FileSystem::GetFileExtension(file->GetName());
+			if (ext == "img")
+			{
+				UI::POPUP_WINDOW->Open([]() { UpgradeFromUSB(UI::GetSelectedFile()->GetPath()); });
+				UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upgrade_from").c_str(), item->GetName().c_str());
+			}
+			else
+			{
+				UI::POPUP_WINDOW->Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
+				UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upload_file").c_str(), item->GetName().c_str());
+			}
 		}
 		else
 		{
@@ -668,6 +679,7 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 		}
 		break;
+	}
 	case OM::FileSystem::FileSystemItemType::folder:
 		if (OM::FileSystem::IsUsbFolder())
 		{

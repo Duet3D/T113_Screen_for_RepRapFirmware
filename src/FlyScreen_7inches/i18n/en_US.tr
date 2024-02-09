@@ -94,6 +94,7 @@
     <string name="start_print">Start Print: %s</string>
     <string name="upload_file">Upload File: %s</string>
     <string name="uploading_file">Uploading File: %s</string>
+    <string name="upgrade_from">Do you want to upgrade using: %s?</string>
     <string name="open_console">Open Console</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>

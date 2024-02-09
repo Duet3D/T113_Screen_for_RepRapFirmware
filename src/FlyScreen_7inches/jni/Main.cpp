@@ -1,3 +1,6 @@
+#define DEBUG_LEVEL 2
+#include "Debug.h"
+
 #include "activity/mainActivity.h"
 #include "entry/EasyUIContext.h"
 #include "manager/ConfigManager.h"
@@ -12,7 +15,8 @@ extern "C" {
 
 void onEasyUIInit(EasyUIContext *pContext) {
 	//设置时区为东八区
-    setenv("TZ", "CST-8", 1);
+	info("");
+	setenv("TZ", "CST-8", 1);
 
 	Comm::init();
 }

@@ -86,6 +86,8 @@ namespace OM::FileSystem
 	void PausePrint();
 	void StopPrint();
 	void ClearFileSystem();
+
+	std::string GetFileExtension(const std::string& fileName);
 } /* namespace OM */
 
 
