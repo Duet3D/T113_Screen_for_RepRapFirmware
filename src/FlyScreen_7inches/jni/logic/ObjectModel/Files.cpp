@@ -305,10 +305,10 @@ namespace OM::FileSystem
 
 	std::string GetFileExtension(const std::string& filename)
 	{
-		size_t dot = file->GetName().find_last_of('.');
+		size_t dot = filename.find_last_of('.');
 		if (dot != std::string::npos)
 		{
-			return file->GetName().substr(dot + 1);
+			return filename.substr(dot + 1);
 		}
 		return "";
 	}
