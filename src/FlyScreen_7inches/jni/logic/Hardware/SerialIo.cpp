@@ -9,7 +9,8 @@
  *
  */
 
-#define DEBUG_LEVEL 4
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 
 #include "SerialIo.h"
 #include "uart/UartContext.h"

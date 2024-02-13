@@ -5,7 +5,8 @@
  *      Author: andy
  */
 
-#define DEBUG_LEVEL 3
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "UserInterface.h"
 #include "Debug.h"
 #include "ObjectModel/Files.h"

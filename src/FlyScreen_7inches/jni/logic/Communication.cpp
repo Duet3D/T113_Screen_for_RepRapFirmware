@@ -8,7 +8,8 @@
  *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/PanelDue.cpp
  */
 
-#define DEBUG_LEVEL 5
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_WARN
 #include "Debug.h"
 
 #include "UI/UserInterface.h"
@@ -58,7 +59,7 @@ namespace Comm {
 
 	const int parserMinErrors = 2;
 
-	static uint32_t lastResponseTime = 0;
+	static long long lastResponseTime = 0;
 
 	static bool outOfBuffers = false;
 

@@ -1,4 +1,5 @@
-#define DEBUG_LEVEL 2
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "activity/mainActivity.h"

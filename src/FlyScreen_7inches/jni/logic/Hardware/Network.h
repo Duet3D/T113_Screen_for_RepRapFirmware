@@ -21,14 +21,14 @@ namespace Comm
 			 const char* subUrl,
 			 RestClient::Response& r,
 			 QueryParameters_t& queryParameters,
-			 int32_t sessionKey = -1);
+			 int32_t sessionKey = 0);
 
 	bool Post(std::string url,
 			  const char* subUrl,
 			  RestClient::Response& r,
 			  QueryParameters_t& queryParameters,
 			  const std::string& data,
-			  int32_t sessionKey = -1);
+			  int32_t sessionKey = 0);
 } // namespace Comm
 
 #endif /* JNI_LOGIC_HARDWARE_NETWORK_H_ */

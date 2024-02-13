@@ -1,4 +1,5 @@
-#define DEBUG_LEVEL 5
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_WARN
 #include "Debug.h"
 
 #include "Library/Thumbnail.h"

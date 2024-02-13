@@ -14,6 +14,7 @@
 
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
+#include "Hardware/Network.h"
 #include "manager/ConfigManager.h"
 #include "termio.h"
 
@@ -94,7 +95,7 @@ namespace Comm
 		const baudrate_t& GetBaudRate() const { return m_baudRate; }
 
 		// Network methods
-		const error_code Connect();
+		const bool Connect(bool useSessionKey = true);
 		const error_code Disconnect();
 
 		void SetIPAddress(const std::string& ipAddress);
@@ -106,19 +107,29 @@ namespace Comm
 		void SetPassword(const std::string& password);
 		const std::string GetPassword() const { return m_password; }
 
-		void SetSessionKey(const int32_t sessionKey);
+		void SetSessionKey(const uint32_t sessionKey);
 
 		// USB methods
 
 	  private:
+		bool Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters);
+		bool Post(const char* subUrl,
+				  RestClient::Response& r,
+				  QueryParameters_t& queryParameters,
+				  const std::string& data);
+
 		CommunicationType m_communicationType;
 		std::string m_ipAddress;
 		std::string m_hostname;
 		std::string m_password;
-		int32_t m_sessionKey;
+		int32_t m_sessionTimeout;
+		long long m_lastRequestTime;
+		uint32_t m_sessionKey;
 
 		uint32_t m_pollInterval;
 		baudrate_t m_baudRate;
+
+		static constexpr uint32_t noSessionKey = 0;
 	};
 
 	extern Duet duet;

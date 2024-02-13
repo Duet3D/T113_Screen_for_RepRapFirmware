@@ -5,7 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG_LEVEL 3
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
 #include "Network.h"
 #include "Debug.h"
@@ -65,12 +66,12 @@ namespace Comm
 		conn->FollowRedirects(true, 3);
 
 		// set headers
-		if (sessionKey != -1)
-			conn->AppendHeader("X-Session-Key", utils::format("%d", sessionKey));
+		conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
 
 		// if using a non-standard Certificate Authority (CA) trust file
 		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
 
+		dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
 		r = conn->get("");
 		if (r.code != 200)
 		{
@@ -105,13 +106,13 @@ namespace Comm
 		conn->FollowRedirects(true, 3);
 
 		// set headers
-		if (sessionKey != -1)
-			conn->AppendHeader("X-Session-Key", utils::format("%d", sessionKey));
+		conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
 
 		conn->AppendHeader("Content-Type", "text/plain");
 		// if using a non-standard Certificate Authority (CA) trust file
 		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
 
+		verbose("Post: \"%s\", data=\"%s\"", url.c_str(), data.substr(0, 50).c_str());
 		r = conn->post("", data);
 		if (r.code != 200)
 		{

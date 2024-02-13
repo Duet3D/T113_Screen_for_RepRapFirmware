@@ -4,7 +4,8 @@
  *  Created on: 7 Sep 2020
  *      Author: manuel
  */
-#define DEBUG_LEVEL 3
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
 #include "Utils.h"
 #include "Axis.h"

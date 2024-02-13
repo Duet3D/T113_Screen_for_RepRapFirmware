@@ -5,7 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#define DEBUG_LEVEL 3
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Files.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"

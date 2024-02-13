@@ -4,19 +4,22 @@
  *  Created on: 26 Jan 2024
  *      Author: Andy Everitt
  */
-#define DEBUG_LEVEL 5
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 #include "timer.h"
 
 #include "Communication.h"
 #include "Debug.h"
 #include "Duet.h"
-#include "Hardware/Network.h"
 #include "Hardware/SerialIo.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
 #include "uart/UartContext.h"
 #include "utils.h"
+#include "utils/TimeHelper.h"
+#include "json/json.h"
 #include <map>
 #include <string>
 
@@ -26,7 +29,8 @@ namespace Comm
 
 	Duet::Duet()
 		: m_communicationType(CommunicationType::none), m_ipAddress(""), m_hostname(""), m_password(""),
-		  m_sessionKey(-1), m_pollInterval(defaultPrinterPollInterval)
+		  m_sessionTimeout(0), m_lastRequestTime(0), m_sessionKey(noSessionKey),
+		  m_pollInterval(defaultPrinterPollInterval)
 	{
 	}
 
@@ -40,7 +44,13 @@ namespace Comm
 		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
 	}
 
-	void Duet::Reset() {}
+	void Duet::Reset()
+	{
+		verbose("");
+		m_sessionKey = noSessionKey;
+		m_sessionTimeout = 0;
+		m_lastRequestTime = 0;
+	}
 
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
@@ -49,8 +59,6 @@ namespace Comm
 		info("Setting communication type to %d", (int)type);
 		StoragePreferences::putInt("communication_type", (int)type);
 		Disconnect();
-		UARTCONTEXT->closeUart();
-		Thread::sleep(50);
 
 		m_communicationType = type;
 		if (type == CommunicationType::uart)
@@ -83,6 +91,66 @@ namespace Comm
 		SetPollInterval(static_cast<uint32_t>(m_pollInterval * scale));
 	}
 
+	/*
+	Tries to make a get request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
+	again
+	*/
+	bool Duet::Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters)
+	{
+		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		{
+			if (!Connect())
+			{
+				warn("Failed to connect to Duet, cannot send get request %s", subUrl);
+				r.code = -1;
+				return false;
+			}
+		}
+		if (!Comm::Get(m_ipAddress, subUrl, r, queryParameters, m_sessionKey))
+		{
+			if (r.code == 401 || r.code == 403)
+			{
+				error("HTTP error %d: Likely invalid sessionKey %u. Running rr_connect", r.code, m_sessionKey);
+				Connect();
+				return Comm::Get(m_ipAddress, subUrl, r, queryParameters, m_sessionKey);
+			}
+			return false;
+		}
+		m_lastRequestTime = TimeHelper::getCurrentTime();
+		return true;
+	}
+
+	/*
+	Tries to make a post request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
+	again
+	*/
+	bool Duet::Post(const char* subUrl,
+					RestClient::Response& r,
+					QueryParameters_t& queryParameters,
+					const std::string& data)
+	{
+		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		{
+			if (!Connect())
+			{
+				warn("Failed to connect to Duet, cannot send post request %s", subUrl);
+				return false;
+			}
+		}
+		if (!Comm::Post(m_ipAddress, subUrl, r, queryParameters, data, m_sessionKey))
+		{
+			if (r.code == 401 || r.code == 403)
+			{
+				error("HTTP error %d: Likely invalid sessionKey %d. Running rr_connect", r.code, m_sessionKey);
+				Connect();
+				return Comm::Post(m_ipAddress, subUrl, r, queryParameters, data, m_sessionKey);
+			}
+			return false;
+		}
+		m_lastRequestTime = TimeHelper::getCurrentTime();
+		return true;
+	}
+
 	void Duet::SendGcode(const char* gcode)
 	{
 		switch (m_communicationType)
@@ -94,7 +162,7 @@ namespace Comm
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["gcode"] = gcode;
-			if (!Get(m_ipAddress, "/rr_gcode", r, query, m_sessionKey))
+			if (!Get("/rr_gcode", r, query))
 			{
 				UI::CONSOLE->AddResponse(
 					utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
@@ -138,7 +206,7 @@ namespace Comm
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["name"] = filename;
-			if (!Post(m_ipAddress, "/rr_upload", r, query, contents, m_sessionKey))
+			if (!Post("/rr_upload", r, query, contents))
 			{
 				UI::CONSOLE->AddResponse(
 					utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
@@ -163,7 +231,7 @@ namespace Comm
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["flags"] = flags;
-			if (!Get(m_ipAddress, "/rr_model", r, query, m_sessionKey))
+			if (!Get("/rr_model", r, query))
 			{
 				UI::CONSOLE->AddResponse(
 					utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags).c_str());
@@ -189,7 +257,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["key"] = key;
 			query["flags"] = flags;
-			if (!Get(m_ipAddress, "/rr_model", r, query, m_sessionKey))
+			if (!Get("/rr_model", r, query))
 			{
 				UI::CONSOLE->AddResponse(
 					utils::format(
@@ -218,7 +286,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
-			if (!Get(m_ipAddress, "/rr_filelist", r, query, m_sessionKey))
+			if (!Get("/rr_filelist", r, query))
 				break;
 			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
@@ -265,41 +333,84 @@ namespace Comm
 	void Duet::RequestReply(RestClient::Response& r)
 	{
 		QueryParameters_t query;
-		Get(m_ipAddress, "/rr_reply", r, query, m_sessionKey);
+		Get("/rr_reply", r, query);
 	}
 
-	const Duet::error_code Duet::Connect()
+	const bool Duet::Connect(bool useSessionKey)
 	{
 		if (m_communicationType != CommunicationType::network)
 			return 0;
 
+		Disconnect();
+		Reset();
+
 		RestClient::Response r;
 		QueryParameters_t query;
 		query["password"] = m_password;
-		if (!Get(m_ipAddress, "/rr_connect", r, query))
+		if (useSessionKey)
+			query["sessionKey"] = "yes";
+
+		if (!Comm::Get(m_ipAddress, "/rr_connect", r, query))
 		{
 			error("rr_connect failed, returned response %d", r.code);
-			return r.code;
+			return false;
 		}
 
-		// Session key parsed in "UI/Observers/HttpObservers.h"
-		StringRef ref((char*)"sessionKey", 12);
-		Comm::ProcessReceivedValue(ref, r.body.c_str(), {});
-		return r.code;
+		verbose("parsing rr_connect response");
+		Json::Reader reader;
+		Json::Value body;
+
+		if (!reader.parse(r.body, body))
+		{
+			error("Failed to parse JSON response from rr_connect");
+			return false;
+		}
+
+		if (body.isMember("err") && body["err"].asInt() != 0)
+		{
+			error("rr_connect failed, returned error %d", body["err"].asInt());
+			return false;
+		}
+
+		if (body.isMember("sessionTimeout"))
+		{
+			m_sessionTimeout = body["sessionTimeout"].asInt();
+			m_lastRequestTime = TimeHelper::getCurrentTime();
+			info("Duet session timeout set to %d", m_sessionTimeout);
+		}
+
+		if (body.isMember("sessionKey"))
+		{
+			m_sessionKey = body["sessionKey"].asUInt();
+			info("Duet session key = %u", m_sessionKey);
+		}
+		info("rr_connect succeeded");
+		return true;
 	}
 
 	const Duet::error_code Duet::Disconnect()
 	{
+		SetStatus(OM::PrinterStatus::connecting);
 		switch (m_communicationType)
 		{
+		case CommunicationType::uart:
+			UARTCONTEXT->closeUart();
+			Thread::sleep(50);
+			break;
 		case CommunicationType::network: {
+			if (m_sessionKey == noSessionKey)
+			{
+				Reset();
+				return 0;
+			}
 			RestClient::Response r;
 			QueryParameters_t query;
-			if (!Get(m_ipAddress, "/rr_disconnect", r, query, m_sessionKey))
+			if (!Comm::Get(m_ipAddress, "/rr_disconnect", r, query, m_sessionKey))
 			{
 				error("rr_disconnect failed, returned response %d", r.code);
 				return r.code;
 			}
+			Reset();
 			return r.code;
 		}
 		default:
@@ -361,9 +472,9 @@ namespace Comm
 		m_password = password;
 	}
 
-	void Duet::SetSessionKey(const int32_t key)
+	void Duet::SetSessionKey(const uint32_t key)
 	{
-		info("Setting Duet session key = %d", key);
 		m_sessionKey = key;
+		info("Set Duet session key = %u", m_sessionKey);
 	}
 } // namespace Comm
