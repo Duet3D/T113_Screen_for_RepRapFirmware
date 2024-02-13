@@ -38,8 +38,6 @@ namespace Comm
 		SetHostname(StoragePreferences::getString("hostname", ""));
 		SetPassword(StoragePreferences::getString("password", ""));
 		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
-
-		SendGcode("M29");
 	}
 
 	void Duet::Reset() {}
