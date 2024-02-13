@@ -11,6 +11,7 @@
 #include "PrinterStatus.h"
 #include "uart/CommDef.h"
 #include "ObjectModel/Utils.h"
+#include "Hardware/Duet.h"
 
 
 namespace OM
@@ -76,6 +77,10 @@ namespace OM
 		{
 			info("printer status %d -> %d\n", (int)sStatus, (int)newStatus);
 			sStatus = newStatus;
+			if (sStatus == OM::PrinterStatus::halted)
+			{
+				Comm::duet.SendGcode("M999");
+			}
 		}
 	}
 }

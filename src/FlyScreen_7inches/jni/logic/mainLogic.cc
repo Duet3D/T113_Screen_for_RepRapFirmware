@@ -285,9 +285,11 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	UI::POPUP_WINDOW->Close();
-	Comm::duet.SendGcode("M112\n");
+	Comm::duet.SendGcode("M112 ;"
+						 "\xF0"
+						 "\x0F");
 	Thread::sleep(1000);
-	Comm::duet.SendGcode("M999\n");
+	Comm::duet.SendGcode("M999");
 	return false;
 }
 
