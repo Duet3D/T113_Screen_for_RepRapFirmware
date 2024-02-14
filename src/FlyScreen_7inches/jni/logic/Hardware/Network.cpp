@@ -6,7 +6,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 
 #include "Debug.h"
 #include "Network.h"
@@ -18,6 +18,10 @@
 
 namespace Comm
 {
+	// Duet 2 seems to only support 3 concurrent connections. We need 1 connection for synchronous requests, so we can
+	// only have 2 threads.
+	constexpr size_t maxThreadPoolSize = 2;
+
 	class AsyncGetThread : public Thread
 	{
 	  public:
@@ -36,12 +40,11 @@ namespace Comm
 			verbose("%s%s", url.c_str(), subUrl);
 			if (!Get(url, subUrl, r, queryParameters, sessionKey))
 			{
-				// try again
-				return true;
+				return false;
 			}
 
-			// if callback returns true, stop the thread
-			return !callback(r);
+			callback(r);
+			return false;
 		}
 
 		void SetRequestParameters(std::string url,
@@ -58,7 +61,7 @@ namespace Comm
 		}
 
 	  private:
-			std::string url;
+		std::string url;
 		const char* subUrl;
 		RestClient::Response r;
 		QueryParameters_t queryParameters;
@@ -66,7 +69,7 @@ namespace Comm
 		function<bool(RestClient::Response&)> callback;
 	};
 
-	static std::vector<AsyncGetThread*> threads;
+	static std::vector<AsyncGetThread*> threadPool;
 
 	static void AddQueryParameters(std::string& url, QueryParameters_t& queryParameters)
 	{
@@ -102,8 +105,27 @@ namespace Comm
 				  function<bool(RestClient::Response&)> callback,
 				  uint32_t sessionKey)
 	{
-		// TODO: delete thread when done
+		// Attempts to use a thread from the pool if one is not currently in use
+		for (auto thread : threadPool)
+		{
+			if (thread->isRunning())
+				continue;
+
+			verbose("Reusing thread from pool");
+			thread->SetRequestParameters(url, subUrl, queryParameters, callback, sessionKey);
+			return thread->run();
+		}
+
+		if (threadPool.size() >= maxThreadPoolSize)
+		{
+			error("Thread pool is full, cannot add more threads");
+			return false;
+		}
+
+		// Create a new thread and add it to the pool
 		AsyncGetThread* thread = new AsyncGetThread(url, subUrl, queryParameters, callback, sessionKey);
+		threadPool.push_back(thread);
+		info("Added thread to pool, size=%d", threadPool.size());
 		return true;
 	}
 

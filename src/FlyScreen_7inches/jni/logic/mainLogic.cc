@@ -150,6 +150,7 @@ static void onUI_init()
 	}
 
 	mFeedrateBtn1Ptr->setSelected(true);
+	info("UI initialized");
 }
 
 /**
