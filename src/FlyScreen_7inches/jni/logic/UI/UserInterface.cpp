@@ -75,22 +75,23 @@ namespace UI
 			AddToVector<ZKBase*>(openedWindows_, window);
 	}
 
-	void Window::OpenOverlay(ZKBase* overlay)
+	void Window::OpenOverlay(ZKBase* overlay, bool closeAlreadyOpened)
 	{
-		if (overlayWindow_ != nullptr)
+		if (!overlayWindows_.empty() && closeAlreadyOpened)
 		{
-			overlayWindow_->setVisible(false);
+			CloseOverlay();
 		}
+
 		overlay->setVisible(true);
-		overlayWindow_ = overlay;
+		AddToVector<ZKBase*>(overlayWindows_, overlay);
 	}
 
 	bool Window::CloseOverlay()
 	{
-		if (overlayWindow_ == nullptr)
+		if (overlayWindows_.empty())
 			return false;
 
-		// Ensure that you can't close the popup window if it's blocking. To do this, you must first Clear the popup
+		// Ensure that you can't close the popup window if it's blocking.
 		if (POPUP_WINDOW->IsBlocking())
 		{
 			return false;
@@ -99,8 +100,11 @@ namespace UI
 		{
 			POPUP_WINDOW->Clear();
 		}
-		overlayWindow_->setVisible(false);
-		overlayWindow_ = nullptr;
+		for (auto& window : overlayWindows_)
+		{
+			window->setVisible(false);
+			RemoveFromVector<ZKBase*>(openedWindows_, window);
+		}
 		return true;
 	}
 

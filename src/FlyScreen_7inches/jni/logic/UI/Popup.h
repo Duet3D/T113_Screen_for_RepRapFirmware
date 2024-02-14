@@ -126,7 +126,8 @@ namespace UI
 		void Open(const char* header,
 				  const int value,
 				  function<void(int)> onValueChanged,
-				  function<void(int)> onConfirm);
+				  function<void(int)> onConfirm,
+				  bool withSlider = false);
 		void Clear();
 		void Close();
 		void Confirm();
@@ -182,6 +183,8 @@ namespace UI
 		void SetHeaderf(const char* header, ...);
 		void SetPrefix(const char* prefix);
 		void SetSuffix(const char* suffix);
+		int GetMin() const { return min_; }
+		int GetMax() const { return max_; }
 		void SetUnit(const char* unit);
 
 	  private:
@@ -202,6 +205,16 @@ namespace UI
 		function<void(int)> onProgressChanged_;
 		bool displayRaw_ = false;
 	};
+
+	void OpenSliderNumPad(const char* header,
+						  const char* prefix,
+						  const char* suffix,
+						  const char* unit,
+						  const int min,
+						  const int max,
+						  const int value,
+						  function<void(int)> callback,
+						  bool displayRaw = false);
 } // namespace UI
 
 #endif /* JNI_LOGIC_UI_POPUP_H_ */

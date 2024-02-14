@@ -59,7 +59,7 @@ namespace UI
 		void AddHome(ZKBase* home);
 		void ClearHome();
 		void OpenWindow(ZKBase* window);
-		void OpenOverlay(ZKBase* window);
+		void OpenOverlay(ZKBase* window, bool closeAlreadyOpened = true);
 		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
@@ -72,7 +72,7 @@ namespace UI
 		std::vector<ZKBase*> openedWindows_;
 		std::vector<ZKBase*> closedWindows_;
 		std::vector<ZKBase*> homeWindows_;
-		ZKBase* overlayWindow_ = nullptr;
+		std::vector<ZKBase*> overlayWindows_;
 	};
 
 	enum class HeaterType

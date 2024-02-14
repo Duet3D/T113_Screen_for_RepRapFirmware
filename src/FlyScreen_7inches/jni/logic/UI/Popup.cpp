@@ -474,13 +474,14 @@ namespace UI
 	void NumPadWindow::Open(const char* header,
 							const int value,
 							function<void(int)> onValueChanged,
-							function<void(int)> onConfirm)
+							function<void(int)> onConfirm,
+							bool withSlider)
 	{
 		header_->setText(header);
 		value_->setText(value);
 		onValueChanged_ = onValueChanged;
 		onConfirm_ = onConfirm;
-		WINDOW->OpenOverlay(window_);
+		WINDOW->OpenOverlay(window_, !withSlider);
 	}
 
 	void NumPadWindow::Clear()
@@ -521,6 +522,8 @@ namespace UI
 
 	void NumPadWindow::SetValue(int value)
 	{
+		if (value == GetValue())
+			return;
 		value_->setText(value);
 		Callback();
 	}
@@ -608,18 +611,37 @@ namespace UI
 	{
 		min_ = min;
 		max_ = max;
+		slider_->setMax(max - min);
 	}
 
 	const int SliderWindow::GetValue() const
 	{
-		int percent = slider_->getProgress();
-		return ((percent * (max_ - min_)) / 100) + min_;
+		int progress = slider_->getProgress();
+		int val = progress + min_;
+		warn("Slider progress %d (%d)", progress, val);
+		return val;
 	}
 
 	void SliderWindow::SetValue(const int val)
 	{
-		int percent = ((val - min_) * 100) / (max_ - min_);
-		slider_->setProgress(percent);
+		if (val == GetValue())
+			return;
+
+		if (val < min_)
+		{
+			warn("Slider value %d below min %d", val, min_);
+			return;
+		}
+
+		if (val > max_)
+		{
+			warn("Slider value %d exceeds max %d", val, max_);
+			return;
+		}
+
+		int progress = val - min_;
+		warn("Slider progress %d (%d)", progress, val);
+		slider_->setProgress(progress);
 	}
 
 	void SliderWindow::SetHeader(const char* header)
@@ -648,5 +670,45 @@ namespace UI
 	void SliderWindow::SetUnit(const char* unit)
 	{
 		unit_.copy(unit);
+	}
+
+	void OpenSliderNumPad(const char* header,
+						  const char* prefix,
+						  const char* suffix,
+						  const char* unit,
+						  const int min,
+						  const int max,
+						  const int defaultValue,
+						  function<void(int)> onProgressChanged,
+						  bool displayRaw)
+	{
+		warn("defaultValue %d", defaultValue);
+		SLIDER_WINDOW->Open(
+			header,
+			prefix,
+			suffix,
+			unit,
+			min,
+			max,
+			defaultValue,
+			[onProgressChanged](int value) {
+				warn("Slider value %d", value);
+				NUMPAD_WINDOW->SetValue(value);
+				onProgressChanged(value);
+			},
+			displayRaw);
+		NUMPAD_WINDOW->Open(
+			"",
+			defaultValue,
+			[](int value) {
+				if (value < SLIDER_WINDOW->GetMin() || value > SLIDER_WINDOW->GetMax())
+				{
+					return;
+				}
+				warn("Numpad value %d", value);
+				SLIDER_WINDOW->SetValue(value);
+			},
+			[](int) { WINDOW->CloseOverlay(); },
+			true);
 	}
 } // namespace UI
