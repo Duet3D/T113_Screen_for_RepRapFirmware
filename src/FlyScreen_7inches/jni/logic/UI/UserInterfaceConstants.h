@@ -30,4 +30,6 @@ constexpr unsigned int MaxResponseLines = 200;
 
 constexpr unsigned int MaxFileNameLength = 100;
 
+constexpr unsigned long long TimeSyncInterval = 10e3; // Interval to resynchronize time with the Duet in milliseconds
+
 #endif /* SRC_UI_USERINTERFACECONSTANTS_HPP_ */

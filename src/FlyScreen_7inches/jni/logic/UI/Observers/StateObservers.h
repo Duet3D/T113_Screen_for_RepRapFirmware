@@ -131,12 +131,19 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 				  }),
 	OBSERVER_CHAR("state:time",
 				  [](OBSERVER_CHAR_ARGS) {
+					  static unsigned long long lastUpdated = 0;
 					  char* timeStr = (char*)val; // remove const
 					  if (timeStr[0] == 0)
 					  {
 						  mDigitalClock1Ptr->setVisible(false);
 						  return;
 					  }
+
+					  if (TimeHelper::getCurrentTime() - lastUpdated < TimeSyncInterval)
+					  {
+						  return;
+					  }
+
 					  dbg("Setting system time to %s", val);
 					  for (size_t i = 0; timeStr[i] != 0; ++i)
 					  {
@@ -147,6 +154,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 						  }
 					  }
 					  TimeHelper::setDateTime(timeStr);
+					  lastUpdated = TimeHelper::getCurrentTime();
 					  mDigitalClock1Ptr->setVisible(true);
 				  }),
 };
