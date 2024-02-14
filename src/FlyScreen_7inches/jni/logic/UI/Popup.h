@@ -30,7 +30,6 @@ namespace UI
 	class PopupWindow
 	{
 	  public:
-		PopupWindow() : okCb_([]() {}), cancelCb_([]() {}) {}
 		static PopupWindow* GetInstance()
 		{
 			static PopupWindow cWindow;
@@ -85,6 +84,7 @@ namespace UI
 		int selectedAxis = 0;
 
 	  private:
+		PopupWindow() : okCb_([]() {}), cancelCb_([]() {}) {}
 		bool ValidateIntegerInputInner(const char* text);
 		bool ValidateFloatInputInner(const char* text);
 		bool ValidateTextInputInner(const char* text);
@@ -113,14 +113,43 @@ namespace UI
 		uint32_t timeout_;
 	};
 
+	class NumPadWindow
+	{
+	  public:
+		static NumPadWindow* GetInstance()
+		{
+			static NumPadWindow numPadWindow;
+			return &numPadWindow;
+		}
+
+		void Init(ZKWindow* window, ZKTextView* header, ZKTextView* value);
+		void Open(const char* header,
+				  const int value,
+				  function<void(int)> onValueChanged,
+				  function<void(int)> onConfirm);
+		void Clear();
+		void Close();
+		void Callback();
+		void Confirm();
+		int GetValue();
+		void AddOneChar(char c);
+		void DelOneChar();
+
+	  private:
+		NumPadWindow()
+			: window_(nullptr), header_(nullptr), value_(nullptr), onValueChanged_([](int) {}), onConfirm_([](int) {})
+		{
+		}
+		ZKWindow* window_;
+		ZKTextView* header_;
+		ZKTextView* value_;
+		function<void(int)> onValueChanged_;
+		function<void(int)> onConfirm_;
+	};
+
 	class SliderWindow
 	{
 	  public:
-		SliderWindow()
-			: window_(nullptr), slider_(nullptr), header_(nullptr), value_(nullptr), prefix_(nullptr), suffix_(nullptr),
-			  min_(0), max_(100), onProgressChanged_([](int) {})
-		{
-		}
 		static SliderWindow* GetInstance()
 		{
 			static SliderWindow sliderWindow;
@@ -153,6 +182,12 @@ namespace UI
 		void SetUnit(const char* unit);
 
 	  private:
+		SliderWindow()
+			: window_(nullptr), slider_(nullptr), header_(nullptr), value_(nullptr), prefix_(nullptr), suffix_(nullptr),
+			  min_(0), max_(100), onProgressChanged_([](int) {})
+		{
+		}
+
 		ZKWindow* window_;
 		ZKSeekBar* slider_;
 		ZKTextView* header_;

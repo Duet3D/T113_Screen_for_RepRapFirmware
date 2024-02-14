@@ -102,9 +102,10 @@ static void onUI_init()
 	Comm::duet.Init();
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
-	UI::ToolsList::Create("home")->Init(mToolListViewPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
-	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr, mTemperatureInputWindowPtr, mNumPadInputPtr);
+	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
+	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
+	UI::NUMPAD_WINDOW->Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
 	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
 						   mNoTouchWindowPtr,
 						   mPopupOkBtnPtr,
@@ -371,72 +372,67 @@ static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int in
 	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
 }
 
-static UI::ToolsList* getVisibleToolsList()
+static bool onButtonClick_NumPad0(ZKButton* pButton)
 {
-	if (mPrintWindowPtr->isVisible())
-		return UI::ToolsList::Get("print");
-	return UI::ToolsList::Get("home");
+	UI::NUMPAD_WINDOW->AddOneChar('0');
+	return false;
 }
+
 static bool onButtonClick_NumPad1(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('1');
+	UI::NUMPAD_WINDOW->AddOneChar('1');
 	return false;
 }
 
 static bool onButtonClick_NumPad2(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('2');
+	UI::NUMPAD_WINDOW->AddOneChar('2');
 	return false;
 }
 
 static bool onButtonClick_NumPad3(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('3');
+	UI::NUMPAD_WINDOW->AddOneChar('3');
 	return false;
 }
 
 static bool onButtonClick_NumPad4(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('4');
+	UI::NUMPAD_WINDOW->AddOneChar('4');
 	return false;
 }
 
 static bool onButtonClick_NumPad5(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('5');
+	UI::NUMPAD_WINDOW->AddOneChar('5');
 	return false;
 }
 
 static bool onButtonClick_NumPad6(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('6');
+	UI::NUMPAD_WINDOW->AddOneChar('6');
 	return false;
 }
 
 static bool onButtonClick_NumPad7(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('7');
+	UI::NUMPAD_WINDOW->AddOneChar('7');
 	return false;
 }
 
 static bool onButtonClick_NumPad8(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('8');
+	UI::NUMPAD_WINDOW->AddOneChar('8');
 	return false;
 }
 
 static bool onButtonClick_NumPad9(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('9');
+	UI::NUMPAD_WINDOW->AddOneChar('9');
 	return false;
 }
 
 static bool onButtonClick_NumPadDel(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadDelOneChar();
-	return false;
-}
-
-static bool onButtonClick_NumPad0(ZKButton *pButton) {
-	getVisibleToolsList()->NumPadAddOneChar('0');
+	UI::NUMPAD_WINDOW->DelOneChar();
 	return false;
 }
 
 static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
-	getVisibleToolsList()->SendTempTarget();
-	getVisibleToolsList()->CloseNumPad();
+	UI::NUMPAD_WINDOW->Confirm();
 	return false;
 }
+
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
 	Comm::duet.SendGcode("G28\n");
 	return false;
@@ -1037,4 +1033,8 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 	dbg(" ButtonClick UsbFiles !!!\n");
 	OM::FileSystem::RequestUsbFiles("");
 	return false;
+}
+static bool onButtonClick_NumPadCloseBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick NumPadCloseBtn !!!\n");
+    return false;
 }

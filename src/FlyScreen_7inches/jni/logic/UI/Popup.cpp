@@ -464,6 +464,76 @@ namespace UI
 		axisJogSelection_->setSelection(0);
 	}
 
+	void NumPadWindow::Init(ZKWindow* window, ZKTextView* header, ZKTextView* value)
+	{
+		window_ = window;
+		header_ = header;
+		value_ = value;
+	}
+
+	void NumPadWindow::Open(const char* header,
+							const int value,
+							function<void(int)> onValueChanged,
+							function<void(int)> onConfirm)
+	{
+		header_->setText(header);
+		value_->setText(value);
+		onValueChanged_ = onValueChanged;
+		onConfirm_ = onConfirm;
+		WINDOW->OpenOverlay(window_);
+	}
+
+	void NumPadWindow::Clear()
+	{
+		onValueChanged_ = [](int) {};
+		onConfirm_ = [](int) {};
+		header_->setText("");
+		value_->setText("");
+	}
+
+	void NumPadWindow::Close()
+	{
+		Clear();
+		WINDOW->CloseOverlay();
+	}
+
+	void NumPadWindow::Callback()
+	{
+		onValueChanged_(GetValue());
+	}
+
+	void NumPadWindow::Confirm()
+	{
+		onConfirm_(GetValue());
+		Close();
+	}
+
+	int NumPadWindow::GetValue()
+	{
+		int value;
+		if (!Comm::GetInteger(value_->getText().c_str(), value))
+		{
+			return 0;
+		}
+		return value;
+	}
+
+	void NumPadWindow::AddOneChar(char ch)
+	{
+		std::string value = value_->getText() + ch;
+		value_->setText(value);
+	}
+
+	void NumPadWindow::DelOneChar()
+	{
+		std::string value = value_->getText();
+		if (!value.empty())
+		{
+			value.erase(value.length() - 1, 1);
+			value_->setText(value);
+		}
+	}
+
 	void SliderWindow::Init(ZKWindow* window,
 							ZKSeekBar* slider,
 							ZKTextView* header,

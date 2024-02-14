@@ -11,6 +11,7 @@
 #include "Debug.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "utils.h"
 #include <algorithm>
 #include <map>
 
@@ -201,11 +202,9 @@ namespace UI
 		return (it != sToolsListMap.end()) ? it->second : nullptr;
 	}
 
-	void ToolsList::Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput)
+	void ToolsList::Init(ZKListView* toolListView)
 	{
 		pToolListView_ = toolListView;
-		pNumPadWindow_ = numPadWindow;
-		pNumPadInput_ = numPadInput;
 	}
 
 	void ToolsList::CalculateTotalHeaterCount()
@@ -426,50 +425,30 @@ namespace UI
 
 	void ToolsList::OpenNumPad(const NumPadData data)
 	{
-		numPadData_.numPadStr = "";
-		pNumPadInput_->setText("");
+		std::string header;
 		numPadData_.heaterType = data.heaterType;
 		numPadData_.active = data.active;
 
 		switch (data.heaterType)
 		{
 		case HeaterType::tool:
+			header = utils::format("Tool %d Heater %d", data.toolIndex, data.toolHeaterIndex);
 			numPadData_.toolIndex = data.toolIndex;
 			numPadData_.toolHeaterIndex = data.toolHeaterIndex;
 			break;
 		case HeaterType::bed:
 		case HeaterType::chamber:
+			header = utils::format(
+				"%s %d", (data.heaterType == HeaterType::bed) ? "Bed" : "Chamber", data.bedOrChamberIndex);
 			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
 			break;
 		}
-		WINDOW->OpenOverlay(pNumPadWindow_);
+		UI::NUMPAD_WINDOW->Open(
+			header.c_str(), NULL, [](int) {}, [this](int value) { SendTempTarget(value); });
 	}
 
-	void ToolsList::CloseNumPad()
+	bool ToolsList::SendTempTarget(int target)
 	{
-		WINDOW->CloseWindow(pNumPadWindow_, false);
-	}
-
-	void ToolsList::NumPadAddOneChar(char ch)
-	{
-		numPadData_.numPadStr += ch;
-		pNumPadInput_->setText(numPadData_.numPadStr);
-	}
-
-	void ToolsList::NumPadDelOneChar()
-	{
-		if (!numPadData_.numPadStr.empty())
-		{
-			numPadData_.numPadStr.erase(numPadData_.numPadStr.length() - 1, 1);
-			pNumPadInput_->setText(numPadData_.numPadStr);
-		}
-	}
-
-	bool ToolsList::SendTempTarget()
-	{
-		if (numPadData_.numPadStr.empty()) return false;
-
-		int32_t target = atoi(numPadData_.numPadStr.c_str());
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
 		dbg("heaterType=%d", (int)numPadData_.heaterType);

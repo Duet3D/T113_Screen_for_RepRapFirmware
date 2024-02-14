@@ -85,7 +85,6 @@ namespace UI
 	struct NumPadData
 	{
 		HeaterType heaterType;
-		std::string numPadStr;
 		bool active;
 		union {
 			struct
@@ -106,7 +105,7 @@ namespace UI
 		ToolsList(const char* id);
 		static ToolsList* Create(const char* id);
 		static ToolsList* Get(const char* id);
-		void Init(ZKListView* toolListView, ZKWindow* numPadWindow, ZKTextView* numPadInput);
+		void Init(ZKListView* toolListView);
 		void CalculateTotalHeaterCount();
 		size_t GetTotalHeaterCount(const bool calculate, const bool addTools = true, const bool addBeds = true,
 								   const bool addChambers = true);
@@ -118,18 +117,13 @@ namespace UI
 		void RefreshToolList(const bool lengthChanged = true);
 		static void RefreshAllToolLists(const bool lengthChanged = true);
 		void OpenNumPad(const NumPadData data);
-		void CloseNumPad();
-		void NumPadAddOneChar(char ch);
-		void NumPadDelOneChar();
-		bool SendTempTarget();
+		bool SendTempTarget(int value);
 
 	  private:
 		const char* id;
 		size_t toolCount_, bedCount_, chamberCount_;
 		NumPadData numPadData_;
 		ZKListView* pToolListView_ = nullptr;
-		ZKWindow* pNumPadWindow_ = nullptr;
-		ZKTextView* pNumPadInput_ = nullptr;
 	};
 
 	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool*& tool);
@@ -166,6 +160,7 @@ namespace UI
 	void RunSelectedFile();
 
 #define WINDOW Window::GetInstance()
+#define NUMPAD_WINDOW NumPadWindow::GetInstance()
 #define POPUP_WINDOW PopupWindow::GetInstance()
 #define SLIDER_WINDOW SliderWindow::GetInstance()
 #define CONSOLE Console::GetInstance()
