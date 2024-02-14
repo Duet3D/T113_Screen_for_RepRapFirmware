@@ -129,9 +129,10 @@ namespace UI
 				  function<void(int)> onConfirm);
 		void Clear();
 		void Close();
-		void Callback();
 		void Confirm();
 		int GetValue();
+		void SetValue(int value);
+		void SetValue(const char* value);
 		void AddOneChar(char c);
 		void DelOneChar();
 
@@ -140,6 +141,8 @@ namespace UI
 			: window_(nullptr), header_(nullptr), value_(nullptr), onValueChanged_([](int) {}), onConfirm_([](int) {})
 		{
 		}
+		void Callback();
+
 		ZKWindow* window_;
 		ZKTextView* header_;
 		ZKTextView* value_;

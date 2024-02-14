@@ -506,6 +506,7 @@ namespace UI
 	{
 		onConfirm_(GetValue());
 		Close();
+		Clear();
 	}
 
 	int NumPadWindow::GetValue()
@@ -518,20 +519,33 @@ namespace UI
 		return value;
 	}
 
+	void NumPadWindow::SetValue(int value)
+	{
+		value_->setText(value);
+		Callback();
+	}
+
+	void NumPadWindow::SetValue(const char* value)
+	{
+		value_->setText(value);
+		Callback();
+	}
+
 	void NumPadWindow::AddOneChar(char ch)
 	{
 		std::string value = value_->getText() + ch;
-		value_->setText(value);
+		SetValue(value.c_str());
 	}
 
 	void NumPadWindow::DelOneChar()
 	{
 		std::string value = value_->getText();
-		if (!value.empty())
+		if (value.empty())
 		{
-			value.erase(value.length() - 1, 1);
-			value_->setText(value);
+			return;
 		}
+		value.erase(value.length() - 1, 1);
+		SetValue(value.c_str());
 	}
 
 	void SliderWindow::Init(ZKWindow* window,
