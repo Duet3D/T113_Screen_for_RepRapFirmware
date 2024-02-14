@@ -82,6 +82,7 @@ static int sFeedRate = 6000;
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
+	{TIMER_ASYNC_HTTP_REQUEST, 100},
 };
 
 /**
@@ -225,6 +226,11 @@ static bool onUI_Timer(int id)
 	}
 	case TIMER_DELAYED_TASK: {
 		runDelayedCallbacks();
+		break;
+	}
+	case TIMER_ASYNC_HTTP_REQUEST: {
+		Comm::ProcessQueuedAsyncRequests();
+		break;
 	}
 	default:
 		break;

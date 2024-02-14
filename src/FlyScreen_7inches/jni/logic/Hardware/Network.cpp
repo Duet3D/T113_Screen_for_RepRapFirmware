@@ -22,6 +22,15 @@ namespace Comm
 	// only have 2 threads.
 	constexpr size_t maxThreadPoolSize = 2;
 
+	struct AsyncGetData
+	{
+		std::string url;
+		const char* subUrl;
+		QueryParameters_t queryParameters;
+		function<bool(RestClient::Response&)> callback;
+		uint32_t sessionKey;
+	};
+
 	class AsyncGetThread : public Thread
 	{
 	  public:
@@ -70,6 +79,7 @@ namespace Comm
 	};
 
 	static std::vector<AsyncGetThread*> threadPool;
+	static std::vector<AsyncGetData> queuedData;
 
 	static void AddQueryParameters(std::string& url, QueryParameters_t& queryParameters)
 	{
@@ -103,7 +113,8 @@ namespace Comm
 				  const char* subUrl,
 				  QueryParameters_t& queryParameters,
 				  function<bool(RestClient::Response&)> callback,
-				  uint32_t sessionKey)
+				  uint32_t sessionKey,
+				  bool queue)
 	{
 		// Attempts to use a thread from the pool if one is not currently in use
 		for (auto thread : threadPool)
@@ -118,8 +129,25 @@ namespace Comm
 
 		if (threadPool.size() >= maxThreadPoolSize)
 		{
-			error("Thread pool is full, cannot add more threads");
-			return false;
+			if (!queue)
+			{
+				error("Thread pool is full, cannot add more threads");
+				return false;
+			}
+			if (strncmp(subUrl, "/rr_connect", 11) == 0)
+			{
+				for (auto& data : queuedData)
+				{
+					if (data.url == url && data.subUrl == subUrl)
+					{
+						info("Request %s already queued, not adding again", (url + subUrl).c_str());
+						return false;
+					}
+				}
+			}
+			queuedData.push_back({url, subUrl, queryParameters, callback, sessionKey});
+			info("Queued request %s, size=%d", (url + subUrl).c_str(), queuedData.size());
+			return true;
 		}
 
 		// Create a new thread and add it to the pool
@@ -127,6 +155,27 @@ namespace Comm
 		threadPool.push_back(thread);
 		info("Added thread to pool, size=%d", threadPool.size());
 		return true;
+	}
+
+	void ProcessQueuedAsyncRequests()
+	{
+		if (queuedData.empty())
+			return;
+
+		info("Processing queued requests, size=%d", queuedData.size());
+		auto data = queuedData.begin();
+		while (data != queuedData.end())
+		{
+			info("Processing queued request %s", (data->url + data->subUrl).c_str());
+			if (!AsyncGet(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
+			{
+				error("Failed to process queued request %s", (data->url + data->subUrl).c_str());
+				return;
+			}
+			info("Processed queued request %s", (data->url + data->subUrl).c_str());
+			data = queuedData.erase(data);
+		}
+		info("Processed all queued requests, size=%d", queuedData.size());
 	}
 
 	bool Get(std::string url,

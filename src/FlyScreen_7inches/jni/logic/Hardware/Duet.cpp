@@ -93,9 +93,23 @@ namespace Comm
 
 	bool Duet::AsyncGet(const char* subUrl,
 						QueryParameters_t& queryParameters,
-						function<bool(RestClient::Response&)> callback)
+						function<bool(RestClient::Response&)> callback,
+						bool queue)
 	{
-		Comm::AsyncGet(m_ipAddress, subUrl, queryParameters, callback, m_sessionKey);
+		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		{
+			if (!Connect())
+			{
+				warn("Failed to connect to Duet, cannot send get request %s", subUrl);
+				return false;
+			}
+		}
+		if (!Comm::AsyncGet(m_ipAddress, subUrl, queryParameters, callback, m_sessionKey, queue))
+		{
+			warn("Failed to send async get request %s", subUrl);
+			return false;
+		}
+		m_lastRequestTime = TimeHelper::getCurrentTime();
 		return true;
 	}
 
@@ -170,14 +184,21 @@ namespace Comm
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["gcode"] = gcode;
-			if (!Get("/rr_gcode", r, query))
-			{
-				UI::CONSOLE->AddResponse(
-					utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
-				break;
-			}
-			RequestReply(r);
-			ProcessReply(r);
+			AsyncGet(
+				"/rr_gcode",
+				query,
+				[this, gcode](RestClient::Response& r) {
+					if (r.code != 200)
+					{
+						UI::CONSOLE->AddResponse(
+							utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
+						return false;
+					}
+					RequestReply(r);
+					ProcessReply(r);
+					return true;
+				},
+				true);
 			break;
 		}
 		case CommunicationType::usb:
@@ -361,46 +382,48 @@ namespace Comm
 
 		RestClient::Response r;
 		QueryParameters_t query;
-		query["password"] = m_password;
+		query["password"] = std::string("\"") + m_password + "\"";
 		if (useSessionKey)
 			query["sessionKey"] = "yes";
 
-		if (!Comm::Get(m_ipAddress, "/rr_connect", r, query))
-		{
-			error("rr_connect failed, returned response %d", r.code);
-			return false;
-		}
+		return Comm::AsyncGet(
+			m_ipAddress,
+			"/rr_connect",
+			query,
+			[this](RestClient::Response& r) {
+				verbose("parsing rr_connect response");
+				Json::Reader reader;
+				Json::Value body;
 
-		verbose("parsing rr_connect response");
-		Json::Reader reader;
-		Json::Value body;
+				if (!reader.parse(r.body, body))
+				{
+					error("Failed to parse JSON response from rr_connect");
+					return false;
+				}
 
-		if (!reader.parse(r.body, body))
-		{
-			error("Failed to parse JSON response from rr_connect");
-			return false;
-		}
+				if (body.isMember("err") && body["err"].asInt() != 0)
+				{
+					error("rr_connect failed, returned error %d", body["err"].asInt());
+					return false;
+				}
 
-		if (body.isMember("err") && body["err"].asInt() != 0)
-		{
-			error("rr_connect failed, returned error %d", body["err"].asInt());
-			return false;
-		}
+				if (body.isMember("sessionTimeout"))
+				{
+					m_sessionTimeout = body["sessionTimeout"].asInt();
+					m_lastRequestTime = TimeHelper::getCurrentTime();
+					info("Duet session timeout set to %d", m_sessionTimeout);
+				}
 
-		if (body.isMember("sessionTimeout"))
-		{
-			m_sessionTimeout = body["sessionTimeout"].asInt();
-			m_lastRequestTime = TimeHelper::getCurrentTime();
-			info("Duet session timeout set to %d", m_sessionTimeout);
-		}
-
-		if (body.isMember("sessionKey"))
-		{
-			m_sessionKey = body["sessionKey"].asUInt();
-			info("Duet session key = %u", m_sessionKey);
-		}
-		info("rr_connect succeeded");
-		return true;
+				if (body.isMember("sessionKey"))
+				{
+					m_sessionKey = body["sessionKey"].asUInt();
+					info("Duet session key = %u", m_sessionKey);
+				}
+				info("rr_connect succeeded");
+				return true;
+			},
+			0,
+			true);
 	}
 
 	const Duet::error_code Duet::Disconnect()

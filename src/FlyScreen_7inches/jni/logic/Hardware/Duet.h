@@ -114,7 +114,8 @@ namespace Comm
 	  private:
 		bool AsyncGet(const char* subUrl,
 					  QueryParameters_t& queryParameters,
-					  function<bool(RestClient::Response&)> callback);
+					  function<bool(RestClient::Response&)> callback,
+					  bool queue = false);
 		bool Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters);
 		bool Post(const char* subUrl,
 				  RestClient::Response& r,

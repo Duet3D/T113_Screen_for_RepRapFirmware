@@ -22,7 +22,10 @@ namespace Comm
 				  const char* subUrl,
 				  QueryParameters_t& queryParameters,
 				  function<bool(RestClient::Response&)> callback,
-				  uint32_t sessionKey = 0);
+				  uint32_t sessionKey = 0,
+				  bool queue = false);
+
+	void ProcessQueuedAsyncRequests();
 
 	bool Get(std::string url,
 			 const char* subUrl,
