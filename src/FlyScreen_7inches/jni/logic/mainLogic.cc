@@ -433,6 +433,13 @@ static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
 	return false;
 }
 
+static bool onButtonClick_NumPadCloseBtn(ZKButton* pButton)
+{
+	LOGD(" ButtonClick NumPadCloseBtn !!!\n");
+	UI::NUMPAD_WINDOW->Close();
+	return false;
+}
+
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
 	Comm::duet.SendGcode("G28\n");
 	return false;
@@ -1033,8 +1040,4 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 	dbg(" ButtonClick UsbFiles !!!\n");
 	OM::FileSystem::RequestUsbFiles("");
 	return false;
-}
-static bool onButtonClick_NumPadCloseBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick NumPadCloseBtn !!!\n");
-    return false;
 }
