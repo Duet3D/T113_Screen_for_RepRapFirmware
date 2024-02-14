@@ -58,6 +58,8 @@ namespace OM
 		uint8_t slot;
 
 		void Reset();
+		int32_t GetActiveTemp();
+		int32_t GetStandbyTemp();
 		bool SetBedTemp(const int32_t temp, const bool active);
 		bool SetChamberTemp(const int32_t temp, const bool active);
 		bool ToggleBedState();

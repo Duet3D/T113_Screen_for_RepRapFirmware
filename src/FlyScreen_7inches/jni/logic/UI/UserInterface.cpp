@@ -428,23 +428,40 @@ namespace UI
 		std::string header;
 		numPadData_.heaterType = data.heaterType;
 		numPadData_.active = data.active;
+		int currentTarget = 0;
 
 		switch (data.heaterType)
 		{
-		case HeaterType::tool:
-			header = utils::format("Tool %d Heater %d", data.toolIndex, data.toolHeaterIndex);
+		case HeaterType::tool: {
+
+			header = utils::format(
+				"Tool %d Heater %d %s", data.toolIndex, data.toolHeaterIndex, data.active ? "Active" : "Standby");
 			numPadData_.toolIndex = data.toolIndex;
 			numPadData_.toolHeaterIndex = data.toolHeaterIndex;
-			break;
-		case HeaterType::bed:
-		case HeaterType::chamber:
-			header = utils::format(
-				"%s %d", (data.heaterType == HeaterType::bed) ? "Bed" : "Chamber", data.bedOrChamberIndex);
-			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
+			OM::ToolHeater* toolHeater = OM::GetTool(data.toolIndex)->GetHeater(data.toolHeaterIndex);
+			if (toolHeater == nullptr)
+				return;
+			currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
 			break;
 		}
+		case HeaterType::bed:
+		case HeaterType::chamber: {
+			header = utils::format("%s %d %s",
+								   (data.heaterType == HeaterType::bed) ? "Bed" : "Chamber",
+								   data.bedOrChamberIndex,
+								   data.active ? "Active" : "Standby");
+			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
+			OM::BedOrChamber* bedOrChamber = (data.heaterType == HeaterType::bed)
+												 ? OM::GetBed(data.bedOrChamberIndex)
+												 : OM::GetChamber(data.bedOrChamberIndex);
+			if (bedOrChamber == nullptr)
+				return;
+			currentTarget = data.active ? bedOrChamber->GetActiveTemp() : bedOrChamber->GetStandbyTemp();
+			break;
+		}
+		}
 		UI::NUMPAD_WINDOW->Open(
-			header.c_str(), NULL, [](int) {}, [this](int value) { SendTempTarget(value); });
+			header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
 	}
 
 	bool ToolsList::SendTempTarget(int target)

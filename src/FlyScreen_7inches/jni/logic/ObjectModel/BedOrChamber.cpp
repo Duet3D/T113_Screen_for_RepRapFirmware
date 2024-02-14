@@ -38,6 +38,24 @@ namespace OM
 		slot = MaxSlots;
 	}
 
+	int32_t BedOrChamber::GetActiveTemp()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		return pheater->activeTemp;
+	}
+
+	int32_t BedOrChamber::GetStandbyTemp()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		return pheater->standbyTemp;
+	}
+
 	bool BedOrChamber::SetBedTemp(const int32_t temp, const bool active)
 	{
 		Heat::Heater* pheater = Heat::GetHeater(heater);
