@@ -137,7 +137,7 @@ namespace SerialIo {
 	}
 
 	static void ProcessField() {
-
+		dbg("id \"%s\" (%s)", fieldId.c_str(), fieldVal.c_str());
 		if (state == jsCharsVal) {
 			if (fieldVal.Equals("null")) {
 				fieldVal.Clear();				// so that we can distinguish null from an empty string
@@ -341,7 +341,7 @@ namespace SerialIo {
 		dbg_if(log, "CheckInput[%d]: %s", len, rxBuffer);
 		while (len != nextOut) {
 			char c = rxBuffer[nextOut];
-			dbg("char %d: %c", nextOut, c);
+			verbose("char %d: %c", nextOut, c);
 			nextOut = (nextOut + 1) % (len + 1);
 			if (c == '\n') {
 				if (state == jsError) {
@@ -351,6 +351,7 @@ namespace SerialIo {
 
 					if (cbs && cbs->ParserErrorEncountered) {
 						cbs->ParserErrorEncountered(lastState, fieldId.c_str(), serialIoErrors); // Notify the consumer that we ran into an error
+						error("rxBuffer: %s", rxBuffer);
 						lastState = jsBegin;
 					}
 				}

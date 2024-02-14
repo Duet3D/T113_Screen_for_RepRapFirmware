@@ -91,6 +91,14 @@ namespace Comm
 		SetPollInterval(static_cast<uint32_t>(m_pollInterval * scale));
 	}
 
+	bool Duet::AsyncGet(const char* subUrl,
+						QueryParameters_t& queryParameters,
+						function<bool(RestClient::Response&)> callback)
+	{
+		Comm::AsyncGet(m_ipAddress, subUrl, queryParameters, callback, m_sessionKey);
+		return true;
+	}
+
 	/*
 	Tries to make a get request to Duet, if it returns 401 or 403 then it will run `rr_connect` and send the request
 	again
@@ -231,13 +239,17 @@ namespace Comm
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["flags"] = flags;
-			if (!Get("/rr_model", r, query))
-			{
-				UI::CONSOLE->AddResponse(
-					utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags).c_str());
-				break;
-			}
-			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			AsyncGet("/rr_model", query, [this, flags](RestClient::Response& r) {
+				if (r.code != 200)
+				{
+					UI::CONSOLE->AddResponse(
+						utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags)
+							.c_str());
+					return false;
+				}
+				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				return true;
+			});
 			break;
 		}
 		default:
@@ -257,15 +269,18 @@ namespace Comm
 			QueryParameters_t query;
 			query["key"] = key;
 			query["flags"] = flags;
-			if (!Get("/rr_model", r, query))
-			{
-				UI::CONSOLE->AddResponse(
-					utils::format(
-						"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags)
-						.c_str());
-				break;
-			}
-			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			AsyncGet("/rr_model", query, [this, key, flags](RestClient::Response& r) {
+				if (r.code != 200)
+				{
+					UI::CONSOLE->AddResponse(
+						utils::format(
+							"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags)
+							.c_str());
+					return false;
+				}
+				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				return true;
+			});
 			break;
 		}
 		default:

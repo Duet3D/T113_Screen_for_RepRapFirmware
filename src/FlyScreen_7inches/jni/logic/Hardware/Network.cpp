@@ -8,14 +8,66 @@
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
-#include "Network.h"
 #include "Debug.h"
+#include "Network.h"
 #include "curl/curl.h"
 #include "restclient-cpp/connection.h"
 #include "utils.h"
+#include <system/Thread.h>
+#include <vector>
 
 namespace Comm
 {
+	class AsyncGetThread : public Thread
+	{
+	  public:
+		AsyncGetThread(std::string url,
+					   const char* subUrl,
+					   QueryParameters_t& queryParameters,
+					   function<bool(RestClient::Response&)> callback,
+					   uint32_t sessionKey)
+			: url(url), subUrl(subUrl), queryParameters(queryParameters), sessionKey(sessionKey), callback(callback)
+		{
+			dbg("starting thread for %s%s", url.c_str(), subUrl);
+			run();
+		}
+		virtual bool threadLoop()
+		{
+			verbose("%s%s", url.c_str(), subUrl);
+			if (!Get(url, subUrl, r, queryParameters, sessionKey))
+			{
+				// try again
+				return true;
+			}
+
+			// if callback returns true, stop the thread
+			return !callback(r);
+		}
+
+		void SetRequestParameters(std::string url,
+								  const char* subUrl,
+								  QueryParameters_t& queryParameters,
+								  function<bool(RestClient::Response&)> callback,
+								  uint32_t sessionKey)
+		{
+			this->url = url;
+			this->subUrl = subUrl;
+			this->queryParameters = queryParameters;
+			this->callback = callback;
+			this->sessionKey = sessionKey;
+		}
+
+	  private:
+			std::string url;
+		const char* subUrl;
+		RestClient::Response r;
+		QueryParameters_t queryParameters;
+		int32_t sessionKey;
+		function<bool(RestClient::Response&)> callback;
+	};
+
+	static std::vector<AsyncGetThread*> threads;
+
 	static void AddQueryParameters(std::string& url, QueryParameters_t& queryParameters)
 	{
 		if (queryParameters.size() > 0)
@@ -44,11 +96,22 @@ namespace Comm
 		}
 	}
 
+	bool AsyncGet(std::string url,
+				  const char* subUrl,
+				  QueryParameters_t& queryParameters,
+				  function<bool(RestClient::Response&)> callback,
+				  uint32_t sessionKey)
+	{
+		// TODO: delete thread when done
+		AsyncGetThread* thread = new AsyncGetThread(url, subUrl, queryParameters, callback, sessionKey);
+		return true;
+	}
+
 	bool Get(std::string url,
 			 const char* subUrl,
 			 RestClient::Response& r,
 			 QueryParameters_t& queryParameters,
-			 int32_t sessionKey)
+			 uint32_t sessionKey)
 	{
 		url += subUrl;
 
@@ -88,7 +151,7 @@ namespace Comm
 			  RestClient::Response& r,
 			  QueryParameters_t& queryParameters,
 			  const std::string& data,
-			  int32_t sessionKey)
+			  uint32_t sessionKey)
 	{
 		url += subUrl;
 

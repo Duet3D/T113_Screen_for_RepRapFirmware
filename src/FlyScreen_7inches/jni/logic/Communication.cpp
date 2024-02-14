@@ -912,12 +912,13 @@ namespace Comm {
 		}
 	}
 
-	static void ParserErrorEncountered(int currentState, const char*, int errors) {
+	static void ParserErrorEncountered(int currentState, const char* id, int errors)
+	{
 		(void)currentState;
 
 		if (errors > parserMinErrors) {
-			//MessageLog::AppendMessageF("Warning: received %d malformed responses.", errors);
-			LOGE("Warning: received %d malformed responses.", errors);
+			UI::CONSOLE->AddResponse(utils::format("Warning: received %d malformed responses.", errors).c_str());
+			error("Warning: received %d malformed responses for id \"%s\"", errors, id);
 		}
 		if (currentRespSeq == nullptr) {
 			return;

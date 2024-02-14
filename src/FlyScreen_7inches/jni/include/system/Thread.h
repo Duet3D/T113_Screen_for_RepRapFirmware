@@ -10,67 +10,69 @@
 #ifndef _SYSTEM_THREAD_H_
 #define _SYSTEM_THREAD_H_
 
-#include "Mutex.h"
 #include "Condition.h"
+#include "Mutex.h"
 
 /**
- * @brief 线程类
+ * @brief Thread class
  */
-class Thread {
-public:
+class Thread
+{
+  public:
 	Thread();
 	virtual ~Thread();
 
 	/**
-	 * @brief 启动线程
-	 * @param name 线程名称；默认为NULL，由系统自动分配
+	 * @brief Start the thread
+	 * @param name Thread name; default is NULL, automatically assigned by the system
 	 */
-	bool run(const char *name = 0);
+	bool run(const char* name = 0);
 
 	/**
-	 * @brief 请求退出线程
-	 * @attention 调用完函数立即返回，并不代表线程也退出了
+	 * @brief Request to exit the thread
+	 * @attention The function returns immediately after calling, but it does not mean that the thread has also exited
 	 */
 	void requestExit();
 
 	/**
-	 * @brief 请求并等待线程退出
-	 * @attention 线程退出，函数才返回
+	 * @brief Request and wait for the thread to exit
+	 * @attention The function returns only when the thread exits
 	 */
 	void requestExitAndWait();
 
 	/**
-	 * @brief 线程是否运行中
+	 * @brief Whether the thread is running
 	 */
 	bool isRunning() const;
 
 	static void sleep(int msec);
 
-protected:
+  protected:
 	/**
-	 * @brief 是否有退出线程请求
+	 * @brief Whether there is a request to exit the thread
 	 */
 	bool exitPending() const;
 
 	/**
-	 * @brief 线程开始运行时回调该接口
+	 * @brief Callback interface when the thread starts running
 	 */
 	virtual bool readyToRun();
 
 	/**
-	 * @brief 线程循环调用该接口
-	 * @return true 不退出线程，false 将退出线程
+	 * @brief The thread calls this interface in a loop
+	 * @return true The thread will not exit, false The thread will exit
 	 */
 	virtual bool threadLoop() = 0;
 
-private:
+  private:
 	Thread& operator=(const Thread&);
-	static void* _threadLoop(void *user);
+	static void* _threadLoop(void* user);
 
-private:
-	typedef struct {
-		void *userData;
-		char *threadName;
+  private:
+	typedef struct
+	{
+		void* userData;
+		char* threadName;
 	} SThreadData;
 
 	bool mExitPending;
