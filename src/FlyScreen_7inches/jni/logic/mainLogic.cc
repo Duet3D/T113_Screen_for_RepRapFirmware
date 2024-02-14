@@ -446,6 +446,13 @@ static bool onButtonClick_NumPadCloseBtn(ZKButton* pButton)
 	return false;
 }
 
+static bool onButtonClick_NumPadClearBtn(ZKButton* pButton)
+{
+	LOGD(" ButtonClick NumPadClearBtn !!!\n");
+	UI::NUMPAD_WINDOW->ClearValue();
+	return false;
+}
+
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
 	Comm::duet.SendGcode("G28\n");
 	return false;

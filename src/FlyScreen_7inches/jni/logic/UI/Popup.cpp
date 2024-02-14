@@ -534,6 +534,11 @@ namespace UI
 		Callback();
 	}
 
+	void NumPadWindow::ClearValue()
+	{
+		value_->setText("");
+	}
+
 	void NumPadWindow::AddOneChar(char ch)
 	{
 		std::string value = value_->getText() + ch;

@@ -134,6 +134,7 @@ namespace UI
 		int GetValue();
 		void SetValue(int value);
 		void SetValue(const char* value);
+		void ClearValue();
 		void AddOneChar(char c);
 		void DelOneChar();
 
