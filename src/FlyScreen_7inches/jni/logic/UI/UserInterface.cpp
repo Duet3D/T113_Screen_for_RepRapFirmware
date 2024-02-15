@@ -6,7 +6,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 #include "UserInterface.h"
 #include "Debug.h"
 #include "ObjectModel/Files.h"
@@ -91,9 +91,11 @@ namespace UI
 		if (overlayWindows_.empty())
 			return false;
 
+		verbose("%d overlay windows to close", overlayWindows_.size());
 		// Ensure that you can't close the popup window if it's blocking.
 		if (POPUP_WINDOW->IsBlocking())
 		{
+			verbose("Popup window is blocking");
 			return false;
 		}
 		if (POPUP_WINDOW->IsOpen())
@@ -103,8 +105,9 @@ namespace UI
 		for (auto& window : overlayWindows_)
 		{
 			window->setVisible(false);
-			RemoveFromVector<ZKBase*>(openedWindows_, window);
+			RemoveFromVector<ZKBase*>(overlayWindows_, window);
 		}
+		verbose("Closed overlays, %d remaining", overlayWindows_.size());
 		return true;
 	}
 
