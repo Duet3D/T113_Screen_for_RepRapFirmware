@@ -6,7 +6,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "UserInterface.h"
 #include "Debug.h"
 #include "ObjectModel/Files.h"
@@ -602,5 +602,12 @@ namespace UI
 	void RunSelectedFile()
 	{
 		return OM::FileSystem::RunFile(sSelectedFile);
+	}
+
+	bool UpdateFileThumbnailChunk(const struct Thumbnail& thumbnail,
+								  uint32_t pixels_offset,
+								  const qoi_rgba_t* pixels,
+								  size_t pixels_count)
+	{
 	}
 } // namespace UI

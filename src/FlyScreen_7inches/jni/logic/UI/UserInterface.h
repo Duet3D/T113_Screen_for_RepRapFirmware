@@ -20,6 +20,7 @@
 
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
+#include "Library/Thumbnail.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
@@ -158,6 +159,10 @@ namespace UI
 	void SetSelectedFile(const OM::FileSystem::File* file);
 	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
+	bool UpdateFileThumbnailChunk(const struct Thumbnail& thumbnail,
+								  uint32_t pixels_offset,
+								  const qoi_rgba_t* pixels,
+								  size_t pixels_count);
 
 #define WINDOW Window::GetInstance()
 #define NUMPAD_WINDOW NumPadWindow::GetInstance()

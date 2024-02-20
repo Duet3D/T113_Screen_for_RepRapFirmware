@@ -292,9 +292,7 @@ number of channels (3 = RGB, 4 = RGBA) and the colorspace.
 
 The function returns 0 on failure (invalid parameters, or fopen or malloc
 failed) or the number of bytes written on success. */
-
 int qoi_write(const char *filename, const void *data, const qoi_desc *desc);
-
 
 /* Read and decode a QOI image from the file system. If channels is 0, the
 number of channels from the file header is used. If channels is 3 or 4 the
@@ -305,11 +303,9 @@ failed) or a pointer to the decoded pixels. On success, the qoi_desc struct
 will be filled with the description from the file header.
 
 The returned pixel data should be free()d after use. */
-
-void *qoi_read(const char *filename, qoi_desc *desc, int channels);
+void* qoi_read(const char* filename, qoi_desc* desc, int channels);
 
 #endif /* QOI_NO_STDIO */
-
 
 /* Encode raw RGB or RGBA pixels into a QOI image in memory.
 
@@ -318,9 +314,7 @@ failed) or a pointer to the encoded data on success. On success the out_len
 is set to the size in bytes of the encoded data.
 
 The returned qoi data should be free()d after use. */
-
-void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len);
-
+void* qoi_encode(const void* data, const qoi_desc* desc, int* out_len);
 
 /* Decode a QOI image from memory.
 
@@ -329,7 +323,6 @@ failed) or a pointer to the decoded pixels. On success, the qoi_desc struct
 is filled with the description from the file header.
 
 The returned pixel data should be free()d after use. */
-
 void *qoi_decode(const void *data, int size, qoi_desc *desc, int channels);
 
 int qoi_decode_init(qoi_desc *desc);

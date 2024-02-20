@@ -9,7 +9,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/UserInterface.h"
@@ -644,16 +644,20 @@ namespace Comm {
 			error("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
 			thumbnailContext.state = ThumbnailState::Init;
 		}
-	#if 0 // && DEBUG
+#if 1 // && DEBUG
 		if (thumbnail.imageFormat != Thumbnail::ImageFormat::Invalid) {
 			dbg("filename %s offset %d size %d format %d width %d height %d\n",
 				thumbnailContext.filename.c_str(),
-				thumbnailContext.offset, thumbnailContext.size,
+				thumbnailContext.offset,
+				thumbnailContext.size,
 				thumbnail.imageFormat,
-				thumbnail.width, thumbnail.height);
+				thumbnail.width,
+				thumbnail.height);
 		}
 #endif
+		int ret;
 
+		dbg("thumbnailContext state %d", thumbnailContext.state);
 		switch (thumbnailContext.state) {
 		case ThumbnailState::Init:
 		case ThumbnailState::DataRequest:
@@ -671,12 +675,13 @@ namespace Comm {
 				error("thumbnail meta or data invalid.\n");
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
-			} /*
-			 if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0) {
-				 error("failed to decode thumbnail chunk %d.\n", ret);
-				 thumbnailContext.state = ThumbnailState::Init;
-				 break;
-			 }*/
+			}
+			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0)
+			{
+				error("failed to decode thumbnail chunk %d.\n", ret);
+				thumbnailContext.state = ThumbnailState::Init;
+				break;
+			}
 			if (thumbnailContext.next == 0) {
 				thumbnailContext.state = ThumbnailState::Init;
 			} else {
@@ -752,7 +757,7 @@ namespace Comm {
 
 		// no matching key found
 		if (!searchResult) {
-			dbg("no matching key found for %s\n", id.c_str());
+			verbose("no matching key found for %s\n", id.c_str());
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
@@ -805,6 +810,7 @@ namespace Comm {
 			break;
 
 		case rcvM36ThumbnailsFormat:
+			info("thumbnail format %s", data);
 			thumbnail.imageFormat = Thumbnail::ImageFormat::Invalid;
 			if (strcmp(data, "qoi") == 0) {
 				thumbnail.imageFormat = Thumbnail::ImageFormat::Qoi;
@@ -816,12 +822,14 @@ namespace Comm {
 			uint32_t height;
 			if (GetUnsignedInteger(data, height))
 			{
+				info("thumbnail height %d", height);
 				thumbnail.height = height;
 			}
 			break;
 		case rcvM36ThumbnailsOffset:
 			uint32_t offset;
 			if (GetUnsignedInteger(data, offset)) {
+				info("thumbnail offset %d", offset);
 				thumbnailContext.next = offset;
 				dbg("receive initial offset %d.\n", offset);
 			}
@@ -829,44 +837,51 @@ namespace Comm {
 		case rcvM36ThumbnailsSize:
 			uint32_t size;
 			if (GetUnsignedInteger(data, size)) {
+				info("thumbnail size %d", size);
 				thumbnailContext.size = size;
 			}
 			break;
 		case rcvM36ThumbnailsWidth:
 			uint32_t width;
 			if (GetUnsignedInteger(data, width)) {
+				info("thumbnail width %d", width);
 				thumbnail.width = width;
 			}
 			break;
 
 		case rcvM361ThumbnailData:
+			info("thumbnail data %d", strlen(data));
 			thumbnailData.size = std::min(strlen(data), sizeof(thumbnailData.buffer));
 			memcpy(thumbnailData.buffer, data, thumbnailData.size);
 			thumbnailContext.state = ThumbnailState::Data;
 			break;
 		case rcvM361ThumbnailErr:
 			if (!GetInteger(data, thumbnailContext.err)) {
+				warn("thumbnail err %s", data);
 				thumbnailContext.parseErr = -1;
 			}
 			break;
 		case rcvM361ThumbnailFilename:
 			if (!thumbnailContext.filename.Equals(data)) {
+				warn("thumbnail filename error \"%s\"", data);
 				thumbnailContext.parseErr = -2;
 			}
 			break;
 		case rcvM361ThumbnailNext:
 			if (!GetUnsignedInteger(data, thumbnailContext.next)) {
+				warn("thumbnail next error \"%s\"", data);
 				thumbnailContext.parseErr = -3;
 				break;
 			}
-			dbg("receive next offset %d.\n", thumbnailContext.next);
+			dbg("thumbnail receive next offset %d.", thumbnailContext.next);
 			break;
 		case rcvM361ThumbnailOffset:
 			if (!GetUnsignedInteger(data, thumbnailContext.offset)) {
+				warn("thumbnail offset error \"%s\"", data);
 				thumbnailContext.parseErr = -4;
 				break;
 			}
-			dbg("receive current offset %d.\n", thumbnailContext.offset);
+			dbg("thumbnail receive current offset %d.", thumbnailContext.offset);
 			break;
 
 		case rcvControlCommand:
@@ -935,14 +950,30 @@ namespace Comm {
 		{
 			Reconnect();
 		}
+
+		if (thumbnailContext.state == ThumbnailState::DataRequest)
+		{
+			// Request thumbnail data
+			info("Requesting thumbnail data for %s at offset %d\n",
+				 thumbnailContext.filename.c_str(),
+				 thumbnailContext.next);
+			duet.SendGcodef("M36.1 P\"%s\" S%d", thumbnailContext.filename.c_str(), thumbnailContext.next);
+			thumbnailContext.state = ThumbnailState::DataWait;
+			return;
+		}
+
 		currentReqSeq = GetNextSeq(currentReqSeq);
-		if (currentReqSeq != nullptr) {
+		if (currentReqSeq != nullptr)
+		{
 			Comm::duet.RequestModel("state", "f"); // Check if state is halted, if so we need to send M999
 			info("requesting %s\n", currentReqSeq->key);
 			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
-		} else {
+		}
+		else
+		{
 			// Once we get here the first time we will have work all seqs once
-			if (!initialized) {
+			if (!initialized)
+			{
 				info("seqs init DONE\n");
 				initialized = true;
 			}

@@ -1,5 +1,5 @@
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
+#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 #include "Debug.h"
 
 #include "Library/Thumbnail.h"
@@ -101,6 +101,8 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 		if (thumbnail.qoi.height != thumbnail.height ||
 		    thumbnail.qoi.width != thumbnail.width)
 		{
+			error("thumbnail height %d, qoi height %d", thumbnail.height, thumbnail.qoi.height);
+			error("thumbnail width %d, qoi width %d", thumbnail.width, thumbnail.qoi.width);
 			return -5;
 		}
 
