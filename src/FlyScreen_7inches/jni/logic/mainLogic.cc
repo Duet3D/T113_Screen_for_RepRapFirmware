@@ -7,6 +7,7 @@
 #include "Hardware/Duet.h"
 #include "Hardware/SerialIo.h"
 #include "Hardware/Usb.h"
+#include "Library/bmp.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
@@ -1064,5 +1065,40 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 {
 	dbg(" ButtonClick UsbFiles !!!\n");
 	OM::FileSystem::RequestUsbFiles("");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
+{
+	Comm::duet.SendGcode("M36 \"QOI_32x32.gcode\"");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
+{
+	int height = 361;
+	int width = 867;
+	unsigned char image[height][width][BYTES_PER_PIXEL];
+	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
+
+	int i, j;
+	for (i = 0; i < height; i++)
+	{
+		for (j = 0; j < width; j++)
+		{
+			image[i][j][2] = (unsigned char)(i * 255 / height);					/// red
+			image[i][j][1] = (unsigned char)(j * 255 / width);					/// green
+			image[i][j][0] = (unsigned char)((i + j) * 255 / (height + width)); /// blue
+		}
+	}
+
+	generateBitmapImage((unsigned char*)image, height, width, imageFileName);
+	mThumbnailPtr->setBackgroundPic("/tmp/bitmapImage.bmp");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
+{
+	Comm::duet.SendGcode("M122");
 	return false;
 }
