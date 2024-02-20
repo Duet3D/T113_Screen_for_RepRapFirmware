@@ -1078,8 +1078,9 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
 	int height = 361;
 	int width = 867;
-	unsigned char image[height][width][BYTES_PER_PIXEL];
-	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
+	char* imageFileName = (char*)"/tmp/bitmapImage2.bmp";
+
+	BMP bmp(width, height, imageFileName);
 
 	rgba_t pixels[height][width];
 
@@ -1092,13 +1093,10 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 			pixels[i][j].rgba.g = (unsigned char)(j * 255 / width);					 /// green
 			pixels[i][j].rgba.b = (unsigned char)((i + j) * 255 / (height + width)); /// blue
 			pixels[i][j].rgba.a = 0;
-			image[i][j][2] = (unsigned char)(i * 255 / height);					/// red
-			image[i][j][1] = (unsigned char)(j * 255 / width);					/// green
-			image[i][j][0] = (unsigned char)((i + j) * 255 / (height + width)); /// blue
 		}
 	}
 
-	generateBitmapImage((unsigned char*)pixels, height, width, imageFileName);
+	bmp.generateBitmapImage((unsigned char*)pixels);
 	mThumbnailPtr->setBackgroundPic(imageFileName);
 	return false;
 }
