@@ -214,6 +214,8 @@ namespace Comm
 		}
 		dbg("%s succeeded, returned response %d", url.c_str(), r.code);
 		verbose("Response body: %s", r.body.c_str());
+
+		delete conn;
 		return true;
 	}
 

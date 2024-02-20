@@ -380,6 +380,8 @@ namespace Comm
 		Disconnect();
 		Reset();
 
+		info("Connecting to Duet at %s", m_ipAddress.c_str());
+
 		RestClient::Response r;
 		QueryParameters_t query;
 		query["password"] = std::string("\"") + m_password + "\"";
