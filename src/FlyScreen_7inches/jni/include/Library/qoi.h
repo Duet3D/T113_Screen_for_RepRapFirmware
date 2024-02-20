@@ -253,11 +253,7 @@ how chunks are en-/decoded. */
 #define QOI_SRGB   0
 #define QOI_LINEAR 1
 
-typedef union {
-	struct { unsigned char r, g, b, a; } rgba;
-	unsigned int v;
-} qoi_rgba_t;
-
+#include "Pixel.h"
 
 enum qoi_decoder_state {
 	qoi_decoder_header,
@@ -277,9 +273,9 @@ typedef struct {
 
 	size_t pixels_count;
 
-	qoi_rgba_t index[64];
+	rgba_t index[64];
 	int run;
-	qoi_rgba_t start;
+	rgba_t start;
 	unsigned char last_bytes[4];
 	size_t last_bytes_size;
 } qoi_desc;
@@ -404,8 +400,8 @@ void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len) {
 	int px_len, px_end, px_pos, channels;
 	unsigned char *bytes;
 	const unsigned char *pixels;
-	qoi_rgba_t index[64];
-	qoi_rgba_t px, px_prev;
+	rgba_t index[64];
+	rgba_t px, px_prev;
 
 	if (
 		data == NULL || out_len == NULL || desc == NULL ||
@@ -451,38 +447,46 @@ void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len) {
 
 	for (px_pos = 0; px_pos < px_len; px_pos += channels) {
 		if (channels == 4) {
-			px = *(qoi_rgba_t *)(pixels + px_pos);
+			px = *(rgba_t*)(pixels + px_pos);
 		}
-		else {
+		else
+		{
 			px.rgba.r = pixels[px_pos + 0];
 			px.rgba.g = pixels[px_pos + 1];
 			px.rgba.b = pixels[px_pos + 2];
 		}
 
-		if (px.v == px_prev.v) {
+		if (px.v == px_prev.v)
+		{
 			run++;
-			if (run == 62 || px_pos == px_end) {
+			if (run == 62 || px_pos == px_end)
+			{
 				bytes[p++] = QOI_OP_RUN | (run - 1);
 				run = 0;
 			}
 		}
-		else {
+		else
+		{
 			int index_pos;
 
-			if (run > 0) {
+			if (run > 0)
+			{
 				bytes[p++] = QOI_OP_RUN | (run - 1);
 				run = 0;
 			}
 
 			index_pos = QOI_COLOR_HASH(px) % 64;
 
-			if (index[index_pos].v == px.v) {
+			if (index[index_pos].v == px.v)
+			{
 				bytes[p++] = QOI_OP_INDEX | index_pos;
 			}
-			else {
+			else
+			{
 				index[index_pos] = px;
 
-				if (px.rgba.a == px_prev.rgba.a) {
+				if (px.rgba.a == px_prev.rgba.a)
+				{
 					signed char vr = px.rgba.r - px_prev.rgba.r;
 					signed char vg = px.rgba.g - px_prev.rgba.g;
 					signed char vb = px.rgba.b - px_prev.rgba.b;
@@ -490,29 +494,25 @@ void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len) {
 					signed char vg_r = vr - vg;
 					signed char vg_b = vb - vg;
 
-					if (
-						vr > -3 && vr < 2 &&
-						vg > -3 && vg < 2 &&
-						vb > -3 && vb < 2
-					) {
+					if (vr > -3 && vr < 2 && vg > -3 && vg < 2 && vb > -3 && vb < 2)
+					{
 						bytes[p++] = QOI_OP_DIFF | (vr + 2) << 4 | (vg + 2) << 2 | (vb + 2);
 					}
-					else if (
-						vg_r >  -9 && vg_r <  8 &&
-						vg   > -33 && vg   < 32 &&
-						vg_b >  -9 && vg_b <  8
-					) {
-						bytes[p++] = QOI_OP_LUMA     | (vg   + 32);
-						bytes[p++] = (vg_r + 8) << 4 | (vg_b +  8);
+					else if (vg_r > -9 && vg_r < 8 && vg > -33 && vg < 32 && vg_b > -9 && vg_b < 8)
+					{
+						bytes[p++] = QOI_OP_LUMA | (vg + 32);
+						bytes[p++] = (vg_r + 8) << 4 | (vg_b + 8);
 					}
-					else {
+					else
+					{
 						bytes[p++] = QOI_OP_RGB;
 						bytes[p++] = px.rgba.r;
 						bytes[p++] = px.rgba.g;
 						bytes[p++] = px.rgba.b;
 					}
 				}
-				else {
+				else
+				{
 					bytes[p++] = QOI_OP_RGBA;
 					bytes[p++] = px.rgba.r;
 					bytes[p++] = px.rgba.g;
@@ -524,7 +524,8 @@ void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len) {
 		px_prev = px;
 	}
 
-	for (i = 0; i < (int)sizeof(qoi_padding); i++) {
+	for (i = 0; i < (int)sizeof(qoi_padding); i++)
+	{
 		bytes[p++] = qoi_padding[i];
 	}
 
@@ -532,8 +533,10 @@ void *qoi_encode(const void *data, const qoi_desc *desc, int *out_len) {
 	return bytes;
 }
 
-int qoi_decode_init(qoi_desc *desc) {
-	if (!desc) {
+int qoi_decode_init(qoi_desc* desc)
+{
+	if (!desc)
+	{
 		return -1;
 	}
 
@@ -544,20 +547,18 @@ int qoi_decode_init(qoi_desc *desc) {
 
 // returns header in desc
 // number of bytes read on success, negative number on error
-int qoi_decode_header(const void *data, int size, qoi_desc *desc) {
-	const unsigned char *bytes;
+int qoi_decode_header(const void* data, int size, qoi_desc* desc)
+{
+	const unsigned char* bytes;
 	unsigned int header_magic;
 	int p = 0;
 
-	if (
-		data == NULL || desc == NULL ||
-		desc->decoder_state != qoi_decoder_header ||
-		size < QOI_HEADER_SIZE
-	) {
+	if (data == NULL || desc == NULL || desc->decoder_state != qoi_decoder_header || size < QOI_HEADER_SIZE)
+	{
 		return -1;
 	}
 
-	bytes = (const unsigned char *)data;
+	bytes = (const unsigned char*)data;
 
 	header_magic = qoi_read_32(bytes, &p);
 	desc->width = qoi_read_32(bytes, &p);
@@ -565,13 +566,9 @@ int qoi_decode_header(const void *data, int size, qoi_desc *desc) {
 	desc->channels = bytes[p++];
 	desc->colorspace = bytes[p++];
 
-	if (
-		desc->width == 0 || desc->height == 0 ||
-		desc->channels < 3 || desc->channels > 4 ||
-		desc->colorspace > 1 ||
-		header_magic != QOI_MAGIC ||
-		desc->height >= QOI_PIXELS_MAX / desc->width
-	) {
+	if (desc->width == 0 || desc->height == 0 || desc->channels < 3 || desc->channels > 4 || desc->colorspace > 1 ||
+		header_magic != QOI_MAGIC || desc->height >= QOI_PIXELS_MAX / desc->width)
+	{
 		return -2;
 	}
 
@@ -585,7 +582,6 @@ int qoi_decode_header(const void *data, int size, qoi_desc *desc) {
 	desc->pixels_count = 0;
 	QOI_ZEROARR(desc->index);
 
-
 	desc->decoder_state = qoi_decoder_body;
 
 	return p;
@@ -595,61 +591,59 @@ int qoi_decode_header(const void *data, int size, qoi_desc *desc) {
 
 // return negative number on error or processed bytes from data
 // pixels return number of decoded pixel_count (qoi_rgba_t)
-int qoi_decode_body(qoi_desc *desc, const void *data, int size, void *buffer, int buffer_size, int *pixel_count) {
-	const unsigned char *bytes;
-	unsigned char *pixels;
-	qoi_rgba_t px;
+int qoi_decode_body(qoi_desc* desc, const void* data, int size, void* buffer, int buffer_size, int* pixel_count)
+{
+	const unsigned char* bytes;
+	unsigned char* pixels;
+	rgba_t px;
 	int px_pos;
 	int p = 0;
 
-	if (
-		desc == NULL || data == NULL || size == 0 ||
-		desc->decoder_state != qoi_decoder_body ||
-		buffer == NULL || buffer_size < desc->channels ||
-		pixel_count == NULL
-	) {
+	if (desc == NULL || data == NULL || size == 0 || desc->decoder_state != qoi_decoder_body || buffer == NULL ||
+		buffer_size < desc->channels || pixel_count == NULL)
+	{
 		return -3;
 	}
 
-	if (
-		desc->width == 0 || desc->height == 0 ||
-		desc->channels < 3 || desc->channels > 4 ||
-		desc->colorspace > 1 ||
-		desc->height >= QOI_PIXELS_MAX / desc->width
-	) {
+	if (desc->width == 0 || desc->height == 0 || desc->channels < 3 || desc->channels > 4 || desc->colorspace > 1 ||
+		desc->height >= QOI_PIXELS_MAX / desc->width)
+	{
 		return -4;
 	}
 
 	// restore last pixel for chunk
 	px = desc->start;
 
-	pixels = (unsigned char *)buffer;
+	pixels = (unsigned char*)buffer;
 	*pixel_count = 0;
 
-	bytes = (const unsigned char *)data;
-	for (px_pos = 0; px_pos < buffer_size && p < size; px_pos += sizeof(qoi_rgba_t)) {
+	bytes = (const unsigned char*)data;
+	for (px_pos = 0; px_pos < buffer_size && p < size; px_pos += sizeof(rgba_t))
+	{
 
-		if (desc->pixels_count >= desc->width * desc->height) {
+		if (desc->pixels_count >= desc->width * desc->height)
+		{
 			// everything decoded
 			break;
 		}
-		if (desc->run > 0) {
+		if (desc->run > 0)
+		{
 			desc->run--;
 		}
-		else if (p < size) {
+		else if (p < size)
+		{
 			int b1 = bytes[p];
 
 			// check if command is complete
-			if (
-				(b1 == QOI_OP_RGB && p + 4 > size) ||
-				(b1 == QOI_OP_RGBA && p + 5 > size) ||
-				((b1 & QOI_MASK_2) == QOI_OP_LUMA && p + 2 > size)
-			) {
+			if ((b1 == QOI_OP_RGB && p + 4 > size) || (b1 == QOI_OP_RGBA && p + 5 > size) ||
+				((b1 & QOI_MASK_2) == QOI_OP_LUMA && p + 2 > size))
+			{
 				desc->last_bytes_size = size - p;
 
 				qoi_dbg("incomplete command %02x %d %d %d\n", b1, desc->last_bytes_size, p, size);
 
-				if (desc->last_bytes_size > sizeof(desc->last_bytes_size)) {
+				if (desc->last_bytes_size > sizeof(desc->last_bytes_size))
+				{
 					qoi_dbg("buffer too small\n");
 					return -5;
 				}
@@ -662,40 +656,46 @@ int qoi_decode_body(qoi_desc *desc, const void *data, int size, void *buffer, in
 
 			p++;
 
-			if (b1 == QOI_OP_RGB) {
+			if (b1 == QOI_OP_RGB)
+			{
 				px.rgba.r = bytes[p++];
 				px.rgba.g = bytes[p++];
 				px.rgba.b = bytes[p++];
 			}
-			else if (b1 == QOI_OP_RGBA) {
+			else if (b1 == QOI_OP_RGBA)
+			{
 				px.rgba.r = bytes[p++];
 				px.rgba.g = bytes[p++];
 				px.rgba.b = bytes[p++];
 				px.rgba.a = bytes[p++];
 			}
-			else if ((b1 & QOI_MASK_2) == QOI_OP_INDEX) {
+			else if ((b1 & QOI_MASK_2) == QOI_OP_INDEX)
+			{
 				px = desc->index[b1];
 			}
-			else if ((b1 & QOI_MASK_2) == QOI_OP_DIFF) {
+			else if ((b1 & QOI_MASK_2) == QOI_OP_DIFF)
+			{
 				px.rgba.r += ((b1 >> 4) & 0x03) - 2;
 				px.rgba.g += ((b1 >> 2) & 0x03) - 2;
-				px.rgba.b += ( b1       & 0x03) - 2;
+				px.rgba.b += (b1 & 0x03) - 2;
 			}
-			else if ((b1 & QOI_MASK_2) == QOI_OP_LUMA) {
+			else if ((b1 & QOI_MASK_2) == QOI_OP_LUMA)
+			{
 				int b2 = bytes[p++];
 				int vg = (b1 & 0x3f) - 32;
 				px.rgba.r += vg - 8 + ((b2 >> 4) & 0x0f);
 				px.rgba.g += vg;
-				px.rgba.b += vg - 8 +  (b2       & 0x0f);
+				px.rgba.b += vg - 8 + (b2 & 0x0f);
 			}
-			else if ((b1 & QOI_MASK_2) == QOI_OP_RUN) {
+			else if ((b1 & QOI_MASK_2) == QOI_OP_RUN)
+			{
 				desc->run = (b1 & 0x3f);
 			}
 
 			desc->index[QOI_COLOR_HASH(px) % 64] = px;
 		}
 
-		*(qoi_rgba_t*)(pixels + px_pos) = px;
+		*(rgba_t*)(pixels + px_pos) = px;
 
 		(*pixel_count)++;
 		desc->pixels_count++;
@@ -710,13 +710,12 @@ int qoi_decode_body(qoi_desc *desc, const void *data, int size, void *buffer, in
 	return p;
 }
 
-int qoi_decode_body_last(qoi_desc *desc, const void *data, int size, void *buffer, int buffer_size, int *pixel_count) {
+int qoi_decode_body_last(qoi_desc* desc, const void* data, int size, void* buffer, int buffer_size, int* pixel_count)
+{
 
-	if (
-		!desc || desc->last_bytes_size == 0 ||
-		desc->last_bytes_size > sizeof(desc->last_bytes) ||
-		size < (int)sizeof(qoi_rgba_t)
-	) {
+	if (!desc || desc->last_bytes_size == 0 || desc->last_bytes_size > sizeof(desc->last_bytes) ||
+		size < (int)sizeof(rgba_t))
+	{
 		return -10;
 	}
 
@@ -754,7 +753,6 @@ int qoi_decode_body_last(qoi_desc *desc, const void *data, int size, void *buffe
 	desc->last_bytes_size = 0;
 
 	return res;
-
 }
 
 // negative on error
@@ -802,8 +800,8 @@ void *qoi_decode(const void *data, int size, qoi_desc *desc, int channels) {
 	const unsigned char *bytes;
 	unsigned int header_magic;
 	unsigned char *pixels;
-	qoi_rgba_t index[64];
-	qoi_rgba_t px;
+	rgba_t index[64];
+	rgba_t px;
 	int px_len, chunks_len, px_pos;
 	int p = 0, run = 0;
 
@@ -891,7 +889,7 @@ void *qoi_decode(const void *data, int size, qoi_desc *desc, int channels) {
 		}
 
 		if (channels == 4) {
-			*(qoi_rgba_t*)(pixels + px_pos) = px;
+			*(rgba_t*)(pixels + px_pos) = px;
 		}
 		else {
 			pixels[px_pos + 0] = px.rgba.r;

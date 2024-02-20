@@ -81,7 +81,7 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 
 	int size_done = 0;
 	int pixel_decoded = 0;
-	qoi_rgba_t rgba_buffer[64];
+	rgba_t rgba_buffer[64];
 
 	do
 	{

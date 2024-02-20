@@ -8,9 +8,10 @@
 #ifndef JNI_INCLUDE_LIBRARY_BMP_H_
 #define JNI_INCLUDE_LIBRARY_BMP_H_
 
+#include "Pixel.h"
 #include <stdio.h>
 
-constexpr int BYTES_PER_PIXEL = 3; /// red, green, & blue
+constexpr int BYTES_PER_PIXEL = 4; /// blue, green, red, alpha
 constexpr int FILE_HEADER_SIZE = 14;
 constexpr int INFO_HEADER_SIZE = 40;
 
@@ -22,7 +23,9 @@ void generateBitmapImage(unsigned char* image, int height, int width, char* imag
 {
 	int widthInBytes = width * BYTES_PER_PIXEL;
 
-	unsigned char padding[3] = {0, 0, 0};
+	unsigned char padding[BYTES_PER_PIXEL] = {0};
+	memset(padding, 0, BYTES_PER_PIXEL);
+
 	int paddingSize = (4 - (widthInBytes) % 4) % 4;
 
 	int stride = (widthInBytes) + paddingSize;
@@ -50,20 +53,10 @@ unsigned char* createBitmapFileHeader(int height, int stride)
 	int fileSize = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (stride * height);
 
 	static unsigned char fileHeader[] = {
-		0,
-		0, /// signature
-		0,
-		0,
-		0,
-		0, /// image file size in bytes
-		0,
-		0,
-		0,
-		0, /// reserved
-		0,
-		0,
-		0,
-		0, /// start of pixel array
+        0, 0, /// signature
+        0, 0, 0, 0, /// image file size in bytes
+        0, 0, 0, 0, /// reserved
+        0, 0, 0, 0, /// start of pixel array
 	};
 
 	fileHeader[0] = (unsigned char)('B');

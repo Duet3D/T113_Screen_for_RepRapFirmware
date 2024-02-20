@@ -606,7 +606,7 @@ namespace UI
 
 	bool UpdateFileThumbnailChunk(const struct Thumbnail& thumbnail,
 								  uint32_t pixels_offset,
-								  const qoi_rgba_t* pixels,
+								  const rgba_t* pixels,
 								  size_t pixels_count)
 	{
 	}
