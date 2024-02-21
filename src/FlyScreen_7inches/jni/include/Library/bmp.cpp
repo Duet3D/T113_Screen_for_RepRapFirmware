@@ -1,5 +1,5 @@
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "bmp.h"
@@ -75,7 +75,7 @@ void BMP::appendPixels(unsigned char* pixels, int count)
 	while (count > 0)
 	{
 		int pixelByte = ((m_pixelIndex)*BYTES_PER_PIXEL);
-		dbg("pixelIndex: %d, byte %d", m_pixelIndex, pixelByte);
+		verbose("pixelIndex: %d, byte %d", m_pixelIndex, pixelByte);
 		if (pixelByte >= m_widthInBytes)
 		{
 			dbg("padding index: %d (%d/%d)", m_pixelIndex, pixelByte, m_widthInBytes);
@@ -84,16 +84,12 @@ void BMP::appendPixels(unsigned char* pixels, int count)
 		}
 		else
 		{
-			dbg("pixel index: %d = %d", m_pixelIndex, i);
+			verbose("pixel index: %d = %d", m_pixelIndex, i);
 			fwrite(pixels + i, BYTES_PER_PIXEL, 1, m_imageFile);
 			i += BYTES_PER_PIXEL;
 			count--;
 		}
 		m_pixelIndex++;
-		if (m_pixelIndex * BYTES_PER_PIXEL > m_stride)
-		{
-			m_pixelIndex = 0;
-		}
 	}
 }
 
