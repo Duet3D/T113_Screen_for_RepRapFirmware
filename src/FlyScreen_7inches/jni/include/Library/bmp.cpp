@@ -110,7 +110,7 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 	int pixelsToAdd = std::min(m_width - m_pixelIndex, count);
 	while (pixelsToAdd > 0)
 	{
-		dbg("Adding %d pixels", pixelsToAdd);
+		dbg("Adding %d pixels to buffer index %d", pixelsToAdd, m_pixelIndex);
 		std::copy(pixels, pixels + pixelsToAdd, m_pixelBuffer + m_pixelIndex);
 		m_pixelIndex += pixelsToAdd;
 		dbg("new pixelIndex: %d", m_pixelIndex);
@@ -119,7 +119,7 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 			writeRow((unsigned char*)m_pixelBuffer);
 			m_pixelIndex = 0;
 		}
-		pixels += pixelsToAdd * bytesPerPixel;
+		pixels += pixelsToAdd;
 		count -= pixelsToAdd;
 		pixelsToAdd = std::min(m_width, count);
 	}
