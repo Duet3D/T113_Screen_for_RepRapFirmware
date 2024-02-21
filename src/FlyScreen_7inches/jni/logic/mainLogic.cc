@@ -1076,34 +1076,36 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 23;
-	int width = 21;
+	int height = 20;
+	int width = 30;
+	int size = height * width;
 	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
 	char* imageFileName2 = (char*)"/tmp/bitmapImage2.bmp";
 
 	BMP bmp(width, height, imageFileName);
 	BMP bmp2(width, height, imageFileName2);
 
-	rgb_t pixels[height][width];
+	rgba_t pixels[size];
 
-	int i, j;
-	for (i = 0; i < height; i++)
+	int i, j, k;
+	for (i = 0; i < size; i++)
 	{
-		for (j = 0; j < width; j++)
-		{
-			pixels[i][j].rgba.r = (unsigned char)(i * 255 / height);				 /// red
-			pixels[i][j].rgba.g = (unsigned char)(j * 255 / width);					 /// green
-			pixels[i][j].rgba.b = (unsigned char)((i + j) * 255 / (height + width)); /// blue
-																					 // pixels[i][j].rgba.a = 0;
-		}
+		k = i % width;
+		j = i / width;
+		pixels[i].rgba.r = (unsigned char)(j * 255 / height);				  /// red
+		pixels[i].rgba.g = (unsigned char)(k * 255 / width);				  /// green
+		pixels[i].rgba.b = (unsigned char)((j + k) * 255 / (height + width)); /// blue
+		pixels[i].rgba.a = 0;
 	}
-	bmp.generateBitmapImage((unsigned char*)pixels);
+	bmp.generateBitmapImage(pixels);
 	bmp2.generateBitmapHeaders();
-	for (i = 0; i < height; i++)
+	int chunkSize = 64;
+	for (i = 0; i < size; i += chunkSize)
 	{
-		bmp2.appendPixels((unsigned char*)pixels[i], width);
+		info("Appending pixels %d", i);
+		bmp2.appendPixels((pixels + i), chunkSize);
 	}
-	bmp2.pad();
+	// bmp2.pad();
 	mThumbnailPtr->setBackgroundPic(imageFileName);
 	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
 	return false;

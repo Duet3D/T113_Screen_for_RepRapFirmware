@@ -10,23 +10,27 @@
 
 #include "Pixel.h"
 #include <stdio.h>
+#include <vector>
 
 class BMP
 {
   public:
 	BMP(int width, int height, const char* imageFileName);
 	~BMP();
+	bool New(int width, int height, const char* imageFileName);
 	bool Open();
 	bool IsOpen() { return m_imageFile != nullptr; }
 	bool Close();
-	void generateBitmapImage(unsigned char* image);
+	void generateBitmapImage(rgba_t* image);
 	void generateBitmapHeaders();
-	void appendPixels(unsigned char* pixels, int count);
+	void appendPixels(rgba_t* pixels, int count);
 	void pad();
 
   private:
 	unsigned char* createBitmapFileHeader();
 	unsigned char* createBitmapInfoHeader();
+	void writeRow(unsigned char* pixels);
+
 	int m_width;
 	int m_height;
 	const char* m_imageFileName;
@@ -35,6 +39,7 @@ class BMP
 	int m_stride;
 	FILE* m_imageFile;
 	int m_pixelIndex;
+	std::vector<rgba_t> m_pixelBuffer;
 };
 
 #endif /* JNI_INCLUDE_LIBRARY_BMP_H_ */
