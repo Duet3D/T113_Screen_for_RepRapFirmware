@@ -12,16 +12,19 @@ constexpr int INFO_HEADER_SIZE = 40;
 
 const static unsigned char padding[BYTES_PER_PIXEL] = {0};
 
+BMP::BMP()
+	: m_width(0), m_height(0), m_imageFileName(nullptr), m_paddingSize(0), m_stride(0), m_imageFile(nullptr),
+	  m_pixelIndex(0), m_pixelBuffer(nullptr)
+{
+}
+
 BMP::BMP(int width, int height, const char* imageFileName)
-	: m_width(width), m_height(height), m_imageFileName(imageFileName),
+	: m_width(width), m_height(height), m_imageFileName(imageFileName), m_widthInBytes(width * BYTES_PER_PIXEL),
 	  m_paddingSize((4 - (width * BYTES_PER_PIXEL) % 4) % 4), m_stride((width * BYTES_PER_PIXEL) + m_paddingSize),
 	  m_pixelIndex(0)
 {
 	m_imageFile = fopen(imageFileName, "wb");
-
-	m_widthInBytes = m_width * BYTES_PER_PIXEL;
-	m_paddingSize = (4 - (m_widthInBytes) % 4) % 4;
-	m_stride = (m_widthInBytes) + m_paddingSize;
+	m_pixelBuffer = new rgba_t[width];
 	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
 		 imageFileName,
 		 m_width,
@@ -32,22 +35,27 @@ BMP::BMP(int width, int height, const char* imageFileName)
 
 BMP::~BMP()
 {
+	DeleteBuffer();
 	Close();
 }
 
 bool BMP::New(int width, int height, const char* imageFileName)
 {
-	if (m_imageFile != nullptr)
-	{
-		Close();
-	}
+	DeleteBuffer();
+	Close();
+
 	m_width = width;
 	m_height = height;
 	m_imageFileName = imageFileName;
 	m_paddingSize = (4 - (width * BYTES_PER_PIXEL) % 4) % 4;
 	m_stride = (width * BYTES_PER_PIXEL) + m_paddingSize;
 	m_pixelIndex = 0;
-	m_pixelBuffer.clear();
+	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
+		 imageFileName,
+		 m_width,
+		 m_height,
+		 m_paddingSize,
+		 m_stride);
 	return Open();
 }
 
@@ -59,6 +67,10 @@ bool BMP::Open()
 
 bool BMP::Close()
 {
+	if (m_imageFile == nullptr)
+	{
+		return true;
+	}
 	return fclose(m_imageFile) == 0;
 }
 
@@ -95,21 +107,17 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 {
 	static int bytesPerPixel = sizeof(rgba_t);
 	info("count: %d", count);
-	int pixelsToAdd = std::min(m_width - (int)m_pixelBuffer.size(), count);
-	m_pixelBuffer.reserve(m_width);
+	int pixelsToAdd = std::min(m_width - m_pixelIndex, count);
 	while (pixelsToAdd > 0)
 	{
 		dbg("Adding %d pixels", pixelsToAdd);
-		for (int i = 0; i < pixelsToAdd; i++)
+		std::copy(pixels, pixels + pixelsToAdd, m_pixelBuffer + m_pixelIndex);
+		m_pixelIndex += pixelsToAdd;
+		dbg("new pixelIndex: %d", m_pixelIndex);
+		if ((int)m_pixelIndex >= m_width)
 		{
-			m_pixelBuffer.push_back(pixels[i]);
-		}
-		dbg("pixelBuffer.size: %d", m_pixelBuffer.size());
-		if ((int)m_pixelBuffer.size() >= m_width)
-		{
-			writeRow((unsigned char*)m_pixelBuffer.begin());
-			m_pixelBuffer.clear();
-			m_pixelBuffer.reserve(m_width);
+			writeRow((unsigned char*)m_pixelBuffer);
+			m_pixelIndex = 0;
 		}
 		pixels += pixelsToAdd * bytesPerPixel;
 		count -= pixelsToAdd;
@@ -121,6 +129,14 @@ void BMP::pad()
 {
 	int paddingLength = m_stride - (m_pixelIndex * BYTES_PER_PIXEL);
 	fwrite(padding, 1, paddingLength, m_imageFile);
+}
+
+void BMP::DeleteBuffer()
+{
+	if (m_pixelBuffer != nullptr)
+	{
+		delete[] m_pixelBuffer;
+	}
 }
 
 unsigned char* BMP::createBitmapFileHeader()

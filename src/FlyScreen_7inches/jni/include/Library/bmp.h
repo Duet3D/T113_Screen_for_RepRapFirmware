@@ -15,6 +15,7 @@
 class BMP
 {
   public:
+	BMP();
 	BMP(int width, int height, const char* imageFileName);
 	~BMP();
 	bool New(int width, int height, const char* imageFileName);
@@ -30,6 +31,7 @@ class BMP
 	unsigned char* createBitmapFileHeader();
 	unsigned char* createBitmapInfoHeader();
 	void writeRow(unsigned char* pixels);
+	void DeleteBuffer();
 
 	int m_width;
 	int m_height;
@@ -39,7 +41,7 @@ class BMP
 	int m_stride;
 	FILE* m_imageFile;
 	int m_pixelIndex;
-	std::vector<rgba_t> m_pixelBuffer;
+	rgba_t* m_pixelBuffer;
 };
 
 #endif /* JNI_INCLUDE_LIBRARY_BMP_H_ */
