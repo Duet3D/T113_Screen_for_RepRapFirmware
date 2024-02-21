@@ -16,4 +16,11 @@ typedef union {
 	unsigned int v;
 } rgba_t;
 
+typedef union {
+	struct
+	{
+		unsigned char b, g, r;
+	} rgba;
+} rgb_t;
+
 #endif /* JNI_INCLUDE_LIBRARY_PIXEL_H_ */

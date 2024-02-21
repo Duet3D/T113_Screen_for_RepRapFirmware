@@ -1,7 +1,11 @@
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
+#include "Debug.h"
+
 #include "bmp.h"
 #include <stdio.h>
 
-constexpr int BYTES_PER_PIXEL = 4; /// blue, green, red, alpha
+constexpr int BYTES_PER_PIXEL = 3; /// blue, green, red, alpha
 constexpr int FILE_HEADER_SIZE = 14;
 constexpr int INFO_HEADER_SIZE = 40;
 
@@ -17,6 +21,12 @@ BMP::BMP(int width, int height, const char* imageFileName)
 	m_widthInBytes = m_width * BYTES_PER_PIXEL;
 	m_paddingSize = (4 - (m_widthInBytes) % 4) % 4;
 	m_stride = (m_widthInBytes) + m_paddingSize;
+	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
+		 imageFileName,
+		 m_width,
+		 m_height,
+		 m_paddingSize,
+		 m_stride);
 }
 
 BMP::~BMP()
@@ -50,16 +60,53 @@ void BMP::generateBitmapImage(unsigned char* image)
 void BMP::generateBitmapHeaders()
 {
 	unsigned char* fileHeader = createBitmapFileHeader();
+	dbg("fileHeader: %.*s", FILE_HEADER_SIZE, fileHeader);
 	fwrite(fileHeader, 1, FILE_HEADER_SIZE, m_imageFile);
 
 	unsigned char* infoHeader = createBitmapInfoHeader();
+	dbg("infoHeader: %.*s", INFO_HEADER_SIZE, infoHeader);
 	fwrite(infoHeader, 1, INFO_HEADER_SIZE, m_imageFile);
+}
+
+void BMP::appendPixels(unsigned char* pixels, int count)
+{
+	info("count: %d", count);
+	int i = 0;
+	while (count > 0)
+	{
+		int pixelByte = ((m_pixelIndex)*BYTES_PER_PIXEL);
+		dbg("pixelIndex: %d, byte %d", m_pixelIndex, pixelByte);
+		if (pixelByte >= m_widthInBytes)
+		{
+			dbg("padding index: %d (%d/%d)", m_pixelIndex, pixelByte, m_widthInBytes);
+			fwrite(padding, 1, m_paddingSize, m_imageFile);
+			m_pixelIndex = -1;
+		}
+		else
+		{
+			dbg("pixel index: %d = %d", m_pixelIndex, i);
+			fwrite(pixels + i, BYTES_PER_PIXEL, 1, m_imageFile);
+			i += BYTES_PER_PIXEL;
+			count--;
+		}
+		m_pixelIndex++;
+		if (m_pixelIndex * BYTES_PER_PIXEL > m_stride)
+		{
+			m_pixelIndex = 0;
+		}
+	}
+}
+
+void BMP::pad()
+{
+	int paddingLength = m_stride - (m_pixelIndex * BYTES_PER_PIXEL);
+	fwrite(padding, 1, paddingLength, m_imageFile);
 }
 
 unsigned char* BMP::createBitmapFileHeader()
 {
 	int fileSize = FILE_HEADER_SIZE + INFO_HEADER_SIZE + (m_stride * m_height);
-
+	dbg("%s fileSize: %d", m_imageFileName, fileSize);
 	static unsigned char fileHeader[] = {
 		0, 0, /// signature
 		0, 0, 0, 0, /// image file size in bytes

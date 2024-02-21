@@ -1076,13 +1076,15 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 361;
-	int width = 867;
-	char* imageFileName = (char*)"/tmp/bitmapImage2.bmp";
+	int height = 23;
+	int width = 21;
+	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
+	char* imageFileName2 = (char*)"/tmp/bitmapImage2.bmp";
 
 	BMP bmp(width, height, imageFileName);
+	BMP bmp2(width, height, imageFileName2);
 
-	rgba_t pixels[height][width];
+	rgb_t pixels[height][width];
 
 	int i, j;
 	for (i = 0; i < height; i++)
@@ -1092,12 +1094,18 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 			pixels[i][j].rgba.r = (unsigned char)(i * 255 / height);				 /// red
 			pixels[i][j].rgba.g = (unsigned char)(j * 255 / width);					 /// green
 			pixels[i][j].rgba.b = (unsigned char)((i + j) * 255 / (height + width)); /// blue
-			pixels[i][j].rgba.a = 0;
+																					 // pixels[i][j].rgba.a = 0;
 		}
 	}
-
 	bmp.generateBitmapImage((unsigned char*)pixels);
+	bmp2.generateBitmapHeaders();
+	for (i = 0; i < height; i++)
+	{
+		bmp2.appendPixels((unsigned char*)pixels[i], width);
+	}
+	bmp2.pad();
 	mThumbnailPtr->setBackgroundPic(imageFileName);
+	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
 	return false;
 }
 

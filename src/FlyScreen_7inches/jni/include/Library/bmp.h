@@ -21,7 +21,8 @@ class BMP
 	bool Close();
 	void generateBitmapImage(unsigned char* image);
 	void generateBitmapHeaders();
-	void appendPixels(rgba_t* pixels, int count);
+	void appendPixels(unsigned char* pixels, int count);
+	void pad();
 
   private:
 	unsigned char* createBitmapFileHeader();
