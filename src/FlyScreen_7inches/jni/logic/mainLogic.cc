@@ -124,6 +124,7 @@ static void onUI_init()
 						   mPopupAxisAdjusmentPtr);
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
+	UI::SetThumbnail(mThumbnail2Ptr);
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -1076,8 +1077,8 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 20;
-	int width = 30;
+	int height = 400;
+	int width = 300;
 	int size = height * width;
 	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
 	char* imageFileName2 = (char*)"/tmp/bitmapImage2.bmp";
@@ -1098,7 +1099,6 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 		pixels[i].rgba.a = 0;
 	}
 	bmp.generateBitmapImage(pixels);
-	bmp2.generateBitmapHeaders();
 	int chunkSize = 64;
 	for (i = 0; i < size; i += chunkSize)
 	{

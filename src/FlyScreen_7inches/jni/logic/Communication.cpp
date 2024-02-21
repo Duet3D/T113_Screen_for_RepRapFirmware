@@ -668,6 +668,10 @@ namespace Comm {
 				error("thumbnail meta invalid.\n");
 				break;
 			}
+			if (!thumbnail.bmp.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail.bmp"))
+			{
+				error("Failed to create thumbnail file.");
+			}
 			thumbnailContext.state = ThumbnailState::DataRequest;
 			break;
 		case ThumbnailState::Data:
@@ -676,13 +680,14 @@ namespace Comm {
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
 			}
-			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData, UI::UpdateFileThumbnailChunk)) < 0)
+			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData)) < 0)
 			{
 				error("failed to decode thumbnail chunk %d.\n", ret);
 				thumbnailContext.state = ThumbnailState::Init;
 				break;
 			}
 			if (thumbnailContext.next == 0) {
+				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
 				thumbnailContext.state = ThumbnailState::Init;
 			} else {
 				thumbnailContext.state = ThumbnailState::DataRequest;

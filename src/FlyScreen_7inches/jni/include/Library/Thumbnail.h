@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <cstddef>
 
+#include "bmp.h"
 #include "qoi.h"
-
 
 struct Thumbnail
 {
@@ -20,6 +20,7 @@ struct Thumbnail
 	} imageFormat;
 
 	qoi_desc qoi;
+	BMP bmp;
 };
 
 struct ThumbnailData
@@ -34,6 +35,6 @@ bool ThumbnailIsValid(struct Thumbnail &thumbnail);
 bool ThumbnailDataIsValid(struct ThumbnailData &data);
 
 int ThumbnailInit(struct Thumbnail &thumbnail);
-int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data, ThumbnailProcessCb callback);
+int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data);
 
 #endif /* ifndef THUMBNAIL_HPP */

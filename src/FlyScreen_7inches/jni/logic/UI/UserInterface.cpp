@@ -604,10 +604,15 @@ namespace UI
 		return OM::FileSystem::RunFile(sSelectedFile);
 	}
 
-	bool UpdateFileThumbnailChunk(const struct Thumbnail& thumbnail,
-								  uint32_t pixels_offset,
-								  const rgba_t* pixels,
-								  size_t pixels_count)
+	static ZKTextView* s_thumbnail;
+
+	void SetThumbnail(ZKTextView* thumbnail)
 	{
+		s_thumbnail = thumbnail;
+	}
+
+	ZKTextView* GetThumbnail()
+	{
+		return s_thumbnail;
 	}
 } // namespace UI

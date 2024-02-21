@@ -30,7 +30,6 @@ namespace Comm
 	extern struct Seq* GetNextSeq(struct Seq *current);
 	extern void sendNext();
 	void init();
-
 }
 
 #endif /* JNI_LOGIC_COMMUNICATION_HPP_ */

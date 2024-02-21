@@ -54,7 +54,7 @@ int ThumbnailInit(struct Thumbnail &thumbnail)
 	return qoi_decode_init(&thumbnail.qoi);
 }
 
-int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data, ThumbnailProcessCb callback)
+int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data)
 {
 	if (!ThumbnailIsValid(thumbnail))
 	{
@@ -108,13 +108,7 @@ int ThumbnailDecodeChunk(struct Thumbnail &thumbnail, struct ThumbnailData &data
 
 		size_done += ret;
 
-		if (callback)
-		{
-			dbg("calling callback\n");
-			bool cont = callback(thumbnail, thumbnail.pixel_count, rgba_buffer, pixel_decoded);
-			if (!cont)
-				return -6;
-		}
+		thumbnail.bmp.appendPixels(rgba_buffer, pixel_decoded);
 
 		thumbnail.pixel_count += pixel_decoded;
 

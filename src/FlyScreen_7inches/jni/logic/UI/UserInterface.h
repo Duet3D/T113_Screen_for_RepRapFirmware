@@ -159,10 +159,8 @@ namespace UI
 	void SetSelectedFile(const OM::FileSystem::File* file);
 	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
-	bool UpdateFileThumbnailChunk(const struct Thumbnail& thumbnail,
-								  uint32_t pixels_offset,
-								  const rgba_t* pixels,
-								  size_t pixels_count);
+	void SetThumbnail(ZKTextView* thumbnail);
+	ZKTextView* GetThumbnail();
 
 #define WINDOW Window::GetInstance()
 #define NUMPAD_WINDOW NumPadWindow::GetInstance()

@@ -31,6 +31,8 @@ BMP::BMP(int width, int height, const char* imageFileName)
 		 m_height,
 		 m_paddingSize,
 		 m_stride);
+
+	generateBitmapHeaders();
 }
 
 BMP::~BMP()
@@ -50,13 +52,21 @@ bool BMP::New(int width, int height, const char* imageFileName)
 	m_paddingSize = (4 - (width * BYTES_PER_PIXEL) % 4) % 4;
 	m_stride = (width * BYTES_PER_PIXEL) + m_paddingSize;
 	m_pixelIndex = 0;
+	m_pixelBuffer = new rgba_t[width];
 	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
 		 imageFileName,
 		 m_width,
 		 m_height,
 		 m_paddingSize,
 		 m_stride);
-	return Open();
+	if (!Open())
+	{
+		error("Failed to open file %s", imageFileName);
+		return false;
+	}
+
+	generateBitmapHeaders();
+	return true;
 }
 
 bool BMP::Open()
@@ -76,8 +86,6 @@ bool BMP::Close()
 
 void BMP::generateBitmapImage(rgba_t* pixels)
 {
-	generateBitmapHeaders();
-
 	int i;
 	for (i = 0; i < m_height; i++)
 	{
