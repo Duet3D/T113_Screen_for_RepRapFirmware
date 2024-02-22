@@ -1077,37 +1077,43 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 400;
-	int width = 300;
+	int height = 32;
+	int width = 32;
 	int size = height * width;
-	char* imageFileName = (char*)"/tmp/bitmapImage.bmp";
-	char* imageFileName2 = (char*)"/tmp/bitmapImage2.bmp";
+	char* imageFileName = "/tmp/bitmapImage.bmp";
+	char* imageFileName2 = "/tmp/bitmapImage2.bmp";
 
 	BMP bmp(width, height, imageFileName);
 	BMP bmp2(width, height, imageFileName2);
 
 	rgba_t pixels[size];
 
-	int i, j, k;
+	int i, row, col;
 	for (i = 0; i < size; i++)
 	{
-		k = i % width;
-		j = i / width;
-		pixels[i].rgba.r = (unsigned char)(j * 255 / height);				  /// red
-		pixels[i].rgba.g = (unsigned char)(k * 255 / width);				  /// green
-		pixels[i].rgba.b = (unsigned char)((j + k) * 255 / (height + width)); /// blue
+		col = i % width;
+		row = i / width;
+		pixels[i].rgba.r = (unsigned char)(row * 255 / height);					  /// red
+		pixels[i].rgba.g = (unsigned char)(col * 255 / width);					  /// green
+		pixels[i].rgba.b = (unsigned char)((row + col) * 255 / (height + width)); /// blue
 		pixels[i].rgba.a = 0;
 	}
 	bmp.generateBitmapImage(pixels);
-	int chunkSize = 64;
+	int chunkSize = 32;
 	for (i = 0; i < size; i += chunkSize)
 	{
 		info("Appending pixels %d", i);
 		bmp2.appendPixels((pixels + i), chunkSize);
 	}
-	// bmp2.pad();
+
+	bmp.Close();
+	bmp2.Close();
+	dbg("Finished writing bmp files");
+	// Crashes here but not sure why
 	mThumbnailPtr->setBackgroundPic(imageFileName);
+	dbg("Set thumbnail 1");
 	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
+	dbg("Set both images");
 	return false;
 }
 

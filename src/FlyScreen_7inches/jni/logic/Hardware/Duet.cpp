@@ -52,6 +52,13 @@ namespace Comm
 		m_lastRequestTime = 0;
 	}
 
+	void Duet::Reconnect()
+	{
+		warn("");
+		Disconnect();
+		Connect();
+	}
+
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
 		if (type == m_communicationType)
@@ -61,16 +68,7 @@ namespace Comm
 		Disconnect();
 
 		m_communicationType = type;
-		if (type == CommunicationType::uart)
-		{
-			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
-			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
-		}
-
-		if (type == CommunicationType::network)
-		{
-			Connect();
-		}
+		Connect();
 	}
 
 	void Duet::SetPollInterval(uint32_t interval)
@@ -374,58 +372,64 @@ namespace Comm
 
 	const bool Duet::Connect(bool useSessionKey)
 	{
-		if (m_communicationType != CommunicationType::network)
-			return 0;
-
 		Disconnect();
 		Reset();
 
-		info("Connecting to Duet at %s", m_ipAddress.c_str());
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart: {
+			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
+			return UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
+		}
+		case CommunicationType::network: {
+			info("Connecting to Duet at %s", m_ipAddress.c_str());
 
-		RestClient::Response r;
-		QueryParameters_t query;
-		query["password"] = std::string("\"") + m_password + "\"";
-		if (useSessionKey)
-			query["sessionKey"] = "yes";
+			RestClient::Response r;
+			QueryParameters_t query;
+			query["password"] = std::string("\"") + m_password + "\"";
+			if (useSessionKey)
+				query["sessionKey"] = "yes";
 
-		return Comm::AsyncGet(
-			m_ipAddress,
-			"/rr_connect",
-			query,
-			[this](RestClient::Response& r) {
-				verbose("parsing rr_connect response");
-				Json::Reader reader;
-				Json::Value body;
+			return Comm::AsyncGet(
+				m_ipAddress,
+				"/rr_connect",
+				query,
+				[this](RestClient::Response& r) {
+					verbose("parsing rr_connect response");
+					Json::Reader reader;
+					Json::Value body;
 
-				if (!reader.parse(r.body, body))
-				{
-					error("Failed to parse JSON response from rr_connect");
-					return false;
-				}
+					if (!reader.parse(r.body, body))
+					{
+						error("Failed to parse JSON response from rr_connect");
+						return false;
+					}
 
-				if (body.isMember("err") && body["err"].asInt() != 0)
-				{
-					error("rr_connect failed, returned error %d", body["err"].asInt());
-					return false;
-				}
+					if (body.isMember("err") && body["err"].asInt() != 0)
+					{
+						error("rr_connect failed, returned error %d", body["err"].asInt());
+						return false;
+					}
 
-				if (body.isMember("sessionTimeout"))
-				{
-					m_sessionTimeout = body["sessionTimeout"].asInt();
-					m_lastRequestTime = TimeHelper::getCurrentTime();
-					info("Duet session timeout set to %d", m_sessionTimeout);
-				}
+					if (body.isMember("sessionTimeout"))
+					{
+						m_sessionTimeout = body["sessionTimeout"].asInt();
+						m_lastRequestTime = TimeHelper::getCurrentTime();
+						info("Duet session timeout set to %d", m_sessionTimeout);
+					}
 
-				if (body.isMember("sessionKey"))
-				{
-					m_sessionKey = body["sessionKey"].asUInt();
-					info("Duet session key = %u", m_sessionKey);
-				}
-				info("rr_connect succeeded");
-				return true;
-			},
-			0,
-			true);
+					if (body.isMember("sessionKey"))
+					{
+						m_sessionKey = body["sessionKey"].asUInt();
+						info("Duet session key = %u", m_sessionKey);
+					}
+					info("rr_connect succeeded");
+					return true;
+				},
+				0,
+				true);
+		}
+		}
 	}
 
 	const Duet::error_code Duet::Disconnect()
@@ -435,9 +439,10 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 			UARTCONTEXT->closeUart();
-			Thread::sleep(50);
+			Thread::sleep(100);
 			break;
 		case CommunicationType::network: {
+			ClearThreadPool();
 			if (m_sessionKey == noSessionKey)
 			{
 				Reset();

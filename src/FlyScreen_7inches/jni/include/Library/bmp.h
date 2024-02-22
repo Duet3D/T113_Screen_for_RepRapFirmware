@@ -31,6 +31,7 @@ class BMP
 	unsigned char* createBitmapFileHeader();
 	unsigned char* createBitmapInfoHeader();
 	void writeRow(unsigned char* pixels);
+	bool AllocateBuffer();
 	void DeleteBuffer();
 
 	int m_width;

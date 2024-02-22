@@ -5,7 +5,7 @@
  *      Author: guoxs
  */
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 
 #include <stdio.h>
 #include <unistd.h>
@@ -23,7 +23,7 @@
 #include "manager/LanguageManager.h"
 #include "utils/Log.h"
 
-#define UART_DATA_BUF_LEN 16384 // 16KB
+#define UART_DATA_BUF_LEN 32768 // 32KB
 
 extern int parseProtocol(const BYTE *pData, UINT len);
 
@@ -111,9 +111,11 @@ void UartContext::closeUart() {
 		requestExit();
 
 		close(mUartID);
+		Thread::sleep(100);
 		mUartID = 0;
 		mIsOpen = false;
 	}
+	mDataBufLen = 0;
 }
 
 bool UartContext::send(const BYTE *pData, UINT len) {

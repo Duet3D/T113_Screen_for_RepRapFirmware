@@ -178,6 +178,13 @@ namespace Comm
 		info("Processed all queued requests, size=%d", queuedData.size());
 	}
 
+	int ClearThreadPool()
+	{
+		int count = threadPool.size();
+		threadPool.clear();
+		return count - threadPool.size();
+	}
+
 	bool Get(std::string url,
 			 const char* subUrl,
 			 RestClient::Response& r,

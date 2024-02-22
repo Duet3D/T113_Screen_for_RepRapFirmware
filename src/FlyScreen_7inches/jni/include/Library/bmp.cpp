@@ -24,7 +24,7 @@ BMP::BMP(int width, int height, const char* imageFileName)
 	  m_pixelIndex(0)
 {
 	m_imageFile = fopen(imageFileName, "wb");
-	m_pixelBuffer = new rgba_t[width];
+	AllocateBuffer();
 	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
 		 imageFileName,
 		 m_width,
@@ -51,8 +51,7 @@ bool BMP::New(int width, int height, const char* imageFileName)
 	m_imageFileName = imageFileName;
 	m_paddingSize = (4 - (width * BYTES_PER_PIXEL) % 4) % 4;
 	m_stride = (width * BYTES_PER_PIXEL) + m_paddingSize;
-	m_pixelIndex = 0;
-	m_pixelBuffer = new rgba_t[width];
+	AllocateBuffer();
 	info("BMP: %s, width(%d), height(%d), paddingSize(%d), stride(%d)",
 		 imageFileName,
 		 m_width,
@@ -79,9 +78,17 @@ bool BMP::Close()
 {
 	if (m_imageFile == nullptr)
 	{
+		warn("File %s already closed", m_imageFileName);
 		return true;
 	}
-	return fclose(m_imageFile) == 0;
+	info("Closing file %s", m_imageFileName);
+	if (!fclose(m_imageFile) == 0)
+	{
+		error("Failed to close file %s", m_imageFileName);
+		return false;
+	}
+	m_imageFile = nullptr;
+	return true;
 }
 
 void BMP::generateBitmapImage(rgba_t* pixels)
@@ -96,40 +103,54 @@ void BMP::generateBitmapImage(rgba_t* pixels)
 void BMP::generateBitmapHeaders()
 {
 	unsigned char* fileHeader = createBitmapFileHeader();
-	dbg("fileHeader: %.*s", FILE_HEADER_SIZE, fileHeader);
+	dbg("fileHeader: %.*x", FILE_HEADER_SIZE, fileHeader);
 	fwrite(fileHeader, 1, FILE_HEADER_SIZE, m_imageFile);
 
 	unsigned char* infoHeader = createBitmapInfoHeader();
-	dbg("infoHeader: %.*s", INFO_HEADER_SIZE, infoHeader);
+	dbg("infoHeader: %.*x", INFO_HEADER_SIZE, infoHeader);
 	fwrite(infoHeader, 1, INFO_HEADER_SIZE, m_imageFile);
 }
 
 void BMP::writeRow(unsigned char* pixels)
 {
-	dbg("Writing row");
+	dbg("Writing row to file %s", m_imageFileName);
+#if DEBUG_LEVEL <= DEBUG_LEVEL_VERBOSE
+	for (int i = 0; i < m_width; i++)
+	{
+		rgba_t* pixel = (rgba_t*)(pixels) + i;
+		verbose(
+			"pixel[%d]: %x r=%d g=%d b=%d a=%d", i, *pixel, pixel->rgba.r, pixel->rgba.g, pixel->rgba.b, pixel->rgba.a);
+	}
+#endif
 	fwrite(pixels, BYTES_PER_PIXEL, m_width, m_imageFile);
 	fwrite(padding, 1, m_paddingSize, m_imageFile);
 }
 
 void BMP::appendPixels(rgba_t* pixels, int count)
 {
-	static int bytesPerPixel = sizeof(rgba_t);
 	info("count: %d", count);
-	int pixelsToAdd = std::min(m_width - m_pixelIndex, count);
+	int size = m_width * m_height;
+	int pixelsToAdd = std::min(size - m_pixelIndex, count);
 	while (pixelsToAdd > 0)
 	{
 		dbg("Adding %d pixels to buffer index %d", pixelsToAdd, m_pixelIndex);
 		std::copy(pixels, pixels + pixelsToAdd, m_pixelBuffer + m_pixelIndex);
 		m_pixelIndex += pixelsToAdd;
 		dbg("new pixelIndex: %d", m_pixelIndex);
-		if ((int)m_pixelIndex >= m_width)
+		if ((int)m_pixelIndex >= size)
 		{
-			writeRow((unsigned char*)m_pixelBuffer);
+			for (int i = m_height - 1; i >= 0; i--)
+			// for (int i = 0; i < m_height; i++)
+			{
+				dbg("Row %d", i);
+				writeRow((unsigned char*)(m_pixelBuffer + i * m_width));
+			}
 			m_pixelIndex = 0;
+			return;
 		}
 		pixels += pixelsToAdd;
 		count -= pixelsToAdd;
-		pixelsToAdd = std::min(m_width, count);
+		pixelsToAdd = std::min(size, count);
 	}
 }
 
@@ -139,12 +160,25 @@ void BMP::pad()
 	fwrite(padding, 1, paddingLength, m_imageFile);
 }
 
+bool BMP::AllocateBuffer()
+{
+	if (m_pixelBuffer == nullptr)
+	{
+		m_pixelBuffer = new rgba_t[m_width * m_height];
+		return m_pixelBuffer != nullptr;
+	}
+	error("Buffer already allocated");
+	return false;
+}
+
 void BMP::DeleteBuffer()
 {
 	if (m_pixelBuffer != nullptr)
 	{
 		delete[] m_pixelBuffer;
 	}
+	m_pixelBuffer = nullptr;
+	m_pixelIndex = 0;
 }
 
 unsigned char* BMP::createBitmapFileHeader()
@@ -190,10 +224,14 @@ unsigned char* BMP::createBitmapInfoHeader()
 	infoHeader[5] = (unsigned char)(m_width >> 8);
 	infoHeader[6] = (unsigned char)(m_width >> 16);
 	infoHeader[7] = (unsigned char)(m_width >> 24);
+
+	// normally setting the height negative would normally flip the image vertically but zkgui
+	// does not support this 😢
 	infoHeader[8] = (unsigned char)(m_height);
 	infoHeader[9] = (unsigned char)(m_height >> 8);
 	infoHeader[10] = (unsigned char)(m_height >> 16);
 	infoHeader[11] = (unsigned char)(m_height >> 24);
+
 	infoHeader[12] = (unsigned char)(1);
 	infoHeader[14] = (unsigned char)(BYTES_PER_PIXEL * 8);
 

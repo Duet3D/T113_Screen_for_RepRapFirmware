@@ -65,6 +65,7 @@ namespace Comm
 		Duet();
 		void Init();
 		void Reset();
+		void Reconnect();
 
 		void SetCommunicationType(CommunicationType type);
 		const CommunicationType GetCommunicationType() const { return m_communicationType; }

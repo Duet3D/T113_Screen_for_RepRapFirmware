@@ -75,22 +75,23 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 		return -3;
 	}
 
-	info("*** received size %d decoded size %d\n", data.size, ret);
+	info("*** received size %d, base64 decoded size %d\n", data.size, ret);
 
 	data.size = ret;
 
 	int size_done = 0;
 	int pixel_decoded = 0;
-	rgba_t rgba_buffer[64];
+	rgba_t rgba_buffer[1024];
 
 	do
 	{
-		info("buffer %08x size %d/%d pixbuf %08x pixbuf size %d decoded %08x\n",
+		info("buffer %08x (size %d, done%d) pixbuf %08x (size %d, decoded %d)\n",
 			 data.buffer,
 			 data.size,
 			 size_done,
 			 rgba_buffer,
-			 &pixel_decoded);
+			 sizeof(rgba_buffer),
+			 pixel_decoded);
 		ret = qoi_decode_chunked(&thumbnail.qoi, (data.buffer) + size_done, data.size - size_done, rgba_buffer, sizeof(rgba_buffer), &pixel_decoded);
 		if (ret < 0)
 		{
@@ -108,11 +109,9 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 
 		size_done += ret;
 
-		thumbnail.bmp.appendPixels(rgba_buffer, pixel_decoded);
-
 		thumbnail.pixel_count += pixel_decoded;
 
-		info("ret %d done %d/%d decoded %d missing %d(%02x) count %d/%d/%d\n",
+		info("decoded %d pixels, done %d/%d, decoded %d missing %d(%02x) count %d/%d/%d\n",
 			 ret,
 			 size_done,
 			 data.size,
@@ -123,6 +122,7 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 			 thumbnail.pixel_count,
 			 thumbnail.height * thumbnail.width);
 
+		thumbnail.bmp.appendPixels(rgba_buffer, pixel_decoded);
 	} while (size_done < data.size && qoi_decode_state_get(&thumbnail.qoi) == qoi_decoder_body);
 
 	info("done %d/%d pixels %d/%d\n", size_done, data.size, thumbnail.pixel_count, thumbnail.height * thumbnail.width);

@@ -586,7 +586,8 @@ namespace Comm {
 		lastResponseTime = TimeHelper::getCurrentTime();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
-		duet.SendGcode("M29");
+		// duet.SendGcode("M29");
+		duet.Reconnect();
 		ResetSeqs();
 	}
 
@@ -687,6 +688,8 @@ namespace Comm {
 				break;
 			}
 			if (thumbnailContext.next == 0) {
+				thumbnail.bmp.Close();
+				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
 				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
 				thumbnailContext.state = ThumbnailState::Init;
 			} else {
