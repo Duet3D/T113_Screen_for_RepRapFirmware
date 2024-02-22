@@ -34,7 +34,8 @@ namespace UI
 						   ZKEditText* textInput,
 						   ZKEditText* numberInput,
 						   ZKListView* axisJogSelection,
-						   ZKListView* axisJogAdjustment)
+						   ZKListView* axisJogAdjustment,
+						   ZKTextView* image)
 	{
 		window_ = window;
 		noTouchWindow_ = noTouchWindow;
@@ -50,6 +51,7 @@ namespace UI
 		numberInput_ = numberInput;
 		axisJogSelection_ = axisJogSelection;
 		axisJogAdjustment_ = axisJogAdjustment;
+		image_ = image;
 
 		SetTimeout(StoragePreferences::getInt("info_timeout", defaultTimeout));
 	}
@@ -245,6 +247,17 @@ namespace UI
 		WINDOW->CloseOverlay();
 	}
 
+	void PopupWindow::SetImage(const char* imagePath)
+	{
+		image_->setBackgroundPic(imagePath);
+		image_->setVisible(true);
+	}
+
+	void PopupWindow::ShowImage(bool show)
+	{
+		image_->setVisible(show);
+	}
+
 	void PopupWindow::CancelTimeout()
 	{
 
@@ -311,6 +324,8 @@ namespace UI
 		okBtn_->setVisible(true);
 		axisJogSelection_->setVisible(false);
 		axisJogAdjustment_->setVisible(false);
+		image_->setVisible(false);
+		image_->setBackgroundPic(nullptr);
 
 		for (auto& axis : axes_)
 		{

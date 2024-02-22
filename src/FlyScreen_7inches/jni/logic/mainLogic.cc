@@ -121,10 +121,11 @@ static void onUI_init()
 						   mPopupTextInputPtr,
 						   mPopupNumberInputPtr,
 						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr);
+						   mPopupAxisAdjusmentPtr,
+						   mPopupImagePtr);
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
-	UI::SetThumbnail(mThumbnail2Ptr);
+	UI::SetThumbnail(mPopupImagePtr);
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -693,12 +694,15 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
+			Comm::duet.SendGcodef("M36 %s", item->GetPath().c_str());
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+			UI::POPUP_WINDOW->ShowImage(true);
+			UI::POPUP_WINDOW->CancelTimeout();
 		}
 		break;
 	}

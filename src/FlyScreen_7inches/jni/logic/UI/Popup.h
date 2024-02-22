@@ -48,7 +48,8 @@ namespace UI
 				  ZKEditText* textInput,
 				  ZKEditText* numberInput,
 				  ZKListView* axisJogSelection,
-				  ZKListView* axisJogAdjustment);
+				  ZKListView* axisJogAdjustment,
+				  ZKTextView* image);
 		void Open();
 		void Open(function<void(void)> okCb);
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
@@ -59,6 +60,8 @@ namespace UI
 		void SetTextf(const char* format, ...);
 		void SetOkBtnText(const char* text);
 		void SetCancelBtnText(const char* text);
+		void SetImage(const char* imagePath);
+		void ShowImage(bool show);
 		void Close();
 
 		void CancelTimeout();
@@ -105,6 +108,7 @@ namespace UI
 		ZKEditText* numberInput_ = nullptr;
 		ZKListView* axisJogSelection_ = nullptr;
 		ZKListView* axisJogAdjustment_ = nullptr;
+		ZKTextView* image_ = nullptr;
 		function<void(void)> okCb_;
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;

@@ -111,7 +111,7 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 
 		thumbnail.pixel_count += pixel_decoded;
 
-		info("decoded %d pixels, done %d/%d, decoded %d missing %d(%02x) count %d/%d/%d\n",
+		info("decoded %d bytes, done %d/%d; decoded %d missing %d(%02x) count %d/%d/%d\n",
 			 ret,
 			 size_done,
 			 data.size,
