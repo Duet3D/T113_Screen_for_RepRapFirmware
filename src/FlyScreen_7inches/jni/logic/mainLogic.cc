@@ -5,7 +5,7 @@
 #include "Communication.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
-#include "Hardware/SerialIo.h"
+#include "Hardware/JsonDecoder.h"
 #include "Hardware/Usb.h"
 #include "Library/bmp.h"
 #include "ObjectModel/Alert.h"
@@ -198,8 +198,9 @@ static void onUI_quit()
  */
 static void onProtocolDataUpdate(const SProtocolData &rxData)
 {
-//	dbg("data %s", rxData.data);
-	SerialIo::CheckInput(rxData.data, rxData.len);
+	// We want a single decoder for all uart data
+	static Comm::JsonDecoder decoder;
+	decoder.CheckInput(rxData.data, rxData.len);
 }
 
 /**

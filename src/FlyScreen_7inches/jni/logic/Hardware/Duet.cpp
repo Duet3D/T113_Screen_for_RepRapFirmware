@@ -11,6 +11,7 @@
 #include "Communication.h"
 #include "Debug.h"
 #include "Duet.h"
+#include "Hardware/JsonDecoder.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
@@ -259,6 +260,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["flags"] = flags;
 			AsyncGet("/rr_model", query, [this, flags](RestClient::Response& r) {
+				JsonDecoder decoder;
 				if (r.code != 200)
 				{
 					UI::CONSOLE->AddResponse(
@@ -266,7 +268,7 @@ namespace Comm
 							.c_str());
 					return false;
 				}
-				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
 			break;
@@ -289,6 +291,7 @@ namespace Comm
 			query["key"] = key;
 			query["flags"] = flags;
 			AsyncGet("/rr_model", query, [this, key, flags](RestClient::Response& r) {
+				JsonDecoder decoder;
 				if (r.code != 200)
 				{
 					UI::CONSOLE->AddResponse(
@@ -297,7 +300,7 @@ namespace Comm
 							.c_str());
 					return false;
 				}
-				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
 			break;
@@ -316,13 +319,14 @@ namespace Comm
 			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
 			break;
 		case CommunicationType::network: {
+			JsonDecoder decoder;
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
 			if (!Get("/rr_filelist", r, query))
 				break;
-			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}
 		default:
@@ -341,12 +345,17 @@ namespace Comm
 			warn("Empty reply received");
 			return;
 		}
+
+		JsonDecoder decoder;
 		if (reply.body[0] != '{')
 		{
 			dbg("Reply not json: assuming it is a gcode response");
 			size_t prevPosition = 0;
 			size_t position = reply.body.find("\n"); // Find the first occurrence of \n
 
+			// Split reply by new line and handle each as its own response.
+			// The replicates the uart behaviour and is required because rr_reply will group multiple
+			// replies together into a single response.
 			while (position != std::string::npos)
 			{
 				StringRef ref((char*)"resp", 5);
@@ -356,11 +365,13 @@ namespace Comm
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
 				if (line.empty())
 					continue;
-				Comm::ProcessReceivedValue(ref, line.c_str(), {});
+
+				// Can skip checking the input since we know it's a gcode response
+				decoder.ProcessReceivedValue(ref, line.c_str(), {});
 			}
 			return;
 		}
-		SerialIo::CheckInput((const unsigned char*)reply.body.c_str(), reply.body.length() + 1);
+		decoder.CheckInput((const unsigned char*)reply.body.c_str(), reply.body.length() + 1);
 		return;
 	}
 
@@ -429,7 +440,11 @@ namespace Comm
 				0,
 				true);
 		}
+		default:
+			break;
 		}
+
+		return false;
 	}
 
 	const Duet::error_code Duet::Disconnect()
@@ -497,7 +512,9 @@ namespace Comm
 
 		StoragePreferences::putString("ip_address", ipAddress);
 		m_ipAddress = ipAddress;
-		Connect();
+
+		if (m_communicationType == CommunicationType::network)
+			Connect();
 	}
 
 	void Duet::SetHostname(const std::string& hostname)
