@@ -18,6 +18,8 @@
 
 #include "Debug.h"
 
+#define jserror(fmt, args...) error("jsError id=%s @ %d: " fmt, fieldId.c_str(), nextOut, ##args)
+
 const size_t MaxArrayNesting = 4;
 
 namespace SerialIo {
@@ -292,7 +294,7 @@ namespace SerialIo {
 			} else {
 				state = jsError;
 
-				verbose("jsError: CheckValueCompleted: ]");
+				jserror("CheckValueCompleted: ]");
 			}
 			return true;
 
@@ -300,7 +302,7 @@ namespace SerialIo {
 			if (InArray()) {
 				state = jsError;
 
-				verbose("jsError: CheckValueCompleted: }");
+				jserror("CheckValueCompleted: }");
 			} else {
 				if (doProcess) {
 					ProcessField();
@@ -396,7 +398,7 @@ namespace SerialIo {
 					default:
 						state = jsError;
 
-						dbg_if(log, "jsError: jsExpectId");
+						error("jsError: jsExpectId, expected [\" or }] but got \"%c\"", c);
 						break;
 					}
 					break;
@@ -410,12 +412,12 @@ namespace SerialIo {
 						if (c < ' ') {
 							state = jsError;
 
-							dbg_if(log, "jsError: jsId 1");
+							jserror("jsId 1, expected \" but got \"%c\"", c);
 						} else if (c != ':' && c != '^') {
 							if (fieldId.cat(c)) {
 								state = jsError;
 
-								dbg_if(log, "jsError: jsId 2");
+								jserror("jsId 2, id not finished, received \"%c\"", c);
 							}
 						}
 						break;
@@ -432,7 +434,7 @@ namespace SerialIo {
 					default:
 						state = jsError;
 
-						dbg_if(log, "jsError: jsHadId");
+						jserror("jsHadId, expected : but got \"%c\"", c);
 						break;
 					}
 					break;
@@ -452,7 +454,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;
 
-							dbg_if(log, "jsError: [");
+							jserror("[, could not start array, current depth: %d", arrayDepth);
 						}
 						break;
 					case ']':
@@ -462,7 +464,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;	// ']' received without a matching '[' first
 
-							dbg_if(log, "jsError: ]");
+							jserror("], not in array");
 						}
 						break;
 					case '-':
@@ -474,7 +476,7 @@ namespace SerialIo {
 						state = (!fieldId.cat(':')) ? jsExpectId : jsError;
 
 						if (state == jsError) {
-							dbg_if(log, "jsError: {");
+							jserror("{, failed to start nested object");
 						}
 						break;
 					default:
@@ -490,7 +492,7 @@ namespace SerialIo {
 						} else {
 							state = jsError;
 
-							dbg_if(log, "jsError: jsVal default");
+							jserror("jsVal default, expected [a-z0-9] but got \"%c\"", c);
 						}
 					}
 					break;
@@ -509,7 +511,7 @@ namespace SerialIo {
 						if (c < ' ') {
 							state = jsError;
 
-							dbg_if(log, "jsError: jsStringVal");
+							jserror("jsStringVal, got \"%c\"", c);
 						} else {
 							fieldVal.cat(c);	// ignore any error so that long string parameters just get truncated
 						}
@@ -526,7 +528,7 @@ namespace SerialIo {
 							if (fieldVal.cat(c)) {
 								state = jsError;
 
-								dbg_if(log, "jsError: jsStringEscape 1");
+								jserror("jsStringEscape 1, failed to append %c", c);
 							}
 							break;
 						case 'n':
@@ -534,7 +536,7 @@ namespace SerialIo {
 							if (fieldVal.cat(' ')) {		// replace newline and tab by space
 								state = jsError;
 
-								dbg_if(log, "jsError: jsStringEscape 2");
+								jserror("jsStringEscape 2, failed to append space");
 							}
 							break;
 						case 'b':
@@ -551,7 +553,7 @@ namespace SerialIo {
 					state = (c >= '0' && c <= '9' && !fieldVal.cat(c)) ? jsIntVal : jsError;
 
 						if (state == jsError) {
-							dbg_if(log, "jsError: jsNegIntVal");
+							jserror("jsNegIntVal, expected negative int but got %c", c);
 						}
 					break;
 
@@ -564,13 +566,13 @@ namespace SerialIo {
 						state = (!fieldVal.cat(c)) ? jsFracVal : jsError;
 
 						if (state == jsError) {
-							dbg_if(log, "jsError: jsIntVal");
+							jserror("jsIntVal, failed to append %c", c);
 						}
 					}
 					else if (!(c >= '0' && c <= '9' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg_if(log, "jsError @ %d: jsIntVal", nextOut);
+						jserror("jsIntVal, expected [0-9] but got \"%c\", or failed to append to fieldVal", c);
 					}
 					break;
 
@@ -582,7 +584,7 @@ namespace SerialIo {
 					if (!(c >= '0' && c <= '9' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg_if(log, "jsError: jsFracVal");
+						jserror("jsFracVal, expected [0-9] but got \"%c\", or failed to append to fieldVal", c);
 					}
 					break;
 
@@ -594,7 +596,7 @@ namespace SerialIo {
 					if (!(c >= 'a' && c <= 'z' && !fieldVal.cat(c))) {
 						state = jsError;
 
-						dbg_if(log, "jsError: jsCharsVal");
+						jserror("jsCharsVal, expected [a-z] but got \"%c\", or failed to append to fieldVal", c);
 					}
 					break;
 
@@ -605,7 +607,7 @@ namespace SerialIo {
 
 					state = jsError;
 
-					dbg_if(log, "jsError: jsEndVal");
+					jserror("jsEndVal");
 					break;
 
 				case jsError:
