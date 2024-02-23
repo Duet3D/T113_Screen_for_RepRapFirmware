@@ -173,19 +173,21 @@ namespace Comm
 			current = &seqs[i];
 			if (current->state == SeqStateError)
 			{
+				warn("seq %s had an error\n", current->key);
 				// skip and re-init if last request had an error
 				current->state = SeqStateInit;
 				continue;
 			}
 			if (current->state == SeqStateInit || current->state == SeqStateUpdate)
 			{
+				dbg("seq %s\n", current->key);
 				return current;
 			}
 		}
 		return nullptr;
 	}
 
-	struct Seq* FindSeqByKey(const char* key)
+	Seq* FindSeqByKey(const char* key)
 	{
 		dbg("key %s\n", key);
 

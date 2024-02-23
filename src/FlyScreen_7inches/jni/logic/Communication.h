@@ -83,14 +83,14 @@ namespace Comm
 	bool GetBool(const char s[], bool &rslt);
 	void Reconnect();
 
-	struct Seq* FindSeqByKey(const char* key);
+	Seq* FindSeqByKey(const char* key);
 	void UpdateSeq(const ReceivedDataEvent seqid, int32_t val);
 	void ResetSeqs();
 
 	void KickWatchdog();
 
-	extern struct Seq* GetNextSeq(struct Seq *current);
-	extern void sendNext();
+	Seq* GetNextSeq(struct Seq* current);
+	void sendNext();
 	void init();
 }
 

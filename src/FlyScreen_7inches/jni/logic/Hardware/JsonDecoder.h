@@ -49,7 +49,7 @@ namespace Comm
 		};
 
 		JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0) {}
-		void CheckInput(const unsigned char* rxBuffer, unsigned int len, bool log = false);
+		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 
 	  private:

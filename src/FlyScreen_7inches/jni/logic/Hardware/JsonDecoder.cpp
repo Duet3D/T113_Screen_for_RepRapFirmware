@@ -168,6 +168,13 @@ namespace Comm
 	{
 		KickWatchdog();
 
+		if (currentRespSeq != nullptr)
+		{
+			currentRespSeq->state = SeqStateOk;
+			dbg("seq %s %d DONE", currentRespSeq->key, currentRespSeq->state);
+			currentRespSeq = nullptr;
+		}
+
 		// FileManager::EndReceivedMessage();
 
 		// Open M291 message box if required
@@ -270,9 +277,11 @@ namespace Comm
 		}
 
 		// search for key in observerMap
+		verbose("searching for observers for %s\n", id.c_str());
 		auto observers = UI::observerMap.GetObservers(id.c_str());
 		if (observers.size() != 0)
 		{
+			dbg("found %d observers for %s\n", observers.size(), id.c_str());
 			for (auto& observer : observers)
 			{
 				observer.Update(data, indices);
@@ -287,8 +296,7 @@ namespace Comm
 			return;
 		}
 		const ReceivedDataEvent rde = searchResult->val;
-		//		dbg("event: %s(%d) rtype %d data '%s'\n", searchResult->key, searchResult->val, currentResponseType,
-		// data);
+		verbose("event: %s(%d) data '%s'\n", searchResult->key, searchResult->val, data);
 		switch (rde)
 		{
 		// M409 section
@@ -516,7 +524,6 @@ namespace Comm
 
 	void JsonDecoder::ProcessField()
 	{
-		dbg("id \"%s\" (%s)", fieldId.c_str(), fieldVal.c_str());
 		if (state == jsCharsVal)
 		{
 			if (fieldVal.Equals("null"))
@@ -524,7 +531,7 @@ namespace Comm
 				fieldVal.Clear(); // so that we can distinguish null from an empty string
 			}
 		}
-		verbose("%s: %s", fieldId.c_str(), fieldVal.c_str());
+		dbg("%s: %s", fieldId.c_str(), fieldVal.c_str());
 		ProcessReceivedValue(fieldId.GetRef(), fieldVal.c_str(), arrayIndices);
 		fieldVal.Clear();
 	}
@@ -753,10 +760,10 @@ namespace Comm
 	} while (0)
 
 	// This is the JSON parser state machine
-	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len, bool log)
+	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
 		nextOut = 0;
-		dbg_if(log, "CheckInput[%d]: %s", len, rxBuffer);
+		dbg("CheckInput[%d]: %s", len, rxBuffer);
 		while (len != nextOut)
 		{
 			char c = rxBuffer[nextOut];
@@ -766,7 +773,7 @@ namespace Comm
 			{
 				if (state == jsError)
 				{
-					dbg_if(log, "ParserErrorEncountered @ %d", nextOut);
+					error("ParserErrorEncountered @ %d", nextOut);
 
 					serialIoErrors++;
 
@@ -1075,7 +1082,7 @@ namespace Comm
 				}
 
 				if (lastState != state)
-					dbg_if(log, "state %d -> %d", lastState, state);
+					verbose("state %d -> %d", lastState, state);
 #if DEBUG
 #endif
 			}
