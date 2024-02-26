@@ -347,7 +347,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["name"] = filename;
 
-#if 1
+#if 0
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
@@ -365,7 +365,8 @@ namespace Comm
 			break;
 #endif
 
-#if 0
+/* This way is quicker but duplicates code to decode the received data */
+#if 1
 			std::string name(filename);
 			AsyncGet(
 				"/rr_fileinfo",
