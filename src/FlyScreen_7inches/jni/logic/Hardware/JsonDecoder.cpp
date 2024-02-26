@@ -203,7 +203,7 @@ namespace Comm
 #endif
 		int ret;
 
-		dbg("thumbnailContext state %d", thumbnailContext.state);
+		info("thumbnailContext state %d", thumbnailContext.state);
 		switch (thumbnailContext.state)
 		{
 		case ThumbnailState::Init:
@@ -729,7 +729,7 @@ namespace Comm
 					ProcessField();
 				}
 				RemoveLastId();
-				if (fieldId.strlen() == 0)
+				if (fieldId.strlen() == 0 || fieldId.Equals(fieldPrefix.c_str()))
 				{
 					serialIoErrors = 0;
 
@@ -749,15 +749,6 @@ namespace Comm
 			return false;
 		}
 	}
-
-#define dbg_if(cond, fmt, args...)                                                                                     \
-	do                                                                                                                 \
-	{                                                                                                                  \
-		if (cond)                                                                                                      \
-		{                                                                                                              \
-			dbg(fmt, ##args);                                                                                          \
-		}                                                                                                              \
-	} while (0)
 
 	// This is the JSON parser state machine
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
@@ -801,7 +792,6 @@ namespace Comm
 						if (!fieldPrefix.IsEmpty())
 						{
 							fieldId.copy(fieldPrefix.c_str());
-							fieldId.cat(':');
 						}
 						arrayDepth = 0;
 					}
@@ -817,7 +807,7 @@ namespace Comm
 						break;
 					case '}': // empty object, or extra comma at end of field list
 						RemoveLastId();
-						if (fieldId.strlen() == 0)
+						if (fieldId.strlen() == 0 || fieldId.Equals(fieldPrefix.c_str()))
 						{
 							serialIoErrors = 0;
 							EndReceivedMessage();

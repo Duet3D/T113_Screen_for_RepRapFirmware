@@ -347,7 +347,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["name"] = filename;
 
-#if 0
+#if 1
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
@@ -364,7 +364,8 @@ namespace Comm
 
 			break;
 #endif
-#if 1
+
+#if 0
 			std::string name(filename);
 			AsyncGet(
 				"/rr_fileinfo",
@@ -501,8 +502,8 @@ namespace Comm
 					{
 						return false;
 					}
-					decoder.SetPrefix("thumbnail");
-					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+					decoder.SetPrefix("thumbnail:");
+					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.size() + 1);
 					return true;
 				},
 				true);
