@@ -52,6 +52,7 @@ namespace Comm
 	extern ThumbnailData thumbnailData;
 	extern Thumbnail thumbnail;
 	extern ThumbnailContext thumbnailContext;
+	extern bool stopThumbnailRequest;
 
 	enum SeqState
 	{
@@ -91,6 +92,7 @@ namespace Comm
 
 	Seq* GetNextSeq(struct Seq* current);
 	void RequestNextThumbnailChunk();
+	void CancelThumbnailRequest();
 	void sendNext();
 	void init();
 }

@@ -54,7 +54,7 @@ namespace UI
 		void Open(function<void(void)> okCb);
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
 		void Ok();
-		void Cancel();
+		void Cancel(bool close = true);
 		void SetText(const std::string& text);
 		void SetText(const char* text);
 		void SetTextf(const char* format, ...);

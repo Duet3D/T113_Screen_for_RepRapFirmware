@@ -146,7 +146,14 @@ namespace UI
 
 	void Window::Back()
 	{
-		if (CloseOverlay()) { return; }
+		if (POPUP_WINDOW->IsOpen())
+		{
+			POPUP_WINDOW->Cancel(false);
+		}
+		if (CloseOverlay())
+		{
+			return;
+		}
 		if (OM::FileSystem::IsInSubFolder())
 		{
 			info("Returning to previous folder");

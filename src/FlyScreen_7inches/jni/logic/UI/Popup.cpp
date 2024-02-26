@@ -202,14 +202,16 @@ namespace UI
 		Close();
 	}
 
-	void PopupWindow::Cancel()
+	void PopupWindow::Cancel(bool close)
 	{
 		if (!IsResponse())
 		{
 			Comm::duet.SendGcode("M292 P1");
 		}
 		cancelCb_();
-		Close();
+
+		if (close)
+			Close();
 	}
 
 	void PopupWindow::SetText(const std::string& text)

@@ -700,11 +700,13 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
-			UI::POPUP_WINDOW->Open([]() {
-				UI::RunSelectedFile();
-				UI::WINDOW->CloseLastWindow();
-				UI::WINDOW->OpenWindow(mPrintWindowPtr);
-			});
+			UI::POPUP_WINDOW->Open(
+				[]() {
+					UI::RunSelectedFile();
+					UI::WINDOW->CloseLastWindow();
+					UI::WINDOW->OpenWindow(mPrintWindowPtr);
+				},
+				[]() { Comm::CancelThumbnailRequest(); });
 			Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 			UI::POPUP_WINDOW->ShowImage(true);

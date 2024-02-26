@@ -394,6 +394,13 @@ namespace Comm
 			break;
 
 		case rcvM361ThumbnailData:
+			if (stopThumbnailRequest)
+			{
+				warn("Thumbnail request cancelled");
+				thumbnailContext.state = ThumbnailState::Init;
+				stopThumbnailRequest = false;
+				break;
+			}
 			info("thumbnail data %d", strlen(data));
 			thumbnailData.size = std::min(strlen(data), sizeof(thumbnailData.buffer));
 			memcpy(thumbnailData.buffer, data, thumbnailData.size);

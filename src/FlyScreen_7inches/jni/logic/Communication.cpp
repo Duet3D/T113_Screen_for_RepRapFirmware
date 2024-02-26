@@ -62,6 +62,7 @@ namespace Comm
 	ThumbnailData thumbnailData;
 	Thumbnail thumbnail;
 	ThumbnailContext thumbnailContext;
+	bool stopThumbnailRequest = false;
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
@@ -323,6 +324,15 @@ namespace Comm
 			thumbnailContext.state = ThumbnailState::DataWait;
 			return;
 		}
+	}
+
+	void CancelThumbnailRequest()
+	{
+		warn("Requesting thumbnail cancel");
+		thumbnailContext.state = ThumbnailState::Init;
+		thumbnailContext.filename.Clear();
+		thumbnailContext.next = 0;
+		stopThumbnailRequest = true;
 	}
 
 	void sendNext()

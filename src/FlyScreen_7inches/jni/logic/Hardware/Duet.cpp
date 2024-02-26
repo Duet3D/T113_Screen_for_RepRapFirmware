@@ -337,6 +337,8 @@ namespace Comm
 
 	void Duet::RequestFileInfo(const char* filename)
 	{
+		stopThumbnailRequest = false;
+
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
@@ -434,6 +436,12 @@ namespace Comm
 						query["name"] = filename;
 						while (context.next != 0)
 						{
+							if (stopThumbnailRequest)
+							{
+								warn("Thumbnail request cancelled");
+								stopThumbnailRequest = false;
+								return false;
+							}
 							// Request thumbnail data
 							query["offset"] = utils::format("%d", context.next);
 							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
