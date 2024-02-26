@@ -346,6 +346,7 @@ namespace Comm
 			JsonDecoder decoder;
 			QueryParameters_t query;
 			query["name"] = filename;
+			UI::GetThumbnail()->setText("Loading...");
 
 #if 0
 			AsyncGet(
@@ -409,7 +410,7 @@ namespace Comm
 							if (format != "qoi")
 							{
 								warn("Unsupported thumbnail format: %s", format.c_str());
-								return false;
+								continue;
 							}
 							thumbnail.imageFormat = Thumbnail::ImageFormat::Qoi;
 						}
@@ -439,7 +440,7 @@ namespace Comm
 							if (!Get("/rr_thumbnail", r, query))
 							{
 								error("Failed to get thumbnail data for %s at offset %d", filename, context.next);
-								return false;
+								continue;
 							}
 							dbg("Parsing rr_thumbnail response");
 							reader.parse(r.body, body);
@@ -450,7 +451,7 @@ namespace Comm
 									  filename,
 									  context.next,
 									  body["err"].asInt());
-								return false;
+								continue;
 							}
 
 							if (body.isMember("next"))
@@ -471,6 +472,7 @@ namespace Comm
 						thumbnail.bmp.Close();
 						UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
 					}
+					UI::GetThumbnail()->setText("");
 					return true;
 				},
 				true);
@@ -485,6 +487,7 @@ namespace Comm
 
 	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
+		UI::GetThumbnail()->setText("Loading...");
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:

@@ -325,6 +325,7 @@ namespace UI
 		axisJogSelection_->setVisible(false);
 		axisJogAdjustment_->setVisible(false);
 		image_->setVisible(false);
+		image_->setText("");
 		image_->setBackgroundPic(nullptr);
 
 		for (auto& axis : axes_)

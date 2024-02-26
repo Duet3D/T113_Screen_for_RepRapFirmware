@@ -203,7 +203,7 @@ namespace Comm
 #endif
 		int ret;
 
-		info("thumbnailContext state %d", thumbnailContext.state);
+		verbose("thumbnailContext state %d", thumbnailContext.state);
 		switch (thumbnailContext.state)
 		{
 		case ThumbnailState::Init:
@@ -239,6 +239,7 @@ namespace Comm
 			{
 				thumbnail.bmp.Close();
 				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
+				UI::GetThumbnail()->setText("");
 				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
 				thumbnailContext.state = ThumbnailState::Init;
 			}

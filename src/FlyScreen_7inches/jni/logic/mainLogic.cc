@@ -700,13 +700,12 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
-			// Comm::duet.SendGcodef("M36 %s", item->GetPath().c_str());
-			Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
+			Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 			UI::POPUP_WINDOW->ShowImage(true);
 			UI::POPUP_WINDOW->CancelTimeout();
