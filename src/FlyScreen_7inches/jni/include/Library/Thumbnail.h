@@ -26,7 +26,7 @@ struct Thumbnail
 struct ThumbnailData
 {
 	uint16_t size;
-	unsigned char buffer[2048];
+	unsigned char buffer[4096]; // 1024 bytes for UART, 2600 bytes for network, some extra since we have lots of memory
 };
 
 typedef bool (*ThumbnailProcessCb)(const struct Thumbnail &thumbnail, uint32_t pixels_offset, const rgba_t *pixels, size_t pixels_count);

@@ -189,7 +189,7 @@ namespace Comm
 
 	Seq* FindSeqByKey(const char* key)
 	{
-		dbg("key %s\n", key);
+		verbose("key %s\n", key);
 
 		for (size_t i = 0; i < ARRAY_SIZE(seqs); ++i)
 		{
@@ -311,23 +311,26 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
-	void sendNext()
+	void RequestNextThumbnailChunk()
 	{
-		long long now = TimeHelper::getCurrentTime();
-		if (now > (lastResponseTime + duet.GetPollInterval() + printerResponseTimeout))
-		{
-			Reconnect();
-		}
-
 		if (thumbnailContext.state == ThumbnailState::DataRequest)
 		{
 			// Request thumbnail data
 			info("Requesting thumbnail data for %s at offset %d\n",
 				 thumbnailContext.filename.c_str(),
 				 thumbnailContext.next);
-			duet.SendGcodef("M36.1 P\"%s\" S%d", thumbnailContext.filename.c_str(), thumbnailContext.next);
+			duet.RequestThumbnail(thumbnailContext.filename.c_str(), thumbnailContext.next);
 			thumbnailContext.state = ThumbnailState::DataWait;
 			return;
+		}
+	}
+
+	void sendNext()
+	{
+		long long now = TimeHelper::getCurrentTime();
+		if (now > (lastResponseTime + duet.GetPollInterval() + printerResponseTimeout))
+		{
+			Reconnect();
 		}
 
 		currentReqSeq = GetNextSeq(currentReqSeq);

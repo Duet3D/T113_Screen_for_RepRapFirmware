@@ -335,6 +335,182 @@ namespace Comm
 		return;
 	}
 
+	void Duet::RequestFileInfo(const char* filename)
+	{
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M36 \"%s\"", filename);
+			break;
+		case CommunicationType::network: {
+			JsonDecoder decoder;
+			QueryParameters_t query;
+			query["name"] = filename;
+
+#if 0
+			AsyncGet(
+				"/rr_fileinfo",
+				query,
+				[this](RestClient::Response& r) -> bool {
+					JsonDecoder decoder;
+					if (r.code != 200)
+					{
+						return false;
+					}
+					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+					return true;
+				},
+				true);
+
+			break;
+#endif
+#if 1
+			std::string name(filename);
+			AsyncGet(
+				"/rr_fileinfo",
+				query,
+				[this, name](RestClient::Response& r) -> bool {
+					Json::Reader reader;
+					Json::Value body;
+					const char* filename = name.c_str();
+					dbg("Name = %s", filename);
+					if (r.code != 200)
+					{
+						UI::CONSOLE->AddResponse(
+							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
+								.c_str());
+						return false;
+					}
+					reader.parse(r.body, body);
+					if (body.isMember("err") && body["err"].asInt() != 0)
+					{
+						UI::CONSOLE->AddResponse(
+							utils::format(
+								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
+								.c_str());
+						return false;
+					}
+					if (!body.isMember("thumbnails"))
+					{
+						info("No thumbnails found for %s", filename);
+						return false;
+					}
+					Json::Value thumbnailsJson = body["thumbnails"];
+					for (Json::ArrayIndex i = 0; i < thumbnailsJson.size(); i++)
+					{
+						Thumbnail thumbnail;
+						ThumbnailContext context;
+						ThumbnailInit(thumbnail);
+						if (thumbnailsJson[i].isMember("format"))
+						{
+							std::string format = thumbnailsJson[i]["format"].asString();
+							if (format != "qoi")
+							{
+								warn("Unsupported thumbnail format: %s", format.c_str());
+								return false;
+							}
+							thumbnail.imageFormat = Thumbnail::ImageFormat::Qoi;
+						}
+						if (thumbnailsJson[i].isMember("width"))
+						{
+							thumbnail.width = thumbnailsJson[i]["width"].asInt();
+						}
+						if (thumbnailsJson[i].isMember("height"))
+						{
+							thumbnail.height = thumbnailsJson[i]["height"].asInt();
+						}
+
+						if (thumbnailsJson[i].isMember("offset"))
+						{
+							context.next = thumbnailsJson[i]["offset"].asInt();
+						}
+						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
+
+						thumbnail.bmp.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail.bmp");
+						QueryParameters_t query;
+						query["name"] = filename;
+						while (context.next != 0)
+						{
+							// Request thumbnail data
+							query["offset"] = utils::format("%d", context.next);
+							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
+							if (!Get("/rr_thumbnail", r, query))
+							{
+								error("Failed to get thumbnail data for %s at offset %d", filename, context.next);
+								return false;
+							}
+							dbg("Parsing rr_thumbnail response");
+							reader.parse(r.body, body);
+
+							if (body.isMember("err") && body["err"].asInt() != 0)
+							{
+								error("Failed to get thumbnail data for %s at offset %d: %d",
+									  filename,
+									  context.next,
+									  body["err"].asInt());
+								return false;
+							}
+
+							if (body.isMember("next"))
+							{
+								context.next = body["next"].asInt();
+								dbg("Next thumbnail offset: %d", context.next);
+							}
+
+							dbg("Decoding thumbnail data");
+							if (body.isMember("data"))
+							{
+								ThumbnailData data;
+								data.size = std::min(body["data"].asString().size(), sizeof(data.buffer));
+								memcpy(data.buffer, body["data"].asString().c_str(), data.size);
+								ThumbnailDecodeChunk(thumbnail, data);
+							}
+						}
+						thumbnail.bmp.Close();
+						UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
+					}
+					return true;
+				},
+				true);
+			break;
+#endif
+		}
+		default:
+			break;
+		}
+		return;
+	}
+
+	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
+	{
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M36.1 P\"%s\" S%d", filename, offset);
+			break;
+		case CommunicationType::network: {
+			QueryParameters_t query;
+			query["name"] = filename;
+			query["offset"] = utils::format("%d", offset);
+			AsyncGet(
+				"/rr_thumbnail",
+				query,
+				[this](RestClient::Response& r) -> bool {
+					JsonDecoder decoder;
+					if (r.code != 200)
+					{
+						return false;
+					}
+					decoder.SetPrefix("thumbnail");
+					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+					return true;
+				},
+				true);
+			break;
+		}
+		}
+	}
+
 	void Duet::ProcessReply(const RestClient::Response& reply)
 	{
 		if (m_communicationType != CommunicationType::network)

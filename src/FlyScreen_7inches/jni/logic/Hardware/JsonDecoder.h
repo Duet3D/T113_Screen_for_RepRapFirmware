@@ -51,6 +51,7 @@ namespace Comm
 		JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0) {}
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
+		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }
 
 	  private:
 		void StartReceivedMessage(void);
@@ -68,8 +69,9 @@ namespace Comm
 
 		// fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array
 		// index, and a ':' character indicates a field separator.
+		String<50> fieldPrefix;
 		String<200> fieldId;
-		String<2048> fieldVal;
+		String<4096> fieldVal; // rr_thumbnail seems to be biggest response we get
 		JsonState state = jsBegin;
 		JsonState lastState = jsBegin;
 		int serialIoErrors;

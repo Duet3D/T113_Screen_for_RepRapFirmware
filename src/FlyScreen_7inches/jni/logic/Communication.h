@@ -90,6 +90,7 @@ namespace Comm
 	void KickWatchdog();
 
 	Seq* GetNextSeq(struct Seq* current);
+	void RequestNextThumbnailChunk();
 	void sendNext();
 	void init();
 }

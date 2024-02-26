@@ -84,6 +84,7 @@ static int sFeedRate = 6000;
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
 	{TIMER_ASYNC_HTTP_REQUEST, 100},
+	{TIMER_THUMBNAIL, 50},
 };
 
 /**
@@ -234,6 +235,10 @@ static bool onUI_Timer(int id)
 	}
 	case TIMER_ASYNC_HTTP_REQUEST: {
 		Comm::ProcessQueuedAsyncRequests();
+		break;
+	}
+	case TIMER_THUMBNAIL: {
+		Comm::RequestNextThumbnailChunk();
 		break;
 	}
 	default:
@@ -695,7 +700,8 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
-			Comm::duet.SendGcodef("M36 %s", item->GetPath().c_str());
+			// Comm::duet.SendGcodef("M36 %s", item->GetPath().c_str());
+			Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
 				UI::WINDOW->CloseLastWindow();
@@ -1085,8 +1091,8 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 	int height = 32;
 	int width = 32;
 	int size = height * width;
-	char* imageFileName = "/tmp/bitmapImage.bmp";
-	char* imageFileName2 = "/tmp/bitmapImage2.bmp";
+	const char* imageFileName = "/tmp/bitmapImage.bmp";
+	const char* imageFileName2 = "/tmp/bitmapImage2.bmp";
 
 	BMP bmp(width, height, imageFileName);
 	BMP bmp2(width, height, imageFileName2);

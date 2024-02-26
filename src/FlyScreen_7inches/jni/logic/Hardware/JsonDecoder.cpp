@@ -798,6 +798,11 @@ namespace Comm
 						state = jsExpectId;
 						fieldVal.Clear();
 						fieldId.Clear();
+						if (!fieldPrefix.IsEmpty())
+						{
+							fieldId.copy(fieldPrefix.c_str());
+							fieldId.cat(':');
+						}
 						arrayDepth = 0;
 					}
 					break;
