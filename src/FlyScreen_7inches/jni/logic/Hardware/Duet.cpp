@@ -406,32 +406,38 @@ namespace Comm
 						Thumbnail thumbnail;
 						ThumbnailContext context;
 						ThumbnailInit(thumbnail);
-						if (thumbnailsJson[i].isMember("format"))
+						if (!thumbnailsJson[i].isMember("width"))
 						{
-							std::string format = thumbnailsJson[i]["format"].asString();
-							if (format != "qoi")
-							{
-								warn("Unsupported thumbnail format: %s", format.c_str());
-								continue;
-							}
-							thumbnail.imageFormat = Thumbnail::ImageFormat::Qoi;
+							continue;
 						}
-						if (thumbnailsJson[i].isMember("width"))
-						{
-							thumbnail.width = thumbnailsJson[i]["width"].asInt();
-						}
-						if (thumbnailsJson[i].isMember("height"))
-						{
-							thumbnail.height = thumbnailsJson[i]["height"].asInt();
-						}
+						thumbnail.width = thumbnailsJson[i]["width"].asInt();
 
-						if (thumbnailsJson[i].isMember("offset"))
+						if (!thumbnailsJson[i].isMember("height"))
 						{
-							context.next = thumbnailsJson[i]["offset"].asInt();
+							continue;
 						}
+						thumbnail.height = thumbnailsJson[i]["height"].asInt();
+
+						if (!thumbnailsJson[i].isMember("offset"))
+						{
+							continue;
+						}
+						context.next = thumbnailsJson[i]["offset"].asInt();
+
+						if (!thumbnailsJson[i].isMember("format"))
+						{
+							continue;
+						}
+						std::string format = thumbnailsJson[i]["format"].asString();
+						if (!thumbnail.SetImageFormat(format.c_str()))
+						{
+							warn("Unsupported thumbnail format: %s", format.c_str());
+							continue;
+						}
+						thumbnail.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail");
+
 						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
-						thumbnail.bmp.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail.bmp");
 						QueryParameters_t query;
 						query["name"] = filename;
 						while (context.next != 0)
@@ -477,8 +483,8 @@ namespace Comm
 								ThumbnailDecodeChunk(thumbnail, data);
 							}
 						}
-						thumbnail.bmp.Close();
-						UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
+						thumbnail.Close();
+						UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail");
 					}
 					UI::GetThumbnail()->setText("");
 					return true;

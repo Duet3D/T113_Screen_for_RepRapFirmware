@@ -216,9 +216,10 @@ namespace Comm
 				error("thumbnail meta invalid.\n");
 				break;
 			}
-			if (!thumbnail.bmp.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail.bmp"))
+			if (!thumbnail.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail"))
 			{
 				error("Failed to create thumbnail file.");
+				break;
 			}
 			thumbnailContext.state = ThumbnailState::DataRequest;
 			break;
@@ -237,10 +238,10 @@ namespace Comm
 			}
 			if (thumbnailContext.next == 0)
 			{
-				thumbnail.bmp.Close();
+				thumbnail.Close();
 				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
 				UI::GetThumbnail()->setText("");
-				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail.bmp");
+				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail");
 				thumbnailContext.state = ThumbnailState::Init;
 			}
 			else
@@ -351,11 +352,8 @@ namespace Comm
 
 		case rcvM36ThumbnailsFormat:
 			info("thumbnail format %s", data);
-			thumbnail.imageFormat = Thumbnail::ImageFormat::Invalid;
-			if (strcmp(data, "qoi") == 0)
+			if (thumbnail.SetImageFormat(data))
 			{
-				thumbnail.imageFormat = Thumbnail::ImageFormat::Qoi;
-
 				thumbnailContext.state = ThumbnailState::Header;
 			}
 			break;

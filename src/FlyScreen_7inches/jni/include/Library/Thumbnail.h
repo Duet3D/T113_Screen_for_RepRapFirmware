@@ -5,6 +5,7 @@
 #include <cstddef>
 
 #include "bmp.h"
+#include "png.h"
 #include "qoi.h"
 
 struct Thumbnail
@@ -17,10 +18,16 @@ struct Thumbnail
 	enum ImageFormat {
 		Invalid = 0,
 		Qoi,
+		Png,
 	} imageFormat;
 
 	qoi_desc qoi;
+	PNG png;
 	BMP bmp;
+
+	bool New(uint16_t width, uint16_t height, const char* imageFileName);
+	bool SetImageFormat(const char* format);
+	bool Close();
 };
 
 struct ThumbnailData

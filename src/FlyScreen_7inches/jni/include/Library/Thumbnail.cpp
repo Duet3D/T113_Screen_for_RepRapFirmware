@@ -14,10 +14,63 @@ extern "C"
 #define QOI_IMPLEMENTATION 1
 #include "qoi.h"
 
-bool ThumbnailIsValid(struct Thumbnail &thumbnail)
+static int ThumbnailDecodeChunkPng(struct Thumbnail& thumbnail, struct ThumbnailData& data);
+static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct ThumbnailData& data);
+
+bool Thumbnail::New(uint16_t width, uint16_t height, const char* imageFileName)
 {
-	if (thumbnail.imageFormat != Thumbnail::ImageFormat::Qoi)
+	Close();
+	switch (imageFormat)
 	{
+	case ImageFormat::Png:
+		return png.New(imageFileName);
+	case ImageFormat::Qoi:
+		return bmp.New(width, height, imageFileName);
+	default:
+		return false;
+	}
+}
+
+bool Thumbnail::SetImageFormat(const char* format)
+{
+	if (strcmp(format, "qoi") == 0)
+	{
+		imageFormat = ImageFormat::Qoi;
+		return true;
+	}
+	else if (strcmp(format, "png") == 0)
+	{
+		imageFormat = ImageFormat::Png;
+		return true;
+	}
+	else
+	{
+		imageFormat = ImageFormat::Invalid;
+		return false;
+	}
+}
+
+bool Thumbnail::Close()
+{
+	switch (imageFormat)
+	{
+	case ImageFormat::Png:
+		return png.Close();
+	case ImageFormat::Qoi:
+		return bmp.Close();
+	default:
+		return false;
+	}
+}
+
+bool ThumbnailIsValid(struct Thumbnail& thumbnail)
+{
+	switch (thumbnail.imageFormat)
+	{
+	case Thumbnail::ImageFormat::Qoi:
+	case Thumbnail::ImageFormat::Png:
+		break;
+	default:
 		return false;
 	}
 
@@ -79,6 +132,27 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 
 	data.size = ret;
 
+	switch (thumbnail.imageFormat)
+	{
+	case Thumbnail::ImageFormat::Png:
+		return ThumbnailDecodeChunkPng(thumbnail, data);
+	case Thumbnail::ImageFormat::Qoi:
+		return ThumbnailDecodeChunkQoi(thumbnail, data);
+	default:
+		// Shouldn't get here
+		return -4;
+	}
+}
+
+static int ThumbnailDecodeChunkPng(struct Thumbnail& thumbnail, struct ThumbnailData& data)
+{
+	thumbnail.png.appendData(data.buffer, data.size);
+	return 0;
+}
+
+static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct ThumbnailData& data)
+{
+	int ret;
 	int size_done = 0;
 	int pixel_decoded = 0;
 	rgba_t rgba_buffer[1024];
@@ -92,19 +166,23 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 			 rgba_buffer,
 			 sizeof(rgba_buffer),
 			 pixel_decoded);
-		ret = qoi_decode_chunked(&thumbnail.qoi, (data.buffer) + size_done, data.size - size_done, rgba_buffer, sizeof(rgba_buffer), &pixel_decoded);
+		ret = qoi_decode_chunked(&thumbnail.qoi,
+								 (data.buffer) + size_done,
+								 data.size - size_done,
+								 rgba_buffer,
+								 sizeof(rgba_buffer),
+								 &pixel_decoded);
 		if (ret < 0)
 		{
 			error("failed qoi decoding state %d %d.\n", qoi_decode_state_get(&thumbnail.qoi), ret);
-			return -4;
+			return -5;
 		}
 
-		if (thumbnail.qoi.height != thumbnail.height ||
-		    thumbnail.qoi.width != thumbnail.width)
+		if (thumbnail.qoi.height != thumbnail.height || thumbnail.qoi.width != thumbnail.width)
 		{
 			error("thumbnail height %d, qoi height %d", thumbnail.height, thumbnail.qoi.height);
 			error("thumbnail width %d, qoi width %d", thumbnail.width, thumbnail.qoi.width);
-			return -5;
+			return -6;
 		}
 
 		size_done += ret;
