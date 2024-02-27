@@ -667,10 +667,8 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 			stat(thumbnailPath.c_str(), &sb) != -1 && sb.st_size > 1)
 		{
 			info("Thumbnail exists with size %lld at path %s", sb.st_size, thumbnailPath.c_str());
-			info("Setting thumbnail to %s", thumbnailPath.c_str());
 			pFileThumbnail->setBackgroundPic(thumbnailPath.c_str());
 		}
-	}
 		else
 		{
 			pFileThumbnail->setBackgroundPic("");
