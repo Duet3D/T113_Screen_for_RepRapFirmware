@@ -323,10 +323,14 @@ namespace Comm
 
 	void RequestNextThumbnailChunk()
 	{
-		if (UI::POPUP_WINDOW->IsOpen())
+		if (UI::POPUP_WINDOW->IsOpen() && UI::GetSelectedFile() != nullptr)
 		{
-			UI::GetThumbnail()->setBackgroundPic(
-				utils::format("/tmp/thumbnails/%s", UI::GetSelectedFile()->GetName().c_str()).c_str());
+			std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", UI::GetSelectedFile()->GetName().c_str());
+			if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
+			{
+				UI::GetThumbnail()->setText("");
+				UI::GetThumbnail()->setBackgroundPic(thumbnailPath.c_str());
+			}
 		}
 
 		if (!thumbnailRequestInProgress)

@@ -14,6 +14,7 @@
 #include "Communication.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
+#include "UI/UserInterface.h"
 #include <algorithm>
 
 namespace OM::FileSystem
@@ -312,6 +313,7 @@ namespace OM::FileSystem
 			delete item;
 		}
 		sItems.clear();
+		UI::SetSelectedFile(nullptr);
 	}
 
 	std::string GetFileExtension(const std::string& filename)
