@@ -7,6 +7,7 @@
 #include "bmp.h"
 #include "png.h"
 #include "qoi.h"
+#include <string>
 
 struct Thumbnail
 {
@@ -24,6 +25,7 @@ struct Thumbnail
 	qoi_desc qoi;
 	PNG png;
 	BMP bmp;
+	std::string filename;
 
 	bool New(uint16_t width, uint16_t height, const char* imageFileName);
 	bool SetImageFormat(const char* format);

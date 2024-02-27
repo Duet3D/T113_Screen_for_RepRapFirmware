@@ -128,6 +128,11 @@ void BMP::writeRow(unsigned char* pixels)
 
 void BMP::appendPixels(rgba_t* pixels, int count)
 {
+	if (!IsOpen())
+	{
+		warn("File %s not open", m_imageFileName);
+		return;
+	}
 	info("count: %d", count);
 	int size = m_width * m_height;
 	int pixelsToAdd = std::min(size - m_pixelIndex, count);

@@ -358,7 +358,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFanWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::print:
-			OM::FileSystem::RequestFiles("0:/gcodes");
+		OM::FileSystem::RequestFiles("0:/gcodes");
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
@@ -647,7 +647,7 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
 	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
 	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
-//	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
+	ZKListView::ZKListSubItem* pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
 
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
@@ -656,13 +656,24 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	pListItem->setText(item->GetName());
 	switch (item->GetType())
 	{
-	case OM::FileSystem::FileSystemItemType::file:
+	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
+		std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", item->GetName().c_str());
+		if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
+		{
+			pFileThumbnail->setBackgroundPic(thumbnailPath.c_str());
+		}
+		else
+		{
+			pFileThumbnail->setBackgroundPic("");
+		}
 		break;
+	}
 	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
 		pFileType->setTextTr("folder");
+		pFileThumbnail->setBackgroundPic("");
 		break;
 	}
 	pFileSize->setTextTrf("file_size", item->GetSize());
@@ -707,7 +718,7 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 					UI::WINDOW->OpenWindow(mPrintWindowPtr);
 				},
 				[]() { Comm::CancelThumbnailRequest(); });
-			Comm::duet.RequestFileInfo(item->GetPath().c_str());
+			// Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
 			UI::POPUP_WINDOW->ShowImage(true);
 			UI::POPUP_WINDOW->CancelTimeout();

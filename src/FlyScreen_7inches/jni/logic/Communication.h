@@ -53,6 +53,7 @@ namespace Comm
 	extern Thumbnail thumbnail;
 	extern ThumbnailContext thumbnailContext;
 	extern bool stopThumbnailRequest;
+	extern bool thumbnailRequestInProgress;
 
 	enum SeqState
 	{

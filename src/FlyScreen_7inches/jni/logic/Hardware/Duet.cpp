@@ -338,6 +338,7 @@ namespace Comm
 	void Duet::RequestFileInfo(const char* filename)
 	{
 		stopThumbnailRequest = false;
+		thumbnailRequestInProgress = true;
 
 		switch (m_communicationType)
 		{
@@ -384,6 +385,7 @@ namespace Comm
 						UI::CONSOLE->AddResponse(
 							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
 								.c_str());
+						thumbnailRequestInProgress = false;
 						return false;
 					}
 					reader.parse(r.body, body);
@@ -393,11 +395,13 @@ namespace Comm
 							utils::format(
 								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
 								.c_str());
+						thumbnailRequestInProgress = false;
 						return false;
 					}
 					if (!body.isMember("thumbnails"))
 					{
 						info("No thumbnails found for %s", filename);
+						thumbnailRequestInProgress = false;
 						return false;
 					}
 					Json::Value thumbnailsJson = body["thumbnails"];
@@ -434,7 +438,7 @@ namespace Comm
 							warn("Unsupported thumbnail format: %s", format.c_str());
 							continue;
 						}
-						thumbnail.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail");
+						thumbnail.New(thumbnail.width, thumbnail.height, filename);
 
 						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
@@ -445,7 +449,7 @@ namespace Comm
 							if (stopThumbnailRequest)
 							{
 								warn("Thumbnail request cancelled");
-								stopThumbnailRequest = false;
+								thumbnailRequestInProgress = false;
 								return false;
 							}
 							// Request thumbnail data
@@ -484,9 +488,10 @@ namespace Comm
 							}
 						}
 						thumbnail.Close();
-						UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail");
+						OM::FileSystem::GetListView()->refreshListView();
 					}
 					UI::GetThumbnail()->setText("");
+					thumbnailRequestInProgress = false;
 					return true;
 				},
 				true);

@@ -17,15 +17,27 @@ extern "C"
 static int ThumbnailDecodeChunkPng(struct Thumbnail& thumbnail, struct ThumbnailData& data);
 static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct ThumbnailData& data);
 
+std::string GetFileName(const char* filepath)
+{
+	std::string filename = filepath;
+	size_t pos = filename.find_last_of("/");
+	if (pos != std::string::npos)
+	{
+		filename = filename.substr(pos + 1);
+	}
+	return std::string("/tmp/thumbnails/") + filename;
+}
+
 bool Thumbnail::New(uint16_t width, uint16_t height, const char* imageFileName)
 {
 	Close();
+	filename = GetFileName(imageFileName);
 	switch (imageFormat)
 	{
 	case ImageFormat::Png:
-		return png.New(imageFileName);
+		return png.New(filename.c_str());
 	case ImageFormat::Qoi:
-		return bmp.New(width, height, imageFileName);
+		return bmp.New(width, height, filename.c_str());
 	default:
 		return false;
 	}

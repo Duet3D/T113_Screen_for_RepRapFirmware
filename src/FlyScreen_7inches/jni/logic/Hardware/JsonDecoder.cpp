@@ -189,6 +189,7 @@ namespace Comm
 			error("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
 			thumbnailContext.state = ThumbnailState::Init;
 		}
+
 #if 1 // && DEBUG
 		if (thumbnail.imageFormat != Thumbnail::ImageFormat::Invalid)
 		{
@@ -203,6 +204,16 @@ namespace Comm
 #endif
 		int ret;
 
+		if (stopThumbnailRequest)
+		{
+			warn("Thumbnail request cancelled");
+			thumbnailContext.state = ThumbnailState::Init;
+			thumbnailRequestInProgress = false;
+		}
+
+		if (thumbnail.imageFormat == Thumbnail::ImageFormat::Invalid)
+			thumbnailRequestInProgress = false;
+
 		verbose("thumbnailContext state %d", thumbnailContext.state);
 		switch (thumbnailContext.state)
 		{
@@ -216,7 +227,7 @@ namespace Comm
 				error("thumbnail meta invalid.\n");
 				break;
 			}
-			if (!thumbnail.New(thumbnail.width, thumbnail.height, "/tmp/thumbnail"))
+			if (!thumbnail.New(thumbnail.width, thumbnail.height, thumbnailContext.filename.c_str()))
 			{
 				error("Failed to create thumbnail file.");
 				break;
@@ -241,12 +252,19 @@ namespace Comm
 				thumbnail.Close();
 				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
 				UI::GetThumbnail()->setText("");
-				UI::GetThumbnail()->setBackgroundPic("/tmp/thumbnail");
 				thumbnailContext.state = ThumbnailState::Init;
+				thumbnailRequestInProgress = false;
 			}
 			else
 			{
 				thumbnailContext.state = ThumbnailState::DataRequest;
+			}
+
+			if (stopThumbnailRequest)
+			{
+				warn("Thumbnail request cancelled");
+				thumbnailContext.state = ThumbnailState::Init;
+				thumbnailRequestInProgress = false;
 			}
 			break;
 		}
@@ -347,7 +365,17 @@ namespace Comm
 		}
 
 		case rcvM36Filename:
+			thumbnailRequestInProgress = true;
 			thumbnailContext.filename.copy(data);
+			break;
+
+		case rcvM36GeneratedBy:
+			// The thumbnail field is not present if no thumbnail is in the file so we need to use this field which is
+			// after the thumbnail key
+			if (thumbnail.imageFormat == Thumbnail::ImageFormat::Invalid)
+			{
+				thumbnailRequestInProgress = false;
+			}
 			break;
 
 		case rcvM36ThumbnailsFormat:
@@ -392,11 +420,12 @@ namespace Comm
 			break;
 
 		case rcvM361ThumbnailData:
+			thumbnailRequestInProgress = true;
 			if (stopThumbnailRequest)
 			{
 				warn("Thumbnail request cancelled");
 				thumbnailContext.state = ThumbnailState::Init;
-				stopThumbnailRequest = false;
+				thumbnailRequestInProgress = false;
 				break;
 			}
 			info("thumbnail data %d", strlen(data));

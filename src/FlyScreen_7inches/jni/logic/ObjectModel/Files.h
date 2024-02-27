@@ -62,6 +62,7 @@ namespace OM::FileSystem
 	};
 
 	void Init(ZKTextView* folderId, ZKListView* listView);
+	ZKListView* GetListView();
 	File* AddFileAt(const size_t index);
 	Folder* AddFolderAt(const size_t index);
 	const size_t GetItemCount();

@@ -63,6 +63,7 @@ namespace Comm
 	Thumbnail thumbnail;
 	ThumbnailContext thumbnailContext;
 	bool stopThumbnailRequest = false;
+	bool thumbnailRequestInProgress = false;
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
@@ -312,8 +313,66 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
+	static std::vector<std::string> thumbnailQueue;
+
+	void QueueThumbnailRequest(std::string filename)
+	{
+		thumbnailQueue.push_back(filename);
+		info("Queued thumbnail request for %s", filename.c_str());
+	}
+
 	void RequestNextThumbnailChunk()
 	{
+		if (UI::POPUP_WINDOW->IsOpen())
+		{
+			UI::GetThumbnail()->setBackgroundPic(
+				utils::format("/tmp/thumbnails/%s", UI::GetSelectedFile()->GetName().c_str()).c_str());
+		}
+
+		if (!thumbnailRequestInProgress)
+			stopThumbnailRequest = false;
+
+		if (!OM::FileSystem::GetListView()->isVisible())
+		{
+			CancelThumbnailRequest();
+			return;
+		}
+
+		size_t size = OM::FileSystem::GetListView()->getListItemCount();
+		size_t visibleCount =
+			std::min(OM::FileSystem::GetListView()->getRows() * OM::FileSystem::GetListView()->getCols() +
+						 OM::FileSystem::GetListView()->getCols(),
+					 size);
+		size_t first = OM::FileSystem::GetListView()->getFirstVisibleItemIndex();
+		OM::FileSystem::FileSystemItem* item;
+
+		for (size_t i = 0; i < size; i++)
+		{
+			item = OM::FileSystem::GetItem(i);
+			if (item == nullptr || item->GetType() != OM::FileSystem::FileSystemItemType::file)
+			{
+				continue;
+			}
+			std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", item->GetName().c_str());
+			bool exists = (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0);
+			if ((i < first || i >= first + visibleCount))
+			{
+				if (exists)
+				{
+					info("Deleting thumbnail for %s", item->GetName().c_str());
+					system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str());
+				}
+				continue;
+			}
+			if (exists)
+			{
+				continue;
+			}
+			info("Queueing thumbnail request for %s", item->GetName().c_str());
+			system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str());
+			thumbnailQueue.push_back(item->GetPath());
+		}
+
 		if (thumbnailContext.state == ThumbnailState::DataRequest)
 		{
 			// Request thumbnail data
@@ -324,6 +383,13 @@ namespace Comm
 			thumbnailContext.state = ThumbnailState::DataWait;
 			return;
 		}
+
+		if (!thumbnailRequestInProgress && thumbnailContext.state == ThumbnailState::Init && !thumbnailQueue.empty())
+		{
+			// Request thumbnail info
+			duet.RequestFileInfo(thumbnailQueue[0].c_str());
+			thumbnailQueue.erase(thumbnailQueue.begin());
+		}
 	}
 
 	void CancelThumbnailRequest()
@@ -332,6 +398,7 @@ namespace Comm
 		thumbnailContext.state = ThumbnailState::Init;
 		thumbnailContext.filename.Clear();
 		thumbnailContext.next = 0;
+		thumbnailQueue.clear();
 		stopThumbnailRequest = true;
 	}
 
@@ -366,6 +433,7 @@ namespace Comm
 	void init()
 	{
 		// Sort the fieldTable prior searching using binary search
+		system("mkdir /tmp/thumbnails");
 		SortFieldTable();
 	}
 } // namespace Comm
