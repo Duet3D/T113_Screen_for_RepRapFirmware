@@ -8,11 +8,12 @@
 #ifndef JNI_LOGIC_COMMUNICATION_HPP_
 #define JNI_LOGIC_COMMUNICATION_HPP_
 
+#include "Library/Thumbnail.h"
+
 #include "Commands.h"
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
-#include "Library/Thumbnail.h"
 #include <stdint.h>
 #include <string>
 

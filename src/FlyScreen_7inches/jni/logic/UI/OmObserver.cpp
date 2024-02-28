@@ -7,9 +7,10 @@
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
+#include "OmObserver.h"
+
 #include <ObjectModel/Axis.h>
 #include <ObjectModel/Utils.h>
-#include "OmObserver.h"
 
 #include "Debug.h"
 

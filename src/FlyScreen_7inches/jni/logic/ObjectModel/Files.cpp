@@ -219,7 +219,7 @@ namespace OM::FileSystem
 		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
 		Comm::CancelThumbnailRequest();
-		system("rm -rf /tmp/thumbnails/*");
+		ClearAllCachedThumbnails();
 		Comm::duet.RequestFileList(path.c_str());
 	}
 

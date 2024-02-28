@@ -1,8 +1,9 @@
 #ifndef THUMBNAIL_HPP
 #define THUMBNAIL_HPP 1
 
-#include <sys/types.h>
+#include "control/ZKBase.h"
 #include <cstddef>
+#include <sys/types.h>
 
 #include "bmp.h"
 #include "png.h"
@@ -45,5 +46,11 @@ bool ThumbnailDataIsValid(struct ThumbnailData &data);
 
 int ThumbnailInit(struct Thumbnail &thumbnail);
 int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data);
+
+bool IsThumbnailCached(const char* filename, bool includeBlank = false);
+void SetThumbnail(ZKBase* base, const char* filename);
+bool ClearAllCachedThumbnails();
+bool DeleteCachedThumbnail(const char* filename);
+bool CreateBlankThumbnailCache(const char* filename);
 
 #endif /* ifndef THUMBNAIL_HPP */

@@ -10,9 +10,11 @@ extern "C"
 }
 
 #include "sys/param.h"
+#include <sys/stat.h>
 
 #define QOI_IMPLEMENTATION 1
 #include "qoi.h"
+#include "utils.h"
 
 static int ThumbnailDecodeChunkPng(struct Thumbnail& thumbnail, struct ThumbnailData& data);
 static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct ThumbnailData& data);
@@ -218,4 +220,50 @@ static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct Thumbnail
 	info("done %d/%d pixels %d/%d\n", size_done, data.size, thumbnail.pixel_count, thumbnail.height * thumbnail.width);
 
 	return qoi_decode_state_get(&thumbnail.qoi) != qoi_decoder_done;
+}
+
+bool IsThumbnailCached(const char* filename, bool includeBlank)
+{
+	std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", filename);
+	struct stat sb;
+	if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
+	{
+		if (stat(thumbnailPath.c_str(), &sb) == -1)
+		{
+			// File doesn't exist
+			return false;
+		}
+		if (!includeBlank && sb.st_size <= 1)
+		{
+			// File exists but is empty
+			return false;
+		}
+		verbose("Thumbnail exists with size %lld at path %s", sb.st_size, thumbnailPath.c_str());
+		return true;
+	}
+	return false;
+}
+
+void SetThumbnail(ZKBase* base, const char* filename)
+{
+	std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", filename);
+	base->setBackgroundPic(thumbnailPath.c_str());
+}
+
+bool ClearAllCachedThumbnails()
+{
+	info("Clearing all cached thumbnails");
+	return system("rm -f /tmp/thumbnails/*") == 0;
+}
+
+bool DeleteCachedThumbnail(const char* filename)
+{
+	info("Deleting thumbnail for %s", filename);
+	return system(utils::format("rm -f \"/tmp/thumbnails/%s\"", filename).c_str()) == 0;
+}
+
+bool CreateBlankThumbnailCache(const char* filename)
+{
+	info("Creating blank thumbnail for %s", filename);
+	return system(utils::format("echo \"\" > \"/tmp/thumbnails/%s\"", filename).c_str()) == 0;
 }

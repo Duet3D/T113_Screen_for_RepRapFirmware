@@ -661,13 +661,9 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
-		std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", item->GetName().c_str());
-		struct stat sb;
-		if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0 &&
-			stat(thumbnailPath.c_str(), &sb) != -1 && sb.st_size > 1)
+		if (IsThumbnailCached(item->GetName().c_str()))
 		{
-			info("Thumbnail exists with size %lld at path %s", sb.st_size, thumbnailPath.c_str());
-			pFileThumbnail->setBackgroundPic(thumbnailPath.c_str());
+			SetThumbnail(pFileThumbnail, item->GetName().c_str());
 		}
 		else
 		{

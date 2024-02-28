@@ -323,13 +323,13 @@ namespace Comm
 
 	void RequestNextThumbnailChunk()
 	{
-		if (UI::POPUP_WINDOW->IsOpen() && UI::GetSelectedFile() != nullptr)
+		const OM::FileSystem::FileSystemItem* selectedFile = UI::GetSelectedFile();
+		if (UI::POPUP_WINDOW->IsOpen() && selectedFile != nullptr)
 		{
-			std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", UI::GetSelectedFile()->GetName().c_str());
-			if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
+			if (IsThumbnailCached(selectedFile->GetName().c_str()) && !thumbnailRequestInProgress)
 			{
 				UI::GetThumbnail()->setText("");
-				UI::GetThumbnail()->setBackgroundPic(thumbnailPath.c_str());
+				SetThumbnail(UI::GetThumbnail(), selectedFile->GetName().c_str());
 			}
 		}
 
@@ -348,8 +348,8 @@ namespace Comm
 						 OM::FileSystem::GetListView()->getCols(),
 					 size);
 		size_t first = OM::FileSystem::GetListView()->getFirstVisibleItemIndex();
-		OM::FileSystem::FileSystemItem* item;
 
+		OM::FileSystem::FileSystemItem* item;
 		for (size_t i = 0; i < size; i++)
 		{
 			item = OM::FileSystem::GetItem(i);
@@ -357,23 +357,32 @@ namespace Comm
 			{
 				continue;
 			}
-			std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", item->GetName().c_str());
-			bool exists = (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0);
+
+			bool exists = IsThumbnailCached(item->GetName().c_str(), true);
 			if ((i < first || i >= first + visibleCount))
 			{
+				// Are we requesting a thumbnail for an item that is not visible?
+				if (thumbnailContext.filename.c_str() == item->GetPath())
+				{
+					warn("Requesting thumbnail cancel for %s", item->GetName().c_str());
+					stopThumbnailRequest = true;
+				}
+
+				// If the thumbnail exists and is not visible, delete it
 				if (exists)
 				{
-					info("Deleting thumbnail for %s", item->GetName().c_str());
-					system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str());
+					DeleteCachedThumbnail(item->GetName().c_str());
 				}
 				continue;
 			}
+
+			// If the thumbnail
 			if (exists)
 			{
 				continue;
 			}
 			info("Queueing thumbnail request for %s", item->GetName().c_str());
-			system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str());
+			CreateBlankThumbnailCache(item->GetName().c_str());
 			thumbnailQueue.push_back(item->GetPath());
 		}
 
