@@ -26,6 +26,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
+#include "UI/GuidedSetup.h"
 #include "Upgrade.h"
 #include "os/MountMonitor.h"
 #include "os/UpgradeMonitor.h"
@@ -1144,4 +1145,17 @@ static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
 {
 	Comm::duet.SendGcode("M122");
 	return false;
+}
+static bool onButtonClick_NextPageBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick NextPageBtn !!!\n");
+    return false;
+}
+
+static bool onButtonClick_PreviousPageBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick PreviousPageBtn !!!\n");
+    return false;
+}
+
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked) {
+    LOGD(" Checkbox ShowSetupOnStartup checked %d", isChecked);
 }
