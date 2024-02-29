@@ -26,21 +26,22 @@ namespace UI::GuidedSetup
 		function<void(void)> previousCb; // run this when previous button pressed
 		ZKWindow* window; // if not null, display this window as it might provide additional buttons or user input
 
-		Page(const char* imagePath, function<void(void)> nextCb, function<void(void)> previousCb, ZKWindow* window)
-			: imagePath(imagePath), nextCb(nextCb), previousCb(previousCb), window(window)
-		{
-		}
+		Page(const char* guideId,
+			 const char* imagePath,
+			 function<void(void)> nextCb,
+			 function<void(void)> previousCb,
+			 ZKWindow* window);
 	};
 
 	class Guide
 	{
 	  public:
-		Guide(std::vector<Page> pages) : m_index(0), m_currentPage(nullptr), m_pages(pages) {}
+		Guide(const char* id);
 		~Guide();
-		void Init(std::vector<Page> pages) { m_pages = pages; }
+		void AddPage(Page& page) { m_pages.push_back(page); }
 		void NextPage();
 		void PreviousPage();
-		bool Show(int index = 0);
+		bool Show(size_t index = 0);
 		void Close();
 		size_t GetPageCount() { return m_pages.size(); }
 
@@ -50,13 +51,16 @@ namespace UI::GuidedSetup
 		bool RunNextCallback();
 		bool RunPreviousCallback();
 
-		int m_index;
+		size_t m_index;
 		Page* m_currentPage;
 		std::vector<Page> m_pages;
 	};
 
 	void Init(ZKWindow* window);
-	void Show(Guide* guide, int index = 0);
+	void AddPage(const char* guideId, Page& page);
+	void Show(Guide* guide, size_t index = 0);
+	Guide* GetGuide(const char* id);
+	Guide* GetCurrentGuide();
 	void Close();
 } // namespace UI::GuidedSetup
 

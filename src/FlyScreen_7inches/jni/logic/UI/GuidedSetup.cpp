@@ -15,8 +15,41 @@ namespace UI::GuidedSetup
 {
 	static ZKWindow* s_window = nullptr;
 	static Guide* s_currentGuide = nullptr;
+	static std::map<const char*, Guide*> guides;
 
-	bool Guide::Show(int index)
+	Page::Page(const char* guideId,
+			   const char* imagePath,
+			   function<void(void)> nextCb,
+			   function<void(void)> previousCb,
+			   ZKWindow* window)
+		: imagePath(imagePath), nextCb(nextCb), previousCb(previousCb), window(window)
+	{
+		if (guides.find(guideId) == guides.end())
+		{
+			error("Guide with id %s does not exist", guideId);
+			return;
+		}
+		info("Adding page to guide %s", guideId);
+		guides[guideId]->AddPage(*this);
+	}
+
+	Guide::Guide(const char* id) : m_index(0), m_currentPage(nullptr)
+	{
+		if (guides.find(id) != guides.end())
+		{
+			error("Guide with id %s already exists", id);
+			return;
+		}
+		info("Creating guide %s", id);
+		guides[id] = this;
+	}
+
+	Guide::~Guide()
+	{
+		Close();
+	}
+
+	bool Guide::Show(size_t index)
 	{
 		if (index >= GetPageCount())
 		{
@@ -105,12 +138,34 @@ namespace UI::GuidedSetup
 	void Init(ZKWindow* window)
 	{
 		s_window = window;
-
-		int myInt[] = {1,2,3};
-		std::vector<int> vec(std::begin(myInt), std::end(myInt));
 	}
 
-	void Show(Guide* guide, int index)
+	void AddPage(const char* guideId, Page& page)
+	{
+		if (guides.find(guideId) == guides.end())
+		{
+			error("Guide with id %s does not exist", guideId);
+			return;
+		}
+		guides[guideId]->AddPage(page);
+	}
+
+	Guide* GetGuide(const char* id)
+	{
+		if (guides.find(id) == guides.end())
+		{
+			error("Guide with id %s does not exist", id);
+			return nullptr;
+		}
+		return guides[id];
+	}
+
+	Guide* GetCurrentGuide()
+	{
+		return s_currentGuide;
+	}
+
+	void Show(Guide* guide, size_t index)
 	{
 		if (guide == nullptr)
 		{
@@ -119,6 +174,7 @@ namespace UI::GuidedSetup
 
 		Close();
 		guide->Show(index);
+		s_currentGuide = guide;
 	}
 
 	void Close()
