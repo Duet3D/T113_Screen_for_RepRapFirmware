@@ -22,7 +22,8 @@ class PNG
 	bool Open();
 	bool IsOpen() { return m_imageFile != nullptr; }
 	bool Close();
-	void appendData(unsigned char data[], int size);
+	size_t appendData(unsigned char data[], int size);
+	size_t dataSize = 0;
 
   private:
 	const char* m_imageFileName;

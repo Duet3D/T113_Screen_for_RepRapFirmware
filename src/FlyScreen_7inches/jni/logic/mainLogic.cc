@@ -21,6 +21,7 @@
 #include "UI/Observers/MoveObservers.h"
 #include "UI/Observers/ResponseObservers.h"
 #include "UI/Observers/StateObservers.h"
+#include "UI/Observers/ThumbnailObservers.h"
 #include "UI/Observers/ToolObservers.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"

@@ -1,5 +1,5 @@
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
 #include "bmp.h"
@@ -133,7 +133,6 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 		warn("File %s not open", m_imageFileName);
 		return;
 	}
-	info("count: %d", count);
 	int size = m_width * m_height;
 	int pixelsToAdd = std::min(size - m_pixelIndex, count);
 	while (pixelsToAdd > 0)
@@ -144,6 +143,7 @@ void BMP::appendPixels(rgba_t* pixels, int count)
 		dbg("new pixelIndex: %d", m_pixelIndex);
 		if ((int)m_pixelIndex >= size)
 		{
+			info("Writing %d pixels to file %s", m_pixelIndex, m_imageFileName);
 			for (int i = m_height - 1; i >= 0; i--)
 			// for (int i = 0; i < m_height; i++)
 			{

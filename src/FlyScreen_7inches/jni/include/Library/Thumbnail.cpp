@@ -1,5 +1,5 @@
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
 #include "Library/Thumbnail.h"
@@ -142,7 +142,7 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 		return -3;
 	}
 
-	info("*** received size %d, base64 decoded size %d\n", data.size, ret);
+	dbg("*** received size %d, base64 decoded size %d\n", data.size, ret);
 
 	data.size = ret;
 
@@ -160,7 +160,8 @@ int ThumbnailDecodeChunk(struct Thumbnail& thumbnail, struct ThumbnailData& data
 
 static int ThumbnailDecodeChunkPng(struct Thumbnail& thumbnail, struct ThumbnailData& data)
 {
-	thumbnail.png.appendData(data.buffer, data.size);
+	size_t ret = thumbnail.png.appendData(data.buffer, data.size);
+	info("done %d/%d %s\n", ret, data.size, thumbnail.filename.c_str());
 	return 0;
 }
 
@@ -173,13 +174,13 @@ static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct Thumbnail
 
 	do
 	{
-		info("buffer %08x (size %d, done%d) pixbuf %08x (size %d, decoded %d)\n",
-			 data.buffer,
-			 data.size,
-			 size_done,
-			 rgba_buffer,
-			 sizeof(rgba_buffer),
-			 pixel_decoded);
+		dbg("buffer %08x (size %d, done%d) pixbuf %08x (size %d, decoded %d)\n",
+			data.buffer,
+			data.size,
+			size_done,
+			rgba_buffer,
+			sizeof(rgba_buffer),
+			pixel_decoded);
 		ret = qoi_decode_chunked(&thumbnail.qoi,
 								 (data.buffer) + size_done,
 								 data.size - size_done,
@@ -203,21 +204,26 @@ static int ThumbnailDecodeChunkQoi(struct Thumbnail& thumbnail, struct Thumbnail
 
 		thumbnail.pixel_count += pixel_decoded;
 
-		info("decoded %d bytes, done %d/%d; decoded %d missing %d(%02x) count %d/%d/%d\n",
-			 ret,
-			 size_done,
-			 data.size,
-			 pixel_decoded,
-			 thumbnail.qoi.last_bytes_size,
-			 thumbnail.qoi.last_bytes[0] & 0xc0,
-			 thumbnail.qoi.pixels_count,
-			 thumbnail.pixel_count,
-			 thumbnail.height * thumbnail.width);
+		dbg("decoded %d bytes, done %d/%d; decoded %d missing %d(%02x) count %d/%d/%d\n",
+			ret,
+			size_done,
+			data.size,
+			pixel_decoded,
+			thumbnail.qoi.last_bytes_size,
+			thumbnail.qoi.last_bytes[0] & 0xc0,
+			thumbnail.qoi.pixels_count,
+			thumbnail.pixel_count,
+			thumbnail.height * thumbnail.width);
 
 		thumbnail.bmp.appendPixels(rgba_buffer, pixel_decoded);
 	} while (size_done < data.size && qoi_decode_state_get(&thumbnail.qoi) == qoi_decoder_body);
 
-	info("done %d/%d pixels %d/%d\n", size_done, data.size, thumbnail.pixel_count, thumbnail.height * thumbnail.width);
+	info("done %d/%d pixels %d/%d %s",
+		 size_done,
+		 data.size,
+		 thumbnail.pixel_count,
+		 thumbnail.height * thumbnail.width,
+		 thumbnail.filename.c_str());
 
 	return qoi_decode_state_get(&thumbnail.qoi) != qoi_decoder_done;
 }
@@ -238,7 +244,6 @@ bool IsThumbnailCached(const char* filename, bool includeBlank)
 			// File exists but is empty
 			return false;
 		}
-		verbose("Thumbnail exists with size %lld at path %s", sb.st_size, thumbnailPath.c_str());
 		return true;
 	}
 	return false;

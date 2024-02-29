@@ -28,6 +28,7 @@ bool PNG::New(const char* imageFileName)
 {
 	Close();
 	m_imageFileName = imageFileName;
+	dataSize = 0;
 	return Open();
 }
 
@@ -57,12 +58,13 @@ bool PNG::Close()
 	return true;
 }
 
-void PNG::appendData(unsigned char data[], int size)
+size_t PNG::appendData(unsigned char data[], int size)
 {
 	if (!IsOpen())
 	{
 		warn("File %s not open", m_imageFileName);
-		return;
+		return 0;
 	}
-	fwrite(data, 1, size, m_imageFile);
+	dataSize += size;
+	return fwrite(data, 1, size, m_imageFile);
 }
