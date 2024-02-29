@@ -26,6 +26,7 @@ namespace Comm
 				  bool queue = false);
 
 	void ProcessQueuedAsyncRequests();
+	int ClearThreadPool();
 
 	bool Get(std::string url,
 			 const char* subUrl,

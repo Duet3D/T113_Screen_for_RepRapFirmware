@@ -5,8 +5,9 @@
 #include "Communication.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
-#include "Hardware/SerialIo.h"
+#include "Hardware/JsonDecoder.h"
 #include "Hardware/Usb.h"
+#include "Library/bmp.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
@@ -20,6 +21,7 @@
 #include "UI/Observers/MoveObservers.h"
 #include "UI/Observers/ResponseObservers.h"
 #include "UI/Observers/StateObservers.h"
+#include "UI/Observers/ThumbnailObservers.h"
 #include "UI/Observers/ToolObservers.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
@@ -32,6 +34,7 @@
 #include "utils/TimeHelper.h"
 #include <string>
 #include <sys/reboot.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
 
@@ -83,6 +86,7 @@ static int sFeedRate = 6000;
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
 	{TIMER_ASYNC_HTTP_REQUEST, 100},
+	{TIMER_THUMBNAIL, 50},
 };
 
 /**
@@ -120,9 +124,11 @@ static void onUI_init()
 						   mPopupTextInputPtr,
 						   mPopupNumberInputPtr,
 						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr);
+						   mPopupAxisAdjusmentPtr,
+						   mPopupImagePtr);
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
+	UI::SetThumbnail(mPopupImagePtr);
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -195,8 +201,9 @@ static void onUI_quit()
  */
 static void onProtocolDataUpdate(const SProtocolData &rxData)
 {
-//	dbg("data %s", rxData.data);
-	SerialIo::CheckInput(rxData.data, rxData.len);
+	// We want a single decoder for all uart data
+	static Comm::JsonDecoder decoder;
+	decoder.CheckInput(rxData.data, rxData.len);
 }
 
 /**
@@ -230,6 +237,10 @@ static bool onUI_Timer(int id)
 	}
 	case TIMER_ASYNC_HTTP_REQUEST: {
 		Comm::ProcessQueuedAsyncRequests();
+		break;
+	}
+	case TIMER_THUMBNAIL: {
+		Comm::RequestNextThumbnailChunk();
 		break;
 	}
 	default:
@@ -349,7 +360,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFanWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::print:
-			OM::FileSystem::RequestFiles("0:/gcodes");
+		OM::FileSystem::RequestFiles("0:/gcodes");
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
@@ -624,6 +635,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 }
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
+	UI::POPUP_WINDOW->Close();
 	OM::FileSystem::ClearFileSystem();
 	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;
@@ -634,11 +646,11 @@ static int getListItemCount_FileListView(const ZKListView *pListView) {
 }
 
 static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ FileListView  !!!\n");
+	// LOGD(" obtainListItemData_ FileListView  !!!\n");
 	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
 	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
 	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
-//	ZKListView::ZKListSubItem *pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
+	ZKListView::ZKListSubItem* pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
 
 	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 	if (item == nullptr)
@@ -647,13 +659,23 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	pListItem->setText(item->GetName());
 	switch (item->GetType())
 	{
-	case OM::FileSystem::FileSystemItemType::file:
+	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
+		if (IsThumbnailCached(item->GetName().c_str()))
+		{
+			SetThumbnail(pFileThumbnail, item->GetName().c_str());
+		}
+		else
+		{
+			pFileThumbnail->setBackgroundPic("");
+		}
 		break;
+	}
 	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
 		pFileType->setTextTr("folder");
+		pFileThumbnail->setBackgroundPic("");
 		break;
 	}
 	pFileSize->setTextTrf("file_size", item->GetSize());
@@ -696,7 +718,10 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
+			// Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+			UI::POPUP_WINDOW->ShowImage(true);
+			UI::POPUP_WINDOW->CancelTimeout();
 		}
 		break;
 	}
@@ -1064,5 +1089,59 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 {
 	dbg(" ButtonClick UsbFiles !!!\n");
 	OM::FileSystem::RequestUsbFiles("");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
+{
+	Comm::duet.SendGcode("M36 \"QOI_32x32.gcode\"");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
+{
+	int height = 32;
+	int width = 32;
+	int size = height * width;
+	const char* imageFileName = "/tmp/bitmapImage.bmp";
+	const char* imageFileName2 = "/tmp/bitmapImage2.bmp";
+
+	BMP bmp(width, height, imageFileName);
+	BMP bmp2(width, height, imageFileName2);
+
+	rgba_t pixels[size];
+
+	int i, row, col;
+	for (i = 0; i < size; i++)
+	{
+		col = i % width;
+		row = i / width;
+		pixels[i].rgba.r = (unsigned char)(row * 255 / height);					  /// red
+		pixels[i].rgba.g = (unsigned char)(col * 255 / width);					  /// green
+		pixels[i].rgba.b = (unsigned char)((row + col) * 255 / (height + width)); /// blue
+		pixels[i].rgba.a = 0;
+	}
+	bmp.generateBitmapImage(pixels);
+	int chunkSize = 32;
+	for (i = 0; i < size; i += chunkSize)
+	{
+		info("Appending pixels %d", i);
+		bmp2.appendPixels((pixels + i), chunkSize);
+	}
+
+	bmp.Close();
+	bmp2.Close();
+	dbg("Finished writing bmp files");
+	// Crashes here but not sure why
+	mThumbnailPtr->setBackgroundPic(imageFileName);
+	dbg("Set thumbnail 1");
+	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
+	dbg("Set both images");
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
+{
+	Comm::duet.SendGcode("M122");
 	return false;
 }

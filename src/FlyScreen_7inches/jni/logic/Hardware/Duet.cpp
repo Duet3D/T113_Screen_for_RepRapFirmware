@@ -11,6 +11,7 @@
 #include "Communication.h"
 #include "Debug.h"
 #include "Duet.h"
+#include "Hardware/JsonDecoder.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
@@ -52,6 +53,13 @@ namespace Comm
 		m_lastRequestTime = 0;
 	}
 
+	void Duet::Reconnect()
+	{
+		warn("");
+		Disconnect();
+		Connect();
+	}
+
 	void Duet::SetCommunicationType(CommunicationType type)
 	{
 		if (type == m_communicationType)
@@ -61,16 +69,7 @@ namespace Comm
 		Disconnect();
 
 		m_communicationType = type;
-		if (type == CommunicationType::uart)
-		{
-			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
-			UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
-		}
-
-		if (type == CommunicationType::network)
-		{
-			Connect();
-		}
+		Connect();
 	}
 
 	void Duet::SetPollInterval(uint32_t interval)
@@ -261,6 +260,7 @@ namespace Comm
 			QueryParameters_t query;
 			query["flags"] = flags;
 			AsyncGet("/rr_model", query, [this, flags](RestClient::Response& r) {
+				JsonDecoder decoder;
 				if (r.code != 200)
 				{
 					UI::CONSOLE->AddResponse(
@@ -268,7 +268,7 @@ namespace Comm
 							.c_str());
 					return false;
 				}
-				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
 			break;
@@ -291,6 +291,7 @@ namespace Comm
 			query["key"] = key;
 			query["flags"] = flags;
 			AsyncGet("/rr_model", query, [this, key, flags](RestClient::Response& r) {
+				JsonDecoder decoder;
 				if (r.code != 200)
 				{
 					UI::CONSOLE->AddResponse(
@@ -299,7 +300,7 @@ namespace Comm
 							.c_str());
 					return false;
 				}
-				SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+				decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 				return true;
 			});
 			break;
@@ -318,19 +319,220 @@ namespace Comm
 			SendGcodef("M20 S3 P\"%s\" R%d\n", dir, first);
 			break;
 		case CommunicationType::network: {
+			JsonDecoder decoder;
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["dir"] = dir;
 			query["first"] = utils::format("%d", first);
 			if (!Get("/rr_filelist", r, query))
 				break;
-			SerialIo::CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+			decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
 			break;
 		}
 		default:
 			break;
 		}
 		return;
+	}
+
+	void Duet::RequestFileInfo(const char* filename)
+	{
+		stopThumbnailRequest = false;
+		thumbnailRequestInProgress = true;
+
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M36 \"%s\"", filename);
+			break;
+		case CommunicationType::network: {
+			JsonDecoder decoder;
+			QueryParameters_t query;
+			query["name"] = filename;
+			UI::GetThumbnail()->setText("Loading...");
+
+#if 0
+			AsyncGet(
+				"/rr_fileinfo",
+				query,
+				[this](RestClient::Response& r) -> bool {
+					JsonDecoder decoder;
+					if (r.code != 200)
+					{
+						return false;
+					}
+					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.length() + 1);
+					return true;
+				},
+				true);
+
+			break;
+#endif
+
+/* This way is quicker but duplicates code to decode the received data */
+#if 1
+			std::string name(filename);
+			AsyncGet(
+				"/rr_fileinfo",
+				query,
+				[this, name](RestClient::Response& r) -> bool {
+					Json::Reader reader;
+					Json::Value body;
+					const char* filename = name.c_str();
+					dbg("Name = %s", filename);
+					if (r.code != 200)
+					{
+						UI::CONSOLE->AddResponse(
+							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
+								.c_str());
+						thumbnailRequestInProgress = false;
+						return false;
+					}
+					reader.parse(r.body, body);
+					if (body.isMember("err") && body["err"].asInt() != 0)
+					{
+						UI::CONSOLE->AddResponse(
+							utils::format(
+								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
+								.c_str());
+						thumbnailRequestInProgress = false;
+						return false;
+					}
+					if (!body.isMember("thumbnails"))
+					{
+						info("No thumbnails found for %s", filename);
+						thumbnailRequestInProgress = false;
+						return false;
+					}
+					Json::Value thumbnailsJson = body["thumbnails"];
+					for (Json::ArrayIndex i = 0; i < thumbnailsJson.size(); i++)
+					{
+						Thumbnail thumbnail;
+						ThumbnailContext context;
+						ThumbnailInit(thumbnail);
+						if (!thumbnailsJson[i].isMember("width"))
+						{
+							continue;
+						}
+						thumbnail.width = thumbnailsJson[i]["width"].asInt();
+
+						if (!thumbnailsJson[i].isMember("height"))
+						{
+							continue;
+						}
+						thumbnail.height = thumbnailsJson[i]["height"].asInt();
+
+						if (!thumbnailsJson[i].isMember("offset"))
+						{
+							continue;
+						}
+						context.next = thumbnailsJson[i]["offset"].asInt();
+
+						if (!thumbnailsJson[i].isMember("format"))
+						{
+							continue;
+						}
+						std::string format = thumbnailsJson[i]["format"].asString();
+						if (!thumbnail.SetImageFormat(format.c_str()))
+						{
+							warn("Unsupported thumbnail format: %s", format.c_str());
+							continue;
+						}
+						thumbnail.New(thumbnail.width, thumbnail.height, filename);
+
+						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
+
+						QueryParameters_t query;
+						query["name"] = filename;
+						while (context.next != 0)
+						{
+							if (stopThumbnailRequest)
+							{
+								warn("Thumbnail request cancelled");
+								thumbnailRequestInProgress = false;
+								return false;
+							}
+							// Request thumbnail data
+							query["offset"] = utils::format("%d", context.next);
+							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
+							if (!Get("/rr_thumbnail", r, query))
+							{
+								error("Failed to get thumbnail data for %s at offset %d", filename, context.next);
+								continue;
+							}
+							dbg("Parsing rr_thumbnail response");
+							reader.parse(r.body, body);
+
+							if (body.isMember("err") && body["err"].asInt() != 0)
+							{
+								error("Failed to get thumbnail data for %s at offset %d: %d",
+									  filename,
+									  context.next,
+									  body["err"].asInt());
+								continue;
+							}
+
+							if (body.isMember("next"))
+							{
+								context.next = body["next"].asInt();
+								dbg("Next thumbnail offset: %d", context.next);
+							}
+
+							dbg("Decoding thumbnail data");
+							if (body.isMember("data"))
+							{
+								ThumbnailData data;
+								data.size = std::min(body["data"].asString().size(), sizeof(data.buffer));
+								memcpy(data.buffer, body["data"].asString().c_str(), data.size);
+								ThumbnailDecodeChunk(thumbnail, data);
+							}
+						}
+						thumbnail.Close();
+						OM::FileSystem::GetListView()->refreshListView();
+					}
+					UI::GetThumbnail()->setText("");
+					thumbnailRequestInProgress = false;
+					return true;
+				},
+				true);
+			break;
+#endif
+		}
+		default:
+			break;
+		}
+		return;
+	}
+
+	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
+	{
+		UI::GetThumbnail()->setText("Loading...");
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart:
+			SendGcodef("M36.1 P\"%s\" S%d", filename, offset);
+			break;
+		case CommunicationType::network: {
+			QueryParameters_t query;
+			query["name"] = filename;
+			query["offset"] = utils::format("%d", offset);
+			AsyncGet(
+				"/rr_thumbnail",
+				query,
+				[this](RestClient::Response& r) -> bool {
+					JsonDecoder decoder;
+					if (r.code != 200)
+					{
+						return false;
+					}
+					decoder.SetPrefix("thumbnail:");
+					decoder.CheckInput((const unsigned char*)r.body.c_str(), r.body.size() + 1);
+					return true;
+				},
+				true);
+			break;
+		}
+		}
 	}
 
 	void Duet::ProcessReply(const RestClient::Response& reply)
@@ -343,12 +545,17 @@ namespace Comm
 			warn("Empty reply received");
 			return;
 		}
+
+		JsonDecoder decoder;
 		if (reply.body[0] != '{')
 		{
 			dbg("Reply not json: assuming it is a gcode response");
 			size_t prevPosition = 0;
 			size_t position = reply.body.find("\n"); // Find the first occurrence of \n
 
+			// Split reply by new line and handle each as its own response.
+			// The replicates the uart behaviour and is required because rr_reply will group multiple
+			// replies together into a single response.
 			while (position != std::string::npos)
 			{
 				StringRef ref((char*)"resp", 5);
@@ -358,11 +565,13 @@ namespace Comm
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
 				if (line.empty())
 					continue;
-				Comm::ProcessReceivedValue(ref, line.c_str(), {});
+
+				// Can skip checking the input since we know it's a gcode response
+				decoder.ProcessReceivedValue(ref, line.c_str(), {});
 			}
 			return;
 		}
-		SerialIo::CheckInput((const unsigned char*)reply.body.c_str(), reply.body.length() + 1);
+		decoder.CheckInput((const unsigned char*)reply.body.c_str(), reply.body.length() + 1);
 		return;
 	}
 
@@ -374,58 +583,68 @@ namespace Comm
 
 	const bool Duet::Connect(bool useSessionKey)
 	{
-		if (m_communicationType != CommunicationType::network)
-			return 0;
-
 		Disconnect();
 		Reset();
 
-		info("Connecting to Duet at %s", m_ipAddress.c_str());
+		switch (m_communicationType)
+		{
+		case CommunicationType::uart: {
+			info("Opening UART %s at %u", CONFIGMANAGER->getUartName().c_str(), m_baudRate.rate);
+			return UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
+		}
+		case CommunicationType::network: {
+			info("Connecting to Duet at %s", m_ipAddress.c_str());
 
-		RestClient::Response r;
-		QueryParameters_t query;
-		query["password"] = std::string("\"") + m_password + "\"";
-		if (useSessionKey)
-			query["sessionKey"] = "yes";
+			RestClient::Response r;
+			QueryParameters_t query;
+			query["password"] = std::string("\"") + m_password + "\"";
+			if (useSessionKey)
+				query["sessionKey"] = "yes";
 
-		return Comm::AsyncGet(
-			m_ipAddress,
-			"/rr_connect",
-			query,
-			[this](RestClient::Response& r) {
-				verbose("parsing rr_connect response");
-				Json::Reader reader;
-				Json::Value body;
+			return Comm::AsyncGet(
+				m_ipAddress,
+				"/rr_connect",
+				query,
+				[this](RestClient::Response& r) {
+					verbose("parsing rr_connect response");
+					Json::Reader reader;
+					Json::Value body;
 
-				if (!reader.parse(r.body, body))
-				{
-					error("Failed to parse JSON response from rr_connect");
-					return false;
-				}
+					if (!reader.parse(r.body, body))
+					{
+						error("Failed to parse JSON response from rr_connect");
+						return false;
+					}
 
-				if (body.isMember("err") && body["err"].asInt() != 0)
-				{
-					error("rr_connect failed, returned error %d", body["err"].asInt());
-					return false;
-				}
+					if (body.isMember("err") && body["err"].asInt() != 0)
+					{
+						error("rr_connect failed, returned error %d", body["err"].asInt());
+						return false;
+					}
 
-				if (body.isMember("sessionTimeout"))
-				{
-					m_sessionTimeout = body["sessionTimeout"].asInt();
-					m_lastRequestTime = TimeHelper::getCurrentTime();
-					info("Duet session timeout set to %d", m_sessionTimeout);
-				}
+					if (body.isMember("sessionTimeout"))
+					{
+						m_sessionTimeout = body["sessionTimeout"].asInt();
+						m_lastRequestTime = TimeHelper::getCurrentTime();
+						info("Duet session timeout set to %d", m_sessionTimeout);
+					}
 
-				if (body.isMember("sessionKey"))
-				{
-					m_sessionKey = body["sessionKey"].asUInt();
-					info("Duet session key = %u", m_sessionKey);
-				}
-				info("rr_connect succeeded");
-				return true;
-			},
-			0,
-			true);
+					if (body.isMember("sessionKey"))
+					{
+						m_sessionKey = body["sessionKey"].asUInt();
+						info("Duet session key = %u", m_sessionKey);
+					}
+					info("rr_connect succeeded");
+					return true;
+				},
+				0,
+				true);
+		}
+		default:
+			break;
+		}
+
+		return false;
 	}
 
 	const Duet::error_code Duet::Disconnect()
@@ -435,9 +654,10 @@ namespace Comm
 		{
 		case CommunicationType::uart:
 			UARTCONTEXT->closeUart();
-			Thread::sleep(50);
+			Thread::sleep(100);
 			break;
 		case CommunicationType::network: {
+			ClearThreadPool();
 			if (m_sessionKey == noSessionKey)
 			{
 				Reset();
@@ -492,7 +712,9 @@ namespace Comm
 
 		StoragePreferences::putString("ip_address", ipAddress);
 		m_ipAddress = ipAddress;
-		Connect();
+
+		if (m_communicationType == CommunicationType::network)
+			Connect();
 	}
 
 	void Duet::SetHostname(const std::string& hostname)

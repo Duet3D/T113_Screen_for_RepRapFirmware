@@ -178,6 +178,13 @@ namespace Comm
 		info("Processed all queued requests, size=%d", queuedData.size());
 	}
 
+	int ClearThreadPool()
+	{
+		int count = threadPool.size();
+		threadPool.clear();
+		return count - threadPool.size();
+	}
+
 	bool Get(std::string url,
 			 const char* subUrl,
 			 RestClient::Response& r,
@@ -191,8 +198,8 @@ namespace Comm
 		// get a connection object
 		RestClient::Connection* conn = new RestClient::Connection(url);
 
-		// set connection timeout to 1s
-		conn->SetTimeout(1);
+		// set connection timeout in seconds
+		conn->SetTimeout(3);
 
 		// enable following of redirects (default is off)
 		conn->FollowRedirects(true);

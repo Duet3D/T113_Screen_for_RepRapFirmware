@@ -7,10 +7,14 @@
 
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
-#include "Files.h"
 #include "Debug.h"
+
+#include "Files.h"
+
+#include "Communication.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
+#include "UI/UserInterface.h"
 #include <algorithm>
 
 namespace OM::FileSystem
@@ -54,6 +58,11 @@ namespace OM::FileSystem
 	{
 		sFolderId = folderId;
 		sListView = listView;
+	}
+
+	ZKListView* GetListView()
+	{
+		return sListView;
 	}
 
 	File* AddFileAt(const size_t index)
@@ -209,6 +218,8 @@ namespace OM::FileSystem
 	{
 		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
+		Comm::CancelThumbnailRequest();
+		ClearAllCachedThumbnails();
 		Comm::duet.RequestFileList(path.c_str());
 	}
 
@@ -302,6 +313,7 @@ namespace OM::FileSystem
 			delete item;
 		}
 		sItems.clear();
+		UI::SetSelectedFile(nullptr);
 	}
 
 	std::string GetFileExtension(const std::string& filename)

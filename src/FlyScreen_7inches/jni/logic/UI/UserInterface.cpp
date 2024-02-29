@@ -6,7 +6,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "UserInterface.h"
 #include "Debug.h"
 #include "ObjectModel/Files.h"
@@ -146,7 +146,14 @@ namespace UI
 
 	void Window::Back()
 	{
-		if (CloseOverlay()) { return; }
+		if (POPUP_WINDOW->IsOpen())
+		{
+			POPUP_WINDOW->Cancel(false);
+		}
+		if (CloseOverlay())
+		{
+			return;
+		}
 		if (OM::FileSystem::IsInSubFolder())
 		{
 			info("Returning to previous folder");
@@ -602,5 +609,17 @@ namespace UI
 	void RunSelectedFile()
 	{
 		return OM::FileSystem::RunFile(sSelectedFile);
+	}
+
+	static ZKTextView* s_thumbnail;
+
+	void SetThumbnail(ZKTextView* thumbnail)
+	{
+		s_thumbnail = thumbnail;
+	}
+
+	ZKTextView* GetThumbnail()
+	{
+		return s_thumbnail;
 	}
 } // namespace UI
