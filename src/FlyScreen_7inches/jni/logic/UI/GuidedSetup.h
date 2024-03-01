@@ -36,7 +36,7 @@ namespace UI::GuidedSetup
 	class Guide
 	{
 	  public:
-		Guide(const char* id);
+		Guide(const char* id, bool closeAnytime = false);
 		~Guide();
 		void AddPage(Page& page) { m_pages.push_back(page); }
 		void NextPage();
@@ -58,6 +58,7 @@ namespace UI::GuidedSetup
 
 	void Init(ZKWindow* window);
 	void AddPage(const char* guideId, Page& page);
+	void Show(const char* guideId, size_t index = 0);
 	void Show(Guide* guide, size_t index = 0);
 	Guide* GetGuide(const char* id);
 	Guide* GetCurrentGuide();

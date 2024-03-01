@@ -1,3 +1,7 @@
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#include "Debug.h"
+
 #include "UI/GuidedSetup.h"
 
 namespace UI::GuidedSetup
@@ -5,24 +9,24 @@ namespace UI::GuidedSetup
 	Guide setupGuide("setup");
 
 	Page setupPages[] = {Page{
-							 "setup",	   // guideId
-							 "imagePath1", // imagePath
-							 []() {		   // nextCb
-
+							 "setup",		  // guideId
+							 "boot_logo.JPG", // imagePath
+							 []() {			  // nextCb
+								 dbg("page1 nextCb");
 							 },
 							 []() { // previousCb
-
+								 dbg("page1 previousCb");
 							 },
 							 nullptr // window
 						 },
 						 Page{
-							 "setup",
-							 "imagePath2",
-							 []() { // nextCb
-
+							 "setup",			   // guideId
+							 "fileicon.png", // imagePath
+							 []() {				   // nextCb
+								 dbg("page2 nextCb");
 							 },
 							 []() { // previousCb
-
+								 dbg("page2 previousCb");
 							 },
 							 nullptr // window
 						 }};

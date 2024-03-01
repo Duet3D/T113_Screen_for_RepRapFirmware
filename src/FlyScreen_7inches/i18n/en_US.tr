@@ -133,6 +133,11 @@
     <string name="clear">Clear</string>
     <string name="send">Send</string>
 
+    <!-- Guide Settup Page -->
+    <string name="show_on_startup">Show On Startup</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+
     <!-- Gcode List Descriptions -->
     <string name="G0G1_desc">G0 &amp; G1: Move</string>
     <string name="G2G3_desc">G2 &amp; G3: Controlled Arc Move</string>

@@ -130,6 +130,7 @@ static void onUI_init()
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
 	UI::SetThumbnail(mPopupImagePtr);
+	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -1101,43 +1102,7 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 32;
-	int width = 32;
-	int size = height * width;
-	const char* imageFileName = "/tmp/bitmapImage.bmp";
-	const char* imageFileName2 = "/tmp/bitmapImage2.bmp";
-
-	BMP bmp(width, height, imageFileName);
-	BMP bmp2(width, height, imageFileName2);
-
-	rgba_t pixels[size];
-
-	int i, row, col;
-	for (i = 0; i < size; i++)
-	{
-		col = i % width;
-		row = i / width;
-		pixels[i].rgba.r = (unsigned char)(row * 255 / height);					  /// red
-		pixels[i].rgba.g = (unsigned char)(col * 255 / width);					  /// green
-		pixels[i].rgba.b = (unsigned char)((row + col) * 255 / (height + width)); /// blue
-		pixels[i].rgba.a = 0;
-	}
-	bmp.generateBitmapImage(pixels);
-	int chunkSize = 32;
-	for (i = 0; i < size; i += chunkSize)
-	{
-		info("Appending pixels %d", i);
-		bmp2.appendPixels((pixels + i), chunkSize);
-	}
-
-	bmp.Close();
-	bmp2.Close();
-	dbg("Finished writing bmp files");
-	// Crashes here but not sure why
-	mThumbnailPtr->setBackgroundPic(imageFileName);
-	dbg("Set thumbnail 1");
-	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
-	dbg("Set both images");
+	UI::GuidedSetup::Show("setup");
 	return false;
 }
 
@@ -1146,16 +1111,21 @@ static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
 	Comm::duet.SendGcode("M122");
 	return false;
 }
-static bool onButtonClick_NextPageBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick NextPageBtn !!!\n");
-    return false;
+static bool onButtonClick_NextPageBtn(ZKButton* pButton)
+{
+	UI::GuidedSetup::GetCurrentGuide()->NextPage();
+	return false;
 }
 
-static bool onButtonClick_PreviousPageBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick PreviousPageBtn !!!\n");
-    return false;
+static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
+{
+	UI::GuidedSetup::GetCurrentGuide()->PreviousPage();
+	return false;
 }
 
-static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked) {
-    LOGD(" Checkbox ShowSetupOnStartup checked %d", isChecked);
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked) {}
+static bool onButtonClick_Button1(ZKButton* pButton)
+{
+	UI::GuidedSetup::Close();
+	return false;
 }

@@ -6,7 +6,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "GuidedSetup.h"
@@ -26,6 +26,7 @@ namespace UI::GuidedSetup
 	{
 		if (guides.find(guideId) == guides.end())
 		{
+			// TODO we could create the guide here, need to decide if we want to do that
 			error("Guide with id %s does not exist", guideId);
 			return;
 		}
@@ -33,7 +34,7 @@ namespace UI::GuidedSetup
 		guides[guideId]->AddPage(*this);
 	}
 
-	Guide::Guide(const char* id) : m_index(0), m_currentPage(nullptr)
+	Guide::Guide(const char* id, bool closeAnyTime) : m_index(0), m_currentPage(nullptr)
 	{
 		if (guides.find(id) != guides.end())
 		{
@@ -57,10 +58,17 @@ namespace UI::GuidedSetup
 			return false;
 		}
 
+		if (s_window == nullptr)
+		{
+			error("Guided setup window not initialised");
+			return false;
+		}
+		s_window->showWnd();
+
 		SetWindowVisible(false);
 
 		m_index = index;
-		m_currentPage = &m_pages[m_index];
+		m_currentPage = &m_pages.at(m_index);
 
 		SetBackground();
 		SetWindowVisible(true);
@@ -69,6 +77,7 @@ namespace UI::GuidedSetup
 
 	void Guide::Close()
 	{
+		s_window->hideWnd();
 		SetWindowVisible(false);
 		m_currentPage = nullptr;
 	}
@@ -108,8 +117,9 @@ namespace UI::GuidedSetup
 	{
 		if (m_currentPage != nullptr && m_currentPage->imagePath != nullptr)
 		{
-			info("Setting guided setup background pic");
+			info("Setting background pic \"%s\"", m_currentPage->imagePath);
 			s_window->setBackgroundPic(m_currentPage->imagePath);
+			dbg("Set background pic");
 			return true;
 		}
 		return false;
@@ -157,6 +167,7 @@ namespace UI::GuidedSetup
 			error("Guide with id %s does not exist", id);
 			return nullptr;
 		}
+		dbg("Got guide %s", id);
 		return guides[id];
 	}
 
@@ -165,10 +176,18 @@ namespace UI::GuidedSetup
 		return s_currentGuide;
 	}
 
+	void Show(const char* guideId, size_t index)
+	{
+		dbg("Show guide %s", guideId);
+		Guide* guide = GetGuide(guideId);
+		Show(guide, index);
+	}
+
 	void Show(Guide* guide, size_t index)
 	{
 		if (guide == nullptr)
 		{
+			warn("Guide is null");
 			return;
 		}
 
