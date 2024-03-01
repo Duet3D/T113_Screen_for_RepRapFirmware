@@ -10,12 +10,14 @@
 #include "Debug.h"
 
 #include "GuidedSetup.h"
+#include "activity/mainActivity.h"
 #include "storage/StoragePreferences.h"
 
 namespace UI::GuidedSetup
 {
 	static ZKWindow* s_window = nullptr;
 	static ZKTextView* s_pageNum = nullptr;
+	static ZKButton* s_nextBtn = nullptr;
 	static Guide* s_currentGuide = nullptr;
 	static std::map<const char*, Guide*> guides;
 
@@ -54,6 +56,7 @@ namespace UI::GuidedSetup
 
 	bool Guide::Show(size_t index)
 	{
+
 		if (index >= GetPageCount())
 		{
 			error("invalid page index %d, only %d pages available", index, GetPageCount());
@@ -72,6 +75,14 @@ namespace UI::GuidedSetup
 		m_index = index;
 		m_currentPage = &m_pages.at(m_index);
 		s_pageNum->setTextTrf("page_num", m_index + 1, GetPageCount());
+		if (m_index + 1 >= GetPageCount())
+		{
+			s_nextBtn->setTextTr("finish");
+		}
+		else
+		{
+			s_nextBtn->setTextTr("next");
+		}
 
 		SetBackground();
 		SetWindowVisible(true);
@@ -148,10 +159,11 @@ namespace UI::GuidedSetup
 		return false;
 	}
 
-	void Init(ZKWindow* window, ZKTextView* pageNum)
+	void Init(ZKWindow* window)
 	{
 		s_window = window;
-		s_pageNum = pageNum;
+		s_pageNum = (ZKTextView*)s_window->findControlByID(ID_MAIN_GuidePageNum);
+		s_nextBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_NextPageBtn);
 		if (StoragePreferences::getBool("show_setup_on_startup", true))
 		{
 			Show("setup");
