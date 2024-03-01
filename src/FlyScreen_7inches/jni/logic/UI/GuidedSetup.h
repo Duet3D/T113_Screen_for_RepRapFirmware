@@ -8,6 +8,7 @@
 #ifndef JNI_LOGIC_UI_GUIDEDSETUP_H_
 #define JNI_LOGIC_UI_GUIDEDSETUP_H_
 
+#include "control/ZKTextView.h"
 #include "window/ZKWindow.h"
 
 #include "std_fixed/functional.h"
@@ -56,7 +57,7 @@ namespace UI::GuidedSetup
 		std::vector<Page> m_pages;
 	};
 
-	void Init(ZKWindow* window);
+	void Init(ZKWindow* window, ZKTextView* pageNum);
 	void AddPage(const char* guideId, Page& page);
 	void Show(const char* guideId, size_t index = 0);
 	void Show(Guide* guide, size_t index = 0);

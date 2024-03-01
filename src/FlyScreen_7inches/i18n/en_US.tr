@@ -137,6 +137,7 @@
     <string name="show_on_startup">Show On Startup</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="page_num">Page %d/%d</string>
 
     <!-- Gcode List Descriptions -->
     <string name="G0G1_desc">G0 &amp; G1: Move</string>

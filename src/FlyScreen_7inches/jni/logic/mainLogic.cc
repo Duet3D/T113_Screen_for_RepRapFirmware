@@ -132,7 +132,7 @@ static void onUI_init()
 	UI::SetThumbnail(mPopupImagePtr);
 
 	// Guided setup
-	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
+	UI::GuidedSetup::Init(mGuidedSetupWindowPtr, mGuidePageNumPtr);
 	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
 
 	// Duet communication settings

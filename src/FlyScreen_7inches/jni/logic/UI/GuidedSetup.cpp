@@ -15,6 +15,7 @@
 namespace UI::GuidedSetup
 {
 	static ZKWindow* s_window = nullptr;
+	static ZKTextView* s_pageNum = nullptr;
 	static Guide* s_currentGuide = nullptr;
 	static std::map<const char*, Guide*> guides;
 
@@ -70,6 +71,7 @@ namespace UI::GuidedSetup
 
 		m_index = index;
 		m_currentPage = &m_pages.at(m_index);
+		s_pageNum->setTextTrf("page_num", m_index + 1, GetPageCount());
 
 		SetBackground();
 		SetWindowVisible(true);
@@ -146,9 +148,10 @@ namespace UI::GuidedSetup
 		return false;
 	}
 
-	void Init(ZKWindow* window)
+	void Init(ZKWindow* window, ZKTextView* pageNum)
 	{
 		s_window = window;
+		s_pageNum = pageNum;
 		if (StoragePreferences::getBool("show_setup_on_startup", true))
 		{
 			Show("setup");
