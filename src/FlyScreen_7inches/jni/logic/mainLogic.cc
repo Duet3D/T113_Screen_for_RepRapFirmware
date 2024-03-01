@@ -1137,3 +1137,7 @@ static bool onButtonClick_Button1(ZKButton* pButton)
 	UI::GuidedSetup::Close();
 	return false;
 }
+static bool onButtonClick_CloseGuideBtn(ZKButton *pButton) {
+    LOGD(" ButtonClick CloseGuideBtn !!!\n");
+    return false;
+}

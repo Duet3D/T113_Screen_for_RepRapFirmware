@@ -8,8 +8,6 @@
 #ifndef JNI_LOGIC_UI_GUIDEDSETUP_H_
 #define JNI_LOGIC_UI_GUIDEDSETUP_H_
 
-#include "control/ZKButton.h"
-#include "control/ZKTextView.h"
 #include "window/ZKWindow.h"
 
 #include "std_fixed/functional.h"
@@ -37,7 +35,7 @@ namespace UI::GuidedSetup
 	class Guide
 	{
 	  public:
-		Guide(const char* id, bool closeAnytime = false);
+		Guide(const char* id, bool closable);
 		~Guide();
 		void AddPage(Page& page) { m_pages.push_back(page); }
 		void NextPage();
@@ -53,6 +51,7 @@ namespace UI::GuidedSetup
 		bool RunPreviousCallback();
 
 		size_t m_index;
+		bool m_closable;
 		Page* m_currentPage;
 		std::vector<Page> m_pages;
 	};

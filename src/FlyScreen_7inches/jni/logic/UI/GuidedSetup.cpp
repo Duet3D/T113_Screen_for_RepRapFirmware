@@ -11,6 +11,8 @@
 
 #include "GuidedSetup.h"
 #include "activity/mainActivity.h"
+#include "control/ZKButton.h"
+#include "control/ZKTextView.h"
 #include "storage/StoragePreferences.h"
 
 namespace UI::GuidedSetup
@@ -18,6 +20,8 @@ namespace UI::GuidedSetup
 	static ZKWindow* s_window = nullptr;
 	static ZKTextView* s_pageNum = nullptr;
 	static ZKButton* s_nextBtn = nullptr;
+	static ZKButton* s_previousBtn = nullptr;
+	static ZKButton* s_closeBtn = nullptr;
 	static Guide* s_currentGuide = nullptr;
 	static std::map<const char*, Guide*> guides;
 
@@ -38,7 +42,7 @@ namespace UI::GuidedSetup
 		guides[guideId]->AddPage(*this);
 	}
 
-	Guide::Guide(const char* id, bool closeAnyTime) : m_index(0), m_currentPage(nullptr)
+	Guide::Guide(const char* id, bool closable) : m_index(0), m_closable(closable), m_currentPage(nullptr)
 	{
 		if (guides.find(id) != guides.end())
 		{
@@ -75,14 +79,9 @@ namespace UI::GuidedSetup
 		m_index = index;
 		m_currentPage = &m_pages.at(m_index);
 		s_pageNum->setTextTrf("page_num", m_index + 1, GetPageCount());
-		if (m_index + 1 >= GetPageCount())
-		{
-			s_nextBtn->setTextTr("finish");
-		}
-		else
-		{
-			s_nextBtn->setTextTr("next");
-		}
+		s_previousBtn->setInvalid(m_index <= 0);
+		s_nextBtn->setTextTr(m_index + 1 >= GetPageCount() ? "finish" : "next");
+		s_closeBtn->setVisible(m_closable);
 
 		SetBackground();
 		SetWindowVisible(true);
@@ -164,6 +163,9 @@ namespace UI::GuidedSetup
 		s_window = window;
 		s_pageNum = (ZKTextView*)s_window->findControlByID(ID_MAIN_GuidePageNum);
 		s_nextBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_NextPageBtn);
+		s_previousBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_PreviousPageBtn);
+		s_closeBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_CloseGuideBtn);
+
 		if (StoragePreferences::getBool("show_setup_on_startup", true))
 		{
 			Show("setup");

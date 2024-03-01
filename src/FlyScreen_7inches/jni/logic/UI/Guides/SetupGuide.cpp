@@ -6,7 +6,7 @@
 
 namespace UI::GuidedSetup
 {
-	Guide setupGuide("setup");
+	Guide setupGuide("setup", false);
 
 	Page setupPages[] = {Page{
 							 "setup",		  // guideId
