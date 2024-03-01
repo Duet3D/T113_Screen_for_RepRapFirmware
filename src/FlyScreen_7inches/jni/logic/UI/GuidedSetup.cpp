@@ -10,6 +10,7 @@
 #include "Debug.h"
 
 #include "GuidedSetup.h"
+#include "storage/StoragePreferences.h"
 
 namespace UI::GuidedSetup
 {
@@ -148,6 +149,10 @@ namespace UI::GuidedSetup
 	void Init(ZKWindow* window)
 	{
 		s_window = window;
+		if (StoragePreferences::getBool("show_setup_on_startup", true))
+		{
+			Show("setup");
+		}
 	}
 
 	void AddPage(const char* guideId, Page& page)

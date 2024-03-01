@@ -130,7 +130,10 @@ static void onUI_init()
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
 	UI::SetThumbnail(mPopupImagePtr);
+
+	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
+	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -1123,7 +1126,12 @@ static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
 	return false;
 }
 
-static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked) {}
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	dbg("isChecked = %d", isChecked);
+	StoragePreferences::putBool("show_setup_on_startup", isChecked);
+}
+
 static bool onButtonClick_Button1(ZKButton* pButton)
 {
 	UI::GuidedSetup::Close();
