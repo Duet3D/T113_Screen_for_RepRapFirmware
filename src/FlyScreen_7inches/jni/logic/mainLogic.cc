@@ -933,6 +933,9 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
 		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
 		break;
+	case (int)UI::SettingsSlideWindowIndex::guides:
+		UI::WINDOW->OpenOverlay(mGuideSelectionWindowPtr);
+		break;
 	default:
 		break;
 	}
@@ -1140,4 +1143,29 @@ static bool onButtonClick_Button1(ZKButton* pButton)
 static bool onButtonClick_CloseGuideBtn(ZKButton *pButton) {
     LOGD(" ButtonClick CloseGuideBtn !!!\n");
     return false;
+}
+static int getListItemCount_GuidesList(const ZKListView* pListView)
+{
+	return UI::GuidedSetup::GetGuideCount();
+}
+
+static void obtainListItemData_GuidesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(guide->GetId());
+}
+
+static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		return;
+	}
+	UI::GuidedSetup::Show(guide->GetId());
 }

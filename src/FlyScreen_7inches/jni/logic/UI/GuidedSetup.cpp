@@ -42,7 +42,7 @@ namespace UI::GuidedSetup
 		guides[guideId]->AddPage(*this);
 	}
 
-	Guide::Guide(const char* id, bool closable) : m_index(0), m_closable(closable), m_currentPage(nullptr)
+	Guide::Guide(const char* id, bool closable) : m_id(id), m_index(0), m_closable(closable), m_currentPage(nullptr)
 	{
 		if (guides.find(id) != guides.end())
 		{
@@ -196,6 +196,23 @@ namespace UI::GuidedSetup
 	Guide* GetCurrentGuide()
 	{
 		return s_currentGuide;
+	}
+
+	size_t GetGuideCount()
+	{
+		return guides.size();
+	}
+
+	Guide* GetGuideByIndex(size_t index)
+	{
+		if (index >= GetGuideCount())
+		{
+			error("invalid guide index %d, only %d guides available", index, GetGuideCount());
+			return nullptr;
+		}
+		auto it = guides.begin();
+		std::advance(it, index);
+		return it->second;
 	}
 
 	void Show(const char* guideId, size_t index)

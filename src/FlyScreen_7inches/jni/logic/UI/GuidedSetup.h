@@ -42,6 +42,7 @@ namespace UI::GuidedSetup
 		void PreviousPage();
 		bool Show(size_t index = 0);
 		void Close();
+		const char* GetId() { return m_id; }
 		size_t GetPageCount() { return m_pages.size(); }
 
 	  private:
@@ -50,6 +51,7 @@ namespace UI::GuidedSetup
 		bool RunNextCallback();
 		bool RunPreviousCallback();
 
+		const char* m_id;
 		size_t m_index;
 		bool m_closable;
 		Page* m_currentPage;
@@ -62,6 +64,8 @@ namespace UI::GuidedSetup
 	void Show(Guide* guide, size_t index = 0);
 	Guide* GetGuide(const char* id);
 	Guide* GetCurrentGuide();
+	size_t GetGuideCount();
+	Guide* GetGuideByIndex(size_t index);
 	void Close();
 } // namespace UI::GuidedSetup
 

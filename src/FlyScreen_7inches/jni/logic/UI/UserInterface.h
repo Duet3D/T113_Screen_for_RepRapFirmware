@@ -51,6 +51,7 @@ namespace UI
 		power_off,
 		zk_setting,
 		touch_calibration,
+		guides,
 	};
 
 	class Window

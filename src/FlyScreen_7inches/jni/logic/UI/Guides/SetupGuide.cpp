@@ -20,9 +20,9 @@ namespace UI::GuidedSetup
 							 nullptr // window
 						 },
 						 Page{
-							 "setup",			   // guideId
+							 "setup",		 // guideId
 							 "fileicon.png", // imagePath
-							 []() {				   // nextCb
+							 []() {			 // nextCb
 								 dbg("page2 nextCb");
 							 },
 							 []() { // previousCb
