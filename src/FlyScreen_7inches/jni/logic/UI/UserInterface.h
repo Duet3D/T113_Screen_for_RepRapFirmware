@@ -8,6 +8,8 @@
 #ifndef JNI_LOGIC_UI_USERINTERFACE_HPP_
 #define JNI_LOGIC_UI_USERINTERFACE_HPP_
 
+#include "activity/mainActivity.h"
+#include "control/ZKBase.h"
 #include "control/ZKEditText.h"
 #include "control/ZKListView.h"
 #include "control/ZKSeekBar.h"
@@ -156,6 +158,9 @@ namespace UI
 		ZKListView* pConsole_ = nullptr;
 		ZKEditText* pInput_ = nullptr;
 	};
+
+	void Init(ZKWindow* root);
+	ZKBase* GetUIControl(int id);
 
 	void SetSelectedFile(const OM::FileSystem::File* file);
 	const OM::FileSystem::File* GetSelectedFile();

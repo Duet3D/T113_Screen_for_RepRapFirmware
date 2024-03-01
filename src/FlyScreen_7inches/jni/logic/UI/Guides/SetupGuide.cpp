@@ -3,10 +3,11 @@
 #include "Debug.h"
 
 #include "UI/GuidedSetup.h"
+#include "UI/UserInterface.h"
 
 namespace UI::GuidedSetup
 {
-	Guide setupGuide("setup", false);
+	Guide setupGuide("setup", false, ID_MAIN_SetupGuideWindow);
 
 	Page setupPages[] = {Page{
 							 "setup",		  // guideId
@@ -17,7 +18,7 @@ namespace UI::GuidedSetup
 							 []() { // previousCb
 								 dbg("page1 previousCb");
 							 },
-							 nullptr // window
+							 NULL // window
 						 },
 						 Page{
 							 "setup",		 // guideId
@@ -28,7 +29,7 @@ namespace UI::GuidedSetup
 							 []() { // previousCb
 								 dbg("page2 previousCb");
 							 },
-							 nullptr // window
+							 NULL // window
 						 }};
 
 } // namespace UI::GuidedSetup

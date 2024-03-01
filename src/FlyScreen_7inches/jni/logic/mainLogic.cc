@@ -106,6 +106,7 @@ static void onUI_init()
 		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.Init();
+	UI::Init(mRootWindowPtr);
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
@@ -1135,15 +1136,12 @@ static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isCh
 	StoragePreferences::putBool("show_setup_on_startup", isChecked);
 }
 
-static bool onButtonClick_Button1(ZKButton* pButton)
+static bool onButtonClick_CloseGuideBtn(ZKButton *pButton)
 {
 	UI::GuidedSetup::Close();
-	return false;
-}
-static bool onButtonClick_CloseGuideBtn(ZKButton *pButton) {
-    LOGD(" ButtonClick CloseGuideBtn !!!\n");
     return false;
 }
+
 static int getListItemCount_GuidesList(const ZKListView* pListView)
 {
 	return UI::GuidedSetup::GetGuideCount();

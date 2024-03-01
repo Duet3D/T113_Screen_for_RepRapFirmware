@@ -596,6 +596,25 @@ namespace UI
 		Refresh();
 	}
 
+	static ZKWindow* s_root = nullptr;
+
+	void Init(ZKWindow* root)
+	{
+		info("Initialising UI root %p", root);
+		s_root = root;
+	}
+
+	ZKBase* GetUIControl(int id)
+	{
+		info("Retrieving control with id %d", id);
+		ZKBase* control = s_root->findControlByID(id);
+		if (control == nullptr)
+		{
+			error("Control with id %d not found", id);
+		}
+		return control;
+	}
+
 	void SetSelectedFile(const OM::FileSystem::File* file)
 	{
 		sSelectedFile = file;

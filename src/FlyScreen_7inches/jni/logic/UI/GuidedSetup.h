@@ -23,19 +23,19 @@ namespace UI::GuidedSetup
 		const char* imagePath;			 // loaded when displaying this page
 		function<void(void)> nextCb;	 // run this when next button pressed
 		function<void(void)> previousCb; // run this when previous button pressed
-		ZKWindow* window; // if not null, display this window as it might provide additional buttons or user input
+		int windowId; // if not null, display this window as it might provide additional buttons or user input
 
 		Page(const char* guideId,
 			 const char* imagePath,
 			 function<void(void)> nextCb,
 			 function<void(void)> previousCb,
-			 ZKWindow* window);
+			 int windowId);
 	};
 
 	class Guide
 	{
 	  public:
-		Guide(const char* id, bool closable);
+		Guide(const char* id, bool closable, int windowId);
 		~Guide();
 		void AddPage(Page& page) { m_pages.push_back(page); }
 		void NextPage();
@@ -46,7 +46,8 @@ namespace UI::GuidedSetup
 		size_t GetPageCount() { return m_pages.size(); }
 
 	  private:
-		bool SetWindowVisible(bool show);
+		bool SetGuideWindowVisible(bool show);
+		bool SetPageWindowVisible(bool show);
 		bool SetBackground();
 		bool RunNextCallback();
 		bool RunPreviousCallback();
@@ -55,6 +56,7 @@ namespace UI::GuidedSetup
 		size_t m_index;
 		bool m_closable;
 		Page* m_currentPage;
+		int m_windowId; // window to display for all pages when showing this guide
 		std::vector<Page> m_pages;
 	};
 

@@ -10,6 +10,7 @@
 #include "Debug.h"
 
 #include "GuidedSetup.h"
+#include "UI/UserInterface.h"
 #include "activity/mainActivity.h"
 #include "control/ZKButton.h"
 #include "control/ZKTextView.h"
@@ -29,8 +30,8 @@ namespace UI::GuidedSetup
 			   const char* imagePath,
 			   function<void(void)> nextCb,
 			   function<void(void)> previousCb,
-			   ZKWindow* window)
-		: imagePath(imagePath), nextCb(nextCb), previousCb(previousCb), window(window)
+			   int windowId)
+		: imagePath(imagePath), nextCb(nextCb), previousCb(previousCb), windowId(windowId)
 	{
 		if (guides.find(guideId) == guides.end())
 		{
@@ -42,7 +43,8 @@ namespace UI::GuidedSetup
 		guides[guideId]->AddPage(*this);
 	}
 
-	Guide::Guide(const char* id, bool closable) : m_id(id), m_index(0), m_closable(closable), m_currentPage(nullptr)
+	Guide::Guide(const char* id, bool closable, int windowId)
+		: m_id(id), m_index(0), m_closable(closable), m_currentPage(nullptr), m_windowId(windowId)
 	{
 		if (guides.find(id) != guides.end())
 		{
@@ -74,7 +76,7 @@ namespace UI::GuidedSetup
 		}
 		s_window->showWnd();
 
-		SetWindowVisible(false);
+		SetPageWindowVisible(false);
 
 		m_index = index;
 		m_currentPage = &m_pages.at(m_index);
@@ -84,14 +86,16 @@ namespace UI::GuidedSetup
 		s_closeBtn->setVisible(m_closable);
 
 		SetBackground();
-		SetWindowVisible(true);
+		SetGuideWindowVisible(true);
+		SetPageWindowVisible(true);
 		return true;
 	}
 
 	void Guide::Close()
 	{
 		s_window->hideWnd();
-		SetWindowVisible(false);
+		SetPageWindowVisible(false);
+		SetGuideWindowVisible(false);
 		m_currentPage = nullptr;
 	}
 
@@ -116,14 +120,40 @@ namespace UI::GuidedSetup
 		Show(m_index - 1);
 	}
 
-	bool Guide::SetWindowVisible(bool show)
+	bool Guide::SetGuideWindowVisible(bool show)
 	{
-		if (m_currentPage != nullptr && m_currentPage->window != nullptr)
+		if (m_windowId == NULL)
 		{
-			m_currentPage->window->setVisible(show);
-			return true;
+			return false;
 		}
-		return false;
+
+		ZKWindow* window = (ZKWindow*)UI::GetUIControl(m_windowId);
+		if (window == nullptr)
+		{
+			error("Invalid window id %d for guide %s", m_windowId, m_id);
+			return false;
+		}
+		dbg("Setting guide window %s", show ? "visible" : "invisible");
+		window->setVisible(show);
+		return true;
+	}
+
+	bool Guide::SetPageWindowVisible(bool show)
+	{
+		if (m_currentPage == nullptr || m_currentPage->windowId == NULL)
+		{
+			return false;
+		}
+
+		ZKWindow* window = (ZKWindow*)UI::GetUIControl(m_currentPage->windowId);
+		if (window == nullptr)
+		{
+			error("Invalid window id %d for guide %s", m_windowId, m_id);
+			return false;
+		}
+		dbg("Setting page window %s", show ? "visible" : "invisible");
+		window->setVisible(show);
+		return true;
 	}
 
 	bool Guide::SetBackground()
