@@ -7,3 +7,4 @@ src/*/libs/*
 src/*/obj/*
 *.img
 *Thumbs.db
+*ui_resource_usage_analysis.txt

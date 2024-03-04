@@ -7,7 +7,7 @@
 
 namespace UI::GuidedSetup
 {
-	Guide setupGuide("setup", false, ID_MAIN_SetupGuideWindow);
+	Guide setupGuide("setup", true, ID_MAIN_SetupGuideWindow);
 
 	Page setupPages[] = {Page{
 							 "setup",		  // guideId
@@ -29,7 +29,7 @@ namespace UI::GuidedSetup
 							 []() { // previousCb
 								 dbg("page2 previousCb");
 							 },
-							 NULL // window
+							 ID_MAIN_PageOverlayExampleWindow // window
 						 }};
 
 } // namespace UI::GuidedSetup

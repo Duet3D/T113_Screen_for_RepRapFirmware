@@ -1,3 +1,0 @@
-hSliderBar.png
-hSliderKnob.png
-sample_640×426.bmp
