@@ -15,7 +15,9 @@
 namespace OM
 {
 	enum SpindleState : uint8_t {
-		stopped, forward, reverse
+		forward,
+		reverse,
+		stopped,
 	};
 
 	struct SpindleStateMapEntry
@@ -40,17 +42,26 @@ namespace OM
 		// Index within configured spindles
 		uint8_t index;
 		uint32_t active;
+		bool canReverse;
 		uint32_t current;
 		uint32_t max;
 		uint32_t min;
 		SpindleState state;
 
 		void Reset();
+		const char* GetStateStr();
 	};
 
 	Spindle* GetSpindle(const size_t index);
 	Spindle* GetOrCreateSpindle(const size_t index);
 	size_t RemoveSpindle(const size_t index, const bool allFollowing);
+
+	bool SetSpindleActive(size_t index, uint32_t active);
+	bool SetSpindleCanReverse(size_t index, bool canReverse);
+	bool SetSpindleCurrent(size_t index, uint32_t current);
+	bool SetSpindleMax(size_t index, uint32_t max);
+	bool SetSpindleMin(size_t index, uint32_t min);
+	bool SetSpindleState(size_t index, const char* state);
 }
 
 #endif /* SRC_OBJECTMODEL_SPINDLE_HPP_ */

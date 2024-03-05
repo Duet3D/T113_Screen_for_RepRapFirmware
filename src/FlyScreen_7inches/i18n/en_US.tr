@@ -23,6 +23,12 @@
     <string name="offline">Offline</string>
     <string name="standby">Standby</string>
     <string name="tuning">Tuning</string>
+    <string name="unknown">Unknown</string>
+
+    <!-- Spindle Status -->
+    <string name="forward">Forward</string>
+    <string name="reverse">Reverse</string>
+    <string name="stopped">Stopped</string>
 
     <!-- Tool List -->
     <string name="tool">Tool</string>

@@ -243,12 +243,15 @@ namespace UI
 		OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t) {
 			const bool hasHeater = tool->heaters[0] != nullptr;
 			const bool hasSpindle = tool->spindle != nullptr;
-			// Spindle takes precedence
-			if (hasSpindle) { ++count; }
-			else if (hasHeater) { count += tool->GetHeaterCount(); }
-			else
+			// Heater takes precedence (like in DWC)
+			if (hasHeater)
 			{
-				// Hides everything by default
+				count += tool->GetHeaterCount();
+			}
+			if (hasSpindle || !hasHeater)
+			{
+				// For a tool that has no heaters or spindle, we want to show it so that the user can load/unload
+				// filament
 				++count;
 			}
 			return true;
@@ -278,33 +281,53 @@ namespace UI
 									   ZKListView::ZKListSubItem* pStatus)
 	{
 		// Check Tools to see if list index is within tool heaters
-		OM::Tool* tool = nullptr;
-		int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
-		if (tool != nullptr)
+		ToolListItemData data = GetToolListItemDataBySlot(index);
+		if (data.tool != nullptr)
 		{
-			OM::ToolHeater* toolHeater;
-			toolHeater = tool->GetHeater(toolHeaterIndex);
-			if (toolHeater == nullptr)
+			pListItem->setSelected(data.tool->status == OM::ToolStatus::active);
+			if (data.toolHeater != nullptr)
 			{
-				warn("List index %d: Tool %d heaterIndex %d is null", index, tool->index, toolHeaterIndex);
-				pToolName->setText(tool->name.c_str());
+				if (data.tool->GetHeaterCount() > 1)
+				{
+					pToolName->setTextf("%s (%d)", data.tool->name.c_str(), data.toolHeaterIndex);
+				}
+				else
+				{
+					pToolName->setText(data.tool->name.c_str());
+				}
+				pActiveTemperature->setVisible(true);
+				pStandbyTemperature->setVisible(true);
+				pCurrentTemperature->setVisible(true);
+				pActiveTemperature->setText((int)data.toolHeater->activeTemp);
+				pStandbyTemperature->setText((int)data.toolHeater->standbyTemp);
+				pCurrentTemperature->setText(data.toolHeater->heater->current);
+				pStatus->setTextTr(data.toolHeater->heater->GetHeaterStatusStr());
 				return;
 			}
-			// dbg("List index %d: Updating Tool %d heater %d=%d temperatures %.2f:%d:%d", index, tool->index,
-			// 	toolHeaterIndex, toolHeater->heater->index, toolHeater->heater->current, toolHeater->activeTemp,
-			// 	toolHeater->standbyTemp);
-			if (tool->GetHeaterCount() > 1) { pToolName->setTextf("%s (%d)", tool->name.c_str(), toolHeaterIndex); }
-			else { pToolName->setText(tool->name.c_str()); }
-			pActiveTemperature->setText((int)toolHeater->activeTemp);
-			pStandbyTemperature->setText((int)toolHeater->standbyTemp);
-			pCurrentTemperature->setText(toolHeater->heater->current);
-			pStatus->setTextTr(toolHeater->heater->GetHeaterStatusStr());
-			(tool->status == OM::ToolStatus::active) ? pListItem->setSelected(true) : pListItem->setSelected(false);
-
+			else if (data.spindle != nullptr)
+			{
+				pToolName->setText(data.tool->name.c_str());
+				pActiveTemperature->setVisible(true);
+				pStandbyTemperature->setVisible(true);
+				pCurrentTemperature->setVisible(true);
+				pActiveTemperature->setText((int)data.spindle->active);
+				pStandbyTemperature->setText("RPM");
+				pCurrentTemperature->setText((int)data.spindle->current);
+				pStatus->setTextTr(data.spindle->GetStateStr());
+				return;
+			}
+			else
+			{
+				pToolName->setText(data.tool->name.c_str());
+				pActiveTemperature->setVisible(false);
+				pStandbyTemperature->setVisible(false);
+				pCurrentTemperature->setVisible(false);
+				return;
+			}
 			return;
 		}
 
-		int8_t bedOrChamberIndex = index - toolHeaterIndex;
+		int8_t bedOrChamberIndex = index - toolCount_;
 		OM::BedOrChamber* bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
 		OM::Heat::Heater* heater;
 		if (bedOrChamber != nullptr)
@@ -328,7 +351,7 @@ namespace UI
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
-			pStatus->setText(heater->GetHeaterStatusStr());
+			pStatus->setTextTr(heater->GetHeaterStatusStr());
 			pListItem->setSelected(false);
 			return;
 		}
@@ -357,7 +380,7 @@ namespace UI
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
-			pStatus->setText(heater->GetHeaterStatusStr());
+			pStatus->setTextTr(heater->GetHeaterStatusStr());
 			pListItem->setSelected(false);
 			return;
 		}
@@ -373,21 +396,21 @@ namespace UI
 		CalculateTotalHeaterCount();
 		if ((size_t)index < GetTotalHeaterCount(false, true, false, false))
 		{
-			OM::Tool* tool = nullptr;
-			int8_t toolHeaterIndex = UI::GetToolHeaterIndex(index, tool);
-			if (tool == nullptr) return;
-			dbg("Tool index=%d", tool->index);
+			ToolListItemData data = GetToolListItemDataBySlot(index);
+			if (data.tool == nullptr)
+				return;
+			dbg("Tool index=%d", data.tool->index);
 			numPadData.heaterType = UI::HeaterType::tool;
-			numPadData.toolIndex = tool->index;
-			numPadData.toolHeaterIndex = toolHeaterIndex;
+			numPadData.toolIndex = data.tool->index;
+			numPadData.toolHeaterIndex = data.toolHeaterIndex;
 			if (id == nameId)
 			{
-				tool->ToggleState();
+				data.tool->ToggleState();
 				return;
 			}
 			if (id == statusId)
 			{
-				tool->ToggleHeaterState(toolHeaterIndex);
+				data.tool->ToggleHeaterState(data.toolHeaterIndex);
 				return;
 			}
 		}
@@ -518,29 +541,38 @@ namespace UI
 		return true;
 	}
 
-	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool*& tool)
+	ToolsList::ToolListItemData ToolsList::GetToolListItemDataBySlot(const size_t listIndex)
 	{
+		ToolListItemData data;
 		uint8_t count = 0;
-		int8_t toolHeaterIndex = -1;
 		OM::IterateToolsWhile([&](OM::Tool*& toolIter, size_t) {
+			bool hasHeater = toolIter->GetHeaterCount() > 0;
+			bool hasSpindle = toolIter->spindle != nullptr;
+			data.tool = toolIter;
 			if (listIndex < count + toolIter->GetHeaterCount())
 			{
-				tool = toolIter;
-				toolHeaterIndex = listIndex - count;
+				data.toolHeaterIndex = listIndex - count;
+				data.toolHeater = toolIter->GetHeater(data.toolHeaterIndex);
 				return false;
 			}
 			count += toolIter->GetHeaterCount();
+
+			if (listIndex < count + (hasSpindle ? 1u : 0u))
+			{
+				data.spindle = toolIter->spindle;
+				return false;
+			}
+			count += (hasSpindle ? 1 : 0);
+
+			count += (!hasHeater && !hasSpindle) ? 1 : 0;
+			if (listIndex < count)
+			{
+				return false;
+			}
+			data.tool = nullptr;
 			return true;
 		});
-		if (toolHeaterIndex > -1)
-		{
-			//			dbg("List index %d is Tool %d toolHeaterIndex %d=%d", listIndex, tool->index, toolHeaterIndex,
-			// tool->GetHeater(toolHeaterIndex)->index);
-			return toolHeaterIndex;
-		}
-		//		dbg("List index %d is not in tool heaters (total tool heaters %d)", listIndex, count);
-		tool = nullptr;
-		return count; // list index is greater than all heaters for tools
+		return data;
 	}
 
 	void Console::Init(ZKListView* console, ZKEditText* input)

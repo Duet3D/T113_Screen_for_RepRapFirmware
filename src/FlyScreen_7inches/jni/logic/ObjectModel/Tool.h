@@ -125,6 +125,8 @@ namespace OM
 	bool UpdateToolName(const size_t toolIndex, const char *name);
 	bool UpdateToolStatus(const size_t toolIndex, const char *statusStr);
 
+	bool UpdateToolSpindle(const size_t toolIndex, const int8_t spindleIndex);
+
 	void SetCurrentTool(const size_t toolIndex);
 	Tool* GetCurrentTool();
 }

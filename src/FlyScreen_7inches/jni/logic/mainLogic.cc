@@ -1211,13 +1211,13 @@ static void onListItemClick_ExtruderFeedrate(ZKListView* pListView, int index, i
 
 static bool onButtonClick_RetractBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcodef("G1 E-%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	Comm::duet.SendGcodef("G1 E-%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
 	return false;
 }
 
 static bool onButtonClick_ExtrudeBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcodef("G1 E%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	Comm::duet.SendGcodef("G1 E%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
 	return false;
 }
 
@@ -1239,16 +1239,15 @@ static void obtainListItemData_ExtrudeToolList(ZKListView* pListView, ZKListView
 	UI::ToolsList::Get("extrude")->ObtainListItemData(
 		pListItem, index, ptoolName, pcurrentTemp, pactiveTemp, pstandbyTemp, pstatus);
 
-	OM::Tool* tool = nullptr;
-	UI::GetToolHeaterIndex(index, tool);
-	if (tool == nullptr)
+	UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
+	if (data.tool == nullptr)
 	{
 		return;
 	}
 
-	StringRef filament = tool->GetFilament();
-	pfilament->setText((tool->filamentExtruder >= 0 && filament.IsEmpty()) ? "Load Filament"
-																		   : tool->GetFilament().c_str());
+	StringRef filament = data.tool->GetFilament();
+	pfilament->setText((data.tool->filamentExtruder >= 0 && filament.IsEmpty()) ? "Load Filament"
+																				: data.tool->GetFilament().c_str());
 }
 
 static OM::Tool* g_filamentDialogTool = nullptr;
@@ -1263,7 +1262,8 @@ static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, in
 												   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
 	if (id == ID_MAIN_ExtrudeToolFilamentSubItem)
 	{
-		UI::GetToolHeaterIndex(index, g_filamentDialogTool);
+		UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
+		g_filamentDialogTool = data.tool;
 		if (g_filamentDialogTool == nullptr || g_filamentDialogTool->filamentExtruder < 0)
 		{
 			g_filamentDialogTool = nullptr;

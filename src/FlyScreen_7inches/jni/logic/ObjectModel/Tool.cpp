@@ -554,6 +554,20 @@ namespace OM
 		return true;
 	}
 
+	bool UpdateToolSpindle(const size_t toolIndex, const int8_t spindleIndex)
+	{
+		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+
+		// If we do not handle this tool back off
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		tool->spindle = (spindleIndex < 0) ? nullptr : OM::GetOrCreateSpindle(spindleIndex);
+		return true;
+	}
+
 	void SetCurrentTool(const size_t toolIndex)
 	{
 		info("Setting current tool to %d", toolIndex);

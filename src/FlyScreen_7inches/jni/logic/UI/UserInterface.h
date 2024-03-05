@@ -113,7 +113,24 @@ namespace UI
 	class ToolsList
 	{
 	  public:
-		static ToolsList* Create(const char* id);
+		struct ToolListItemData
+		{
+			OM::Tool* tool;
+			int8_t toolHeaterIndex;
+			OM::ToolHeater* toolHeater;
+			OM::Spindle* spindle;
+
+			ToolListItemData()
+			{
+				tool = nullptr;
+				toolHeaterIndex = -1;
+				toolHeater = nullptr;
+				spindle = nullptr;
+			}
+		};
+
+		static ToolsList*
+		Create(const char* id);
 		static ToolsList* Get(const char* id);
 		void Init(ZKListView* toolListView);
 		void CalculateTotalHeaterCount();
@@ -128,16 +145,16 @@ namespace UI
 		static void RefreshAllToolLists(const bool lengthChanged = true);
 		void OpenNumPad(const NumPadData data);
 		bool SendTempTarget(int value);
+		ToolListItemData GetToolListItemDataBySlot(const size_t listIndex);
 
 	  private:
 		ToolsList(const char* id);
+
 		const char* id;
 		size_t toolCount_, bedCount_, chamberCount_;
 		NumPadData numPadData_;
 		ZKListView* pToolListView_ = nullptr;
 	};
-
-	int8_t GetToolHeaterIndex(const size_t listIndex, OM::Tool*& tool);
 
 	class Console
 	{
