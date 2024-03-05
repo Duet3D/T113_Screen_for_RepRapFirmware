@@ -21,7 +21,9 @@
 #include <vector>
 
 #include "Duet3D/General/CircularBuffer.h"
+#include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
+#include "Duet3D/General/Vector.h"
 #include "Library/Thumbnail.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Files.h"
@@ -55,6 +57,11 @@ namespace UI
 		touch_calibration,
 		guides,
 	};
+
+	extern uint32_t g_extrusionFeedRates[5];
+	extern uint32_t g_extrusionFeedDistances[7];
+	extern uint32_t g_defaultExtrusionFeedRate;
+	extern uint32_t g_defaultExtrusionFeedDistance;
 
 	class Window
 	{
@@ -106,7 +113,6 @@ namespace UI
 	class ToolsList
 	{
 	  public:
-		ToolsList(const char* id);
 		static ToolsList* Create(const char* id);
 		static ToolsList* Get(const char* id);
 		void Init(ZKListView* toolListView);
@@ -124,6 +130,7 @@ namespace UI
 		bool SendTempTarget(int value);
 
 	  private:
+		ToolsList(const char* id);
 		const char* id;
 		size_t toolCount_, bedCount_, chamberCount_;
 		NumPadData numPadData_;

@@ -8,15 +8,14 @@
 #ifndef JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
 #define JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
 
-#include "ObjectModel/Tool.h"
-#include "ObjectModel/Utils.h"
 #include "Debug.h"
 
 #include "UI/OmObserver.h"
-#include "UI/UserInterfaceConstants.h"
 #include "UI/UserInterface.h"
+#include "UI/UserInterfaceConstants.h"
 
-
+#include "ObjectModel/Tool.h"
+#include "ObjectModel/Utils.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -56,6 +55,14 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 						  return;
 					  }
 				  }),
+	OBSERVER_INT("tools^:filamentExtruder",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::UpdateToolFilamentExtruder(indices[0], (int8_t)val))
+					 {
+						 error("Failed to update tool %d filamentExtruder to %d", indices[0], val);
+						 return;
+					 }
+				 }),
 	OBSERVER_INT("tools^:active^",
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::UpdateToolTemp(indices[0], indices[1], val, true))
@@ -106,35 +113,32 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
-	OBSERVER_ARRAY_END(
-		"tools^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			if (OM::RemoveTool(indices[0], true)){}
-			UI::ToolsList::RefreshAllToolLists();
-		}),
-	OBSERVER_ARRAY_END(
-		"tools^:heaters^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			if (OM::RemoveToolHeaters(indices[0], indices[1])){}
-			UI::ToolsList::RefreshAllToolLists();
-		}),
-	OBSERVER_ARRAY_END(
-		"tools^:extruders^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			if (OM::RemoveToolExtruders(indices[0], indices[1])){}
-		}),
-	OBSERVER_ARRAY_END(
-		"tools^:fans^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			if (OM::RemoveToolFans(indices[0], indices[1])){}
-		}),
+	OBSERVER_ARRAY_END("tools^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   if (OM::RemoveTool(indices[0], true))
+						   {
+						   }
+						   UI::ToolsList::RefreshAllToolLists();
+					   }),
+	OBSERVER_ARRAY_END("tools^:heaters^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   if (OM::RemoveToolHeaters(indices[0], indices[1]))
+						   {
+						   }
+						   UI::ToolsList::RefreshAllToolLists();
+					   }),
+	OBSERVER_ARRAY_END("tools^:extruders^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   if (OM::RemoveToolExtruders(indices[0], indices[1]))
+						   {
+						   }
+					   }),
+	OBSERVER_ARRAY_END("tools^:fans^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   if (OM::RemoveToolFans(indices[0], indices[1]))
+						   {
+						   }
+					   }),
 };
-
-
-
 
 #endif /* JNI_LOGIC_UI_TOOLOBSERVERS_HPP_ */

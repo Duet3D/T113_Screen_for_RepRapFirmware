@@ -20,8 +20,6 @@
 #include <Duet3D/General/function_ref.h>
 #include <UI/UserInterfaceConstants.h>
 
-#define TOOL_NAME_MAX_LEN 10
-
 namespace OM
 {
 	// Status that a tool may report to us.
@@ -65,7 +63,7 @@ namespace OM
 
 		// tool number
 		uint8_t index;
-		String<TOOL_NAME_MAX_LEN> name;
+		String<MaxToolNameLength> name;
 		ToolHeater* heaters[MaxHeatersPerTool];
 		Move::ExtruderAxis* extruders[MaxExtrudersPerTool];
 		float mix[MaxExtrudersPerTool];
@@ -74,16 +72,18 @@ namespace OM
 		int32_t spindleRpm;
 		float offsets[MaxTotalAxes];
 		ToolStatus status;
-		uint8_t slot;
+		int8_t filamentExtruder;
 
 		ToolHeater* GetHeater(const uint8_t toolHeaterIndex);
 		ToolHeater* GetOrCreateHeater(const uint8_t toolHeaterIndex, const uint8_t heaterIndex);
 
-		Move::ExtruderAxis* GetExtruder(const uint8_t toolExtruderIndex);
+		Move::ExtruderAxis* GetExtruder(const uint8_t toolExtruderIndex) const;
 		Move::ExtruderAxis* GetOrCreateExtruder(const uint8_t toolExtruderIndex, const uint8_t extruderIndex);
 
 		Fan* GetFan(const uint8_t toolFanIndex);
 		Fan* GetOrCreateFan(const uint8_t toolFanIndex, const uint8_t fanIndex);
+
+		StringRef GetFilament() const;
 
 		int32_t GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active);
 		bool GetHeaterTemps(const StringRef& ref, const bool active);
@@ -118,6 +118,8 @@ namespace OM
 
 	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex);
 	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete = 0);
+
+	bool UpdateToolFilamentExtruder(const size_t toolIndex, const int8_t extruderIndex);
 
 	bool UpdateToolTemp(const size_t toolIndex, const size_t toolHeaterIndex, const int32_t temp, const bool active);
 	bool UpdateToolName(const size_t toolIndex, const char *name);

@@ -98,11 +98,25 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						   error("Failed to set extruderAxis[%d]->filamentDiameter = %f", indices[0], val);
 					   }
 				   }),
+	OBSERVER_CHAR("move:extruders^:filament",
+				  [](OBSERVER_CHAR_ARGS) {
+					  if (!OM::Move::SetExtruderFilamentName(indices[0], val))
+					  {
+						  error("Failed to set extruderAxis[%d]->filamentName = %s", indices[0], val);
+					  }
+				  }),
 	OBSERVER_FLOAT("move:extruders^:position",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetExtruderPosition(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
+					   }
+				   }),
+	OBSERVER_FLOAT("move:extruders^:pressureAdvance",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetExtruderPressureAdvance(indices[0], val))
+					   {
+						   error("Failed to set extruderAxis[%d]->pressureAdvance = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:stepsPerMm",

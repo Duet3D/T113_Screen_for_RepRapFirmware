@@ -111,6 +111,7 @@ static void onUI_init()
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr);
+	UI::ToolsList::Create("extrude")->Init(mExtrudeToolListPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::NUMPAD_WINDOW->Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
 	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
@@ -1166,4 +1167,164 @@ static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
 		return;
 	}
 	UI::GuidedSetup::Show(guide->GetId());
+}
+
+static int getListItemCount_ExtruderFeedDist(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(UI::g_extrusionFeedDistances);
+}
+
+static void obtainListItemData_ExtruderFeedDist(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
+	{
+		return;
+	}
+	pListItem->setTextf("%d", UI::g_extrusionFeedDistances[index]);
+	pListItem->setSelected(UI::g_defaultExtrusionFeedDistance == UI::g_extrusionFeedDistances[index]);
+}
+
+static void onListItemClick_ExtruderFeedDist(ZKListView* pListView, int index, int id)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
+	{
+		return;
+	}
+	UI::g_defaultExtrusionFeedDistance = UI::g_extrusionFeedDistances[index];
+}
+
+static int getListItemCount_ExtruderFeedrate(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(UI::g_extrusionFeedRates);
+}
+
+static void obtainListItemData_ExtruderFeedrate(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
+	{
+		return;
+	}
+	pListItem->setTextf("%d", UI::g_extrusionFeedRates[index]);
+	pListItem->setSelected(UI::g_defaultExtrusionFeedRate == UI::g_extrusionFeedRates[index]);
+}
+
+static void onListItemClick_ExtruderFeedrate(ZKListView* pListView, int index, int id)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
+	{
+		return;
+	}
+	UI::g_defaultExtrusionFeedRate = UI::g_extrusionFeedRates[index];
+}
+
+static bool onButtonClick_RetractBtn(ZKButton* pButton)
+{
+	Comm::duet.SendGcodef("G1 E-%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	return false;
+}
+
+static bool onButtonClick_ExtrudeBtn(ZKButton* pButton)
+{
+	Comm::duet.SendGcodef("G1 E%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	return false;
+}
+
+static int getListItemCount_ExtrudeToolList(const ZKListView* pListView)
+{
+	size_t count = UI::ToolsList::Get("extrude")->GetTotalHeaterCount(true, true, false, false);
+	return count;
+}
+
+static void obtainListItemData_ExtrudeToolList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	ZKListView::ZKListSubItem* ptoolName = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolNameSubItem);
+	ZKListView::ZKListSubItem* pcurrentTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolCurrentTemperatureSubItem);
+	ZKListView::ZKListSubItem* pactiveTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolActiveTemperatureSubItem);
+	ZKListView::ZKListSubItem* pstandbyTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+	ZKListView::ZKListSubItem* pstatus = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStatusSubItem);
+	ZKListView::ZKListSubItem* pfilament = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolFilamentSubItem);
+
+	UI::ToolsList::Get("extrude")->ObtainListItemData(
+		pListItem, index, ptoolName, pcurrentTemp, pactiveTemp, pstandbyTemp, pstatus);
+
+	OM::Tool* tool = nullptr;
+	UI::GetToolHeaterIndex(index, tool);
+	if (tool == nullptr)
+	{
+		return;
+	}
+
+	StringRef filament = tool->GetFilament();
+	pfilament->setText((tool->filamentExtruder >= 0 && filament.IsEmpty()) ? "Load Filament"
+																		   : tool->GetFilament().c_str());
+}
+
+static OM::Tool* g_filamentDialogTool = nullptr;
+
+static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, int id)
+{
+	UI::ToolsList::Get("extrude")->OnListItemClick(index,
+												   id,
+												   ID_MAIN_ExtrudeToolNameSubItem,
+												   ID_MAIN_ExtrudeToolStatusSubItem,
+												   ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
+												   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+	if (id == ID_MAIN_ExtrudeToolFilamentSubItem)
+	{
+		UI::GetToolHeaterIndex(index, g_filamentDialogTool);
+		if (g_filamentDialogTool == nullptr || g_filamentDialogTool->filamentExtruder < 0)
+		{
+			g_filamentDialogTool = nullptr;
+			return;
+		}
+		Comm::duet.RequestFileList("/filaments");
+		// TODO: need a way to recognise the response to this request compared to other file list requests
+		mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
+		mFilamentControlHeadingPtr->setTextTrf("tool_filament_control", g_filamentDialogTool->index);
+		UI::WINDOW->OpenOverlay(mFilamentLoadUnloadWindowPtr);
+	}
+}
+
+static int getListItemCount_FilamentList(const ZKListView* pListView)
+{
+	return OM::FileSystem::GetItemCount();
+}
+
+static void obtainListItemData_FilamentList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr || g_filamentDialogTool == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setText(item->GetName());
+	pListItem->setSelected(item->GetName() == g_filamentDialogTool->GetFilament().c_str());
+	mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
+}
+
+static void onListItemClick_FilamentList(ZKListView* pListView, int index, int id)
+{
+
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr || g_filamentDialogTool == nullptr)
+	{
+		return;
+	}
+	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
+	Comm::duet.SendGcodef("M702");
+	Comm::duet.SendGcodef("M701 S\"%s\"", item->GetName().c_str());
+	Comm::duet.SendGcodef("M703");
+	UI::WINDOW->CloseOverlay();
+}
+
+static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
+{
+	if (g_filamentDialogTool == nullptr)
+	{
+		return false;
+	}
+	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
+	Comm::duet.SendGcode("M702");
+	return false;
 }

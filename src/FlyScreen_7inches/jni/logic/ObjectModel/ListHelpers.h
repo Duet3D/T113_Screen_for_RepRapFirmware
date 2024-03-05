@@ -37,6 +37,7 @@ T* GetOrCreate(L& list, const size_t index, const bool create)
 		return elem;
 	}
 
+	error("Failed to get%s index=%d", create ? " or create" : "", index);
 	return nullptr;
 }
 
