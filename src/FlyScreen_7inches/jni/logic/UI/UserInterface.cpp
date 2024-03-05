@@ -49,6 +49,11 @@ const OM::FileSystem::File* sSelectedFile;
 
 namespace UI
 {
+	uint32_t g_extrusionFeedRates[] = {50, 10, 5, 2, 1};
+	uint32_t g_extrusionFeedDistances[] = {100, 50, 20, 10, 5, 2, 1};
+	uint32_t g_defaultExtrusionFeedRate = 5;
+	uint32_t g_defaultExtrusionFeedDistance = 10;
+
 	Window* Window::GetInstance()
 	{
 		static Window window;
@@ -77,11 +82,16 @@ namespace UI
 
 	void Window::OpenOverlay(ZKBase* overlay, bool closeAlreadyOpened)
 	{
+		if (overlay == nullptr)
+		{
+			warn("Overlay is null");
+			return;
+		}
 		if (!overlayWindows_.empty() && closeAlreadyOpened)
 		{
 			CloseOverlay();
 		}
-
+		dbg("Opening overlay %d", overlay->getID());
 		overlay->setVisible(true);
 		AddToVector<ZKBase*>(overlayWindows_, overlay);
 	}
@@ -594,6 +604,25 @@ namespace UI
 		}
 		buffer_.Reset();
 		Refresh();
+	}
+
+	static ZKWindow* s_root = nullptr;
+
+	void Init(ZKWindow* root)
+	{
+		info("Initialising UI root %p", root);
+		s_root = root;
+	}
+
+	ZKBase* GetUIControl(int id)
+	{
+		verbose("Retrieving control with id %d", id);
+		ZKBase* control = s_root->findControlByID(id);
+		if (control == nullptr)
+		{
+			error("Control with id %d not found", id);
+		}
+		return control;
 	}
 
 	void SetSelectedFile(const OM::FileSystem::File* file)

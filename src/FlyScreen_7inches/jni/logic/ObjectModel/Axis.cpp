@@ -171,6 +171,7 @@ namespace OM::Move
 		dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
 		if (index >= MaxTotalAxes)
 		{
+			error("ExtruderAxis index %d greater than MaxTotalAxes", index);
 			return nullptr;
 		}
 		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, true);
@@ -194,11 +195,6 @@ namespace OM::Move
 #define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \
 	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-		if (index >= MaxTotalAxes)                                                                                     \
-		{                                                                                                              \
-			error("extruderAxis[%d] greater than MaxTotalAxes", index);                                                \
-			return false;                                                                                              \
-		}                                                                                                              \
 		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);                                                       \
 		if (extruder == nullptr)                                                                                       \
 		{                                                                                                              \
@@ -213,6 +209,19 @@ namespace OM::Move
 	EXTRUDER_AXIS_SETTER(SetExtruderFactor, float, factor);
 	EXTRUDER_AXIS_SETTER(SetExtruderStepsPerMm, float, stepsPerMm);
 	EXTRUDER_AXIS_SETTER(SetExtruderFilamentDiameter, float, filamentDiameter);
+	EXTRUDER_AXIS_SETTER(SetExtruderPressureAdvance, float, pressureAdvance);
+
+	bool SetExtruderFilamentName(size_t index, const char* name)
+	{
+		ExtruderAxis* extruder = GetOrCreateExtruderAxis(index);
+		if (extruder == nullptr)
+		{
+			error("Could not get or create extruderAxis %d", index);
+			return false;
+		}
+		extruder->filamentName.CopyAndPad(name);
+		return true;
+	}
 
 	void SetExtrusionRate(float rate)
 	{

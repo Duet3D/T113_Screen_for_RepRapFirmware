@@ -16,8 +16,6 @@
 #include <Duet3D/General/function_ref.h>
 #include <UI/UserInterfaceConstants.h>
 
-#define TOOL_NAME_MAX_LEN 10
-
 namespace OM
 {
 	class Fan

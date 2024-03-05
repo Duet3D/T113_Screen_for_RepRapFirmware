@@ -8,6 +8,8 @@
 #ifndef JNI_LOGIC_UI_USERINTERFACE_HPP_
 #define JNI_LOGIC_UI_USERINTERFACE_HPP_
 
+#include "activity/mainActivity.h"
+#include "control/ZKBase.h"
 #include "control/ZKEditText.h"
 #include "control/ZKListView.h"
 #include "control/ZKSeekBar.h"
@@ -19,7 +21,9 @@
 #include <vector>
 
 #include "Duet3D/General/CircularBuffer.h"
+#include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
+#include "Duet3D/General/Vector.h"
 #include "Library/Thumbnail.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Files.h"
@@ -51,7 +55,13 @@ namespace UI
 		power_off,
 		zk_setting,
 		touch_calibration,
+		guides,
 	};
+
+	extern uint32_t g_extrusionFeedRates[5];
+	extern uint32_t g_extrusionFeedDistances[7];
+	extern uint32_t g_defaultExtrusionFeedRate;
+	extern uint32_t g_defaultExtrusionFeedDistance;
 
 	class Window
 	{
@@ -103,7 +113,6 @@ namespace UI
 	class ToolsList
 	{
 	  public:
-		ToolsList(const char* id);
 		static ToolsList* Create(const char* id);
 		static ToolsList* Get(const char* id);
 		void Init(ZKListView* toolListView);
@@ -121,6 +130,7 @@ namespace UI
 		bool SendTempTarget(int value);
 
 	  private:
+		ToolsList(const char* id);
 		const char* id;
 		size_t toolCount_, bedCount_, chamberCount_;
 		NumPadData numPadData_;
@@ -155,6 +165,20 @@ namespace UI
 		ZKListView* pConsole_ = nullptr;
 		ZKEditText* pInput_ = nullptr;
 	};
+
+	void Init(ZKWindow* root);
+	ZKBase* GetUIControl(int id);
+
+	template <typename T>
+	T* GetUIControl(int id)
+	{
+		ZKBase* control = GetUIControl(id);
+		if (control == nullptr)
+		{
+			return nullptr;
+		}
+		return static_cast<T*>(control);
+	}
 
 	void SetSelectedFile(const OM::FileSystem::File* file);
 	const OM::FileSystem::File* GetSelectedFile();

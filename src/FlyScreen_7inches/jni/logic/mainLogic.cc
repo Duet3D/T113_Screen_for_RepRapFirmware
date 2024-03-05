@@ -11,18 +11,11 @@
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Colors.h"
 #include "UI/Gcodes.h"
-#include "UI/Observers/FanObservers.h"
-#include "UI/Observers/FileObservers.h"
-#include "UI/Observers/HeatObservers.h"
-#include "UI/Observers/JobObservers.h"
-#include "UI/Observers/MoveObservers.h"
-#include "UI/Observers/ResponseObservers.h"
-#include "UI/Observers/StateObservers.h"
-#include "UI/Observers/ThumbnailObservers.h"
-#include "UI/Observers/ToolObservers.h"
+#include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
@@ -85,7 +78,7 @@ static int sFeedRate = 6000;
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
-	{TIMER_ASYNC_HTTP_REQUEST, 100},
+	{TIMER_ASYNC_HTTP_REQUEST, 50},
 	{TIMER_THUMBNAIL, 50},
 };
 
@@ -105,10 +98,12 @@ static void onUI_init()
 		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.Init();
+	UI::Init(mRootWindowPtr);
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr);
+	UI::ToolsList::Create("extrude")->Init(mExtrudeToolListPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::NUMPAD_WINDOW->Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
 	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
@@ -129,6 +124,10 @@ static void onUI_init()
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
 	UI::SetThumbnail(mPopupImagePtr);
+
+	// Guided setup
+	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
+	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -928,6 +927,9 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
 		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
 		break;
+	case (int)UI::SettingsSlideWindowIndex::guides:
+		UI::WINDOW->OpenOverlay(mGuideSelectionWindowPtr);
+		break;
 	default:
 		break;
 	}
@@ -1100,48 +1102,224 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	int height = 32;
-	int width = 32;
-	int size = height * width;
-	const char* imageFileName = "/tmp/bitmapImage.bmp";
-	const char* imageFileName2 = "/tmp/bitmapImage2.bmp";
-
-	BMP bmp(width, height, imageFileName);
-	BMP bmp2(width, height, imageFileName2);
-
-	rgba_t pixels[size];
-
-	int i, row, col;
-	for (i = 0; i < size; i++)
-	{
-		col = i % width;
-		row = i / width;
-		pixels[i].rgba.r = (unsigned char)(row * 255 / height);					  /// red
-		pixels[i].rgba.g = (unsigned char)(col * 255 / width);					  /// green
-		pixels[i].rgba.b = (unsigned char)((row + col) * 255 / (height + width)); /// blue
-		pixels[i].rgba.a = 0;
-	}
-	bmp.generateBitmapImage(pixels);
-	int chunkSize = 32;
-	for (i = 0; i < size; i += chunkSize)
-	{
-		info("Appending pixels %d", i);
-		bmp2.appendPixels((pixels + i), chunkSize);
-	}
-
-	bmp.Close();
-	bmp2.Close();
-	dbg("Finished writing bmp files");
-	// Crashes here but not sure why
-	mThumbnailPtr->setBackgroundPic(imageFileName);
-	dbg("Set thumbnail 1");
-	mThumbnail2Ptr->setBackgroundPic(imageFileName2);
-	dbg("Set both images");
+	UI::GuidedSetup::Show("setup");
 	return false;
 }
 
 static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
 {
 	Comm::duet.SendGcode("M122");
+	return false;
+}
+static bool onButtonClick_NextPageBtn(ZKButton* pButton)
+{
+	UI::GuidedSetup::GetCurrentGuide()->NextPage();
+	return false;
+}
+
+static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
+{
+	UI::GuidedSetup::GetCurrentGuide()->PreviousPage();
+	return false;
+}
+
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	dbg("isChecked = %d", isChecked);
+	StoragePreferences::putBool("show_setup_on_startup", isChecked);
+}
+
+static bool onButtonClick_CloseGuideBtn(ZKButton *pButton)
+{
+	UI::GuidedSetup::Close();
+    return false;
+}
+
+static int getListItemCount_GuidesList(const ZKListView* pListView)
+{
+	return UI::GuidedSetup::GetGuideCount();
+}
+
+static void obtainListItemData_GuidesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(guide->GetId());
+}
+
+static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		return;
+	}
+	UI::GuidedSetup::Show(guide->GetId());
+}
+
+static int getListItemCount_ExtruderFeedDist(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(UI::g_extrusionFeedDistances);
+}
+
+static void obtainListItemData_ExtruderFeedDist(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
+	{
+		return;
+	}
+	pListItem->setTextf("%d", UI::g_extrusionFeedDistances[index]);
+	pListItem->setSelected(UI::g_defaultExtrusionFeedDistance == UI::g_extrusionFeedDistances[index]);
+}
+
+static void onListItemClick_ExtruderFeedDist(ZKListView* pListView, int index, int id)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
+	{
+		return;
+	}
+	UI::g_defaultExtrusionFeedDistance = UI::g_extrusionFeedDistances[index];
+}
+
+static int getListItemCount_ExtruderFeedrate(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(UI::g_extrusionFeedRates);
+}
+
+static void obtainListItemData_ExtruderFeedrate(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
+	{
+		return;
+	}
+	pListItem->setTextf("%d", UI::g_extrusionFeedRates[index]);
+	pListItem->setSelected(UI::g_defaultExtrusionFeedRate == UI::g_extrusionFeedRates[index]);
+}
+
+static void onListItemClick_ExtruderFeedrate(ZKListView* pListView, int index, int id)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
+	{
+		return;
+	}
+	UI::g_defaultExtrusionFeedRate = UI::g_extrusionFeedRates[index];
+}
+
+static bool onButtonClick_RetractBtn(ZKButton* pButton)
+{
+	Comm::duet.SendGcodef("G1 E-%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	return false;
+}
+
+static bool onButtonClick_ExtrudeBtn(ZKButton* pButton)
+{
+	Comm::duet.SendGcodef("G1 E%.3f F%d\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate);
+	return false;
+}
+
+static int getListItemCount_ExtrudeToolList(const ZKListView* pListView)
+{
+	size_t count = UI::ToolsList::Get("extrude")->GetTotalHeaterCount(true, true, false, false);
+	return count;
+}
+
+static void obtainListItemData_ExtrudeToolList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	ZKListView::ZKListSubItem* ptoolName = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolNameSubItem);
+	ZKListView::ZKListSubItem* pcurrentTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolCurrentTemperatureSubItem);
+	ZKListView::ZKListSubItem* pactiveTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolActiveTemperatureSubItem);
+	ZKListView::ZKListSubItem* pstandbyTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+	ZKListView::ZKListSubItem* pstatus = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStatusSubItem);
+	ZKListView::ZKListSubItem* pfilament = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolFilamentSubItem);
+
+	UI::ToolsList::Get("extrude")->ObtainListItemData(
+		pListItem, index, ptoolName, pcurrentTemp, pactiveTemp, pstandbyTemp, pstatus);
+
+	OM::Tool* tool = nullptr;
+	UI::GetToolHeaterIndex(index, tool);
+	if (tool == nullptr)
+	{
+		return;
+	}
+
+	StringRef filament = tool->GetFilament();
+	pfilament->setText((tool->filamentExtruder >= 0 && filament.IsEmpty()) ? "Load Filament"
+																		   : tool->GetFilament().c_str());
+}
+
+static OM::Tool* g_filamentDialogTool = nullptr;
+
+static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, int id)
+{
+	UI::ToolsList::Get("extrude")->OnListItemClick(index,
+												   id,
+												   ID_MAIN_ExtrudeToolNameSubItem,
+												   ID_MAIN_ExtrudeToolStatusSubItem,
+												   ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
+												   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+	if (id == ID_MAIN_ExtrudeToolFilamentSubItem)
+	{
+		UI::GetToolHeaterIndex(index, g_filamentDialogTool);
+		if (g_filamentDialogTool == nullptr || g_filamentDialogTool->filamentExtruder < 0)
+		{
+			g_filamentDialogTool = nullptr;
+			UI::WINDOW->CloseOverlay();
+			return;
+		}
+		Comm::duet.RequestFileList("/filaments");
+		// TODO: need a way to recognise the response to this request compared to other file list requests
+		mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
+		mFilamentControlHeadingPtr->setTextTrf("tool_filament_control", g_filamentDialogTool->index);
+		UI::WINDOW->OpenOverlay(mFilamentLoadUnloadWindowPtr);
+	}
+}
+
+static int getListItemCount_FilamentList(const ZKListView* pListView)
+{
+	return OM::FileSystem::GetItemCount();
+}
+
+static void obtainListItemData_FilamentList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr || g_filamentDialogTool == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setText(item->GetName());
+	pListItem->setSelected(item->GetName() == g_filamentDialogTool->GetFilament().c_str());
+	mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
+}
+
+static void onListItemClick_FilamentList(ZKListView* pListView, int index, int id)
+{
+
+	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
+	if (item == nullptr || g_filamentDialogTool == nullptr)
+	{
+		return;
+	}
+	Comm::duet.SendGcodef("T%d\n"
+						  "M702\n"
+						  "M701 S\"%s\"\n"
+						  "M703",
+						  g_filamentDialogTool->index,
+						  item->GetName().c_str());
+	UI::WINDOW->CloseOverlay();
+}
+
+static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
+{
+	if (g_filamentDialogTool == nullptr)
+	{
+		return false;
+	}
+	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
+	Comm::duet.SendGcode("M702");
 	return false;
 }

@@ -28,6 +28,8 @@ constexpr unsigned int MaxCommandLength = 50;
 constexpr unsigned int MaxResponseLineLength = 65;
 constexpr unsigned int MaxResponseLines = 200;
 
+constexpr unsigned int MaxToolNameLength = 10;
+constexpr unsigned int MaxFilamentNameLength = 100;
 constexpr unsigned int MaxFileNameLength = 100;
 
 constexpr unsigned long long TimeSyncInterval = 10e3; // Interval to resynchronize time with the Duet in milliseconds

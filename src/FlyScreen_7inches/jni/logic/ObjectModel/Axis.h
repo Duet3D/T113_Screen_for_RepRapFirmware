@@ -8,10 +8,12 @@
 #ifndef SRC_OBJECTMODEL_AXIS_HPP_
 #define SRC_OBJECTMODEL_AXIS_HPP_
 
-//#include <cstdint>
-#include <sys/types.h>
+// #include <cstdint>
 #include <Duet3D/General/FreelistManager.h>
+#include <Duet3D/General/String.h>
 #include <Duet3D/General/function_ref.h>
+#include <UI/UserInterfaceConstants.h>
+#include <sys/types.h>
 
 namespace OM::Move
 {
@@ -57,6 +59,8 @@ namespace OM::Move
 		float factor;
 		float stepsPerMm;
 		float filamentDiameter;
+		float pressureAdvance;
+		String<MaxFilamentNameLength> filamentName;
 
 		void Reset();
 	};
@@ -89,6 +93,8 @@ namespace OM::Move
 	bool SetExtruderFactor(size_t index, float f);
 	bool SetExtruderStepsPerMm(size_t index, float f);
 	bool SetExtruderFilamentDiameter(size_t index, float f);
+	bool SetExtruderPressureAdvance(size_t index, float f);
+	bool SetExtruderFilamentName(size_t index, const char* name);
 
 	void SetExtrusionRate(float rate);
 	const float GetExtrusionRate();

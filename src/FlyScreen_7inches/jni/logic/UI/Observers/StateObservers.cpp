@@ -1,22 +1,19 @@
 /*
- * StateObservers.h
+ * StateObservers.cpp
  *
  *  Created on: 9 Jan 2024
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_OBSERVERS_STATEOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_STATEOBSERVERS_HPP_
-
 #include "Debug.h"
 
+#include "UI/OmObserver.h"
+#include "UI/UserInterface.h"
+#include "UI/UserInterfaceConstants.h"
+#include "control/ZKDigitalClock.h"
 #include "utils/TimeHelper.h"
 
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
-#include "UI/OmObserver.h"
-#include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -34,27 +31,27 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  {
 					  case OM::PrinterStatus::printing:
 					  case OM::PrinterStatus::simulating:
-						  mPrintPauseBtnPtr->setVisible(true);
-						  mPrintResumeBtnPtr->setVisible(false);
-						  mPrintCancelBtnPtr->setVisible(false);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintPauseBtn)->setVisible(true);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintResumeBtn)->setVisible(false);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintCancelBtn)->setVisible(false);
 						  break;
 					  case OM::PrinterStatus::paused:
 					  case OM::PrinterStatus::pausing:
 					  case OM::PrinterStatus::resuming:
-						  mPrintPauseBtnPtr->setVisible(false);
-						  mPrintResumeBtnPtr->setVisible(true);
-						  mPrintCancelBtnPtr->setVisible(true);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintPauseBtn)->setVisible(false);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintResumeBtn)->setVisible(true);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintCancelBtn)->setVisible(true);
 						  break;
 					  case OM::PrinterStatus::idle:
 					  case OM::PrinterStatus::configuring:
 					  case OM::PrinterStatus::connecting:
 					  case OM::PrinterStatus::halted:
-						  mPrintFileNamePtr->setText("");
-						  mPrintElapsedTimePtr->setTextTr("elapsed");
-						  mPrintEstimatedTimePtr->setTextTr("estimated");
-						  mPrintPauseBtnPtr->setVisible(false);
-						  mPrintResumeBtnPtr->setVisible(false);
-						  mPrintCancelBtnPtr->setVisible(false);
+						  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintFileName)->setText("");
+						  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintElapsedTime)->setTextTr("elapsed");
+						  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)->setTextTr("estimated");
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintPauseBtn)->setVisible(false);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintResumeBtn)->setVisible(false);
+						  UI::GetUIControl<ZKButton>(ID_MAIN_PrintCancelBtn)->setVisible(false);
 						  break;
 					  default:
 						  break;
@@ -135,7 +132,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  char* timeStr = (char*)val; // remove const
 					  if (timeStr[0] == 0)
 					  {
-						  mDigitalClock1Ptr->setVisible(false);
+						  UI::GetUIControl<ZKDigitalClock>(ID_MAIN_DigitalClock1)->setVisible(false);
 						  return;
 					  }
 
@@ -155,7 +152,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  }
 					  TimeHelper::setDateTime(timeStr);
 					  lastUpdated = TimeHelper::getCurrentTime();
-					  mDigitalClock1Ptr->setVisible(true);
+					  UI::GetUIControl<ZKDigitalClock>(ID_MAIN_DigitalClock1)->setVisible(true);
 				  }),
 };
 
@@ -164,5 +161,3 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> StateObserversArrayEnd[] = {};
-
-#endif /* JNI_LOGIC_UI_OBSERVERS_STATEOBSERVERS_HPP_ */

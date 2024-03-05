@@ -69,9 +69,9 @@ namespace OM
 		return th;
 	}
 
-	Move::ExtruderAxis* Tool::GetExtruder(const uint8_t toolExtruderIndex)
+	Move::ExtruderAxis* Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
-		if (toolExtruderIndex >= MaxExtrudersPerTool)
+		if (toolExtruderIndex >= MaxExtrudersPerTool || toolExtruderIndex < 0)
 		{
 			return nullptr;
 		}
@@ -111,6 +111,17 @@ namespace OM
 		dbg("Setting tool %d fan %d=%d", index, toolFanIndex, fanIndex);
 		fans[toolFanIndex] = fan;
 		return fan;
+	}
+
+	StringRef Tool::GetFilament() const
+	{
+		Move::ExtruderAxis* extruder = Move::GetExtruderAxis(filamentExtruder);
+		if (extruder == nullptr)
+		{
+			static String<1> empty;
+			return empty.GetRef();
+		}
+		return extruder->filamentName.GetRef();
 	}
 
 	int32_t Tool::GetHeaterTarget(const uint8_t toolHeaterIndex, const bool active)
@@ -324,6 +335,7 @@ namespace OM
 		{
 			fans[i] = nullptr;
 		}
+		filamentExtruder = -1;
 		spindle = nullptr;
 		spindleRpm = 0;
 		for (size_t i = 0; i < MaxTotalAxes; ++i)
@@ -335,7 +347,6 @@ namespace OM
 			mix[i] = 0.0f;
 		}
 		status = ToolStatus::off;
-		slot = MaxSlots;
 	}
 
 	Tool* GetTool(const size_t index)
@@ -463,6 +474,17 @@ namespace OM
 		return true;
 	}
 
+	bool UpdateToolFilamentExtruder(const size_t toolIndex, const int8_t extruderIndex)
+	{
+		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+		if (tool == nullptr)
+		{
+			return false;
+		}
+		tool->filamentExtruder = extruderIndex;
+		return true;
+	}
+
 	bool RemoveToolFans(const size_t toolIndex, const uint8_t firstIndexToDelete)
 	{
 		OM::Tool *tool = OM::GetTool(toolIndex);
@@ -503,7 +525,7 @@ namespace OM
 		}
 		else
 		{
-			tool->name.copy(name, TOOL_NAME_MAX_LEN);
+			tool->name.copy(name, MaxToolNameLength);
 		}
 		dbg("Tool %d name=%s", tool->index, tool->name.c_str());
 		return true;
