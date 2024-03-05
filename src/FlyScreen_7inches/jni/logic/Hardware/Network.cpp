@@ -94,7 +94,7 @@ namespace Comm
 			utils::replaceSubstring(query.second, ":", "%3A");
 			utils::replaceSubstring(query.second, "\\", "%5C");
 			utils::replaceSubstring(query.second, "/", "%2F");
-			utils::removeCharFromString(query.second, '\n');
+			utils::replaceSubstring(query.second, "\n", "%0A");
 			utils::removeCharFromString(query.second, '\r');
 
 			if (!first)
@@ -127,13 +127,8 @@ namespace Comm
 			return thread->run();
 		}
 
-		if (threadPool.size() >= maxThreadPoolSize)
+		if (queue)
 		{
-			if (!queue)
-			{
-				error("Thread pool is full, cannot add more threads");
-				return false;
-			}
 			if (strncmp(subUrl, "/rr_connect", 11) == 0)
 			{
 				for (auto& data : queuedData)
@@ -148,6 +143,12 @@ namespace Comm
 			queuedData.push_back({url, subUrl, queryParameters, callback, sessionKey});
 			info("Queued request %s, size=%d", (url + subUrl).c_str(), queuedData.size());
 			return true;
+		}
+
+		if (threadPool.size() >= maxThreadPoolSize)
+		{
+			error("Thread pool is full, cannot add more threads");
+			return false;
 		}
 
 		// Create a new thread and add it to the pool

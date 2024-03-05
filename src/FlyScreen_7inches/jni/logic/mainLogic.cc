@@ -86,7 +86,7 @@ static int sFeedRate = 6000;
  */
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
-	{TIMER_ASYNC_HTTP_REQUEST, 100},
+	{TIMER_ASYNC_HTTP_REQUEST, 50},
 	{TIMER_THUMBNAIL, 50},
 };
 
@@ -1311,10 +1311,12 @@ static void onListItemClick_FilamentList(ZKListView* pListView, int index, int i
 	{
 		return;
 	}
-	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
-	Comm::duet.SendGcodef("M702");
-	Comm::duet.SendGcodef("M701 S\"%s\"", item->GetName().c_str());
-	Comm::duet.SendGcodef("M703");
+	Comm::duet.SendGcodef("T%d\n"
+						  "M702\n"
+						  "M701 S\"%s\"\n"
+						  "M703",
+						  g_filamentDialogTool->index,
+						  item->GetName().c_str());
 	UI::WINDOW->CloseOverlay();
 }
 
