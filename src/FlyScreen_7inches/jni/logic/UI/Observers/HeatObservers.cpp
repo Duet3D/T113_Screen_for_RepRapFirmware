@@ -1,22 +1,17 @@
 /*
- * HeatObservers.h
+ * HeatObservers.cpp
  *
  *  Created on: 19 Dec 2023
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_OBSERVERS_HEATOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_HEATOBSERVERS_HPP_
-
 #include "Debug.h"
+
+#include "UI/OmObserver.h"
+#include "UI/UserInterface.h"
+#include "UI/UserInterfaceConstants.h"
 
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Heat.h"
-#include "UI/OmObserver.h"
-#include "UI/UserInterfaceConstants.h"
-#include "UI/UserInterface.h"
-
-
 
 /*
  * These functions are run when the OM field is received.
@@ -37,7 +32,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 						   return;
 					   }
 					   UI::ToolsList::RefreshAllToolLists(false);
-					   mTempGraphPtr->addData(indices[0], val);
+					   UI::GetUIControl<ZKDiagram>(ID_MAIN_TempGraph)->addData(indices[0], val);
 				   }), /* Update what tool heaters active temperature */
 	OBSERVER_INT("heat:heaters^:active",
 				 [](OBSERVER_INT_ARGS) {
@@ -92,31 +87,21 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
-	OBSERVER_ARRAY_END(
-		"heaters^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			if (OM::Heat::RemoveHeater(indices[0], true))
-				UI::ToolsList::RefreshAllToolLists();
-		}),
-	OBSERVER_ARRAY_END(
-		"heat:bedHeaters^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			OM::RemoveBed(OM::lastBed + 1, true);
-			OM::lastBed = -1;
-			UI::ToolsList::RefreshAllToolLists();
-		}),
-	OBSERVER_ARRAY_END(
-		"heat:chamberHeaters^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			OM::RemoveChamber(OM::lastChamber + 1, true);
-			OM::lastChamber = -1;
-			UI::ToolsList::RefreshAllToolLists();
-		}),
+	OBSERVER_ARRAY_END("heaters^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   if (OM::Heat::RemoveHeater(indices[0], true))
+							   UI::ToolsList::RefreshAllToolLists();
+					   }),
+	OBSERVER_ARRAY_END("heat:bedHeaters^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   OM::RemoveBed(OM::lastBed + 1, true);
+						   OM::lastBed = -1;
+						   UI::ToolsList::RefreshAllToolLists();
+					   }),
+	OBSERVER_ARRAY_END("heat:chamberHeaters^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   OM::RemoveChamber(OM::lastChamber + 1, true);
+						   OM::lastChamber = -1;
+						   UI::ToolsList::RefreshAllToolLists();
+					   }),
 };
-
-
-
-#endif /* JNI_LOGIC_UI_OBSERVERS_HEATOBSERVERS_HPP_ */

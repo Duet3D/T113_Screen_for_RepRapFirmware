@@ -169,6 +169,17 @@ namespace UI
 	void Init(ZKWindow* root);
 	ZKBase* GetUIControl(int id);
 
+	template <typename T>
+	T* GetUIControl(int id)
+	{
+		ZKBase* control = GetUIControl(id);
+		if (control == nullptr)
+		{
+			return nullptr;
+		}
+		return static_cast<T*>(control);
+	}
+
 	void SetSelectedFile(const OM::FileSystem::File* file);
 	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();

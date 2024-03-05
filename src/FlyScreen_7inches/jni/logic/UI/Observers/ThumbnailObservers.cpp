@@ -1,13 +1,9 @@
 /*
- * FanObservers.h
+ * FanObservers.cpp
  *
  *  Created on: 8 Jan 2024
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_OBSERVERS_THUMBNAILOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_THUMBNAILOBSERVERS_HPP_
-
 #include "Debug.h"
 
 #include "Communication.h"
@@ -75,7 +71,7 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 						  warn("Thumbnail request cancelled");
 						  Comm::thumbnailContext.state = Comm::ThumbnailState::Init;
 						  Comm::thumbnailRequestInProgress = false;
-                          return;
+						  return;
 					  }
 					  info("thumbnail data %d", strlen(val));
 					  Comm::thumbnailData.size = std::min(strlen(val), sizeof(Comm::thumbnailData.buffer));
@@ -88,7 +84,7 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 					  {
 						  warn("Failed to parse thumbnail err %s", val);
 						  Comm::thumbnailContext.parseErr = -1;
-                          return;
+						  return;
 					  }
 				  }),
 	OBSERVER_CHAR("thumbnail:fileName",
@@ -99,7 +95,7 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 							   Comm::thumbnailContext.filename.c_str(),
 							   val);
 						  Comm::thumbnailContext.parseErr = -2;
-                          return;
+						  return;
 					  }
 				  }),
 	OBSERVER_CHAR("thumbnail:next",
@@ -118,7 +114,7 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 					  {
 						  warn("thumbnail offset error \"%s\"", val);
 						  Comm::thumbnailContext.parseErr = -4;
-                          return;
+						  return;
 					  }
 					  dbg("thumbnail receive current offset %d.", Comm::thumbnailContext.offset);
 				  }),
@@ -129,5 +125,3 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> ThumbnailObserversArrayEnd[] = {};
-
-#endif /* JNI_LOGIC_UI_OBSERVERS_THUMBNAILOBSERVERS_HPP_ */

@@ -1,15 +1,10 @@
 /*
- * PushObservers.h
+ * PushObservers.cpp
  *
  *  Created on: 2 Jan 2024
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_
-
 #include "Debug.h"
-#include "Duet3D/General/String.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
@@ -17,6 +12,9 @@
 #include "restclient-cpp/restclient.h"
 #include <algorithm>
 #include <string>
+
+#include "Duet3D/General/String.h"
+#include "Hardware/Duet.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -45,11 +43,12 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 					  }
 
 					  // Only show if console is not visible and a M291 message box is not showing
-					  if (!mConsoleWindowPtr->isVisible() && UI::POPUP_WINDOW->IsResponse())
+					  if (!UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow)->isVisible() &&
+						  UI::POPUP_WINDOW->IsResponse())
 					  {
 						  UI::POPUP_WINDOW->Open([]() {
 							  UI::WINDOW->CloseLastWindow();
-							  UI::WINDOW->OpenWindow(mConsoleWindowPtr);
+							  UI::WINDOW->OpenWindow(UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow));
 						  });
 						  UI::POPUP_WINDOW->SetText(val);
 						  UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
@@ -78,5 +77,3 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 static UI::Observer<UI::ui_array_end_update_cb> PushObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END("", [](OBSERVER_ARRAY_END_ARGS) {}),
 };
-
-#endif /* JNI_LOGIC_UI_OBSERVERS_RESPONSEOBSERVERS_HPP_ */

@@ -1,21 +1,16 @@
 /*
- * MoveObservers.h
+ * MoveObservers.cpp
  *
  *  Created on: 9 Jan 2024
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_OBSERVERS_MOVEOBSERVERS_HPP_
-#define JNI_LOGIC_UI_OBSERVERS_MOVEOBSERVERS_HPP_
-
 #include "Debug.h"
 
 #include "UI/OmObserver.h"
-#include "UI/UserInterfaceConstants.h"
 #include "UI/UserInterface.h"
+#include "UI/UserInterfaceConstants.h"
+
 #include "ObjectModel/Axis.h"
-
-
 
 /*
  * These functions are run when the OM field is received.
@@ -104,6 +99,7 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  {
 						  error("Failed to set extruderAxis[%d]->filamentName = %s", indices[0], val);
 					  }
+					  UI::GetUIControl<ZKListView>(ID_MAIN_ExtrudeToolList)->refreshListView();
 				  }),
 	OBSERVER_FLOAT("move:extruders^:position",
 				   [](OBSERVER_FLOAT_ARGS) {
@@ -130,8 +126,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 	OBSERVER_FLOAT("move:speedFactor",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   int factor = (int)(val * 100);
-					   mPrintSpeedFactorPtr->setTextf("%d %%", factor);
-					   mPrintSpeedMultiplierBarPtr->setMax(factor + 100);
+					   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintSpeedFactor)->setTextf("%d %%", factor);
+					   UI::GetUIControl<ZKSeekBar>(ID_MAIN_PrintSpeedMultiplierBar)->setMax(factor + 100);
 				   }),
 	OBSERVER_UINT("move:workplaceNumber",
 				  [](OBSERVER_UINT_ARGS) {
@@ -142,15 +138,19 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  }
 				  }),
 	OBSERVER_FLOAT("move:currentMove:requestedSpeed",
-				   [](OBSERVER_FLOAT_ARGS) { mPrintRequestedSpeedPtr->setTextTrf("requested_speed", val); }),
-	OBSERVER_FLOAT("move:currentMove:topSpeed",
-				   [](OBSERVER_FLOAT_ARGS) { mPrintTopSpeedPtr->setTextTrf("top_speed", val); }),
-	OBSERVER_FLOAT("move:currentMove:extrusionRate",
 				   [](OBSERVER_FLOAT_ARGS) {
-					   OM::Move::SetExtrusionRate(val);
-					   float volumetricFlow = OM::Move::GetVolumetricFlow();
-					   mPrintVolFlowPtr->setTextTrf("volumetric_flow", volumetricFlow);
+					   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintRequestedSpeed)->setTextTrf("requested_speed", val);
 				   }),
+	OBSERVER_FLOAT(
+		"move:currentMove:topSpeed",
+		[](OBSERVER_FLOAT_ARGS) { UI::GetUIControl<ZKTextView>(ID_MAIN_PrintTopSpeed)->setTextTrf("top_speed", val); }),
+	OBSERVER_FLOAT(
+		"move:currentMove:extrusionRate",
+		[](OBSERVER_FLOAT_ARGS) {
+			OM::Move::SetExtrusionRate(val);
+			float volumetricFlow = OM::Move::GetVolumetricFlow();
+			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintVolFlow)->setTextTrf("volumetric_flow", volumetricFlow);
+		}),
 };
 
 /*
@@ -158,34 +158,27 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> MoveObserversArrayEnd[] = {
-	OBSERVER_ARRAY_END(
-		"move:axes^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			OM::Move::RemoveAxis(indices[0], true);
-			mPrintPositionListPtr->refreshListView();
-			mAxisControlListViewPtr->refreshListView();
+	OBSERVER_ARRAY_END("move:axes^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   OM::Move::RemoveAxis(indices[0], true);
+						   UI::GetUIControl<ZKListView>(ID_MAIN_PrintPositionList)->refreshListView();
+						   UI::GetUIControl<ZKListView>(ID_MAIN_AxisControlListView)->refreshListView();
 
-			OM::Move::IterateAxesWhile([](OM::Move::Axis* &axis, size_t){
-				if (axis->letter[0] == 'Z')
-				{
-					mPrintBabystepCurrentOffsetPtr->setTextTrf("babystepping_offset", axis->babystep);
-					return false;
-				}
-				return true;
-			}, 0);
-		}
-	),
-	OBSERVER_ARRAY_END(
-		"move:extruders^",
-		[](OBSERVER_ARRAY_END_ARGS)
-		{
-			OM::Move::RemoveExtruderAxis(indices[0], true);
-			mPrintExtruderPositionListPtr->refreshListView();
-		}
-	),
+						   OM::Move::IterateAxesWhile(
+							   [](OM::Move::Axis*& axis, size_t) {
+								   if (axis->letter[0] == 'Z')
+								   {
+									   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintBabystepCurrentOffset)
+										   ->setTextTrf("babystepping_offset", axis->babystep);
+									   return false;
+								   }
+								   return true;
+							   },
+							   0);
+					   }),
+	OBSERVER_ARRAY_END("move:extruders^",
+					   [](OBSERVER_ARRAY_END_ARGS) {
+						   OM::Move::RemoveExtruderAxis(indices[0], true);
+						   UI::GetUIControl<ZKListView>(ID_MAIN_PrintExtruderPositionList)->refreshListView();
+					   }),
 };
-
-
-
-#endif /* JNI_LOGIC_UI_OBSERVERS_MOVEOBSERVERS_HPP_ */

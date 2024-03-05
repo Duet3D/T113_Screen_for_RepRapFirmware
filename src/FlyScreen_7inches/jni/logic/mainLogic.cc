@@ -11,22 +11,14 @@
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Colors.h"
 #include "UI/Gcodes.h"
-#include "UI/Observers/FanObservers.h"
-#include "UI/Observers/FileObservers.h"
-#include "UI/Observers/HeatObservers.h"
-#include "UI/Observers/JobObservers.h"
-#include "UI/Observers/MoveObservers.h"
-#include "UI/Observers/ResponseObservers.h"
-#include "UI/Observers/StateObservers.h"
-#include "UI/Observers/ThumbnailObservers.h"
-#include "UI/Observers/ToolObservers.h"
+#include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
-#include "UI/GuidedSetup.h"
 #include "Upgrade.h"
 #include "os/MountMonitor.h"
 #include "os/UpgradeMonitor.h"
@@ -1275,6 +1267,7 @@ static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, in
 		if (g_filamentDialogTool == nullptr || g_filamentDialogTool->filamentExtruder < 0)
 		{
 			g_filamentDialogTool = nullptr;
+			UI::WINDOW->CloseOverlay();
 			return;
 		}
 		Comm::duet.RequestFileList("/filaments");

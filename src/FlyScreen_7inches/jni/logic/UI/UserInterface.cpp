@@ -82,11 +82,16 @@ namespace UI
 
 	void Window::OpenOverlay(ZKBase* overlay, bool closeAlreadyOpened)
 	{
+		if (overlay == nullptr)
+		{
+			warn("Overlay is null");
+			return;
+		}
 		if (!overlayWindows_.empty() && closeAlreadyOpened)
 		{
 			CloseOverlay();
 		}
-
+		dbg("Opening overlay %d", overlay->getID());
 		overlay->setVisible(true);
 		AddToVector<ZKBase*>(overlayWindows_, overlay);
 	}
@@ -611,7 +616,7 @@ namespace UI
 
 	ZKBase* GetUIControl(int id)
 	{
-		info("Retrieving control with id %d", id);
+		verbose("Retrieving control with id %d", id);
 		ZKBase* control = s_root->findControlByID(id);
 		if (control == nullptr)
 		{

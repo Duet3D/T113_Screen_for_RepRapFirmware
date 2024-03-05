@@ -1,13 +1,9 @@
 /*
- * ToolObservers.h
+ * ToolObservers.cpp
  *
  *  Created on: 19 Dec 2023
  *      Author: Andy Everitt
  */
-
-#ifndef JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
-#define JNI_LOGIC_UI_TOOLOBSERVERS_HPP_
-
 #include "Debug.h"
 
 #include "UI/OmObserver.h"
@@ -140,5 +136,3 @@ static UI::Observer<UI::ui_array_end_update_cb> ToolObserversArrayEnd[] = {
 						   }
 					   }),
 };
-
-#endif /* JNI_LOGIC_UI_TOOLOBSERVERS_HPP_ */
