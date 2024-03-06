@@ -99,6 +99,8 @@ namespace OM
 		void UpdateTemp(const uint8_t toolHeaterIndex, const int32_t temp, const bool active);
 		void ToggleState();
 		void ToggleHeaterState(const uint8_t toolHeaterIndex);
+		void ToggleSpindleState();
+		void UpdateSpindleTarget(const int32_t rpm);
 
 		void Reset();
 	};

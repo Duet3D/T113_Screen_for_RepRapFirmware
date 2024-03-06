@@ -285,8 +285,12 @@ namespace UI
 		if (data.tool != nullptr)
 		{
 			pListItem->setSelected(data.tool->status == OM::ToolStatus::active);
+			pCurrentTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
+			pActiveTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
+			pStandbyTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
 			if (data.toolHeater != nullptr)
 			{
+				// Heater
 				if (data.tool->GetHeaterCount() > 1)
 				{
 					pToolName->setTextf("%s (%d)", data.tool->name.c_str(), data.toolHeaterIndex);
@@ -295,9 +299,6 @@ namespace UI
 				{
 					pToolName->setText(data.tool->name.c_str());
 				}
-				pActiveTemperature->setVisible(true);
-				pStandbyTemperature->setVisible(true);
-				pCurrentTemperature->setVisible(true);
 				pActiveTemperature->setText((int)data.toolHeater->activeTemp);
 				pStandbyTemperature->setText((int)data.toolHeater->standbyTemp);
 				pCurrentTemperature->setText(data.toolHeater->heater->current);
@@ -306,10 +307,8 @@ namespace UI
 			}
 			else if (data.spindle != nullptr)
 			{
-				pToolName->setText(data.tool->name.c_str());
-				pActiveTemperature->setVisible(true);
-				pStandbyTemperature->setVisible(true);
-				pCurrentTemperature->setVisible(true);
+				// Spindle
+				pToolName->setTextf("%s (spindle)", data.tool->name.c_str());
 				pActiveTemperature->setText((int)data.spindle->active);
 				pStandbyTemperature->setText("RPM");
 				pCurrentTemperature->setText((int)data.spindle->current);
@@ -318,6 +317,7 @@ namespace UI
 			}
 			else
 			{
+				// Tool with no heaters or spindle
 				pToolName->setText(data.tool->name.c_str());
 				pActiveTemperature->setVisible(false);
 				pStandbyTemperature->setVisible(false);
@@ -391,7 +391,7 @@ namespace UI
 	{
 		dbg("index=%d, id=%d", index, id);
 		if (id == NULL) return;
-		UI::NumPadData numPadData;
+		NumPadData numPadData;
 
 		CalculateTotalHeaterCount();
 		if ((size_t)index < GetTotalHeaterCount(false, true, false, false))
@@ -401,8 +401,7 @@ namespace UI
 				return;
 			dbg("Tool index=%d", data.tool->index);
 			numPadData.heaterType = UI::HeaterType::tool;
-			numPadData.toolIndex = data.tool->index;
-			numPadData.toolHeaterIndex = data.toolHeaterIndex;
+			numPadData.toolData = data;
 			if (id == nameId)
 			{
 				data.tool->ToggleState();
@@ -410,7 +409,14 @@ namespace UI
 			}
 			if (id == statusId)
 			{
-				data.tool->ToggleHeaterState(data.toolHeaterIndex);
+				if (data.toolHeater != nullptr)
+				{
+					data.tool->ToggleHeaterState(data.toolHeaterIndex);
+				}
+				else if (data.spindle != nullptr)
+				{
+					data.tool->ToggleSpindleState();
+				}
 				return;
 			}
 		}
@@ -472,6 +478,7 @@ namespace UI
 
 	void ToolsList::OpenNumPad(const NumPadData data)
 	{
+		dbg("");
 		std::string header;
 		numPadData_.heaterType = data.heaterType;
 		numPadData_.active = data.active;
@@ -480,15 +487,36 @@ namespace UI
 		switch (data.heaterType)
 		{
 		case HeaterType::tool: {
-
-			header = utils::format(
-				"Tool %d Heater %d %s", data.toolIndex, data.toolHeaterIndex, data.active ? "Active" : "Standby");
-			numPadData_.toolIndex = data.toolIndex;
-			numPadData_.toolHeaterIndex = data.toolHeaterIndex;
-			OM::ToolHeater* toolHeater = OM::GetTool(data.toolIndex)->GetHeater(data.toolHeaterIndex);
-			if (toolHeater == nullptr)
+			if (data.toolData.tool == nullptr)
 				return;
-			currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
+
+			numPadData_.toolData = data.toolData;
+
+			if (data.toolData.toolHeater != nullptr)
+			{
+				header = utils::format("Tool %d Heater %d %s",
+									   data.toolData.tool->index,
+									   data.toolData.toolHeaterIndex,
+									   data.active ? "Active" : "Standby");
+
+				OM::ToolHeater* toolHeater = data.toolData.toolHeater;
+				if (toolHeater == nullptr)
+					return;
+
+				currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
+				UI::NUMPAD_WINDOW->Open(
+					header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
+				return;
+			}
+
+			if (data.toolData.spindle != nullptr)
+			{
+				header = utils::format("Tool %d Spindle", data.toolData.tool->index);
+				currentTarget = data.toolData.spindle->active;
+				UI::NUMPAD_WINDOW->Open(
+					header.c_str(), currentTarget, [](int) {}, [this](int value) { SendSpindleTarget(value); });
+				return;
+			}
 			break;
 		}
 		case HeaterType::bed:
@@ -506,9 +534,9 @@ namespace UI
 			currentTarget = data.active ? bedOrChamber->GetActiveTemp() : bedOrChamber->GetStandbyTemp();
 			break;
 		}
+			UI::NUMPAD_WINDOW->Open(
+				header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
 		}
-		UI::NUMPAD_WINDOW->Open(
-			header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
 	}
 
 	bool ToolsList::SendTempTarget(int target)
@@ -519,10 +547,10 @@ namespace UI
 		switch (numPadData_.heaterType)
 		{
 		case HeaterType::tool:
-			tool = OM::GetTool(numPadData_.toolIndex);
+			tool = numPadData_.toolData.tool;
 			if (tool == nullptr) return false;
 
-			tool->SetHeaterTemps(numPadData_.toolHeaterIndex, target, numPadData_.active);
+			tool->SetHeaterTemps(numPadData_.toolData.toolHeaterIndex, target, numPadData_.active);
 			break;
 		case HeaterType::bed:
 			bedOrChamber = OM::GetBed(numPadData_.bedOrChamberIndex);
@@ -538,6 +566,16 @@ namespace UI
 			break;
 		}
 
+		return true;
+	}
+
+	bool ToolsList::SendSpindleTarget(int target)
+	{
+		OM::Tool* tool = numPadData_.toolData.tool;
+		if (tool == nullptr)
+			return false;
+
+		tool->UpdateSpindleTarget(target);
 		return true;
 	}
 

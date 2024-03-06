@@ -320,6 +320,33 @@ namespace OM
 		}
 	}
 
+	void Tool::ToggleSpindleState()
+	{
+		if (spindle == nullptr)
+		{
+			return;
+		}
+		switch (spindle->state)
+		{
+		case SpindleState::forward:
+		case SpindleState::reverse:
+			Comm::duet.SendGcodef("M5");
+			break;
+		case SpindleState::stopped:
+			Comm::duet.SendGcodef("M3");
+			break;
+		}
+	}
+
+	void Tool::UpdateSpindleTarget(const int32_t rpm)
+	{
+		if (spindle == nullptr)
+		{
+			return;
+		}
+		Comm::duet.SendGcodef("M568 P%d F%d", index, rpm);
+	}
+
 	void Tool::Reset()
 	{
 		index = 0;

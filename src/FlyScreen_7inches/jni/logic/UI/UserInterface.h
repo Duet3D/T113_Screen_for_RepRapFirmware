@@ -93,23 +93,6 @@ namespace UI
 		chamber
 	};
 
-	struct NumPadData
-	{
-		HeaterType heaterType;
-		bool active;
-		union {
-			struct
-			{
-				size_t toolIndex;
-				size_t toolHeaterIndex;
-			};
-			struct
-			{
-				size_t bedOrChamberIndex;
-			};
-		};
-	};
-
 	class ToolsList
 	{
 	  public:
@@ -129,6 +112,14 @@ namespace UI
 			}
 		};
 
+		struct NumPadData
+		{
+			HeaterType heaterType;
+			bool active;
+			ToolListItemData toolData; // Tool control
+			size_t bedOrChamberIndex;  // bed or chamber control
+		};
+
 		static ToolsList*
 		Create(const char* id);
 		static ToolsList* Get(const char* id);
@@ -145,6 +136,7 @@ namespace UI
 		static void RefreshAllToolLists(const bool lengthChanged = true);
 		void OpenNumPad(const NumPadData data);
 		bool SendTempTarget(int value);
+		bool SendSpindleTarget(int value);
 		ToolListItemData GetToolListItemDataBySlot(const size_t listIndex);
 
 	  private:
