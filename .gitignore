@@ -1,10 +1,10 @@
 # Do not track FlyThings IDE config
-src/.metadata/*
+.metadata/*
 # activity files are automatically generated
-src/*/jni/activity/*
+*/jni/activity/*
 # libs and obj directories are generated at each compilation
-src/*/libs/*
-src/*/obj/*
+*/libs/*
+*/obj/*
 *.img
 *Thumbs.db
 *ui_resource_usage_analysis.txt
