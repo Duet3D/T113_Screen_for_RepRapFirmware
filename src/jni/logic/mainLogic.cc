@@ -289,14 +289,12 @@ static bool onButtonClick_BackBtn(ZKButton *pButton)
 static bool onButtonClick_MacroBtn(ZKButton *pButton)
 {
 	OM::FileSystem::RequestFiles("0:/macros");
-	UI::WINDOW->CloseLastWindow();
 	UI::WINDOW->OpenWindow(mFilesWindowPtr);
 	return false;
 }
 
 static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 {
-	UI::WINDOW->CloseLastWindow();
 	UI::WINDOW->OpenWindow(mConsoleWindowPtr);
     return false;
 }
@@ -340,7 +338,6 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
 {
 	dbg(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
-	UI::WINDOW->CloseWindow(mMainWindowPtr);
 	switch (index)
 	{
 	case (int)UI::SlideWindowIndex::move:
@@ -363,7 +360,6 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mFilesWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::network:
-		UI::WINDOW->Home();
 		// UI::WINDOW->OpenWindow(mNetworkWindowPtr);
 		EASYUICONTEXT->openActivity("WifiSettingActivity");
 		break;
@@ -488,7 +484,6 @@ static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 
 static bool onButtonClick_HeightmapBtn(ZKButton* pButton)
 {
-	UI::WINDOW->CloseWindow(mMoveWindowPtr);
 	UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 	return false;
 }
@@ -714,7 +709,6 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		{
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
-				UI::WINDOW->CloseLastWindow();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
 			// Comm::duet.RequestFileInfo(item->GetPath().c_str());

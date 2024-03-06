@@ -73,6 +73,7 @@ namespace UI
 	void Window::OpenWindow(ZKBase* window)
 	{
 		CloseOverlay();
+		CloseLastWindow();
 		info("Opening window %d", window->getID());
 		window->setVisible(true);
 		RemoveFromVector<ZKBase*>(closedWindows_, window);
