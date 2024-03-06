@@ -87,6 +87,15 @@ static UI::Observer<UI::ui_field_update_cb> ToolObserversFields[] = {
 					 }
 					 UI::ToolsList::RefreshAllToolLists(true);
 				 }),
+	OBSERVER_INT("tools^:spindleRpm",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::UpdateToolSpindleRpm(indices[0], val))
+					 {
+						 error("Failed to update tool %d spindleRpm to %d", indices[0], val);
+						 return;
+					 }
+					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
 	OBSERVER_CHAR("tools^:name",
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (!OM::UpdateToolName(indices[0], val))

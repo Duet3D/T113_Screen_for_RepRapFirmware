@@ -595,6 +595,20 @@ namespace OM
 		return true;
 	}
 
+	bool UpdateToolSpindleRpm(const size_t toolIndex, const int32_t rpm)
+	{
+		OM::Tool* tool = OM::GetOrCreateTool(toolIndex);
+
+		// If we do not handle this tool back off
+		if (tool == nullptr)
+		{
+			return false;
+		}
+
+		tool->spindleRpm = rpm;
+		return true;
+	}
+
 	void SetCurrentTool(const size_t toolIndex)
 	{
 		info("Setting current tool to %d", toolIndex);

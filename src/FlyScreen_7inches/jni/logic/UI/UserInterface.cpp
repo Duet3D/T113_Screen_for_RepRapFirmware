@@ -309,7 +309,7 @@ namespace UI
 			{
 				// Spindle
 				pToolName->setTextf("%s (spindle)", data.tool->name.c_str());
-				pActiveTemperature->setText((int)data.spindle->active);
+				pActiveTemperature->setText((int)data.tool->spindleRpm);
 				pStandbyTemperature->setText("RPM");
 				pCurrentTemperature->setText((int)data.spindle->current);
 				pStatus->setTextTr(data.spindle->GetStateStr());
