@@ -220,6 +220,8 @@ This needs to be done at compile time.
     UI::GetUIControl<ZKTextView>(ID_OF_UI_ELEMENT)->setTextTrf("babystepping_offset", 1.23f);
     ```
 
+### Modify Logic
+
 #### Windows / Overlays
 
 * The `UI::WINDOW` object is used to navigate around the GUI. It can be used to open and close windows and overlays.
@@ -253,4 +255,18 @@ This needs to be done at compile time.
     ```
     * Replace `ZKTextView` with the type of the element you are trying to access
   
+  #### Using Object Model Information
 
+  * The Duet Object Model (OM) is constantly being requested from the Duet and is used to update the GUI.
+  * The screen keeps an internal representation of some important parts of the OM.
+  * If there is a part of the OM that you want to use, you need to add an `Observer` to that part of the OM.
+    * `Observers` can be found in `src/jni/logic/UI/Observers/`
+    * Create a new observer file, or reuse an appropriate existing observer file.
+    * The OM is received as a JSON string that is parsed with an internal JSON parser.
+    * The OM key is represented by a `String` object with the following format:
+      * A `^` character indicates the position of an array index, and a `:` character indicates a field separator.
+        * For example, `move.axes[0].homed` would be represented as `move:axes^:homed`
+  * There are 2 types of observers:
+    * `UI::Observer<UI::ui_field_update_cb>`: This type of observer is used to run a callback when a specific OM field has been received.
+      * There are various macros created that will automatically convert the received value into the appropriate type and pass the value to the callback if successful.
+    * `UI::Observer<UI::ui_array_end_update_cb>`: This type of observer is used to run a callback when the end of an array has been received.
