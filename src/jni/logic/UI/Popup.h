@@ -170,15 +170,16 @@ namespace UI
 				  ZKTextView* value,
 				  ZKTextView* prefix,
 				  ZKTextView* suffix);
-		void Open(const char* header,
-				  const char* prefix,
-				  const char* suffix,
-				  const char* unit,
+		void Open(const char* header, // The header text
+				  const char* prefix, // The prefix text, displayed on left of slider
+				  const char* suffix, // The suffix text, displayed on right of slider
+				  const char* unit,	  // The unit text, displayed after the value
 				  const int min,
 				  const int max,
 				  const int value,
 				  function<void(int)> onProgressChanged,
-				  bool displayRaw = false);
+				  bool displayRaw = false // Display the raw value instead of the percentage
+		);
 		void Callback() const;
 		void SetOnProgressChanged(function<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
 		void SetRange(const int min, const int max);

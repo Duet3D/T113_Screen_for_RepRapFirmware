@@ -193,8 +193,8 @@ public:
 	bool isIMEShow() const;
 
 	/**
-	 * @brief 切换多国语言
-	 * @param code 语言编码
+	 * @brief Switches the language for localization
+	 * @param code Language code
 	 */
 	void updateLocalesCode(const char *code);
 
