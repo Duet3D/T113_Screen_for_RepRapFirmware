@@ -58,6 +58,13 @@ Flythings has some documentation on the SDK, it is split between a more up-to-da
     * You need to configure the ADB configuration in Flythings for this to work
     * ![1709737436213](docs/image/README/1709737436213.png)
 
+#### Inverting Display
+
+This needs to be done at compile time.
+* Open the project properties.
+* Change the `Screen rotation` setting in the `FlyThings` tab.
+  * ![1709747084324](docs/image/README/1709747084324.png)
+
 ### Debugging
 
 * https://developer.flythings.cn/en/adb_debug.html
