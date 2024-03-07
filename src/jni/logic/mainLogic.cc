@@ -130,6 +130,10 @@ static void onUI_init()
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
 	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
 
+	// Screensaver
+	mScreensaverEnablePtr->setSelected(StoragePreferences::getBool("screensaver_enable", true));
+	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt("screensaver_timeout", 120));
+
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
 	mIpAddressInputPtr->setText(Comm::duet.GetIPAddress());
@@ -942,6 +946,7 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::theme:
 		break;
 	case (int)UI::SettingsSlideWindowIndex::screensaver:
+		UI::WINDOW->OpenOverlay(mScreensaverSettingWindowPtr);
 		break;
 	default:
 		break;
@@ -1336,4 +1341,27 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
 	Comm::duet.SendGcode("M702");
 	return false;
+}
+
+static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	StoragePreferences::putBool("screensaver_enable", isChecked);
+	EASYUICONTEXT->setScreensaverEnable(isChecked);
+}
+
+static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
+{
+	int timeout = -1;
+	if (!Comm::GetInteger(text.c_str(), timeout))
+	{
+		// Invalid input
+		return;
+	}
+	if (timeout < 0)
+	{
+		mScreensaverTimeoutInputPtr->setText(10);
+		return;
+	}
+	StoragePreferences::putInt("screensaver_timeout", timeout);
+	EASYUICONTEXT->setScreensaverTimeOut(timeout);
 }

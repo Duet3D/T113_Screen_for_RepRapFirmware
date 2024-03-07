@@ -146,6 +146,8 @@
     <string name="brightness">Brigthness</string>
     <string name="theme">Theme</string>
     <string name="screensaver">Screensaver</string>
+    <string name="timeout">Timeout</string>
+    <string name="enabled">Enabled</string>
     <string name="set_brightness">Set Brigthness</string>
 
     <!-- Console Page -->
