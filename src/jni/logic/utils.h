@@ -12,6 +12,11 @@
 
 namespace utils
 {
+	template <typename T>
+	T bound(T value, T min, T max)
+	{
+		return value < min ? min : (value > max ? max : value);
+	}
 	std::string format(const char* fmt, ...);
 	size_t removeCharFromString(std::string& nString, char c);
 	void replaceSubstring(std::string& nString, const std::string& target, const std::string& replacement);

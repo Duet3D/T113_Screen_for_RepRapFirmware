@@ -926,13 +926,15 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		UI::WINDOW->OpenOverlay(mGuideSelectionWindowPtr);
 		break;
 	case (int)UI::SettingsSlideWindowIndex::brightness:
+		//! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
+		//! completely white and need a power cycle.
 		UI::SLIDER_WINDOW->Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
 								"",
 								"",
 								"%",
 								0,
 								100,
-								BRIGHTNESSHELPER->getBrightness(),
+								100 - BRIGHTNESSHELPER->getBrightness(),
 								[](int percent) {
 									BRIGHTNESSHELPER->setBrightness(100 - percent); // Flythings brightness is inverted
 								});
