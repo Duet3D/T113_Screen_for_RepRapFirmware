@@ -24,6 +24,7 @@
 #include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
 #include "timer.h"
+#include "utils/BrightnessHelper.h"
 #include "utils/TimeHelper.h"
 #include <string>
 #include <sys/reboot.h>
@@ -924,6 +925,20 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::guides:
 		UI::WINDOW->OpenOverlay(mGuideSelectionWindowPtr);
 		break;
+	case (int)UI::SettingsSlideWindowIndex::brightness:
+		UI::SLIDER_WINDOW->Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
+								"",
+								"",
+								"%",
+								0,
+								100,
+								BRIGHTNESSHELPER->getBrightness(),
+								[](int percent) {
+									BRIGHTNESSHELPER->setBrightness(100 - percent); // Flythings brightness is inverted
+								});
+		break;
+	case (int)UI::SettingsSlideWindowIndex::theme:
+		break;
 	default:
 		break;
 	}
@@ -1317,7 +1332,4 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
 	Comm::duet.SendGcode("M702");
 	return false;
-}
-static void onProgressChanged_SeekBar1(ZKSeekBar *pSeekBar, int progress) {
-    //LOGD(" ProgressChanged SeekBar1 %d !!!\n", progress);
 }

@@ -56,6 +56,8 @@ namespace UI
 		zk_setting,
 		touch_calibration,
 		guides,
+		brightness,
+		theme,
 	};
 
 	extern uint32_t g_extrusionFeedRates[5];
