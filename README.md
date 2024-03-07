@@ -85,6 +85,7 @@ This needs to be done at compile time.
     ```
   * `onValueChanged` is called when the value changes.
   * `onConfirm` is called when the confirm button is pressed.
+  * Can set the position after opening with `SetPosition(UI::HorizontalPosition)` method
   * ![1709737769657](docs/image/README/1709737769657.png)
 * Slider
   * Open with:
@@ -102,6 +103,7 @@ This needs to be done at compile time.
 				  bool displayRaw = false // Display the raw value instead of the percentage
 		);
     ```
+  * Can set the position after opening with `SetPosition(UI::VerticalPosition, UI::HorizontalPosition)` method
   * ![1709738266397](docs/image/README/1709738266397.png)
 * Number pad and Slider
   * It is possible to open the number pad and slider together
@@ -135,6 +137,7 @@ This needs to be done at compile time.
     UI::POPUP_WINDOW->Open(function<void(void)> okCb,
                            function<void(void)> cancelCb);
     ```
+  * Can set the position after opening with `SetPosition(UI::VerticalPosition, UI::HorizontalPosition)` method
   * Various other helper methods are available in [UI/Popup.h](src/jni/logic/UI/Popup.h)
 * Guides
   * Guides are useful for creating walkthroughs for the user. This might be useful for first time setup, or for showing the user how to use a new feature.
