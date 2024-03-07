@@ -27,6 +27,20 @@
 
 namespace UI
 {
+	enum class VerticalPosition
+	{
+		top = 0,
+		center,
+		bottom,
+	};
+
+	enum class HorizontalPosition
+	{
+		left = 0,
+		center,
+		right,
+	};
+
 	class PopupWindow
 	{
 	  public:
@@ -55,6 +69,7 @@ namespace UI
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
 		void Ok();
 		void Cancel(bool close = true);
+		void SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
 		void SetText(const std::string& text);
 		void SetText(const char* text);
 		void SetTextf(const char* format, ...);
@@ -135,6 +150,7 @@ namespace UI
 		void Clear();
 		void Close();
 		void Confirm();
+		void SetPosition(const HorizontalPosition& horizontal);
 		int GetValue();
 		void SetValue(int value);
 		void SetValue(const char* value);
@@ -181,6 +197,7 @@ namespace UI
 				  bool displayRaw = false // Display the raw value instead of the percentage
 		);
 		void Callback() const;
+		void SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
 		void SetOnProgressChanged(function<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
 		void SetRange(const int min, const int max);
 		const int GetValue() const;

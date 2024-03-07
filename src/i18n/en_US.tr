@@ -143,6 +143,7 @@
     <string name="zk_setting">ZK Settings</string>
     <string name="touch_calibration">Touch Calibration</string>
     <string name="info_timeout">Info Timeout</string>
+    <string name="set_brightness">Set Brigthness</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

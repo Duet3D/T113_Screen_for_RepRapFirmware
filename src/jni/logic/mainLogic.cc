@@ -1096,7 +1096,8 @@ static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	UI::GuidedSetup::Show("setup");
+	UI::SLIDER_WINDOW->Open("Slider", "0", "100", "%", 0, 100, 50, [](int value) { dbg("Slider value: %d", value); });
+	UI::SLIDER_WINDOW->SetPosition(UI::VerticalPosition::center, UI::HorizontalPosition::center);
 	return false;
 }
 
@@ -1316,4 +1317,7 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
 	Comm::duet.SendGcode("M702");
 	return false;
+}
+static void onProgressChanged_SeekBar1(ZKSeekBar *pSeekBar, int progress) {
+    //LOGD(" ProgressChanged SeekBar1 %d !!!\n", progress);
 }

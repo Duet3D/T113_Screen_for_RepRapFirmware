@@ -172,6 +172,7 @@ namespace UI
 
 		SetOkBtnText(LANGUAGEMANAGER->getValue("ok").c_str());
 		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
+		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		WINDOW->OpenOverlay(window_);
 		okCb_ = okCb;
 		cancelCb_ = cancelCb;
@@ -212,6 +213,36 @@ namespace UI
 
 		if (close)
 			Close();
+	}
+
+	void PopupWindow::SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal)
+	{
+		LayoutPosition position = window_->getPosition();
+		switch (vertical)
+		{
+		case VerticalPosition::top:
+			position.mLeft = 40;
+			break;
+		case VerticalPosition::center:
+			position.mLeft = 125;
+			break;
+		case VerticalPosition::bottom:
+			position.mLeft = 236;
+			break;
+		}
+		switch (horizontal)
+		{
+		case HorizontalPosition::left:
+			position.mLeft = 115;
+			break;
+		case HorizontalPosition::center:
+			position.mLeft = 270;
+			break;
+		case HorizontalPosition::right:
+			position.mLeft = 415;
+			break;
+		}
+		window_->setPosition(position);
 	}
 
 	void PopupWindow::SetText(const std::string& text)
@@ -499,6 +530,7 @@ namespace UI
 		value_->setText(value);
 		onValueChanged_ = onValueChanged;
 		onConfirm_ = onConfirm;
+		SetPosition(HorizontalPosition::right);
 		WINDOW->OpenOverlay(window_, !withSlider);
 	}
 
@@ -526,6 +558,24 @@ namespace UI
 		onConfirm_(GetValue());
 		Close();
 		Clear();
+	}
+
+	void NumPadWindow::SetPosition(const HorizontalPosition& horizontal)
+	{
+		LayoutPosition position = window_->getPosition();
+		switch (horizontal)
+		{
+		case HorizontalPosition::left:
+			position.mLeft = 115;
+			break;
+		case HorizontalPosition::center:
+			position.mLeft = 345;
+			break;
+		case HorizontalPosition::right:
+			position.mLeft = 606;
+			break;
+		}
+		window_->setPosition(position);
 	}
 
 	int NumPadWindow::GetValue()
@@ -608,6 +658,7 @@ namespace UI
 		SetSuffix(suffix);
 		SetValue(value);
 		SetOnProgressChanged(onProgressChanged);
+		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		WINDOW->OpenOverlay(window_);
 	}
 
@@ -628,6 +679,36 @@ namespace UI
 											 // which may be useful maybe? If not, change to GetValue()
 		}
 		onProgressChanged_(GetValue());
+	}
+
+	void SliderWindow::SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal)
+	{
+		LayoutPosition position = window_->getPosition();
+		switch (vertical)
+		{
+		case VerticalPosition::top:
+			position.mTop = 75;
+			break;
+		case VerticalPosition::center:
+			position.mTop = 210;
+			break;
+		case VerticalPosition::bottom:
+			position.mTop = 380;
+			break;
+		}
+		switch (horizontal)
+		{
+		case HorizontalPosition::left:
+			position.mLeft = 130;
+			break;
+		case HorizontalPosition::center:
+			position.mLeft = 320;
+			break;
+		case HorizontalPosition::right:
+			position.mLeft = 530;
+			break;
+		}
+		window_->setPosition(position);
 	}
 
 	void SliderWindow::SetRange(const int min, const int max)
@@ -720,6 +801,7 @@ namespace UI
 				onProgressChanged(value);
 			},
 			displayRaw);
+		SLIDER_WINDOW->SetPosition(VerticalPosition::center, HorizontalPosition::left);
 		NUMPAD_WINDOW->Open(
 			"",
 			defaultValue,
