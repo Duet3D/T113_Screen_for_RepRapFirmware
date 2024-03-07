@@ -941,6 +941,8 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		break;
 	case (int)UI::SettingsSlideWindowIndex::theme:
 		break;
+	case (int)UI::SettingsSlideWindowIndex::screensaver:
+		break;
 	default:
 		break;
 	}

@@ -58,6 +58,7 @@ namespace UI
 		guides,
 		brightness,
 		theme,
+		screensaver,
 	};
 
 	extern uint32_t g_extrusionFeedRates[5];
