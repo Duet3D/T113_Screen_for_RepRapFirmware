@@ -58,6 +58,10 @@ static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 static void onUI_init()
 {
 	// Tips: Add UI initialization display code here, such as mText1->setText("123");
+	LayoutPosition position = mScreensaverTextPtr->getPosition();
+	position.mLeft = 10;
+	position.mTop = 10;
+	mScreensaverTextPtr->setPosition(position);
 }
 
 /*

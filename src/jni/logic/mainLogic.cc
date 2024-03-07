@@ -13,7 +13,7 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
-#include "UI/Colors.h"
+#include "UI/Themes.h"
 #include "UI/Gcodes.h"
 #include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
@@ -1364,4 +1364,37 @@ static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
 	}
 	StoragePreferences::putInt("screensaver_timeout", timeout);
 	EASYUICONTEXT->setScreensaverTimeOut(timeout);
+}
+static bool onButtonClick_Button1(ZKButton *pButton) {
+    LOGD(" ButtonClick Button1 !!!\n");
+    return false;
+}
+
+static void onEditTextChanged_EditText2(const std::string &text) {
+    //LOGD(" onEditTextChanged_ EditText2 %s !!!\n", text.c_str());
+}
+
+static void onProgressChanged_SeekBar1(ZKSeekBar *pSeekBar, int progress) {
+    //LOGD(" ProgressChanged SeekBar1 %d !!!\n", progress);
+}
+
+static void onCheckedChanged_Checkbox1(ZKCheckBox* pCheckBox, bool isChecked) {
+    LOGD(" Checkbox Checkbox1 checked %d", isChecked);
+}
+
+static int getListItemCount_ListView1(const ZKListView *pListView) {
+    //LOGD("getListItemCount_ListView1 !\n");
+    return 5;
+}
+
+static void obtainListItemData_ListView1(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
+    //LOGD(" obtainListItemData_ ListView1  !!!\n");
+}
+
+static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) {
+    //LOGD(" onListItemClick_ ListView1  !!!\n");
+}
+
+static void onSlideItemClick_SlideWindow2(ZKSlideWindow *pSlideWindow, int index) {
+    //LOGD(" onSlideItemClick_ SlideWindow2 %d !!!\n", index);
 }

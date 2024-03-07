@@ -21,5 +21,17 @@
 		"body": [
 			"<string name=\"${1:label}\">${2:text}</string>$0"
 		],
-	}
+	},
+	"include_dbg": {
+		"scope": "cpp",
+		"prefix": "include_dbg",
+		"body": [
+			"#include \"DebugLevels.h\"",
+			"#define DEBUG_LEVEL DEBUG_LEVEL_${1:DBG}",
+			"#include \"Debug.h\"",
+			"",
+			"$0"
+		],
+	},
+
 }
