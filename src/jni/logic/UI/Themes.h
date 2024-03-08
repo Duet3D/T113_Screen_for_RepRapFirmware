@@ -48,7 +48,6 @@ namespace UI::Theme
 			uint32_t bgDefault;
 			const char* bgImage;
 		} window;
-		/*
 		struct
 		{
 			uint32_t bgDefault;
@@ -84,6 +83,7 @@ namespace UI::Theme
 			uint32_t bgDefault;
 			const char* bgImage;
 			const char* validImage;
+			uint32_t text;
 			ThumbImage thumb;
 		} circularBar;
 		struct
@@ -136,7 +136,6 @@ namespace UI::Theme
 			ControlState foreground;
 			Images images;
 		} slideWindowItem;
-		*/
 	};
 
 	class Theme

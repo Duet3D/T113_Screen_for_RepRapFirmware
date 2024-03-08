@@ -11,10 +11,11 @@ namespace UI::Theme
 		LighterGray = 0xFF808080,
 		Gray = 0xFFC0C0C0,
 		DarkGray = 0xFFA0A0A0,
-		DarkerGray = 0xFF808080,
 		Red = 0xFFFF0000,
 		Blue = 0xFF0000FF,
-		Button
+		Blue2 = 0xFF5578FC,
+		Blue3 = 0xFF00AAF4,
+		Blue4 = 0xFF00CCFF,
 	};
 
 	static ThemeColors darkTheme = {
@@ -25,45 +26,230 @@ namespace UI::Theme
 				.bgDefault = Colors::Black,
 				.bgImage = nullptr,
 			},
-
+		.text =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::Clear,
+						.pressed = Colors::Clear,
+						.selected = Colors::Clear,
+						.pressedAndSelected = Colors::Clear,
+						.invalid = Colors::Clear,
+					},
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::LightGray,
+						.selected = Colors::LighterGray,
+						.pressedAndSelected = Colors::LightGray,
+						.invalid = Colors::Gray,
+					},
+			},
+		.button =
+			{
+				.bgDefault = Colors::Blue2,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::Blue2,
+						.pressed = Colors::Blue3,
+						.selected = Colors::Blue4,
+						.pressedAndSelected = Colors::Blue3,
+						.invalid = Colors::Gray,
+					},
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.images =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+						.selected = nullptr,
+						.pressedAndSelected = nullptr,
+						.invalid = nullptr,
+					},
+			},
+		.input =
+			{
+				.bgDefault = Colors::White,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.foreground =
+					{
+						.normal = Colors::Black,
+						.pressed = Colors::Black,
+						.selected = Colors::Black,
+						.pressedAndSelected = Colors::Black,
+						.invalid = Colors::Black,
+					},
+				.hint = Colors::LighterGray,
+			},
+		.slider =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.validImage = nullptr,
+				.thumb =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+					},
+			},
+		.circularBar =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.validImage = nullptr,
+				.text = Colors::White,
+				.thumb =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+					},
+			},
+		.pointer =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+			},
+		.digitalClock =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.text = Colors::White,
+			},
+		.checkbox =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::Clear,
+						.pressed = Colors::Clear,
+						.selected = Colors::Clear,
+						.pressedAndSelected = Colors::Clear,
+						.invalid = Colors::Clear,
+					},
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.images =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+						.selected = nullptr,
+						.pressedAndSelected = nullptr,
+						.invalid = nullptr,
+					},
+			},
+		.list =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+			},
+		.listItem =
+			{
+				.bgDefault = Colors::DarkGray,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::LightGray,
+						.pressed = Colors::Blue3,
+						.selected = Colors::Blue4,
+						.pressedAndSelected = Colors::Blue3,
+						.invalid = Colors::Gray,
+					},
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.images =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+						.selected = nullptr,
+						.pressedAndSelected = nullptr,
+						.invalid = nullptr,
+					},
+			},
+		.listSubItem =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+				.background =
+					{
+						.normal = Colors::Clear,
+						.pressed = Colors::Clear,
+						.selected = Colors::Clear,
+						.pressedAndSelected = Colors::Clear,
+						.invalid = Colors::Clear,
+					},
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.images =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+						.selected = nullptr,
+						.pressedAndSelected = nullptr,
+						.invalid = nullptr,
+					},
+			},
+		.slideWindow =
+			{
+				.bgDefault = Colors::Clear,
+				.bgImage = nullptr,
+			},
+		.slideWindowItem =
+			{
+				.foreground =
+					{
+						.normal = Colors::White,
+						.pressed = Colors::White,
+						.selected = Colors::White,
+						.pressedAndSelected = Colors::White,
+						.invalid = Colors::White,
+					},
+				.images =
+					{
+						.normal = nullptr,
+						.pressed = nullptr,
+						.selected = nullptr,
+						.pressedAndSelected = nullptr,
+						.invalid = nullptr,
+					},
+			}
 		/*
-				// Set colors for text
-				.text.bgDefault = Colors::Clear,
-				.text.bgImage = nullptr,
-				.text.background.normal = Colors::Clear,
-				.text.background.pressed = Colors::Clear,
-				.text.background.selected = Colors::Clear,
-				.text.background.pressedAndSelected = Colors::Clear,
-				.text.background.invalid = Colors::Clear,
-				.text.foreground.normal = Colors::White,
-				.text.foreground.pressed = Colors::LightGray,
-				.text.foreground.selected = Colors::LighterGray,
-				.text.foreground.pressedAndSelected = Colors::LightGray,
-				.text.foreground.invalid = Colors::Gray,
-
 				// Set colors for button
-				.button.bgDefault = Colors::Clear,
-				.text.bgImage = nullptr,
-				.button.background.normal = Colors::Clear,
-				.button.background.pressed = Colors::Clear,
-				.button.background.selected = Colors::Clear,
-				.button.background.pressedAndSelected = Colors::Clear,
-				.button.background.invalid = Colors::Clear,
-				.button.foreground.normal = Colors::White,
-				.button.foreground.pressed = Colors::LightGray,
-				.button.foreground.selected = Colors::LighterGray,
-				.button.foreground.pressedAndSelected = Colors::LightGray,
-				.button.foreground.invalid = Colors::Gray,
-
-				// Set colors for input
-				.input.bgDefault = Colors::Clear,
-				.text.bgImage = nullptr,
-				.input.background.normal = Colors::DarkGray,
-				.input.background.pressed = Colors::Gray,
-				.input.background.selected = Colors::LightGray,
-				.input.background.pressedAndSelected = Colors::LighterGray,
-				.input.background.invalid = Colors::Red,
-				.input.hint = Colors::LighterGray,
 
 				// Set colors for slider
 				.slider.base = Colors::DarkGray, // Dark gray
