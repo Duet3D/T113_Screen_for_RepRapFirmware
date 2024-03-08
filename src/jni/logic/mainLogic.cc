@@ -100,6 +100,7 @@ static void onUI_init()
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
+	UI::Theme::SetTheme("dark");
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);

@@ -11,15 +11,9 @@
 #include "UI/UserInterface.h"
 #include <sys/types.h>
 
-namespace UI
+namespace UI::Theme
 {
-	enum class Theme
-	{
-		dark = 0,
-		light,
-	};
-
-	struct Colors
+	struct ControlState
 	{
 		uint32_t normal;
 		uint32_t pressed;
@@ -28,142 +22,123 @@ namespace UI
 		uint32_t invalid;
 	};
 
-	struct ItemColor
+	struct Images
 	{
-		uint32_t base;
-		Colors background;
-		Colors foreground;
+		const char* normal;
+		const char* pressed;
+		const char* selected;
+		const char* pressedAndSelected;
+		const char* invalid;
 	};
 
-	struct ThemeColors
+	struct ThumbImage
 	{
+		const char* normal;
+		const char* pressed;
+	};
+
+	class ThemeColors;
+
+	void Init();
+	void CreateTheme(const char* id, const ThemeColors* theme);
+	void SetTheme(const char* id);
+
+	class ThemeColors
+	{
+	  public:
+		ThemeColors(const char* id) { CreateTheme(id, this); }
 		struct
 		{
-			uint32_t base;
-			Colors background;
-			Colors foreground;
+			uint32_t bgDefault;
+			const char* bgImage;
+		} window;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
 		} text;
 		struct
 		{
-			uint32_t base;
-			Colors background;
-			Colors foreground;
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
+			Images images;
 		} button;
 		struct
 		{
-			uint32_t base;
-			Colors background;
-			Colors foreground;
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
 			uint32_t hint;
 		} input;
 		struct
 		{
-			uint32_t base;
+			uint32_t bgDefault;
+			const char* bgImage;
+			const char* validImage;
+			ThumbImage thumb;
 		} slider;
-	};
-
-	namespace UI
-	{
-		ThemeColors createDarkTheme()
+		struct
 		{
-			ThemeColors darkTheme;
-
-			// Set colors for text
-			darkTheme.text.base = 0xFF000000;						   // Black
-			darkTheme.text.background.normal = 0xFF000000;			   // Black
-			darkTheme.text.background.pressed = 0xFF202020;			   // Dark gray
-			darkTheme.text.background.selected = 0xFF404040;		   // Gray
-			darkTheme.text.background.pressedAndSelected = 0xFF606060; // Light gray
-			darkTheme.text.background.invalid = 0xFFFF0000;			   // Red
-
-			// Set colors for button
-			darkTheme.button.base = 0xFF202020;							 // Dark gray
-			darkTheme.button.background.normal = 0xFF202020;			 // Dark gray
-			darkTheme.button.background.pressed = 0xFF404040;			 // Gray
-			darkTheme.button.background.selected = 0xFF606060;			 // Light gray
-			darkTheme.button.background.pressedAndSelected = 0xFF808080; // Lighter gray
-			darkTheme.button.background.invalid = 0xFFFF0000;			 // Red
-
-			// Set colors for input
-			darkTheme.input.base = 0xFF202020;							// Dark gray
-			darkTheme.input.background.normal = 0xFF202020;				// Dark gray
-			darkTheme.input.background.pressed = 0xFF404040;			// Gray
-			darkTheme.input.background.selected = 0xFF606060;			// Light gray
-			darkTheme.input.background.pressedAndSelected = 0xFF808080; // Lighter gray
-			darkTheme.input.background.invalid = 0xFFFF0000;			// Red
-			darkTheme.input.hint = 0xFF808080;							// Light gray
-
-			// Set colors for slider
-			darkTheme.slider.base = 0xFF202020; // Dark gray
-
-			return darkTheme;
-		}
-
-		ThemeColors createLightTheme()
+			uint32_t bgDefault;
+			const char* bgImage;
+			const char* validImage;
+			ThumbImage thumb;
+		} circularBar;
+		struct
 		{
-			ThemeColors lightTheme;
-			return lightTheme;
-		}
-	} // namespace UI
-	ThemeColors themes[] = {
+			uint32_t bgDefault;
+			const char* bgImage;
+		} pointer;
+		struct
 		{
-			// Set colors for text
-			.text =
-				{
-					.base = 0xFF000000, // Black
-					.background =
-						{
-							.normal = 0xFFFFFFFF,			  // White
-							.pressed = 0xFFE0E0E0,			  // Light gray
-							.selected = 0xFFC0C0C0,			  // Gray
-							.pressedAndSelected = 0xFFA0A0A0, // Dark gray
-							.invalid = 0xFFFF0000,			  // Red
-						},
-					.foreground =
-						{
-							.normal = 0xFF000000,			  // Black
-							.pressed = 0xFF000000,			  // Black
-							.selected = 0xFF000000,			  // Black
-							.pressedAndSelected = 0xFF000000, // Black
-							.invalid = 0xFFFF0000,			  // Red
-						},
-				},
-
-			// Set colors for button
-			.button =
-				{
-					.base = 0xFFE0E0E0, // Light gray
-					.background =
-						{
-							.normal = 0xFFE0E0E0,			  // Light gray
-							.pressed = 0xFFC0C0C0,			  // Gray
-							.selected = 0xFFA0A0A0,			  // Dark gray
-							.pressedAndSelected = 0xFF808080, // Darker gray
-							.invalid = 0xFFFF0000,			  // Red
-						},
-				},
-
-			// Set colors for input
-			.input =
-				{
-					.base = 0xFFE0E0E0, // Light gray
-					.background =
-						{
-							.normal = 0xFFE0E0E0,			  // Light gray
-							.pressed = 0xFFC0C0C0,			  // Gray
-							.selected = 0xFFA0A0A0,			  // Dark gray
-							.pressedAndSelected = 0xFF808080, // Darker gray
-							.invalid = 0xFFFF0000,			  // Red
-						},
-					.hint = 0xFF808080, // Dark gray
-				},
-
-			// Set colors for slider
-			.slider =
-				{
-					.base = 0xFFE0E0E0, // Light gray
-				},
-		},
+			uint32_t bgDefault;
+			const char* bgImage;
+			uint32_t text;
+		} digitalClock;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
+			Images images;
+		} checkbox;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+		} list;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
+			Images images;
+		} listItem;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+			ControlState background;
+			ControlState foreground;
+			Images images;
+		} listSubItem;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+		} slideWindow;
+		struct
+		{
+			ControlState foreground;
+			Images images;
+		} slideWindowItem;
 	};
 } // namespace UI
 

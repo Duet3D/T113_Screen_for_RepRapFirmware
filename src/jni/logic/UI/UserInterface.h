@@ -179,6 +179,7 @@ namespace UI
 	};
 
 	void Init(ZKWindow* root);
+	ZKWindow* GetRootWindow();
 	ZKBase* GetUIControl(int id);
 
 	template <typename T>

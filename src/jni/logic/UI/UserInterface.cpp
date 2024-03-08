@@ -685,6 +685,11 @@ namespace UI
 		s_root = root;
 	}
 
+	ZKWindow* GetRootWindow()
+	{
+		return s_root;
+	}
+
 	ZKBase* GetUIControl(int id)
 	{
 		verbose("Retrieving control with id %d", id);
