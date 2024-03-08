@@ -11,7 +11,7 @@
 namespace UI::Theme
 {
 	static std::map<const char*, Theme*> s_themes;
-	static std::string s_currentTheme;
+	static Theme* s_currentTheme;
 
 	Theme::Theme(const char* id, ThemeColors* colors, function<void(void)> overrides)
 		: id(id), colors(colors), overrides(overrides)
@@ -219,13 +219,6 @@ namespace UI::Theme
 				list->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
 									   colors->list.background.pressedAndSelected);
 				list->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->list.background.invalid);
-
-				// SubItems
-				// for (int i = 0; i < list->get)
-				// {
-				// 	ZKListView::ZKListSubItem*
-				// }
-
 				continue;
 			}
 		}
@@ -238,14 +231,109 @@ namespace UI::Theme
 			warn("Theme %s not found", id);
 			return;
 		}
-		s_currentTheme = id;
-		Theme* theme = s_themes[id];
+		s_currentTheme = s_themes[id];
+		info("Set theme to \"%s\"", s_currentTheme->id);
 
 		ZKWindow* window = UI::GetRootWindow();
 		std::vector<ZKBase*> children;
 		window->getAllControls(children);
-		ThemeControls(theme->colors, children);
-		theme->overrides();
+		ThemeControls(s_currentTheme->colors, children);
+		s_currentTheme->overrides();
 	}
 
+	void ThemeListItem(ZKListView::ZKListItem* pListItem)
+	{
+		static std::map<ZKListView::ZKListItem*, Theme*> s_themedItems;
+		if (s_currentTheme == nullptr)
+		{
+			warn("No theme set");
+			return;
+		}
+
+		if (pListItem == nullptr)
+		{
+			warn("List item is null");
+			return;
+		}
+
+		dbg("Theming list item %p", pListItem);
+		if (s_themedItems.find(pListItem) == s_themedItems.end())
+		{
+			s_themedItems[pListItem] = s_currentTheme;
+		}
+		else if (s_themedItems[pListItem] != s_currentTheme)
+		{
+			s_themedItems[pListItem] = s_currentTheme;
+		}
+		else
+		{
+			dbg("Already themed list item %p", pListItem);
+			return;
+		}
+
+		ThemeColors* colors = s_currentTheme->colors;
+
+		pListItem->setBackgroundColor(colors->listItem.bgDefault);
+		pListItem->setBackgroundPic(colors->listItem.bgImage);
+		pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->listItem.background.normal);
+		pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->listItem.background.pressed);
+		pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->listItem.background.selected);
+		pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+									colors->listItem.background.pressedAndSelected);
+		pListItem->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->listItem.background.invalid);
+
+		// Foreground
+		pListItem->setTextStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->listItem.foreground.normal);
+		pListItem->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->listItem.foreground.pressed);
+		pListItem->setTextStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->listItem.foreground.selected);
+		pListItem->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+									  colors->listItem.foreground.pressedAndSelected);
+		pListItem->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->listItem.foreground.invalid);
+
+		// Pictures
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, colors->listItem.images.normal);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED, colors->listItem.images.pressed);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, colors->listItem.images.selected);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+									  colors->listItem.images.pressedAndSelected);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listItem.images.invalid);
+
+		pListItem->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+
+		for (int i = 0; i < pListItem->getSubItemCount(); i++)
+		{
+			ZKListView::ZKListSubItem* pSubItem = pListItem->getSubItem(i);
+			if (pSubItem == nullptr)
+			{
+				warn("Sub item is null");
+				continue;
+			}
+			pSubItem->setBackgroundColor(colors->listSubItem.bgDefault);
+			pSubItem->setBackgroundPic(colors->listSubItem.bgImage);
+			pSubItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->listSubItem.background.normal);
+			pSubItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->listSubItem.background.pressed);
+			pSubItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->listSubItem.background.selected);
+			pSubItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+									   colors->listSubItem.background.pressedAndSelected);
+			pSubItem->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->listSubItem.background.invalid);
+
+			// Foreground
+			pSubItem->setTextStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->listSubItem.foreground.normal);
+			pSubItem->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->listSubItem.foreground.pressed);
+			pSubItem->setTextStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->listSubItem.foreground.selected);
+			pSubItem->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+										 colors->listSubItem.foreground.pressedAndSelected);
+			pSubItem->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->listSubItem.foreground.invalid);
+
+			// Pictures
+			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, colors->listSubItem.images.normal);
+			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED, colors->listSubItem.images.pressed);
+			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, colors->listSubItem.images.selected);
+			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+										 colors->listSubItem.images.pressedAndSelected);
+			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listSubItem.images.invalid);
+
+			pSubItem->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		}
+	}
 } // namespace UI::Theme

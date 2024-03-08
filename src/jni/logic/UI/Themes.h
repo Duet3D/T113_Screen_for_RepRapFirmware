@@ -149,6 +149,7 @@ namespace UI::Theme
 
 	void CreateTheme(const char* id, Theme* theme);
 	void SetTheme(const char* id);
+	void ThemeListItem(ZKListView::ZKListItem* pListItem);
 } // namespace UI
 
 #endif /* JNI_LOGIC_UI_COLORS_HPP_ */

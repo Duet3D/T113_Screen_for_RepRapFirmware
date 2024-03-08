@@ -57,6 +57,14 @@ public:
 		 */
 		ZKListSubItem* findSubItemByID(int id) const;
 		int getSubItemCount() const { return mSubItemCount; }
+		ZKListSubItem* getSubItem(int index) const
+		{
+			if (index >= 0 && index < mSubItemCount)
+			{
+				return mListSubItemList[index];
+			}
+			return nullptr;
+		}
 
 	protected:
 		virtual void onBeforeCreateWindow(const Json::Value &json);

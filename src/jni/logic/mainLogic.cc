@@ -324,6 +324,7 @@ static int getListItemCount_ToolListView(const ZKListView *pListView)
 
 static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
+	UI::Theme::ThemeListItem(pListItem);
 	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_ToolNameSubItem);
 	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_ToolCurrentTemperatureSubItem);
 	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_ToolActiveTemperatureSubItem);
@@ -1390,6 +1391,8 @@ static int getListItemCount_ListView1(const ZKListView *pListView) {
 
 static void obtainListItemData_ListView1(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
     //LOGD(" obtainListItemData_ ListView1  !!!\n");
+	UI::Theme::ThemeListItem(pListItem);
+	pListItem->setSelected(index == 0);
 }
 
 static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) {

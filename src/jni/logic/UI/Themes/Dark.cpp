@@ -181,11 +181,11 @@ namespace UI::Theme
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::LightGray,
+						.normal = Colors::Gray,
 						.pressed = Colors::Blue3,
-						.selected = Colors::Blue4,
+						.selected = Colors::Blue2,
 						.pressedAndSelected = Colors::Blue3,
-						.invalid = Colors::Gray,
+						.invalid = Colors::DarkGray,
 					},
 				.foreground =
 					{
@@ -193,7 +193,7 @@ namespace UI::Theme
 						.pressed = NULL,
 						.selected = NULL,
 						.pressedAndSelected = NULL,
-						.invalid = NULL,
+						.invalid = Colors::LighterGray,
 					},
 				.images =
 					{
@@ -211,10 +211,10 @@ namespace UI::Theme
 				.background =
 					{
 						.normal = NULL,
-						.pressed = NULL,
-						.selected = NULL,
-						.pressedAndSelected = NULL,
-						.invalid = NULL,
+						.pressed = Colors::Blue3,
+						.selected = Colors::Blue2,
+						.pressedAndSelected = Colors::Blue3,
+						.invalid = Colors::DarkGray,
 					},
 				.foreground =
 					{
