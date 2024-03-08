@@ -23,7 +23,7 @@ namespace UI::Theme
 		// Set colors for window
 		.window =
 			{
-				.bgDefault = Colors::Black,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 			},
 		.text =
@@ -101,11 +101,11 @@ namespace UI::Theme
 		.slider =
 			{
 				.bgDefault = NULL,
-				.bgImage = nullptr,
+				.bgImage = "hSliderBar.png",
 				.validImage = nullptr,
 				.thumb =
 					{
-						.normal = nullptr,
+						.normal = "hSliderKnob.png",
 						.pressed = nullptr,
 					},
 			},
@@ -125,10 +125,11 @@ namespace UI::Theme
 			{
 				.bgDefault = NULL,
 				.bgImage = nullptr,
+				.pointerImage = nullptr,
 			},
 		.digitalClock =
 			{
-				.bgDefault = NULL,
+				.bgDefault = Black,
 				.bgImage = nullptr,
 				.text = Colors::White,
 			},
@@ -138,11 +139,11 @@ namespace UI::Theme
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::Gray,
-						.pressed = Colors::LightGray,
-						.selected = Colors::Blue4,
-						.pressedAndSelected = Colors::Blue3,
-						.invalid = Colors::Clear,
+						.normal = NULL,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.foreground =
 					{
@@ -154,9 +155,9 @@ namespace UI::Theme
 					},
 				.images =
 					{
-						.normal = nullptr,
+						.normal = "toggleOffLarge.png",
 						.pressed = nullptr,
-						.selected = nullptr,
+						.selected = "toggleOnLarge.png",
 						.pressedAndSelected = nullptr,
 						.invalid = nullptr,
 					},
@@ -165,6 +166,14 @@ namespace UI::Theme
 			{
 				.bgDefault = NULL,
 				.bgImage = nullptr,
+				.background =
+					{
+						.normal = NULL,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
+					},
 			},
 		.listItem =
 			{

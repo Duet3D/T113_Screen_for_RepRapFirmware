@@ -66,6 +66,8 @@ namespace UI::Theme
 				text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
 										 colors->text.foreground.pressedAndSelected);
 				text->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->text.foreground.invalid);
+
+				text->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKButton))
@@ -96,6 +98,8 @@ namespace UI::Theme
 				button->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
 										   colors->button.images.pressedAndSelected);
 				button->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->button.images.invalid);
+
+				button->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKEditText))
@@ -118,6 +122,110 @@ namespace UI::Theme
 				text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
 										 colors->input.foreground.pressedAndSelected);
 				text->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->input.foreground.invalid);
+
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKSeekBar))
+			{
+				ZKSeekBar* seek = static_cast<ZKSeekBar*>(control);
+				// Background
+				seek->setBackgroundColor(colors->slider.bgDefault);
+				seek->setBackgroundPic(colors->slider.bgImage);
+
+				// Foreground
+				seek->setProgressPic(colors->slider.validImage);
+				seek->setThumbPic(ZK_CONTROL_STATUS_NORMAL, colors->slider.thumb.normal);
+				seek->setThumbPic(ZK_CONTROL_STATUS_PRESSED, colors->slider.thumb.pressed);
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKCircleBar))
+			{
+				ZKCircleBar* circleBar = static_cast<ZKCircleBar*>(control);
+				// Background
+				circleBar->setBackgroundColor(colors->circularBar.bgDefault);
+				circleBar->setBackgroundPic(colors->circularBar.bgImage);
+
+				// Foreground
+				circleBar->setTextColor(colors->circularBar.text);
+				circleBar->setProgressPic(colors->circularBar.validImage);
+				circleBar->setThumbPic(ZK_CONTROL_STATUS_NORMAL, colors->circularBar.thumb.normal);
+				circleBar->setThumbPic(ZK_CONTROL_STATUS_PRESSED, colors->circularBar.thumb.pressed);
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKPointer))
+			{
+				ZKPointer* pointer = static_cast<ZKPointer*>(control);
+				// Background
+				pointer->setBackgroundColor(colors->pointer.bgDefault);
+				pointer->setBackgroundPic(colors->pointer.bgImage);
+
+				// Foreground
+				// TODO Work out how to set pointer picture
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKDigitalClock))
+			{
+				ZKDigitalClock* digitalClock = static_cast<ZKDigitalClock*>(control);
+				// Background
+				digitalClock->setBackgroundColor(colors->digitalClock.bgDefault);
+				digitalClock->setBackgroundPic(colors->digitalClock.bgImage);
+
+				// Foreground
+				digitalClock->setTextColor(colors->digitalClock.text); // TODO This doesn't work
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKCheckBox))
+			{
+				ZKCheckBox* checkbox = static_cast<ZKCheckBox*>(control);
+				// Background
+				checkbox->setBackgroundColor(colors->checkbox.bgDefault);
+				checkbox->setBackgroundPic(colors->checkbox.bgImage);
+				checkbox->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->checkbox.background.normal);
+				checkbox->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->checkbox.background.pressed);
+				checkbox->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->checkbox.background.selected);
+				checkbox->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+										   colors->checkbox.background.pressedAndSelected);
+				checkbox->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->checkbox.background.invalid);
+
+				// Foreground
+				checkbox->setTextStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->checkbox.foreground.normal);
+				checkbox->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->checkbox.foreground.pressed);
+				checkbox->setTextStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->checkbox.foreground.selected);
+				checkbox->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+											 colors->checkbox.foreground.pressedAndSelected);
+				checkbox->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->checkbox.foreground.invalid);
+
+				// Pictures
+				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, colors->checkbox.images.normal);
+				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED, colors->checkbox.images.pressed);
+				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, colors->checkbox.images.selected);
+				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+											 colors->checkbox.images.pressedAndSelected);
+				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->checkbox.images.invalid);
+
+				checkbox->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKListView))
+			{
+				ZKListView* list = static_cast<ZKListView*>(control);
+				// Background
+				list->setBackgroundColor(colors->list.bgDefault);
+				list->setBackgroundPic(colors->list.bgImage);
+
+				list->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->list.background.normal);
+				list->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, colors->list.background.pressed);
+				list->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, colors->list.background.selected);
+				list->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+									   colors->list.background.pressedAndSelected);
+				list->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->list.background.invalid);
+
+				// SubItems
+				// for (int i = 0; i < list->get)
+				// {
+				// 	ZKListView::ZKListSubItem*
+				// }
+
 				continue;
 			}
 		}

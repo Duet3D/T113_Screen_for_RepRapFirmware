@@ -87,12 +87,13 @@ namespace UI::Theme
 		{
 			uint32_t bgDefault;
 			const char* bgImage;
+			const char* pointerImage; //* This isn't used
 		} pointer;
 		struct
 		{
 			uint32_t bgDefault;
 			const char* bgImage;
-			uint32_t text;
+			uint32_t text; // TODO api doesn't work?
 		} digitalClock;
 		struct
 		{
@@ -106,6 +107,7 @@ namespace UI::Theme
 		{
 			uint32_t bgDefault;
 			const char* bgImage;
+			ControlState background;
 		} list;
 		struct
 		{
