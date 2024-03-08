@@ -9,6 +9,7 @@
 #define JNI_LOGIC_UI_COLORS_HPP_
 
 #include "UI/UserInterface.h"
+#include "std_fixed/functional.h"
 #include <sys/types.h>
 
 namespace UI::Theme
@@ -37,12 +38,8 @@ namespace UI::Theme
 		const char* pressed;
 	};
 
-	class ThemeColors
+	struct ThemeColors
 	{
-	  public:
-		// ThemeColors();
-		// const char* id;
-
 		struct
 		{
 			uint32_t bgDefault;
@@ -69,7 +66,7 @@ namespace UI::Theme
 			const char* bgImage;
 			ControlState background;
 			ControlState foreground;
-			uint32_t hint;
+			uint32_t hint; //* This isn't used
 		} input;
 		struct
 		{
@@ -141,11 +138,14 @@ namespace UI::Theme
 	class Theme
 	{
 	  public:
-		Theme(const char* id, ThemeColors* theme);
+		Theme(const char* id, ThemeColors* colors, function<void(void)> overrides);
+
+		const char* id;
+		ThemeColors* colors;
+		function<void(void)> overrides;
 	};
 
-	void
-	CreateTheme(const char* id, ThemeColors* theme);
+	void CreateTheme(const char* id, Theme* theme);
 	void SetTheme(const char* id);
 } // namespace UI
 

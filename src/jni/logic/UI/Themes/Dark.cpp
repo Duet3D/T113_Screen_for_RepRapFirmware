@@ -4,7 +4,7 @@ namespace UI::Theme
 {
 	enum Colors : uint32_t
 	{
-		Clear = 0x00000000,
+		Clear = 0x00FFFFFF,
 		Black = 0xFF000000,
 		White = 0xFFFFFFFF,
 		LightGray = 0xFFE0E0E0,
@@ -28,15 +28,15 @@ namespace UI::Theme
 			},
 		.text =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::Clear,
-						.pressed = Colors::Clear,
-						.selected = Colors::Clear,
-						.pressedAndSelected = Colors::Clear,
-						.invalid = Colors::Clear,
+						.normal = NULL,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.foreground =
 					{
@@ -49,7 +49,7 @@ namespace UI::Theme
 			},
 		.button =
 			{
-				.bgDefault = Colors::Blue2,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.background =
 					{
@@ -62,10 +62,10 @@ namespace UI::Theme
 				.foreground =
 					{
 						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.images =
 					{
@@ -82,25 +82,25 @@ namespace UI::Theme
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.normal = NULL,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.foreground =
 					{
 						.normal = Colors::Black,
-						.pressed = Colors::Black,
-						.selected = Colors::Black,
-						.pressedAndSelected = Colors::Black,
-						.invalid = Colors::Black,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.hint = Colors::LighterGray,
 			},
 		.slider =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.validImage = nullptr,
 				.thumb =
@@ -111,7 +111,7 @@ namespace UI::Theme
 			},
 		.circularBar =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.validImage = nullptr,
 				.text = Colors::White,
@@ -123,34 +123,34 @@ namespace UI::Theme
 			},
 		.pointer =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 			},
 		.digitalClock =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.text = Colors::White,
 			},
 		.checkbox =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::Clear,
-						.pressed = Colors::Clear,
-						.selected = Colors::Clear,
-						.pressedAndSelected = Colors::Clear,
+						.normal = Colors::Gray,
+						.pressed = Colors::LightGray,
+						.selected = Colors::Blue4,
+						.pressedAndSelected = Colors::Blue3,
 						.invalid = Colors::Clear,
 					},
 				.foreground =
 					{
 						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.images =
 					{
@@ -163,7 +163,7 @@ namespace UI::Theme
 			},
 		.list =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 			},
 		.listItem =
@@ -181,10 +181,10 @@ namespace UI::Theme
 				.foreground =
 					{
 						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.images =
 					{
@@ -197,23 +197,23 @@ namespace UI::Theme
 			},
 		.listSubItem =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::Clear,
-						.pressed = Colors::Clear,
-						.selected = Colors::Clear,
-						.pressedAndSelected = Colors::Clear,
-						.invalid = Colors::Clear,
+						.normal = NULL,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = NULL,
 					},
 				.foreground =
 					{
 						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.pressed = NULL,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = Colors::LighterGray,
 					},
 				.images =
 					{
@@ -226,7 +226,7 @@ namespace UI::Theme
 			},
 		.slideWindow =
 			{
-				.bgDefault = Colors::Clear,
+				.bgDefault = NULL,
 				.bgImage = nullptr,
 			},
 		.slideWindowItem =
@@ -234,10 +234,10 @@ namespace UI::Theme
 				.foreground =
 					{
 						.normal = Colors::White,
-						.pressed = Colors::White,
-						.selected = Colors::White,
-						.pressedAndSelected = Colors::White,
-						.invalid = Colors::White,
+						.pressed = Colors::LightGray,
+						.selected = NULL,
+						.pressedAndSelected = NULL,
+						.invalid = Colors::Gray,
 					},
 				.images =
 					{
@@ -247,14 +247,10 @@ namespace UI::Theme
 						.pressedAndSelected = nullptr,
 						.invalid = nullptr,
 					},
-			}
-		/*
-				// Set colors for button
-
-				// Set colors for slider
-				.slider.base = Colors::DarkGray, // Dark gray
-				*/
+			},
 	};
 
-	static Theme theme("dark", &darkTheme);
+	static Theme theme("dark", &darkTheme, []() {
+		UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
+	});
 } // namespace UI::Theme
