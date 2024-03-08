@@ -37,21 +37,18 @@ namespace UI::Theme
 		const char* pressed;
 	};
 
-	class ThemeColors;
-
-	void Init();
-	void CreateTheme(const char* id, const ThemeColors* theme);
-	void SetTheme(const char* id);
-
 	class ThemeColors
 	{
 	  public:
-		ThemeColors(const char* id) { CreateTheme(id, this); }
+		// ThemeColors();
+		// const char* id;
+
 		struct
 		{
 			uint32_t bgDefault;
 			const char* bgImage;
 		} window;
+		/*
 		struct
 		{
 			uint32_t bgDefault;
@@ -139,7 +136,18 @@ namespace UI::Theme
 			ControlState foreground;
 			Images images;
 		} slideWindowItem;
+		*/
 	};
+
+	class Theme
+	{
+	  public:
+		Theme(const char* id, ThemeColors* theme);
+	};
+
+	void
+	CreateTheme(const char* id, ThemeColors* theme);
+	void SetTheme(const char* id);
 } // namespace UI
 
 #endif /* JNI_LOGIC_UI_COLORS_HPP_ */

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "UI/Themes.h"
 
 namespace UI::Theme
@@ -19,50 +17,58 @@ namespace UI::Theme
 		Button
 	};
 
-	static ThemeColors darkTheme("dark");
+	static ThemeColors darkTheme = {
+		// .id = "dark",
+		// Set colors for window
+		.window =
+			{
+				.bgDefault = Colors::Black,
+				.bgImage = nullptr,
+			},
 
-	// Set colors for window
-	darkTheme.window.bgDefault = Colors::Black;
-	darkTheme.window.bgImage = nullptr;
+		/*
+				// Set colors for text
+				.text.bgDefault = Colors::Clear,
+				.text.bgImage = nullptr,
+				.text.background.normal = Colors::Clear,
+				.text.background.pressed = Colors::Clear,
+				.text.background.selected = Colors::Clear,
+				.text.background.pressedAndSelected = Colors::Clear,
+				.text.background.invalid = Colors::Clear,
+				.text.foreground.normal = Colors::White,
+				.text.foreground.pressed = Colors::LightGray,
+				.text.foreground.selected = Colors::LighterGray,
+				.text.foreground.pressedAndSelected = Colors::LightGray,
+				.text.foreground.invalid = Colors::Gray,
 
-	// Set colors for text
-	darkTheme.text.bgDefault = Colors::Clear;
-	darkTheme.text.bgImage = nullptr;
-	darkTheme.text.background.normal = Colors::Clear;
-	darkTheme.text.background.pressed = Colors::Clear;
-	darkTheme.text.background.selected = Colors::Clear;
-	darkTheme.text.background.pressedAndSelected = Colors::Clear;
-	darkTheme.text.background.invalid = Colors::Clear;
-	darkTheme.text.foreground.normal = Colors::White;
-	darkTheme.text.foreground.pressed = Colors::LightGray;
-	darkTheme.text.foreground.selected = Colors::LighterGray;
-	darkTheme.text.foreground.pressedAndSelected = Colors::LightGray;
-	darkTheme.text.foreground.invalid = Colors::Gray;
+				// Set colors for button
+				.button.bgDefault = Colors::Clear,
+				.text.bgImage = nullptr,
+				.button.background.normal = Colors::Clear,
+				.button.background.pressed = Colors::Clear,
+				.button.background.selected = Colors::Clear,
+				.button.background.pressedAndSelected = Colors::Clear,
+				.button.background.invalid = Colors::Clear,
+				.button.foreground.normal = Colors::White,
+				.button.foreground.pressed = Colors::LightGray,
+				.button.foreground.selected = Colors::LighterGray,
+				.button.foreground.pressedAndSelected = Colors::LightGray,
+				.button.foreground.invalid = Colors::Gray,
 
-	// Set colors for button
-	darkTheme.button.bgDefault = Colors::Clear;
-	darkTheme.text.bgImage = nullptr;
-	darkTheme.button.background.normal = Colors::Clear;
-	darkTheme.button.background.pressed = Colors::Clear;
-	darkTheme.button.background.selected = Colors::Clear;
-	darkTheme.button.background.pressedAndSelected = Colors::Clear;
-	darkTheme.button.background.invalid = Colors::Clear;
-	darkTheme.button.foreground.normal = Colors::White;
-	darkTheme.button.foreground.pressed = Colors::LightGray;
-	darkTheme.button.foreground.selected = Colors::LighterGray;
-	darkTheme.button.foreground.pressedAndSelected = Colors::LightGray;
-	darkTheme.button.foreground.invalid = Colors::Gray;
+				// Set colors for input
+				.input.bgDefault = Colors::Clear,
+				.text.bgImage = nullptr,
+				.input.background.normal = Colors::DarkGray,
+				.input.background.pressed = Colors::Gray,
+				.input.background.selected = Colors::LightGray,
+				.input.background.pressedAndSelected = Colors::LighterGray,
+				.input.background.invalid = Colors::Red,
+				.input.hint = Colors::LighterGray,
 
-	// Set colors for input
-	darkTheme.input.bgDefault = Colors::Clear;
-	darkTheme.text.bgImage = nullptr;
-	darkTheme.input.background.normal = Colors::DarkGray;
-	darkTheme.input.background.pressed = Colors::Gray;
-	darkTheme.input.background.selected = Colors::LightGray;
-	darkTheme.input.background.pressedAndSelected = Colors::LighterGray;
-	darkTheme.input.background.invalid = Colors::Red;
-	darkTheme.input.hint = Colors::LighterGray;
+				// Set colors for slider
+				.slider.base = Colors::DarkGray, // Dark gray
+				*/
+	};
 
-	// Set colors for slider
-	darkTheme.slider.base = Colors::DarkGray; // Dark gray
+	static Theme theme("dark", &darkTheme);
 } // namespace UI::Theme

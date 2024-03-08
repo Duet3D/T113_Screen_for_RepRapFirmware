@@ -13,13 +13,19 @@ namespace UI::Theme
 	static std::map<const char*, ThemeColors*> s_themes;
 	static std::string s_currentTheme;
 
-	void CreateTheme(const char* id, const ThemeColors* theme)
+	Theme::Theme(const char* id, ThemeColors* colors)
+	{
+		CreateTheme(id, colors);
+	}
+
+	void CreateTheme(const char* id, ThemeColors* theme)
 	{
 		if (s_themes.find(id) != s_themes.end())
 		{
 			warn("Theme %s already exists", id);
 			return;
 		}
+		info("Creating theme %s", id);
 		s_themes[id] = theme;
 	}
 
@@ -36,7 +42,7 @@ namespace UI::Theme
 			{
 				dbg("Window");
 				ZKWindow* window = static_cast<ZKWindow*>(control);
-				window->setBackgroundColor(theme->text.base);
+				window->setBackgroundColor(theme->window.bgDefault);
 				// std::vector<ZKBase*> children;
 				// window->getAllControls(children);
 				// ThemeControls(theme, children);
@@ -47,21 +53,21 @@ namespace UI::Theme
 				ZKTextView* text = static_cast<ZKTextView*>(control);
 				dbg("Text control");
 				// Background
-				text->setBackgroundColor(theme->text.base);
-				text->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, theme->text.background.normal);
-				text->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, theme->text.background.pressed);
-				text->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, theme->text.background.selected);
-				text->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
-									   theme->text.background.pressedAndSelected);
-				text->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, theme->text.background.invalid);
+				// text->setBackgroundColor(theme->text.bgDefault);
+				// text->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, theme->text.background.normal);
+				// text->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, theme->text.background.pressed);
+				// text->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, theme->text.background.selected);
+				// text->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+				// 					   theme->text.background.pressedAndSelected);
+				// text->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, theme->text.background.invalid);
 
-				// Foreground
-				text->setTextStatusColor(ZK_CONTROL_STATUS_NORMAL, theme->text.foreground.normal);
-				text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED, theme->text.foreground.pressed);
-				text->setTextStatusColor(ZK_CONTROL_STATUS_SELECTED, theme->text.foreground.selected);
-				text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
-										 theme->text.foreground.pressedAndSelected);
-				text->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, theme->text.foreground.invalid);
+				// // Foreground
+				// text->setTextStatusColor(ZK_CONTROL_STATUS_NORMAL, theme->text.foreground.normal);
+				// text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED, theme->text.foreground.pressed);
+				// text->setTextStatusColor(ZK_CONTROL_STATUS_SELECTED, theme->text.foreground.selected);
+				// text->setTextStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+				// 						 theme->text.foreground.pressedAndSelected);
+				// text->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, theme->text.foreground.invalid);
 				continue;
 			}
 		}
