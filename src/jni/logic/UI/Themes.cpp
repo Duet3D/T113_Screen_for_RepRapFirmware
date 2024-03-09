@@ -13,8 +13,11 @@ namespace UI::Theme
 	static std::map<const char*, Theme*> s_themes;
 	static Theme* s_currentTheme;
 
-	Theme::Theme(const char* id, ThemeColors* colors, function<void(void)> overrides)
-		: id(id), colors(colors), overrides(overrides)
+	Theme::Theme(const char* id,
+				 ThemeColors* colors,
+				 function<void(void)> overrides,
+				 function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides)
+		: id(id), colors(colors), overrides(overrides), listItemOverrides(listItemOverrides)
 	{
 		CreateTheme(id, this);
 	}
@@ -241,7 +244,7 @@ namespace UI::Theme
 		s_currentTheme->overrides();
 	}
 
-	void ThemeListItem(ZKListView::ZKListItem* pListItem)
+	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem)
 	{
 		static std::map<ZKListView::ZKListItem*, Theme*> s_themedItems;
 		if (s_currentTheme == nullptr)
@@ -335,5 +338,6 @@ namespace UI::Theme
 
 			pSubItem->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 		}
+		s_currentTheme->listItemOverrides(pListView, pListItem);
 	}
 } // namespace UI::Theme

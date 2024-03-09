@@ -140,16 +140,22 @@ namespace UI::Theme
 	class Theme
 	{
 	  public:
-		Theme(const char* id, ThemeColors* colors, function<void(void)> overrides);
+		Theme(
+			const char* id,
+			ThemeColors* colors,
+			function<void(void)> overrides,
+			function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides =
+				[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {});
 
 		const char* id;
 		ThemeColors* colors;
 		function<void(void)> overrides;
+		function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides;
 	};
 
 	void CreateTheme(const char* id, Theme* theme);
 	void SetTheme(const char* id);
-	void ThemeListItem(ZKListView::ZKListItem* pListItem);
+	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem);
 } // namespace UI
 
 #endif /* JNI_LOGIC_UI_COLORS_HPP_ */

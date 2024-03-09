@@ -910,8 +910,9 @@ int mainActivity::getListItemCount(const ZKListView *pListView) const{
 }
 
 void mainActivity::obtainListItemData(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index){
-    int tablen = sizeof(SListViewFunctionsCallbackTab) / sizeof(S_ListViewFunctionsCallback);
-    for (int i = 0; i < tablen; ++i) {
+	UI::Theme::ThemeListItem(pListView, pListItem);
+	int tablen = sizeof(SListViewFunctionsCallbackTab) / sizeof(S_ListViewFunctionsCallback);
+	for (int i = 0; i < tablen; ++i) {
         if (SListViewFunctionsCallbackTab[i].id == pListView->getID()) {
             SListViewFunctionsCallbackTab[i].obtainListItemDataCallback(pListView, pListItem, index);
             break;

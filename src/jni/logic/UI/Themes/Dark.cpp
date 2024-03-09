@@ -16,6 +16,7 @@ namespace UI::Theme
 		Blue2 = 0xFF5578FC,
 		Blue3 = 0xFF00AAF4,
 		Blue4 = 0xFF00CCFF,
+		Yellow = 0xFFECBC35,
 	};
 
 	static ThemeColors darkTheme = {
@@ -259,7 +260,19 @@ namespace UI::Theme
 			},
 	};
 
-	static Theme theme("dark", &darkTheme, []() {
-		UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
-	});
+	static Theme theme(
+		"dark",
+		&darkTheme,
+		[]() {
+			// Overrides
+			UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
+		},
+		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {
+			// ListItem Overrides
+			switch (pListView->getID())
+			{
+			case ID_MAIN_ListView1:
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
+			}
+		});
 } // namespace UI::Theme
