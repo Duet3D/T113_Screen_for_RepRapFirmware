@@ -11,6 +11,7 @@
 namespace UI::Theme
 {
 	static std::map<const char*, Theme*> s_themes;
+	static std::map<ZKListView::ZKListItem*, Theme*> s_themedListItems;
 	static Theme* s_currentTheme;
 
 	Theme::Theme(const char* id,
@@ -31,6 +32,25 @@ namespace UI::Theme
 		}
 		info("Creating theme %s", id);
 		s_themes[id] = theme;
+	}
+
+	int GetThemeCount()
+	{
+		return s_themes.size();
+	}
+
+	Theme* GetThemeByIndex(int index)
+	{
+		if (index < 0 || index >= (int)s_themes.size())
+		{
+			return nullptr;
+		}
+		auto it = s_themes.begin();
+		for (int i = 0; i < index; i++)
+		{
+			it++;
+		}
+		return it->second;
 	}
 
 	static void ThemeControls(ThemeColors* colors, std::vector<ZKBase*> controls)
@@ -234,9 +254,18 @@ namespace UI::Theme
 			warn("Theme %s not found", id);
 			return;
 		}
-		s_currentTheme = s_themes[id];
+		SetTheme(s_themes[id]);
+	}
+
+	void SetTheme(Theme* theme)
+	{
+		if (theme == nullptr)
+			return;
+
+		s_currentTheme = theme;
 		info("Set theme to \"%s\"", s_currentTheme->id);
 
+		s_themedListItems.clear();
 		ZKWindow* window = UI::GetRootWindow();
 		std::vector<ZKBase*> children;
 		window->getAllControls(children);
@@ -246,7 +275,6 @@ namespace UI::Theme
 
 	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem)
 	{
-		static std::map<ZKListView::ZKListItem*, Theme*> s_themedItems;
 		if (s_currentTheme == nullptr)
 		{
 			warn("No theme set");
@@ -265,13 +293,13 @@ namespace UI::Theme
 			return;
 		}
 
-		if (s_themedItems.find(pListItem) == s_themedItems.end())
+		if (s_themedListItems.find(pListItem) == s_themedListItems.end())
 		{
-			s_themedItems[pListItem] = s_currentTheme;
+			s_themedListItems[pListItem] = s_currentTheme;
 		}
-		else if (s_themedItems[pListItem] != s_currentTheme)
+		else if (s_themedListItems[pListItem] != s_currentTheme)
 		{
-			s_themedItems[pListItem] = s_currentTheme;
+			s_themedListItems[pListItem] = s_currentTheme;
 		}
 		else
 		{

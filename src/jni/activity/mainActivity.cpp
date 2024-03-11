@@ -4,6 +4,9 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView42Ptr;
+static ZKListView* mThemesListPtr;
+static ZKWindow* mThemeSelectionWindowPtr;
 static ZKTextView* mTextView41Ptr;
 static ZKSlideWindow* mSlideWindow2Ptr;
 static ZKListView* mListView1Ptr;
@@ -324,6 +327,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
@@ -417,6 +421,9 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView42Ptr = NULL;
+    mThemesListPtr = NULL;
+    mThemeSelectionWindowPtr = NULL;
     mTextView41Ptr = NULL;
     mSlideWindow2Ptr = NULL;
     mListView1Ptr = NULL;
@@ -630,6 +637,9 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView42Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView42);
+    mThemesListPtr = (ZKListView*)findControlByID(ID_MAIN_ThemesList);if(mThemesListPtr!= NULL){mThemesListPtr->setListAdapter(this);mThemesListPtr->setItemClickListener(this);}
+    mThemeSelectionWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_ThemeSelectionWindow);
     mTextView41Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView41);
     mSlideWindow2Ptr = (ZKSlideWindow*)findControlByID(ID_MAIN_SlideWindow2);if(mSlideWindow2Ptr!= NULL){mSlideWindow2Ptr->setSlideItemClickListener(this);}
     mListView1Ptr = (ZKListView*)findControlByID(ID_MAIN_ListView1);if(mListView1Ptr!= NULL){mListView1Ptr->setListAdapter(this);mListView1Ptr->setItemClickListener(this);}

@@ -145,6 +145,7 @@
     <string name="info_timeout">Info Timeout</string>
     <string name="brightness">Brigthness</string>
     <string name="theme">Theme</string>
+    <string name="themes">Themes</string>
     <string name="screensaver">Screensaver</string>
     <string name="timeout">Timeout</string>
     <string name="enabled">Enabled</string>
@@ -163,6 +164,9 @@
     <string name="page_num">Page %d/%d</string>
     <string name="start_guide_header">Select a guide to start</string>
     <string name="guides">Guides</string>
+
+    <!-- Theme names -->
+    <string name="dark">Dark</string>
 
     <!-- Guide names -->
     <string name="setup">Setup</string>

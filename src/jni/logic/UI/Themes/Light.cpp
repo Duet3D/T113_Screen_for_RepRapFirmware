@@ -21,7 +21,7 @@ namespace UI::Theme
 		Yellow = 0xFFECBC35,
 	};
 
-	static ThemeColors darkTheme = {
+	static ThemeColors lightTheme = {
 		// .id = "dark",
 		// Set colors for window
 		.window =
@@ -214,9 +214,9 @@ namespace UI::Theme
 				.background =
 					{
 						.normal = NULL,
-						.pressed = Colors::Blue3,
+						.pressed = Colors::Red,
 						.selected = Colors::Clear,
-						.pressedAndSelected = Colors::Blue3,
+						.pressedAndSelected = Colors::Red,
 						.invalid = Colors::DarkerGray,
 					},
 				.foreground =
@@ -263,12 +263,12 @@ namespace UI::Theme
 	};
 
 	static Theme theme(
-		"dark",
-		&darkTheme,
+		"light",
+		&lightTheme,
 		[]() {
 			/* Overrides */
 			// Windows
-			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
+			UI::GetRootWindow()->setBackgroundColor(Colors::LightGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::DarkerGray);

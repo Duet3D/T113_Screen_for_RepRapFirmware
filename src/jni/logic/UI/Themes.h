@@ -154,7 +154,10 @@ namespace UI::Theme
 	};
 
 	void CreateTheme(const char* id, Theme* theme);
+	int GetThemeCount();
+	Theme* GetThemeByIndex(int index);
 	void SetTheme(const char* id);
+	void SetTheme(Theme* theme);
 	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem);
 } // namespace UI
 

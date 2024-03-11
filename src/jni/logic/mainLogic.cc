@@ -945,6 +945,7 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 								});
 		break;
 	case (int)UI::SettingsSlideWindowIndex::theme:
+		UI::WINDOW->OpenOverlay(mThemeSelectionWindowPtr);
 		break;
 	case (int)UI::SettingsSlideWindowIndex::screensaver:
 		UI::WINDOW->OpenOverlay(mScreensaverSettingWindowPtr);
@@ -1399,4 +1400,30 @@ static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) 
 
 static void onSlideItemClick_SlideWindow2(ZKSlideWindow *pSlideWindow, int index) {
     //LOGD(" onSlideItemClick_ SlideWindow2 %d !!!\n", index);
+}
+
+static int getListItemCount_ThemesList(const ZKListView* pListView)
+{
+	return UI::Theme::GetThemeCount();
+}
+
+static void obtainListItemData_ThemesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::Theme::Theme* theme = UI::Theme::GetThemeByIndex(index);
+	if (theme == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(theme->id);
+}
+
+static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
+{
+	UI::Theme::Theme* theme = UI::Theme::GetThemeByIndex(index);
+	if (theme == nullptr)
+	{
+		return;
+	}
+	UI::Theme::SetTheme(theme);
 }
