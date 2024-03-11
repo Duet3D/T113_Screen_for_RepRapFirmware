@@ -167,6 +167,7 @@
 
     <!-- Theme names -->
     <string name="dark">Dark</string>
+    <string name="light">Light</string>
 
     <!-- Guide names -->
     <string name="setup">Setup</string>

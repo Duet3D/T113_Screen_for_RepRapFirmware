@@ -29,8 +29,8 @@ void onEasyUIDeinit(EasyUIContext *pContext) {
 	UARTCONTEXT->closeUart();
 }
 
-const char* onStartupApp(EasyUIContext *pContext) {
-	dbg("lang code %s (%s)", LANGUAGEMANAGER->getCurrentCode().c_str(), LANGUAGEMANAGER->getCurrentLanguage().c_str());
+const char* onStartupApp(EasyUIContext* pContext)
+{
 	if (StoragePreferences::getString("sys_lang_code_key", "") == "")
 	{
 		StoragePreferences::putString("sys_lang_code_key", "en_US");
@@ -43,7 +43,6 @@ const char* onStartupApp(EasyUIContext *pContext) {
 	}
 	return "mainActivity";
 }
-
 
 #ifdef __cplusplus
 

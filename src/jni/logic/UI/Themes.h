@@ -147,16 +147,17 @@ namespace UI::Theme
 			function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides =
 				[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {});
 
-		const char* id;
+		std::string id;
 		ThemeColors* colors;
 		function<void(void)> overrides;
 		function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides;
 	};
 
-	void CreateTheme(const char* id, Theme* theme);
+	void CreateTheme(Theme* theme);
 	int GetThemeCount();
+	const Theme* GetCurrentTheme();
 	Theme* GetThemeByIndex(int index);
-	void SetTheme(const char* id);
+	void SetTheme(const std::string& id);
 	void SetTheme(Theme* theme);
 	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem);
 } // namespace UI

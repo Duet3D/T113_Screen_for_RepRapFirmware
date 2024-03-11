@@ -5,12 +5,13 @@
 #include "Colors.h"
 #include "Themes.h"
 #include <map>
+#include <storage/StoragePreferences.h>
 #include <string>
 #include <typeinfo>
 
 namespace UI::Theme
 {
-	static std::map<const char*, Theme*> s_themes;
+	static std::map<std::string, Theme*> s_themes;
 	static std::map<ZKListView::ZKListItem*, Theme*> s_themedListItems;
 	static Theme* s_currentTheme;
 
@@ -20,23 +21,28 @@ namespace UI::Theme
 				 function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides)
 		: id(id), colors(colors), overrides(overrides), listItemOverrides(listItemOverrides)
 	{
-		CreateTheme(id, this);
+		CreateTheme(this);
 	}
 
-	void CreateTheme(const char* id, Theme* theme)
+	void CreateTheme(Theme* theme)
 	{
-		if (s_themes.find(id) != s_themes.end())
+		if (s_themes.find(theme->id) != s_themes.end())
 		{
-			warn("Theme %s already exists", id);
+			warn("Theme %s already exists", theme->id.c_str());
 			return;
 		}
-		info("Creating theme %s", id);
-		s_themes[id] = theme;
+		info("Creating theme %s", theme->id.c_str());
+		s_themes[theme->id] = theme;
 	}
 
 	int GetThemeCount()
 	{
 		return s_themes.size();
+	}
+
+	const Theme* GetCurrentTheme()
+	{
+		return s_currentTheme;
 	}
 
 	Theme* GetThemeByIndex(int index)
@@ -247,11 +253,23 @@ namespace UI::Theme
 		}
 	}
 
-	void SetTheme(const char* id)
+	void SetTheme(const std::string& id)
 	{
 		if (s_themes.find(id) == s_themes.end())
 		{
-			warn("Theme %s not found", id);
+			std::string validThemes = "";
+			bool first = true;
+			for (auto theme : s_themes)
+			{
+				validThemes += theme.first;
+				if (first)
+				{
+					first = false;
+					continue;
+				}
+				validThemes += ", ";
+			}
+			warn("Theme %s not found. Valid themes are: %s", id, validThemes.c_str());
 			return;
 		}
 		SetTheme(s_themes[id]);
@@ -263,7 +281,8 @@ namespace UI::Theme
 			return;
 
 		s_currentTheme = theme;
-		info("Set theme to \"%s\"", s_currentTheme->id);
+		StoragePreferences::putString("theme", s_currentTheme->id);
+		info("Set theme to \"%s\"", s_currentTheme->id.c_str());
 
 		s_themedListItems.clear();
 		ZKWindow* window = UI::GetRootWindow();
@@ -308,7 +327,7 @@ namespace UI::Theme
 		}
 
 		ThemeColors* colors = s_currentTheme->colors;
-		dbg("Applying %s theme to list item %p", s_currentTheme->id, pListItem);
+		dbg("Applying %s theme to list item %p", s_currentTheme->id.c_str(), pListItem);
 
 		pListItem->setBackgroundColor(colors->listItem.bgDefault);
 		pListItem->setBackgroundPic(colors->listItem.bgImage);

@@ -91,7 +91,6 @@ static void onUI_init()
 {
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
-	dbg("lang code %s (%s)", LANGUAGEMANAGER->getCurrentCode().c_str(), LANGUAGEMANAGER->getCurrentLanguage().c_str());
 	InitUpgradeMountListener();
 
 	initTimer(mActivityPtr);
@@ -101,7 +100,7 @@ static void onUI_init()
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
-	UI::Theme::SetTheme("dark");
+	UI::Theme::SetTheme(StoragePreferences::getString("theme", "dark"));
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
@@ -1416,7 +1415,8 @@ static void obtainListItemData_ThemesList(ZKListView* pListView, ZKListView::ZKL
 		pListItem->setText("");
 		return;
 	}
-	pListItem->setTextTr(theme->id);
+	pListItem->setTextTr(theme->id.c_str());
+	pListItem->setSelected(theme->id == UI::Theme::GetCurrentTheme()->id);
 }
 
 static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
