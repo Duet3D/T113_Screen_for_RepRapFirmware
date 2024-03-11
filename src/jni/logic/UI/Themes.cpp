@@ -70,7 +70,7 @@ namespace UI::Theme
 										 colors->text.foreground.pressedAndSelected);
 				text->setTextStatusColor(ZK_CONTROL_STATUS_INVALID, colors->text.foreground.invalid);
 
-				text->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+				text->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKButton))
@@ -102,7 +102,7 @@ namespace UI::Theme
 										   colors->button.images.pressedAndSelected);
 				button->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->button.images.invalid);
 
-				button->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+				button->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKEditText))
@@ -206,7 +206,7 @@ namespace UI::Theme
 											 colors->checkbox.images.pressedAndSelected);
 				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->checkbox.images.invalid);
 
-				checkbox->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+				checkbox->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKListView))
@@ -253,13 +253,18 @@ namespace UI::Theme
 			return;
 		}
 
+		if (pListView == nullptr)
+		{
+			warn("List view is null");
+			return;
+		}
+
 		if (pListItem == nullptr)
 		{
 			warn("List item is null");
 			return;
 		}
 
-		dbg("Theming list item %p", pListItem);
 		if (s_themedItems.find(pListItem) == s_themedItems.end())
 		{
 			s_themedItems[pListItem] = s_currentTheme;
@@ -270,11 +275,12 @@ namespace UI::Theme
 		}
 		else
 		{
-			dbg("Already themed list item %p", pListItem);
+			verbose("Already themed list item %p", pListItem);
 			return;
 		}
 
 		ThemeColors* colors = s_currentTheme->colors;
+		dbg("Applying %s theme to list item %p", s_currentTheme->id, pListItem);
 
 		pListItem->setBackgroundColor(colors->listItem.bgDefault);
 		pListItem->setBackgroundPic(colors->listItem.bgImage);
@@ -336,7 +342,7 @@ namespace UI::Theme
 										 colors->listSubItem.images.pressedAndSelected);
 			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listSubItem.images.invalid);
 
-			pSubItem->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+			pSubItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 		}
 		s_currentTheme->listItemOverrides(pListView, pListItem);
 	}

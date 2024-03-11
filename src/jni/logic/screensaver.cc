@@ -52,6 +52,9 @@ static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{0, 50},
 };
 
+static int xOffset = 1;
+static int yOffset = 1;
+
 /**
  * Triggered when the UI is initialized
  */
@@ -61,6 +64,8 @@ static void onUI_init()
 	LayoutPosition position = mScreensaverTextPtr->getPosition();
 	position.mLeft = 10;
 	position.mTop = 10;
+	xOffset = 1;
+	yOffset = 1;
 	mScreensaverTextPtr->setPosition(position);
 }
 
@@ -93,8 +98,6 @@ static bool onUI_Timer(int id)
 	switch (id)
 	{
 	case 0: {
-		static int xOffset = 1;
-		static int yOffset = 1;
 		static ZKTextView* textPtr = mScreensaverTextPtr;
 		LayoutPosition position = textPtr->getPosition();
 		if (position.mLeft < 10)

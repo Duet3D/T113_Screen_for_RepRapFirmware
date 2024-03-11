@@ -7,11 +7,13 @@ namespace UI::Theme
 		Clear = 0x00FFFFFF,
 		Black = 0xFF000000,
 		White = 0xFFFFFFFF,
-		LightGray = 0xFFE0E0E0,
-		LighterGray = 0xFF808080,
-		Gray = 0xFFC0C0C0,
-		DarkGray = 0xFFA0A0A0,
+		LighterGray = 0xFFE0E0E0,
+		LightGray = 0xFFC0C0C0,
+		Gray = 0xFFA0A0A0,
+		DarkGray = 0xFF808080,
+		DarkerGray = 0xFF606060,
 		Red = 0xFFFF0000,
+		DarkRed = 0xFFFF8080,
 		Blue = 0xFF0000FF,
 		Blue2 = 0xFF5578FC,
 		Blue3 = 0xFF00AAF4,
@@ -178,15 +180,15 @@ namespace UI::Theme
 			},
 		.listItem =
 			{
-				.bgDefault = Colors::DarkGray,
+				.bgDefault = Colors::Gray,
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::Gray,
+						.normal = Colors::DarkGray,
 						.pressed = Colors::Blue3,
 						.selected = Colors::Blue2,
 						.pressedAndSelected = Colors::Blue3,
-						.invalid = Colors::DarkGray,
+						.invalid = Colors::DarkerGray,
 					},
 				.foreground =
 					{
@@ -194,7 +196,7 @@ namespace UI::Theme
 						.pressed = NULL,
 						.selected = NULL,
 						.pressedAndSelected = NULL,
-						.invalid = Colors::LighterGray,
+						.invalid = Colors::Gray,
 					},
 				.images =
 					{
@@ -213,9 +215,9 @@ namespace UI::Theme
 					{
 						.normal = NULL,
 						.pressed = Colors::Blue3,
-						.selected = Colors::Blue2,
+						.selected = Colors::Clear,
 						.pressedAndSelected = Colors::Blue3,
-						.invalid = Colors::DarkGray,
+						.invalid = Colors::DarkerGray,
 					},
 				.foreground =
 					{
@@ -264,15 +266,47 @@ namespace UI::Theme
 		"dark",
 		&darkTheme,
 		[]() {
-			// Overrides
+			/* Overrides */
+			// Windows
+			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkGray);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::DarkerGray);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Blue4);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_GuideSelectionWindow)->setBackgroundColor(Colors::Black);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_GuidedSetupWindow)->setBackgroundColor(Colors::Black);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundColor(Colors::DarkerGray);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::Black);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_NumPadWindow)->setBackgroundColor(Colors::Black);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow)->setBackgroundColor(Colors::Clear);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow)->setBackgroundColor(Colors::DarkerGray);
+
+			// Scrollable text
+			UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
+
+			// EStop Button
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
 		},
 		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {
-			// ListItem Overrides
+			if (pListView == nullptr || pListItem == nullptr)
+				return;
+
+			/* ListItem Overrides */
 			switch (pListView->getID())
 			{
-			case ID_MAIN_ListView1:
+			case ID_MAIN_FileListView: {
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
+				break;
+			}
+			case ID_MAIN_AxisControlListView: {
+				ZKListView::ZKListSubItem* pHomeBtn = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
+				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Yellow);
+				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
+				break;
+			}
+			default:
+				break;
 			}
 		});
 } // namespace UI::Theme
