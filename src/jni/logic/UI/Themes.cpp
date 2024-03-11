@@ -354,7 +354,7 @@ namespace UI::Theme
 									  colors->listItem.images.pressedAndSelected);
 		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listItem.images.invalid);
 
-		pListItem->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		// pListItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 
 		for (int i = 0; i < pListItem->getSubItemCount(); i++)
 		{
@@ -389,7 +389,7 @@ namespace UI::Theme
 										 colors->listSubItem.images.pressedAndSelected);
 			pSubItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listSubItem.images.invalid);
 
-			pSubItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
+			// pSubItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 		}
 		s_currentTheme->listItemOverrides(pListView, pListItem);
 	}

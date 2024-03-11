@@ -647,6 +647,7 @@ static int getListItemCount_FileListView(const ZKListView *pListView) {
 
 static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
 	// LOGD(" obtainListItemData_ FileListView  !!!\n");
+	ZKListView::ZKListSubItem* pFileName = pListItem->findSubItemByID(ID_MAIN_FileNameSubItem);
 	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
 	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
 	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
@@ -656,7 +657,7 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	if (item == nullptr)
 		return;
 //	dbg("Files: settings list item %d name to %s", index, item->GetName().c_str());
-	pListItem->setText(item->GetName());
+	pFileName->setText(item->GetName());
 	switch (item->GetType())
 	{
 	case OM::FileSystem::FileSystemItemType::file: {
