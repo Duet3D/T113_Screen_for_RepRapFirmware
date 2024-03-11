@@ -5,7 +5,10 @@
 #include "activity/mainActivity.h"
 #include "entry/EasyUIContext.h"
 #include "manager/ConfigManager.h"
+#include "manager/LanguageManager.h"
+#include "storage/StoragePreferences.h"
 #include "uart/UartContext.h"
+#include "utils/BrightnessHelper.h"
 
 #include "logic/Communication.h"
 #include "logic/Hardware/Duet.h"
@@ -27,6 +30,17 @@ void onEasyUIDeinit(EasyUIContext *pContext) {
 }
 
 const char* onStartupApp(EasyUIContext *pContext) {
+	dbg("lang code %s (%s)", LANGUAGEMANAGER->getCurrentCode().c_str(), LANGUAGEMANAGER->getCurrentLanguage().c_str());
+	if (StoragePreferences::getString("sys_lang_code_key", "") == "")
+	{
+		StoragePreferences::putString("sys_lang_code_key", "en_US");
+		LANGUAGEMANAGER->setCurrentCode("en_US");
+	}
+	if (StoragePreferences::getInt("sys_brightness_key", -1) == -1)
+	{
+		StoragePreferences::putInt("sys_brightness_key", 0);
+		BRIGHTNESSHELPER->setBrightness(0);
+	}
 	return "mainActivity";
 }
 

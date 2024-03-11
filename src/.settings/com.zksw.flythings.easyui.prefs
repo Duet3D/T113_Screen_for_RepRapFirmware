@@ -1,5 +1,5 @@
-easyui.cfg.debug={"baud"\:"115200","defBrightness"\:-1,"languageCode"\:"zh_CN","languagePath"\:"/mnt/extsd/tr/","resPath"\:"/mnt/extsd/ui/","rotateScreen"\:0,"rotateTouch"\:0,"screensaverTimeOut"\:120,"startupLibPath"\:"/mnt/extsd/lib/libzkgui.so","startupTouchCalib"\:false,"touchDev"\:"/dev/input/event1","uart"\:"ttyS1","zkdebug"\:true}
-easyui.cfg.release={"baud"\:"115200","defBrightness"\:-1,"languageCode"\:"zh_CN","languagePath"\:"/res/tr/","resPath"\:"/res/ui/","rotateScreen"\:0,"rotateTouch"\:0,"screensaverTimeOut"\:120,"startupLibPath"\:"/res/lib/libzkgui.so","startupTouchCalib"\:false,"touchDev"\:"/dev/input/event1","uart"\:"ttyS1","zkdebug"\:true}
+easyui.cfg.debug={"baud"\:"115200","defBrightness"\:-1,"languageCode"\:"en_US","languagePath"\:"/mnt/extsd/tr/","resPath"\:"/mnt/extsd/ui/","rotateScreen"\:0,"rotateTouch"\:0,"screensaverTimeOut"\:120,"startupLibPath"\:"/mnt/extsd/lib/libzkgui.so","startupTouchCalib"\:false,"touchDev"\:"/dev/input/event1","uart"\:"ttyS1","zkdebug"\:true}
+easyui.cfg.release={"baud"\:"115200","defBrightness"\:-1,"languageCode"\:"en_US","languagePath"\:"/res/tr/","resPath"\:"/res/ui/","rotateScreen"\:0,"rotateTouch"\:0,"screensaverTimeOut"\:120,"startupLibPath"\:"/res/lib/libzkgui.so","startupTouchCalib"\:false,"touchDev"\:"/dev/input/event1","uart"\:"ttyS1","zkdebug"\:true}
 eclipse.preferences.version=1
 platform={"name"\:"T113","cprojectTemplateDir"\:"bundle/cproject/t113","internalCode"\:"t113"}
 resolution=1024x600

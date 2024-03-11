@@ -13,13 +13,14 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
-#include "UI/Themes.h"
 #include "UI/Gcodes.h"
 #include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
+#include "UI/Themes.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
 #include "Upgrade.h"
+#include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
 #include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
@@ -90,7 +91,7 @@ static void onUI_init()
 {
 	// Tips : Add the display code for UI initialization here, such as: mText1Ptr->setText("123");
 	srand(0);
-
+	dbg("lang code %s (%s)", LANGUAGEMANAGER->getCurrentCode().c_str(), LANGUAGEMANAGER->getCurrentLanguage().c_str());
 	InitUpgradeMountListener();
 
 	initTimer(mActivityPtr);
