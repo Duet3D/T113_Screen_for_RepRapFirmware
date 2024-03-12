@@ -78,7 +78,7 @@ bool BMP::Close()
 {
 	if (m_imageFile == nullptr)
 	{
-		warn("File %s already closed", m_imageFileName);
+		// warn("File %s already closed", m_imageFileName);
 		return true;
 	}
 	info("Closing file %s", m_imageFileName);

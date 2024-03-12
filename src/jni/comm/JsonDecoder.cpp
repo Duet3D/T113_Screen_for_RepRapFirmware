@@ -156,11 +156,14 @@ namespace Comm
 
 	void JsonDecoder::StartReceivedMessage()
 	{
-		if (thumbnailContext.state == ThumbnailState::Init)
+		FileInfo* fileInfo = FILEINFO_CACHE->GetCurrentFileInfo();
+		Thumbnail* thumbnail = FILEINFO_CACHE->GetCurrentThumbnail();
+
+		if (thumbnail != nullptr && thumbnail->context.state == ThumbnailState::Init)
 		{
-			thumbnailContext.Init();
-			ThumbnailInit(thumbnail);
-			memset(&thumbnailData, 0, sizeof(thumbnailData));
+			thumbnail->context.Init();
+			ThumbnailInit(*thumbnail);
+			memset(&thumbnailBuf, 0, sizeof(thumbnailBuf));
 		}
 	}
 
@@ -184,89 +187,76 @@ namespace Comm
 			OM::lastAlertSeq = OM::currentAlert.seq;
 		}
 
-		if (thumbnailContext.parseErr != 0 || thumbnailContext.err != 0)
+		Thumbnail* thumbnail = FILEINFO_CACHE->GetCurrentThumbnail();
+
+		if (thumbnail != nullptr)
 		{
-			error("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
-			thumbnailContext.state = ThumbnailState::Init;
-		}
+			if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
+			{
+				error("thumbnail parseErr %d err %d.\n", thumbnail->context.parseErr, thumbnail->context.err);
+				thumbnail->context.state = ThumbnailState::Init;
+			}
 
 #if 1 // && DEBUG
-		if (thumbnail.imageFormat != Thumbnail::ImageFormat::Invalid)
-		{
-			dbg("filename %s offset %d size %d format %d width %d height %d\n",
-				thumbnailContext.filename.c_str(),
-				thumbnailContext.offset,
-				thumbnailContext.size,
-				thumbnail.imageFormat,
-				thumbnail.width,
-				thumbnail.height);
-		}
+			if (thumbnail->meta.imageFormat != ThumbnailMeta::ImageFormat::Invalid)
+			{
+				dbg("filename %s offset %d size %d format %d width %d height %d\n",
+					thumbnail->context.filename.c_str(),
+					thumbnail->context.offset,
+					thumbnail->context.size,
+					thumbnail->meta.imageFormat,
+					thumbnail->meta.width,
+					thumbnail->meta.height);
+			}
 #endif
-		int ret;
+			int ret;
 
-		if (stopThumbnailRequest)
-		{
-			warn("Thumbnail request cancelled");
-			thumbnailContext.state = ThumbnailState::Init;
-			thumbnailRequestInProgress = false;
-		}
-
-		if (thumbnail.imageFormat == Thumbnail::ImageFormat::Invalid)
-			thumbnailRequestInProgress = false;
-
-		verbose("thumbnailContext state %d", thumbnailContext.state);
-		switch (thumbnailContext.state)
-		{
-		case ThumbnailState::Init:
-		case ThumbnailState::DataRequest:
-		case ThumbnailState::DataWait:
-			break;
-		case ThumbnailState::Header:
-			if (!ThumbnailIsValid(thumbnail))
+			verbose("thumbnail->context state %d", thumbnail->context.state);
+			switch (thumbnail->context.state)
 			{
-				error("thumbnail meta invalid.\n");
+			case ThumbnailState::Init:
+			case ThumbnailState::DataRequest:
+			case ThumbnailState::DataWait:
+				break;
+			case ThumbnailState::Header:
+				if (!ThumbnailIsValid(*thumbnail))
+				{
+					error("thumbnail meta invalid.\n");
+					break;
+				}
+				if (!thumbnail->image.New(thumbnail->meta, thumbnail->filename.c_str()))
+				{
+					error("Failed to create thumbnail file.");
+					break;
+				}
+				thumbnail->context.state = ThumbnailState::DataRequest;
+				break;
+			case ThumbnailState::Data:
+				if (!ThumbnailDataIsValid(thumbnailBuf))
+				{
+					error("thumbnail meta or data invalid.\n");
+					thumbnail->context.state = ThumbnailState::Init;
+					break;
+				}
+				if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
+				{
+					error("failed to decode thumbnail chunk %d.\n", ret);
+					thumbnail->context.state = ThumbnailState::Init;
+					break;
+				}
+				if (thumbnail->context.next == 0)
+				{
+					thumbnail->image.Close();
+					info("Updating thumbnail %s", thumbnail->filename.c_str());
+					UI::GetThumbnail()->setText("");
+					thumbnail->context.state = ThumbnailState::Init;
+				}
+				else
+				{
+					thumbnail->context.state = ThumbnailState::DataRequest;
+				}
 				break;
 			}
-			if (!thumbnail.New(thumbnail.width, thumbnail.height, thumbnailContext.filename.c_str()))
-			{
-				error("Failed to create thumbnail file.");
-				break;
-			}
-			thumbnailContext.state = ThumbnailState::DataRequest;
-			break;
-		case ThumbnailState::Data:
-			if (!ThumbnailDataIsValid(thumbnailData))
-			{
-				error("thumbnail meta or data invalid.\n");
-				thumbnailContext.state = ThumbnailState::Init;
-				break;
-			}
-			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData)) < 0)
-			{
-				error("failed to decode thumbnail chunk %d.\n", ret);
-				thumbnailContext.state = ThumbnailState::Init;
-				break;
-			}
-			if (thumbnailContext.next == 0)
-			{
-				thumbnail.Close();
-				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
-				UI::GetThumbnail()->setText("");
-				thumbnailContext.state = ThumbnailState::Init;
-				thumbnailRequestInProgress = false;
-			}
-			else
-			{
-				thumbnailContext.state = ThumbnailState::DataRequest;
-			}
-
-			if (stopThumbnailRequest)
-			{
-				warn("Thumbnail request cancelled");
-				thumbnailContext.state = ThumbnailState::Init;
-				thumbnailRequestInProgress = false;
-			}
-			break;
 		}
 	}
 

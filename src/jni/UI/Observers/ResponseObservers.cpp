@@ -4,7 +4,11 @@
  *  Created on: 2 Jan 2024
  *      Author: Andy Everitt
  */
+
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
+
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
@@ -28,7 +32,8 @@
 static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_CHAR("resp",
 				  [](OBSERVER_CHAR_ARGS) {
-					  info("resp: %s", val);
+					  info("resp length=%d", strlen(val));
+					  dbg("resp: %s", val);
 					  static std::string str;
 					  size_t substrlen;
 

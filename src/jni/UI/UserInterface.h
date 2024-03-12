@@ -20,11 +20,11 @@
 #include <sys/types.h>
 #include <vector>
 
+#include "Comm/FileInfo.h"
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "Duet3D/General/Vector.h"
-#include "Library/Thumbnail.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"

@@ -337,9 +337,6 @@ namespace Comm
 
 	void Duet::RequestFileInfo(const char* filename)
 	{
-		stopThumbnailRequest = false;
-		thumbnailRequestInProgress = true;
-
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
@@ -351,7 +348,7 @@ namespace Comm
 			query["name"] = filename;
 			UI::GetThumbnail()->setText("Loading...");
 
-#if 0
+#if 1
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
@@ -370,7 +367,7 @@ namespace Comm
 #endif
 
 /* This way is quicker but duplicates code to decode the received data */
-#if 1
+#if 0
 			std::string name(filename);
 			AsyncGet(
 				"/rr_fileinfo",
@@ -385,7 +382,6 @@ namespace Comm
 						UI::CONSOLE->AddResponse(
 							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
 								.c_str());
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					reader.parse(r.body, body);
@@ -395,13 +391,11 @@ namespace Comm
 							utils::format(
 								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
 								.c_str());
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					if (!body.isMember("thumbnails"))
 					{
 						info("No thumbnails found for %s", filename);
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					Json::Value thumbnailsJson = body["thumbnails"];
@@ -414,13 +408,13 @@ namespace Comm
 						{
 							continue;
 						}
-						thumbnail.width = thumbnailsJson[i]["width"].asInt();
+						thumbnail.meta.width = thumbnailsJson[i]["width"].asInt();
 
 						if (!thumbnailsJson[i].isMember("height"))
 						{
 							continue;
 						}
-						thumbnail.height = thumbnailsJson[i]["height"].asInt();
+						thumbnail.meta.height = thumbnailsJson[i]["height"].asInt();
 
 						if (!thumbnailsJson[i].isMember("offset"))
 						{
@@ -433,12 +427,12 @@ namespace Comm
 							continue;
 						}
 						std::string format = thumbnailsJson[i]["format"].asString();
-						if (!thumbnail.SetImageFormat(format.c_str()))
+						if (!thumbnail.meta.SetImageFormat(format.c_str()))
 						{
 							warn("Unsupported thumbnail format: %s", format.c_str());
 							continue;
 						}
-						thumbnail.New(thumbnail.width, thumbnail.height, filename);
+						thumbnail.image.New(thumbnail.meta, filename);
 
 						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
@@ -446,12 +440,6 @@ namespace Comm
 						query["name"] = filename;
 						while (context.next != 0)
 						{
-							if (stopThumbnailRequest)
-							{
-								warn("Thumbnail request cancelled");
-								thumbnailRequestInProgress = false;
-								return false;
-							}
 							// Request thumbnail data
 							query["offset"] = utils::format("%d", context.next);
 							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
@@ -481,7 +469,7 @@ namespace Comm
 							dbg("Decoding thumbnail data");
 							if (body.isMember("data"))
 							{
-								ThumbnailData data;
+								ThumbnailBuf data;
 								data.size = std::min(body["data"].asString().size(), sizeof(data.buffer));
 								memcpy(data.buffer, body["data"].asString().c_str(), data.size);
 								ThumbnailDecodeChunk(thumbnail, data);
@@ -491,7 +479,6 @@ namespace Comm
 						OM::FileSystem::GetListView()->refreshListView();
 					}
 					UI::GetThumbnail()->setText("");
-					thumbnailRequestInProgress = false;
 					return true;
 				},
 				true);
