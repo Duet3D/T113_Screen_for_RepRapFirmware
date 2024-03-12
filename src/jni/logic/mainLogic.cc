@@ -2,10 +2,10 @@
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
-#include "Communication.h"
+#include "Comm/Communication.h"
+#include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Hardware/Duet.h"
-#include "Hardware/JsonDecoder.h"
 #include "Hardware/Usb.h"
 #include "Library/bmp.h"
 #include "ObjectModel/Alert.h"
@@ -19,7 +19,7 @@
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
-#include "Upgrade.h"
+#include "Upgrade/Upgrade.h"
 #include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
 #include "os/UpgradeMonitor.h"

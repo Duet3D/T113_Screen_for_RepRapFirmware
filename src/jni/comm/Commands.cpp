@@ -12,7 +12,7 @@
  *      Author: andy
  */
 
-#include "Commands.h"
+#include "Comm/Commands.h"
 #include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
 #include <stdlib.h>
@@ -167,7 +167,7 @@ namespace Comm
 
 	const FieldTableEntry* SearchFieldTable(const char* id)
 	{
-        const FieldTableEntry key = {ReceivedDataEvent::rcvUnknown, id};
+		const FieldTableEntry key = {ReceivedDataEvent::rcvUnknown, id};
 		const FieldTableEntry* searchResult = (FieldTableEntry*)bsearch(
 			&key, fieldTable, ARRAY_SIZE(fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
 		return searchResult;

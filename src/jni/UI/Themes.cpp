@@ -2,7 +2,6 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
-#include "Colors.h"
 #include "Themes.h"
 #include <map>
 #include <storage/StoragePreferences.h>

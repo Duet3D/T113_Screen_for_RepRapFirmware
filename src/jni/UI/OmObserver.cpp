@@ -6,13 +6,13 @@
  */
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#include "Debug.h"
 
 #include "OmObserver.h"
 
 #include <ObjectModel/Axis.h>
 #include <ObjectModel/Utils.h>
 
-#include "Debug.h"
 
 namespace UI
 {

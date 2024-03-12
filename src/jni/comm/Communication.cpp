@@ -14,15 +14,15 @@
 
 #include "UI/UserInterface.h"
 
-#include "Communication.h"
+#include "Comm/Communication.h"
 #include <stdarg.h>
 
+#include "Comm/JsonDecoder.h"
 #include "Hardware/Duet.h"
-#include "Hardware/JsonDecoder.h"
 #include "Hardware/Reset.h"
 #include "Hardware/SerialIo.h"
 
-#include "ControlCommands.h"
+#include "Comm/ControlCommands.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Axis.h"
 #include "ObjectModel/BedOrChamber.h"

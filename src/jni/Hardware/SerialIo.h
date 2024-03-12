@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <sys/types.h>
 #include <Duet3D/General/String.h>
-#include "../ecv.h"
+#include "ecv.h"
 #undef array
 #undef result
 #undef value

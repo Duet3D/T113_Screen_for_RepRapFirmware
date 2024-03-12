@@ -11,7 +11,7 @@
 
 #include "Files.h"
 
-#include "Communication.h"
+#include "Comm/Communication.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
 #include "UI/UserInterface.h"
@@ -156,11 +156,14 @@ namespace OM::FileSystem
 		auto last = sItems.end();
 		FileSystemItem** temp;
 		--last;
-		while(last - first > 0){
+		while (last - first > 0)
+		{
 			temp = last;
-			while(temp != first){
-				if( SortItem( *temp, *(temp-1) ) ){
-					std::iter_swap( temp-1, temp);
+			while (temp != first)
+			{
+				if (SortItem(*temp, *(temp - 1)))
+				{
+					std::iter_swap(temp - 1, temp);
 				}
 				--temp;
 			}
@@ -325,5 +328,4 @@ namespace OM::FileSystem
 		}
 		return "";
 	}
-} /* namespace OM */
-
+} // namespace OM::FileSystem

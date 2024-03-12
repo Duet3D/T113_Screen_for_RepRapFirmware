@@ -10,8 +10,8 @@
 #include "uart/UartContext.h"
 #include "utils/BrightnessHelper.h"
 
-#include "logic/Communication.h"
-#include "logic/Hardware/Duet.h"
+#include "Comm/Communication.h"
+#include "Hardware/Duet.h"
 
 #ifdef __cplusplus
 extern "C" {

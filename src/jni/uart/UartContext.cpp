@@ -18,7 +18,7 @@
 #include "UI/UserInterface.h"
 #include "uart/UartContext.h"
 
-#include "Communication.h"
+#include "Comm/Communication.h"
 #include "Hardware/Duet.h"
 #include "manager/LanguageManager.h"
 #include "utils/Log.h"

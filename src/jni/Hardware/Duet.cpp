@@ -8,10 +8,10 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 #include "timer.h"
 
-#include "Communication.h"
+#include "Comm/Communication.h"
+#include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Duet.h"
-#include "Hardware/JsonDecoder.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
@@ -203,8 +203,8 @@ namespace Comm
 		case CommunicationType::usb:
 			// TODO
 			break;
-        default:
-            break;
+		default:
+			break;
 		}
 	}
 

@@ -11,7 +11,7 @@
 #ifndef JNI_LOGIC_HARDWARE_JSONDECODER_H_
 #define JNI_LOGIC_HARDWARE_JSONDECODER_H_
 
-#include "../ecv.h"
+#include "ecv.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
 #include <sys/types.h>

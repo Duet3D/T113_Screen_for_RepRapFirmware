@@ -6,7 +6,7 @@
  */
 #include "Debug.h"
 
-#include "Communication.h"
+#include "Comm/Communication.h"
 #include "Library/Thumbnail.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"

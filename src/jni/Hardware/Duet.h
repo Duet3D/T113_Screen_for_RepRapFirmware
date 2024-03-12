@@ -8,13 +8,13 @@
 #ifndef JNI_LOGIC_HARDWARE_DUET_H_
 #define JNI_LOGIC_HARDWARE_DUET_H_
 
-#include "../utils.h"
+#include "utils.h"
 #include "curl/curl.h"
 #include "restclient-cpp/restclient.h"
 
+#include "Comm/Network.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
-#include "Hardware/Network.h"
 #include "manager/ConfigManager.h"
 #include "termio.h"
 

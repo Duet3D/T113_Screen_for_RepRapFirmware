@@ -7,9 +7,12 @@
 
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
-#include "Popup.h"
-#include "Communication.h"
 #include "Debug.h"
+
+#include "Popup.h"
+
+#include "Comm/Communication.h"
+
 #include "Hardware/Duet.h"
 #include "UserInterface.h"
 #include "storage/StoragePreferences.h"

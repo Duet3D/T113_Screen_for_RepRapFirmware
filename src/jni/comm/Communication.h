@@ -10,10 +10,10 @@
 
 #include "Library/Thumbnail.h"
 
-#include "Commands.h"
-#include "Configuration.h"
+#include "Comm/Commands.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
+#include "UI/UserInterfaceConstants.h"
 #include <stdint.h>
 #include <string>
 
@@ -30,7 +30,7 @@ namespace Comm
 
 	struct ThumbnailContext
 	{
-		String<MaxFilenameLength> filename;
+		String<MaxFileNameLength> filename;
 		enum ThumbnailState state;
 		int16_t parseErr;
 		int32_t err;
@@ -78,12 +78,12 @@ namespace Comm
 	};
 
 	extern Seq* currentReqSeq;
-	extern Seq *currentRespSeq;
+	extern Seq* currentRespSeq;
 
-	bool GetInteger(const char s[], int32_t &rslt);
-	bool GetUnsignedInteger(const char s[], unsigned int &rslt);
-	bool GetFloat(const char s[], float &rslt);
-	bool GetBool(const char s[], bool &rslt);
+	bool GetInteger(const char s[], int32_t& rslt);
+	bool GetUnsignedInteger(const char s[], unsigned int& rslt);
+	bool GetFloat(const char s[], float& rslt);
+	bool GetBool(const char s[], bool& rslt);
 	void Reconnect();
 
 	Seq* FindSeqByKey(const char* key);
@@ -97,6 +97,6 @@ namespace Comm
 	void CancelThumbnailRequest();
 	void sendNext();
 	void init();
-}
+} // namespace Comm
 
 #endif /* JNI_LOGIC_COMMUNICATION_HPP_ */
