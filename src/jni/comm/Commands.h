@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_LOGIC_COMMANDS_H_
-#define JNI_LOGIC_COMMANDS_H_
+#ifndef JNI_COMM_COMMANDS_H_
+#define JNI_COMM_COMMANDS_H_
 
 namespace Comm
 {
@@ -188,4 +188,4 @@ namespace Comm
 	const FieldTableEntry* SearchFieldTable(const char* id);
 } // namespace Comm
 
-#endif /* JNI_LOGIC_COMMANDS_H_ */
+#endif /* JNI_COMM_COMMANDS_H_ */

@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_HARDWARE_NETWORK_H_
-#define JNI_LOGIC_HARDWARE_NETWORK_H_
+#ifndef JNI_COMM_NETWORK_H_
+#define JNI_COMM_NETWORK_H_
 
 #include "restclient-cpp/restclient.h"
 #include "std_fixed/functional.h"
@@ -42,4 +42,4 @@ namespace Comm
 			  uint32_t sessionKey = 0);
 } // namespace Comm
 
-#endif /* JNI_LOGIC_HARDWARE_NETWORK_H_ */
+#endif /* JNI_COMM_NETWORK_H_ */

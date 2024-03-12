@@ -8,8 +8,8 @@
  *  The original can be found at https://github.com/Duet3D/PanelDueFirmware/blob/master/src/Hardware/SerialIo.h
  */
 
-#ifndef JNI_LOGIC_HARDWARE_JSONDECODER_H_
-#define JNI_LOGIC_HARDWARE_JSONDECODER_H_
+#ifndef JNI_COMM_JSONDECODER_H_
+#define JNI_COMM_JSONDECODER_H_
 
 #include "ecv.h"
 #include <Duet3D/General/String.h>
@@ -82,4 +82,4 @@ namespace Comm
         
 	};
 } // namespace Comm
-#endif /* JNI_LOGIC_HARDWARE_JSONDECODER_H_ */
+#endif /* JNI_COMM_JSONDECODER_H_ */

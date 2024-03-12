@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_OBJECTMODEL_JOB_HPP_
-#define JNI_LOGIC_OBJECTMODEL_JOB_HPP_
+#ifndef JNI_OBJECTMODEL_JOB_HPP_
+#define JNI_OBJECTMODEL_JOB_HPP_
 
 #include <sys/types.h>
 #include "Duet3D/General/StringRef.h"
@@ -26,6 +26,4 @@ namespace OM
 	const uint32_t GetPrintRemaining();
 }
 
-
-
-#endif /* JNI_LOGIC_OBJECTMODEL_JOB_HPP_ */
+#endif /* JNI_OBJECTMODEL_JOB_HPP_ */

@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_OBJECTMODEL_HEAT_HPP_
-#define JNI_LOGIC_OBJECTMODEL_HEAT_HPP_
+#ifndef JNI_OBJECTMODEL_HEAT_HPP_
+#define JNI_OBJECTMODEL_HEAT_HPP_
 
 #include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
@@ -81,4 +81,4 @@ namespace OM
 	}
 }
 
-#endif /* JNI_LOGIC_OBJECTMODEL_HEAT_HPP_ */
+#endif /* JNI_OBJECTMODEL_HEAT_HPP_ */

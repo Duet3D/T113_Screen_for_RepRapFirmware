@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_ALERT_H_
-#define JNI_LOGIC_UI_ALERT_H_
+#ifndef JNI_UI_ALERT_H_
+#define JNI_UI_ALERT_H_
 
 #include "Duet3D/General/Bitmap.h"
 #include "Duet3D/General/String.h"
@@ -104,4 +104,4 @@ namespace OM
 	extern uint32_t lastAlertSeq;
 } // namespace OM
 
-#endif /* JNI_LOGIC_UI_ALERT_H_ */
+#endif /* JNI_UI_ALERT_H_ */

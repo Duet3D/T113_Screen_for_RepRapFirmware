@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_OBJECTMODEL_FAN_HPP_
-#define JNI_LOGIC_OBJECTMODEL_FAN_HPP_
+#ifndef JNI_OBJECTMODEL_FAN_HPP_
+#define JNI_OBJECTMODEL_FAN_HPP_
 
 #include <sys/types.h>
 #include <Duet3D/General/Bitmap.h>
@@ -43,4 +43,4 @@ namespace OM
 	size_t RemoveFan(const size_t index, const bool allFollowing);
 }
 
-#endif /* JNI_LOGIC_OBJECTMODEL_FAN_HPP_ */
+#endif /* JNI_OBJECTMODEL_FAN_HPP_ */

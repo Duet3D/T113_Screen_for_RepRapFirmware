@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_GCODES_HPP_
-#define JNI_LOGIC_UI_GCODES_HPP_
+#ifndef JNI_UI_GCODES_HPP_
+#define JNI_UI_GCODES_HPP_
 
 #include "manager/LanguageManager.h"
 
@@ -231,4 +231,4 @@ static gcode Gcode[] = {
 	{"T_desc"},
 };
 
-#endif /* JNI_LOGIC_UI_GCODES_HPP_ */
+#endif /* JNI_UI_GCODES_HPP_ */

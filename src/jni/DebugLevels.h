@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_LOGIC_DEBUGLEVELS_H_
-#define JNI_LOGIC_DEBUGLEVELS_H_
+#ifndef JNI_DEBUGLEVELS_H_
+#define JNI_DEBUGLEVELS_H_
 
 #define DEBUG_LEVEL_VERBOSE 0
 #define DEBUG_LEVEL_DBG 1
@@ -15,4 +15,4 @@
 #define DEBUG_LEVEL_ERROR 4
 #define DEBUG_LEVEL_FATAL 5
 
-#endif /* JNI_LOGIC_DEBUGLEVELS_H_ */
+#endif /* JNI_DEBUGLEVELS_H_ */

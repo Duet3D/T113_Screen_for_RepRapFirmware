@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_LOGIC_UI_GUIDEDSETUP_H_
-#define JNI_LOGIC_UI_GUIDEDSETUP_H_
+#ifndef JNI_UI_GUIDEDSETUP_H_
+#define JNI_UI_GUIDEDSETUP_H_
 
 #include "window/ZKWindow.h"
 
@@ -71,4 +71,4 @@ namespace UI::GuidedSetup
 	void Close();
 } // namespace UI::GuidedSetup
 
-#endif /* JNI_LOGIC_UI_GUIDEDSETUP_H_ */
+#endif /* JNI_UI_GUIDEDSETUP_H_ */

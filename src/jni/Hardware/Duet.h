@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_HARDWARE_DUET_H_
-#define JNI_LOGIC_HARDWARE_DUET_H_
+#ifndef JNI_HARDWARE_DUET_H_
+#define JNI_HARDWARE_DUET_H_
 
 #include "utils.h"
 #include "curl/curl.h"
@@ -140,4 +140,4 @@ namespace Comm
 	extern Duet duet;
 } // namespace Comm
 
-#endif /* JNI_LOGIC_HARDWARE_DUET_H_ */
+#endif /* JNI_HARDWARE_DUET_H_ */

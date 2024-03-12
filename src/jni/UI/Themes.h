@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_COLORS_HPP_
-#define JNI_LOGIC_UI_COLORS_HPP_
+#ifndef JNI_UI_COLORS_HPP_
+#define JNI_UI_COLORS_HPP_
 
 #include "UI/UserInterface.h"
 #include "std_fixed/functional.h"
@@ -162,4 +162,4 @@ namespace UI::Theme
 	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem);
 } // namespace UI
 
-#endif /* JNI_LOGIC_UI_COLORS_HPP_ */
+#endif /* JNI_UI_COLORS_HPP_ */

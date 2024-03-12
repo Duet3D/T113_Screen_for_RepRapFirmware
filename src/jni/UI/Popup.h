@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_POPUP_H_
-#define JNI_LOGIC_UI_POPUP_H_
+#ifndef JNI_UI_POPUP_H_
+#define JNI_UI_POPUP_H_
 
 #include "control/ZKEditText.h"
 #include "control/ZKListView.h"
@@ -240,4 +240,4 @@ namespace UI
 						  bool displayRaw = false);
 } // namespace UI
 
-#endif /* JNI_LOGIC_UI_POPUP_H_ */
+#endif /* JNI_UI_POPUP_H_ */

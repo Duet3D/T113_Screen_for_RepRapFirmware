@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_LOGIC_OBJECTMODEL_FILES_HPP_
-#define JNI_LOGIC_OBJECTMODEL_FILES_HPP_
+#ifndef JNI_OBJECTMODEL_FILES_HPP_
+#define JNI_OBJECTMODEL_FILES_HPP_
 
 #include "Debug.h"
 #include "control/ZKListView.h"
@@ -91,6 +91,4 @@ namespace OM::FileSystem
 	std::string GetFileExtension(const std::string& fileName);
 } /* namespace OM */
 
-
-
-#endif /* JNI_LOGIC_OBJECTMODEL_FILES_HPP_ */
+#endif /* JNI_OBJECTMODEL_FILES_HPP_ */

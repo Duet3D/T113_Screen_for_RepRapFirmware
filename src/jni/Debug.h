@@ -5,8 +5,8 @@
  *      Author: Loïc
  */
 
-#ifndef JNI_LOGIC_DEBUG_HPP_
-#define JNI_LOGIC_DEBUG_HPP_
+#ifndef JNI_DEBUG_HPP_
+#define JNI_DEBUG_HPP_
 
 #include "DebugLevels.h"
 
@@ -57,4 +57,4 @@
 #define fatal(fmt, args...)
 #endif
 
-#endif /* JNI_LOGIC_DEBUG_HPP_ */
+#endif /* JNI_DEBUG_HPP_ */

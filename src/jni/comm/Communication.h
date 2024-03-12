@@ -5,8 +5,8 @@
  *      Author: Loïc G.
  */
 
-#ifndef JNI_LOGIC_COMMUNICATION_HPP_
-#define JNI_LOGIC_COMMUNICATION_HPP_
+#ifndef JNI_COMM_COMMUNICATION_HPP_
+#define JNI_COMM_COMMUNICATION_HPP_
 
 #include "Library/Thumbnail.h"
 
@@ -99,4 +99,4 @@ namespace Comm
 	void init();
 } // namespace Comm
 
-#endif /* JNI_LOGIC_COMMUNICATION_HPP_ */
+#endif /* JNI_COMM_COMMUNICATION_HPP_ */

@@ -5,8 +5,8 @@
  *      Author: Andy E
  */
 
-#ifndef JNI_LOGIC_UI_USERINTERFACE_HPP_
-#define JNI_LOGIC_UI_USERINTERFACE_HPP_
+#ifndef JNI_UI_USERINTERFACE_HPP_
+#define JNI_UI_USERINTERFACE_HPP_
 
 #include "activity/mainActivity.h"
 #include "control/ZKBase.h"
@@ -206,4 +206,4 @@ namespace UI
 #define CONSOLE Console::GetInstance()
 } // namespace UI
 
-#endif /* JNI_LOGIC_UI_USERINTERFACE_HPP_ */
+#endif /* JNI_UI_USERINTERFACE_HPP_ */

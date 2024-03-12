@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_LOGIC_HARDWARE_USB_H_
-#define JNI_LOGIC_HARDWARE_USB_H_
+#ifndef JNI_HARDWARE_USB_H_
+#define JNI_HARDWARE_USB_H_
 
 #include "Debug.h"
 #include <dirent.h>
@@ -32,4 +32,4 @@ namespace USB
 	bool ReadFileContents(const std::string& filePath, std::string& contents);
 } // namespace USB
 
-#endif /* JNI_LOGIC_HARDWARE_USB_H_ */
+#endif /* JNI_HARDWARE_USB_H_ */

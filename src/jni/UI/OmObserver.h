@@ -5,8 +5,8 @@
  *      Author: Loïc & Andy Everitt
  */
 
-#ifndef JNI_LOGIC_UI_OMOBSERVER_HPP_
-#define JNI_LOGIC_UI_OMOBSERVER_HPP_
+#ifndef JNI_UI_OMOBSERVER_HPP_
+#define JNI_UI_OMOBSERVER_HPP_
 
 #include "Comm/Communication.h"
 
@@ -160,4 +160,4 @@ namespace UI
 	extern ObserverMap<ui_array_end_update_cb> observerMapArrayEnd;
 } // namespace UI
 
-#endif /* JNI_LOGIC_UI_OMOBSERVER_HPP_ */
+#endif /* JNI_UI_OMOBSERVER_HPP_ */

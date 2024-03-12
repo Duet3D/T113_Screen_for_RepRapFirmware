@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_LOGIC_UPGRADE_H_
-#define JNI_LOGIC_UPGRADE_H_
+#ifndef JNI_UPGRADE_UPGRADE_H_
+#define JNI_UPGRADE_UPGRADE_H_
 
 #include "os/MountMonitor.h"
 #include "os/UpgradeMonitor.h"
@@ -28,4 +28,4 @@ class UpgradeStatusListener : public UpgradeMonitor::IUpgradeStatusListener
 	void notify(int what, int status, const char* msg);
 };
 
-#endif /* JNI_LOGIC_UPGRADE_H_ */
+#endif /* JNI_UPGRADE_UPGRADE_H_ */
