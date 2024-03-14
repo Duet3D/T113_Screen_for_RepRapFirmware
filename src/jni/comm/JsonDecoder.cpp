@@ -154,18 +154,7 @@ namespace Comm
 	const char* _ecv_array const trCedilla = "C\xC7"
 											 "c\xE7";
 
-	void JsonDecoder::StartReceivedMessage()
-	{
-		FileInfo* fileInfo = FILEINFO_CACHE->GetCurrentFileInfo();
-		Thumbnail* thumbnail = FILEINFO_CACHE->GetCurrentThumbnail();
-
-		if (thumbnail != nullptr && thumbnail->context.state == ThumbnailState::Init)
-		{
-			thumbnail->context.Init();
-			ThumbnailInit(*thumbnail);
-			memset(&thumbnailBuf, 0, sizeof(thumbnailBuf));
-		}
-	}
+	void JsonDecoder::StartReceivedMessage() {}
 
 	void JsonDecoder::EndReceivedMessage()
 	{
@@ -218,19 +207,6 @@ namespace Comm
 			case ThumbnailState::DataRequest:
 			case ThumbnailState::DataWait:
 				break;
-			case ThumbnailState::Header:
-				if (!ThumbnailIsValid(*thumbnail))
-				{
-					error("thumbnail meta invalid.\n");
-					break;
-				}
-				if (!thumbnail->image.New(thumbnail->meta, thumbnail->filename.c_str()))
-				{
-					error("Failed to create thumbnail file.");
-					break;
-				}
-				thumbnail->context.state = ThumbnailState::DataRequest;
-				break;
 			case ThumbnailState::Data:
 				if (!ThumbnailDataIsValid(thumbnailBuf))
 				{
@@ -249,7 +225,7 @@ namespace Comm
 					thumbnail->image.Close();
 					info("Updating thumbnail %s", thumbnail->filename.c_str());
 					UI::GetThumbnail()->setText("");
-					thumbnail->context.state = ThumbnailState::Init;
+					thumbnail->context.state = ThumbnailState::Cached;
 				}
 				else
 				{
@@ -257,6 +233,7 @@ namespace Comm
 				}
 				break;
 			}
+			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
 		}
 	}
 

@@ -5,16 +5,51 @@
  *      Author: andy
  */
 
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#include "Debug.h"
+#include "DebugCommands.h"
+
 #include "FileInfo.h"
+
+#include "Hardware/Duet.h"
+#include "UI/UserInterface.h"
+#include "utils.h"
 
 namespace Comm
 {
+	FileInfo::FileInfo() : size(0), height(0), layerHeight(0)
+	{
+		dbg("Created new fileinfo");
+	}
+
+	FileInfo::~FileInfo()
+	{
+		dbg("Deleted fileinfo %s", filename.c_str());
+		for (auto& thumbnail : thumbnails)
+		{
+			if (thumbnail == nullptr)
+				continue;
+			delete thumbnail;
+		}
+	}
+
+	Thumbnail* FileInfo::GetThumbnail(size_t index)
+	{
+		if (index >= thumbnails.size())
+		{
+			return nullptr;
+		}
+
+		return thumbnails[index];
+	}
+
 	Thumbnail* FileInfo::GetOrCreateThumbnail(size_t index)
 	{
 		if (index >= thumbnails.size())
 		{
 			thumbnails.resize(index + 1);
-			thumbnails[index] = new Thumbnail;
+			thumbnails[index] = new Thumbnail(filename.GetRef());
 		}
 
 		return thumbnails[index];
@@ -25,8 +60,10 @@ namespace Comm
 		size_t count = 0;
 		for (size_t i = fromIndex; i < thumbnails.size(); ++i)
 		{
-			count++;
+			if (thumbnails[i] == nullptr)
+				continue;
 			delete thumbnails[i];
+			count++;
 		}
 		thumbnails.resize(fromIndex);
 		return count;
@@ -34,17 +71,109 @@ namespace Comm
 
 	FileInfoCache::FileInfoCache() {}
 
-	void FileInfoCache::Spin() {}
+	void FileInfoCache::Spin()
+	{
+		if (m_currentThumbnail == nullptr)
+		{
+			m_thumbnailRequestInProgress = false;
+		}
 
-	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, uint32_t lastModified) {}
+		if (m_thumbnailRequestInProgress)
+		{
 
-	void FileInfoCache::SetCurrentFileInfo(const std::string& filepath)
+			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
+			{
+				warn("Thumbnail request failed for %s", m_currentThumbnail->filename.c_str());
+				m_thumbnailRequestInProgress = false;
+				m_currentThumbnail = nullptr;
+				return;
+			}
+
+			// Check if the request is done
+			switch (m_currentThumbnail->context.state)
+			{
+			case ThumbnailState::Init:
+				m_currentThumbnail = nullptr;
+				m_thumbnailRequestInProgress = false;
+				m_thumbnailResponseInProgress = false;
+				break;
+			case ThumbnailState::Data:
+			case ThumbnailState::DataWait:
+				dbg("Thumbnail request in progress for %s, state=%d",
+					m_currentThumbnail->filename.c_str(),
+					m_currentThumbnail->context.state);
+				return;
+			case ThumbnailState::DataRequest:
+				duet.RequestThumbnail(m_currentThumbnail->filename.c_str(), m_currentThumbnail->context.next);
+				m_currentThumbnail->context.state = ThumbnailState::DataWait;
+				return;
+			case ThumbnailState::Cached:
+				m_thumbnailRequestInProgress = false;
+				m_currentThumbnail = nullptr;
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (!m_fileInfoRequestQueue.empty() && !m_fileInfoRequestInProgress)
+		{
+			std::string filepath = m_fileInfoRequestQueue.front();
+			m_fileInfoRequestQueue.pop_front();
+			m_fileInfoRequestInProgress = true;
+			duet.RequestFileInfo(filepath.c_str());
+			return;
+		}
+
+		if (m_thumbnailRequestQueue.empty())
+		{
+			// dbg("Request queue is empty");
+			return;
+		}
+
+		dbg("Processing thumbnail request queue");
+		Thumbnail* thumbnail = m_thumbnailRequestQueue.front();
+		m_thumbnailRequestQueue.pop_front();
+
+		RequestThumbnail(thumbnail);
+	}
+
+	bool FileInfoCache::IsThumbnailCached(const std::string& filepath, const char* lastModified)
+	{
+		// Does a thumbnail file exist in the file system?
+		if (!::IsThumbnailCached(filepath.c_str(), false))
+		{
+			dbg("Thumbnail file for %s does not exist", filepath.c_str());
+			return false;
+		}
+
+		// Do we have a cache for the files meta data?
+		if (m_cache.find(filepath) == m_cache.end())
+		{
+			dbg("No file info cached for %s", filepath.c_str());
+			return false;
+		}
+
+		FileInfo* fileInfo = m_cache[filepath];
+
+		// Is the last modified time the same?
+		if (!fileInfo->lastModified.Equals(lastModified))
+		{
+			dbg("Last modified time for %s does not match", filepath.c_str());
+			return false;
+		}
+
+		return true;
+	}
+
+	void FileInfoCache::SetCurrentFileInfo(const char* filepath)
 	{
 		if (m_cache.find(filepath) == m_cache.end())
 		{
 			m_cache[filepath] = new FileInfo;
 		}
 		m_currentFileInfo = m_cache[filepath];
+		m_currentFileInfo->filename.copy(filepath);
 		// TODO do we need to clear the info here?
 	}
 
@@ -64,25 +193,124 @@ namespace Comm
 
 	void FileInfoCache::ClearCache()
 	{
+		info("Clearing file info cache");
+		m_currentThumbnail = nullptr;
+		m_currentFileInfo = nullptr;
+
 		for (auto& it : m_cache)
 		{
+			if (it.second == nullptr)
+				continue;
 			delete it.second;
 		}
 		m_cache.clear();
+		m_fileInfoRequestQueue.clear();
+		m_thumbnailRequestQueue.clear();
+		info("Cache cleared");
 	}
 
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath)
 	{
-		return true;
-	}
-	bool FileInfoCache::RequestThumbnail(const FileInfo& fileInfo, size_t index)
-	{
-		return true;
-	}
-	bool FileInfoCache::ThumbnailRequestInProgress() {}
+		if (m_currentThumbnail != nullptr && m_currentThumbnail->filename.Equals(filepath.c_str()))
+		{
+			warn("Thumbnail request for %s already in progress", filepath.c_str());
+			return false;
+		}
 
-	Thumbnail* FileInfoCache::GetCurrentThumbnail()
+		FileInfo* fileInfo = GetFileInfo(filepath);
+		if (fileInfo == nullptr)
+		{
+			info("File info for %s not found, queuing...", filepath.c_str());
+			m_fileInfoRequestQueue.push_back(filepath);
+			return false;
+		}
+
+		Thumbnail* largestValidThumbnail = nullptr;
+		size_t largestSize = 0;
+		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
+		{
+			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
+			if (thumbnail == nullptr)
+				continue;
+			if (thumbnail->meta.size <= 2600 && thumbnail->meta.size > largestSize)
+			{
+				largestValidThumbnail = thumbnail;
+				largestSize = thumbnail->meta.size;
+			}
+		}
+		if (largestValidThumbnail == nullptr)
+		{
+			warn("No valid thumbnail found for %s", filepath.c_str());
+			return false;
+		}
+		m_thumbnailRequestQueue.push_back(largestValidThumbnail);
+		return true;
+	}
+
+	bool FileInfoCache::RequestThumbnail(FileInfo& fileInfo, size_t index)
 	{
+		if (index >= fileInfo.GetThumbnailCount())
+		{
+			warn("Thumbnail index %d out of range for %s", index, fileInfo.filename.c_str());
+			return false;
+		}
+
+		Thumbnail* thumbnail = fileInfo.GetThumbnail(index);
+
+		return RequestThumbnail(thumbnail);
+	}
+
+	bool FileInfoCache::RequestThumbnail(Thumbnail* thumbnail)
+	{
+		if (thumbnail == nullptr)
+		{
+			warn("Thumbnail is null");
+			return false;
+		}
+
+		thumbnail->context.Init();
+		if (thumbnail->filename.IsEmpty() || thumbnail->meta.offset == 0)
+		{
+			warn("Not enough information to request thumbnail for %s", thumbnail->filename.c_str());
+			return false;
+		}
+
+		if (!ThumbnailIsValid(*thumbnail))
+		{
+			error("thumbnail meta invalid.\n");
+			return false;
+		}
+
+		if (!thumbnail->image.New(thumbnail->meta, thumbnail->filename.c_str()))
+		{
+			error("Failed to create thumbnail file.");
+			return false;
+		}
+
+		m_currentThumbnail = thumbnail;
+		m_thumbnailRequestInProgress = true;
+		thumbnail->context.state = ThumbnailState::DataWait;
+		duet.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
+		return true;
+	}
+
+	bool FileInfoCache::ThumbnailRequestInProgress()
+	{
+		return m_thumbnailRequestInProgress;
+	}
+
+	void FileInfoCache::ReceivingThumbnailResponse(bool receiving)
+	{
+		dbg("%d", receiving);
+		m_thumbnailResponseInProgress = receiving;
+	}
+
+	Thumbnail* FileInfoCache::GetCurrentThumbnail(bool force)
+	{
+		if (!m_thumbnailResponseInProgress && !force)
+		{
+			return nullptr;
+		}
 		return m_currentThumbnail;
 	}
 
@@ -100,4 +328,74 @@ namespace Comm
 	{
 		return nullptr;
 	}
+
+	void FileInfoCache::Debug()
+	{
+		dbg("File info cache debug");
+		UI::CONSOLE->AddResponse("File info cache:");
+		for (auto& it : GetInstance()->m_cache)
+		{
+			FileInfo* fileInfo = it.second;
+			if (fileInfo == nullptr)
+				continue;
+			UI::CONSOLE->AddResponse(utils::format("  File %s:", fileInfo->filename.c_str()).c_str());
+			UI::CONSOLE->AddResponse(utils::format("    size: %u", fileInfo->size).c_str());
+			UI::CONSOLE->AddResponse(utils::format("    lastModified: %s", fileInfo->lastModified.c_str()).c_str());
+			UI::CONSOLE->AddResponse(utils::format("    height: %.3f", fileInfo->height).c_str());
+			UI::CONSOLE->AddResponse(utils::format("    layerHeight: %.3f", fileInfo->layerHeight).c_str());
+			UI::CONSOLE->AddResponse(utils::format("    thumbnails: %u", fileInfo->GetThumbnailCount()).c_str());
+
+			for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
+			{
+				Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
+				if (thumbnail == nullptr)
+					continue;
+				UI::CONSOLE->AddResponse(utils::format("      Thumbnail %u:", i).c_str());
+				UI::CONSOLE->AddResponse("        meta:");
+				UI::CONSOLE->AddResponse(utils::format("          filename: %s", thumbnail->filename.c_str()).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          width: %u", thumbnail->meta.width).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          height: %u", thumbnail->meta.height).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          format: %d", thumbnail->meta.imageFormat).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          offset: %u", thumbnail->meta.offset).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          size: %u", thumbnail->meta.size).c_str());
+				UI::CONSOLE->AddResponse("        context:");
+				UI::CONSOLE->AddResponse(utils::format("          err: %d", thumbnail->context.err).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          parseErr: %d", thumbnail->context.parseErr).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          size: %u", thumbnail->context.size).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          offset: %u", thumbnail->context.offset).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          next: %u", thumbnail->context.next).c_str());
+				UI::CONSOLE->AddResponse(utils::format("          state: %d", thumbnail->context.state).c_str());
+			}
+		}
+
+		UI::CONSOLE->AddResponse("  File info request queue:");
+		for (auto& filename : m_fileInfoRequestQueue)
+		{
+			UI::CONSOLE->AddResponse(utils::format("    %s", filename.c_str()).c_str());
+		}
+
+		UI::CONSOLE->AddResponse("  Thumbnail request queue:");
+		for (auto& thumbnail : m_thumbnailRequestQueue)
+		{
+			UI::CONSOLE->AddResponse(
+				utils::format(
+					"    %dx%d %s", thumbnail->meta.width, thumbnail->meta.height, thumbnail->filename.c_str())
+					.c_str());
+		}
+
+		FileInfo* fileInfo = GetInstance()->GetCurrentFileInfo();
+		Thumbnail* thumbnail = GetInstance()->GetCurrentThumbnail();
+		UI::CONSOLE->AddResponse(
+			utils::format("  Current FileInfo: %s",
+						  fileInfo == nullptr ? "null" : GetInstance()->m_currentFileInfo->filename.c_str())
+				.c_str());
+		UI::CONSOLE->AddResponse(
+			utils::format("  Current Thumbnail: %s",
+						  thumbnail == nullptr ? "null" : GetInstance()->m_currentThumbnail->filename.c_str())
+				.c_str());
+		UI::CONSOLE->AddLineBreak();
+	}
+
+	static Debug::DebugCommand dbg_file_info_cache("dbg_file_info_cache",
+												   []() { FileInfoCache::GetInstance()->Debug(); });
 } // namespace Comm

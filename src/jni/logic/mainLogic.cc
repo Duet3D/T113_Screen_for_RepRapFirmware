@@ -639,6 +639,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
 	UI::POPUP_WINDOW->Close();
+	FILEINFO_CACHE->ClearCache();
 	OM::FileSystem::ClearFileSystem();
 	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;

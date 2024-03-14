@@ -79,11 +79,13 @@ bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
 	case Comm::ThumbnailMeta::ImageFormat::Png:
 		break;
 	default:
+		warn("Thumbnail %s format invalid", thumbnail.filename.c_str());
 		return false;
 	}
 
 	if (thumbnail.meta.height == 0 || thumbnail.meta.width == 0)
 	{
+		warn("Thumbnail invalid because heigh=%d, width=%d", thumbnail.meta.height, thumbnail.meta.width);
 		return false;
 	}
 

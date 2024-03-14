@@ -67,7 +67,19 @@ This needs to be done at compile time.
 
 ### Debugging
 
+If you have flythings installed then you can use the IDE to debug the screen.
 * https://developer.flythings.cn/en/adb_debug.html
+
+It is possible to debug the screen using `adb` from the command line without having to install the full Flythings IDE.
+* Download the android SDK Platform-Tools from the following link:
+  * https://developer.android.com/tools/releases/platform-tools
+* Add the `platform-tools` folder to your system `PATH`
+* Run a terminal and type `adb connect <ip_address_of_screen>`
+  * You can find the IP address of the screen by going to `Network` -> `...`
+* Start monitoring the logs with `adb logcat`
+  * You can add the time with `adb logcat -v time`
+  * You can filter by priority with `adb logcat -v time *:E` (error), `adb logcat -v time  *:W` (warning), `adb logcat -v time  *:I` (info), `adb logcat -v time  *:D` (debug), `adb logcat -v time  *:V` (verbose)
+  * To you can chain multiple filters together
 
 ### Modifying GUI
 

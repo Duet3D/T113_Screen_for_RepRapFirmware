@@ -337,6 +337,7 @@ namespace Comm
 
 	void Duet::RequestFileInfo(const char* filename)
 	{
+	    dbg("for %s", filename);
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
@@ -493,6 +494,7 @@ namespace Comm
 
 	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
+	    dbg("for %s, offset=%u", filename, offset);
 		UI::GetThumbnail()->setText("Loading...");
 		switch (m_communicationType)
 		{

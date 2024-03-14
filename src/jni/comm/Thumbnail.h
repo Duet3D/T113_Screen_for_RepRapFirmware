@@ -17,7 +17,6 @@ namespace Comm
 	enum ThumbnailState
 	{
 		Init = 0,
-		Header,
 		DataRequest,
 		DataWait,
 		Data,
@@ -49,6 +48,8 @@ namespace Comm
 		uint32_t offset;
 		uint32_t next;
 
+		ThumbnailContext() { Init(); }
+
 		void Init()
 		{
 			state = ThumbnailState::Init;
@@ -75,10 +76,12 @@ namespace Comm
 
 	struct Thumbnail
 	{
-		String<MaxFileNameLength> filename;
+		StringRef filename;
 		ThumbnailMeta meta;
 		ThumbnailContext context;
 		ThumbnailImage image;
+
+		Thumbnail(StringRef filename) : filename(filename) {}
 	};
 
 	struct ThumbnailBuf

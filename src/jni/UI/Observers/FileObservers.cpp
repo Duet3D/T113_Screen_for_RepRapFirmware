@@ -6,10 +6,12 @@
  */
 #include "Debug.h"
 
+#include "Comm/FileInfo.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "UI/UserInterfaceConstants.h"
 #include "manager/LanguageManager.h"
+#include "utils.h"
 #include <string>
 
 #include "ObjectModel/Files.h"
@@ -81,6 +83,23 @@ static UI::Observer<UI::ui_array_end_update_cb> FileObserversArrayEnd[] = {
 	OBSERVER_ARRAY_END("files^",
 					   [](OBSERVER_ARRAY_END_ARGS) {
 						   OM::FileSystem::SortFileSystem();
+						   for (size_t i = 0; i < OM::FileSystem::GetItemCount(); i++)
+						   {
+							   OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(i);
+							   if (item == nullptr || item->GetType() == OM::FileSystem::FileSystemItemType::folder)
+							   {
+								   continue;
+							   }
+							   if (item->GetPath().find("gcodes") == std::string::npos)
+							   {
+								   continue;
+							   }
+							   if (FILEINFO_CACHE->IsThumbnailCached(item->GetPath(), item->GetDate().c_str()))
+							   {
+								   continue;
+							   }
+							   FILEINFO_CACHE->QueueThumbnailRequest(item->GetPath());
+						   }
 						   UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
 					   }),
 };

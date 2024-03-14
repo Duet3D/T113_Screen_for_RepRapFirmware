@@ -143,13 +143,13 @@
     <string name="zk_setting">ZK Settings</string>
     <string name="touch_calibration">Touch Calibration</string>
     <string name="info_timeout">Info Timeout</string>
-    <string name="brightness">Brigthness</string>
+    <string name="brightness">Brightness</string>
     <string name="theme">Theme</string>
     <string name="themes">Themes</string>
     <string name="screensaver">Screensaver</string>
     <string name="timeout">Timeout</string>
     <string name="enabled">Enabled</string>
-    <string name="set_brightness">Set Brigthness</string>
+    <string name="set_brightness">Set Brightness</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>
