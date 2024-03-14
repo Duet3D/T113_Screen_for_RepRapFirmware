@@ -11,6 +11,7 @@
 #ifndef JNI_COMM_JSONDECODER_H_
 #define JNI_COMM_JSONDECODER_H_
 
+#include "Comm/FileInfo.h"
 #include "ecv.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
@@ -52,6 +53,8 @@ namespace Comm
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }
+
+		Thumbnail* thumbnail = nullptr;
 
 	  private:
 		void StartReceivedMessage(void);

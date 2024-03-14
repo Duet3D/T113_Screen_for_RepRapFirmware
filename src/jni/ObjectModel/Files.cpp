@@ -221,8 +221,6 @@ namespace OM::FileSystem
 	{
 		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
-		Comm::CancelThumbnailRequest();
-		ClearAllCachedThumbnails();
 		Comm::duet.RequestFileList(path.c_str());
 	}
 

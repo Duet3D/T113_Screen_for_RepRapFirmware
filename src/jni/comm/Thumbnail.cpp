@@ -15,20 +15,17 @@ extern "C"
 
 #include "utils.h"
 
+static std::string GetFileName(const char* filepath)
+{
+	std::string sanitisedFilename = filepath;
+	utils::replaceSubstring(sanitisedFilename, ":", "\%3A");
+	utils::replaceSubstring(sanitisedFilename, "/", "\%2F");
+	return std::string("/tmp/thumbnails/") + sanitisedFilename;
+}
+
 namespace Comm
 {
 	ThumbnailBuf thumbnailBuf;
-
-	static std::string GetFileName(const char* filepath)
-	{
-		std::string filename = filepath;
-		size_t pos = filename.find_last_of("/");
-		if (pos != std::string::npos)
-		{
-			filename = filename.substr(pos + 1);
-		}
-		return std::string("/tmp/thumbnails/") + filename;
-	}
 
 	bool ThumbnailImage::New(ThumbnailMeta& meta, const char* filename)
 	{
@@ -224,9 +221,9 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 	}
 }
 
-bool IsThumbnailCached(const char* filename, bool includeBlank)
+bool IsThumbnailCached(const char* filepath, bool includeBlank)
 {
-	std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", filename);
+	std::string thumbnailPath = GetFileName(filepath);
 	struct stat sb;
 	if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
 	{
@@ -245,9 +242,9 @@ bool IsThumbnailCached(const char* filename, bool includeBlank)
 	return false;
 }
 
-void SetThumbnail(ZKBase* base, const char* filename)
+void SetThumbnail(ZKBase* base, const char* filepath)
 {
-	std::string thumbnailPath = utils::format("/tmp/thumbnails/%s", filename);
+	std::string thumbnailPath = GetFileName(filepath);
 	base->setBackgroundPic(thumbnailPath.c_str());
 }
 
@@ -257,14 +254,16 @@ bool ClearAllCachedThumbnails()
 	return system("rm -f /tmp/thumbnails/*") == 0;
 }
 
-bool DeleteCachedThumbnail(const char* filename)
+bool DeleteCachedThumbnail(const char* filepath)
 {
-	info("Deleting thumbnail for %s", filename);
-	return system(utils::format("rm -f \"/tmp/thumbnails/%s\"", filename).c_str()) == 0;
+	info("Deleting thumbnail for %s", filepath);
+	std::string thumbnailPath = GetFileName(filepath);
+	return system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }
 
-bool CreateBlankThumbnailCache(const char* filename)
+bool CreateBlankThumbnailCache(const char* filepath)
 {
-	info("Creating blank thumbnail for %s", filename);
-	return system(utils::format("echo \"\" > \"/tmp/thumbnails/%s\"", filename).c_str()) == 0;
+	info("Creating blank thumbnail for %s", filepath);
+	std::string thumbnailPath = GetFileName(filepath);
+	return system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }

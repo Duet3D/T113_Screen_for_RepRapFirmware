@@ -82,7 +82,7 @@ static int sFeedRate = 6000;
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
 	{TIMER_ASYNC_HTTP_REQUEST, 50},
-	{TIMER_THUMBNAIL, 500},
+	{TIMER_THUMBNAIL, 50},
 };
 
 /**
@@ -667,9 +667,9 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
-		if (IsThumbnailCached(item->GetName().c_str()))
+		if (IsThumbnailCached(item->GetPath().c_str()))
 		{
-			SetThumbnail(pFileThumbnail, item->GetName().c_str());
+			SetThumbnail(pFileThumbnail, item->GetPath().c_str());
 		}
 		else
 		{
@@ -722,8 +722,8 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 				UI::RunSelectedFile();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
-			// Comm::duet.RequestFileInfo(item->GetPath().c_str());
 			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+			SetThumbnail(mPopupImagePtr, item->GetPath().c_str());
 			UI::POPUP_WINDOW->ShowImage(true);
 			UI::POPUP_WINDOW->CancelTimeout();
 		}

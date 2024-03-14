@@ -347,7 +347,6 @@ namespace Comm
 			JsonDecoder decoder;
 			QueryParameters_t query;
 			query["name"] = filename;
-			UI::GetThumbnail()->setText("Loading...");
 
 #if 1
 			AsyncGet(
@@ -494,8 +493,7 @@ namespace Comm
 
 	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
-	    dbg("for %s, offset=%u", filename, offset);
-		UI::GetThumbnail()->setText("Loading...");
+		dbg("for %s, offset=%u", filename, offset);
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:

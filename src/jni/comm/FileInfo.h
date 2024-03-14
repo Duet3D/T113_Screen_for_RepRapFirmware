@@ -17,6 +17,7 @@
 #include <list>
 #include <map>
 #include <stdint.h>
+#include <system/Mutex.h>
 #include <vector>
 
 namespace Comm
@@ -99,6 +100,7 @@ namespace Comm
 		std::map<std::string, FileInfo*> m_cache; // cache of file path and their associated file info
 		std::list<std::string> m_fileInfoRequestQueue;
 		std::list<Thumbnail*> m_thumbnailRequestQueue;
+		Mutex m_thumbnailMutex;
 	};
 
 	extern ThumbnailBuf thumbnailBuf;

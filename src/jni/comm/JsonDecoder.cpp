@@ -176,8 +176,6 @@ namespace Comm
 			OM::lastAlertSeq = OM::currentAlert.seq;
 		}
 
-		Thumbnail* thumbnail = FILEINFO_CACHE->GetCurrentThumbnail();
-
 		if (thumbnail != nullptr)
 		{
 			if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
@@ -225,6 +223,7 @@ namespace Comm
 					thumbnail->image.Close();
 					info("Updating thumbnail %s", thumbnail->filename.c_str());
 					UI::GetThumbnail()->setText("");
+					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
 					thumbnail->context.state = ThumbnailState::Cached;
 				}
 				else
@@ -234,6 +233,7 @@ namespace Comm
 				break;
 			}
 			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
+			thumbnail = nullptr;
 		}
 	}
 
@@ -271,7 +271,7 @@ namespace Comm
 			dbg("found %d observers for %s\n", observers.size(), id.c_str());
 			for (auto& observer : observers)
 			{
-				observer.Update(data, indices);
+				observer.Update(this, data, indices);
 			}
 		}
 
@@ -370,7 +370,7 @@ namespace Comm
 		{
 			for (auto& observer : observers)
 			{
-				observer.Update(indices);
+				observer.Update(this, indices);
 			}
 		}
 	}

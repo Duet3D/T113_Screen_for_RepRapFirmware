@@ -103,10 +103,10 @@ bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data);
 int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
-bool IsThumbnailCached(const char* filename, bool includeBlank = false);
-void SetThumbnail(ZKBase* base, const char* filename);
+bool IsThumbnailCached(const char* filepath, bool includeBlank = false);
+void SetThumbnail(ZKBase* base, const char* filepath);
 bool ClearAllCachedThumbnails();
-bool DeleteCachedThumbnail(const char* filename);
-bool CreateBlankThumbnailCache(const char* filename);
+bool DeleteCachedThumbnail(const char* filepath);
+bool CreateBlankThumbnailCache(const char* filepath);
 
 #endif /* ifndef THUMBNAIL_HPP */

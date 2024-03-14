@@ -102,7 +102,7 @@ void runDelayedCallbacks()
 			if (cb->callback())
 			{
 				cb->lastRun = TimeHelper::getCurrentTime();
-				info("Delayed callback %s scheduled for %u", cb->id, cb->lastRun + cb->delay);
+				info("Delayed callback %s scheduled for %lld", cb->id, cb->lastRun + cb->delay);
 			}
 			else
 			{

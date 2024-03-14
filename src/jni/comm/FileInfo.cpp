@@ -206,6 +206,7 @@ namespace Comm
 		m_cache.clear();
 		m_fileInfoRequestQueue.clear();
 		m_thumbnailRequestQueue.clear();
+		ClearAllCachedThumbnails();
 		info("Cache cleared");
 	}
 
