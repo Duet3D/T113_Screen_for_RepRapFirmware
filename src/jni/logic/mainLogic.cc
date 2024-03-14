@@ -5,6 +5,7 @@
 #include "Comm/Communication.h"
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
+#include "DebugCommands.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
 #include "Library/bmp.h"
@@ -81,7 +82,7 @@ static int sFeedRate = 6000;
 static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{TIMER_DELAYED_TASK, 50},
 	{TIMER_ASYNC_HTTP_REQUEST, 50},
-	{TIMER_THUMBNAIL, 50},
+	{TIMER_THUMBNAIL, 500},
 };
 
 /**
@@ -132,7 +133,9 @@ static void onUI_init()
 	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
 
 	// Screensaver
-	mScreensaverEnablePtr->setSelected(StoragePreferences::getBool("screensaver_enable", true));
+	bool screensaverEnable = StoragePreferences::getBool("screensaver_enable", true);
+	mScreensaverEnablePtr->setSelected(screensaverEnable);
+	EASYUICONTEXT->setScreensaverEnable(screensaverEnable);
 	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt("screensaver_timeout", 120));
 
 	// Duet communication settings
@@ -1117,7 +1120,7 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("M36 \"QOI_32x32.gcode\"");
+	UI::WINDOW->OpenOverlay(mDebugWindowPtr);
 	return false;
 }
 
@@ -1348,6 +1351,7 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 
 static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
 {
+	info("Screensaver %s", isChecked ? "enabled" : "disabled");
 	StoragePreferences::putBool("screensaver_enable", isChecked);
 	EASYUICONTEXT->setScreensaverEnable(isChecked);
 }
@@ -1428,4 +1432,30 @@ static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
 		return;
 	}
 	UI::Theme::SetTheme(theme);
+}
+static int getListItemCount_DebugCommandList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_DebugCommandList !\n");
+	return Debug::GetCommandCount();
+}
+
+static void obtainListItemData_DebugCommandList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(command->id);
+}
+
+static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, int id)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		return;
+	}
+	command->callback();
 }
