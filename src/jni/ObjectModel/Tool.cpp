@@ -39,6 +39,8 @@ namespace OM
 		Tool* t = static_cast<Tool*>(p);
 		for (size_t i = 0; i < MaxHeatersPerTool; ++i)
 		{
+			if (t->heaters[i] == nullptr)
+				continue;
 			delete t->heaters[i];
 		}
 		FreelistManager::Release<Tool>(p);
