@@ -508,8 +508,10 @@ namespace UI
 		{
 			if (!(axisControl & (1 << i)))
 				continue;
-
-			axes_[count] = OM::Move::GetAxis(i);
+			OM::Move::Axis* axis = OM::Move::GetAxis(i);
+			if (axis == nullptr)
+			    continue;
+			axes_[count] = axis;
 			dbg("Axis %d, count %d", i, count);
 			count++;
 		}
