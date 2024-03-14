@@ -4,6 +4,9 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView43Ptr;
+static ZKListView* mDebugCommandListPtr;
+static ZKWindow* mDebugWindowPtr;
 static ZKTextView* mTextView42Ptr;
 static ZKListView* mThemesListPtr;
 static ZKWindow* mThemeSelectionWindowPtr;
@@ -327,6 +330,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_DebugCommandList, getListItemCount_DebugCommandList, obtainListItemData_DebugCommandList, onListItemClick_DebugCommandList,
     ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
@@ -421,6 +425,9 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView43Ptr = NULL;
+    mDebugCommandListPtr = NULL;
+    mDebugWindowPtr = NULL;
     mTextView42Ptr = NULL;
     mThemesListPtr = NULL;
     mThemeSelectionWindowPtr = NULL;
@@ -637,6 +644,9 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView43Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView43);
+    mDebugCommandListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugCommandList);if(mDebugCommandListPtr!= NULL){mDebugCommandListPtr->setListAdapter(this);mDebugCommandListPtr->setItemClickListener(this);}
+    mDebugWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DebugWindow);
     mTextView42Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView42);
     mThemesListPtr = (ZKListView*)findControlByID(ID_MAIN_ThemesList);if(mThemesListPtr!= NULL){mThemesListPtr->setListAdapter(this);mThemesListPtr->setItemClickListener(this);}
     mThemeSelectionWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_ThemeSelectionWindow);
