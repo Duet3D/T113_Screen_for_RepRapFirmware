@@ -268,7 +268,7 @@ namespace UI::Theme
 				}
 				validThemes += ", ";
 			}
-			warn("Theme %s not found. Valid themes are: %s", id, validThemes.c_str());
+			warn("Theme %s not found. Valid themes are: %s", id.c_str(), validThemes.c_str());
 			return;
 		}
 		SetTheme(s_themes[id]);

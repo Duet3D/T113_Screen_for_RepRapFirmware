@@ -10,9 +10,9 @@
 
 #include "Comm/Communication.h"
 #include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 
 /*
  * These functions are run when the OM field is received.

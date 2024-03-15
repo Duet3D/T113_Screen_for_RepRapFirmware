@@ -22,7 +22,6 @@
 
 namespace UI
 {
-	static constexpr uint32_t defaultTimeout = 5000;
 
 	void PopupWindow::Init(ZKWindow* window,
 						   ZKWindow* noTouchWindow,
@@ -56,7 +55,7 @@ namespace UI
 		axisJogAdjustment_ = axisJogAdjustment;
 		image_ = image;
 
-		SetTimeout(StoragePreferences::getInt("info_timeout", defaultTimeout));
+		SetTimeout(StoragePreferences::getInt("info_timeout", DEFAULT_POPUP_TIMEOUT));
 	}
 
 	void PopupWindow::Open()
@@ -466,7 +465,7 @@ namespace UI
 		if (mode_ != OM::Alert::Mode::Text)
 			return false;
 
-		size_t len = Strnlen(text, OM::alertResponseLength);
+		size_t len = Strnlen(text, ALERT_RESPONSE_LENGTH);
 		if (len < (size_t)OM::currentAlert.limits.text.min)
 		{
 			warningText_->setTextTr("invalid_text_min");
@@ -504,7 +503,7 @@ namespace UI
 	{
 		size_t count = 0;
 		dbg("axisControl %d", axisControl);
-		for (size_t i = 0; i < MaxTotalAxes; ++i)
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
 			if (!(axisControl & (1 << i)))
 				continue;

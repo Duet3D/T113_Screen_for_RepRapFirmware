@@ -196,7 +196,7 @@ namespace UI::GuidedSetup
 		s_previousBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_PreviousPageBtn);
 		s_closeBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_CloseGuideBtn);
 
-		if (StoragePreferences::getBool("show_setup_on_startup", true))
+		if (StoragePreferences::getBool("show_setup_on_startup", DEFAULT_SHOW_SETUP_ON_STARTUP))
 		{
 			Show("setup");
 		}

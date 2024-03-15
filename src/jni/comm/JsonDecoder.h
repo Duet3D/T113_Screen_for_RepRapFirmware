@@ -12,6 +12,7 @@
 #define JNI_COMM_JSONDECODER_H_
 
 #include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "ecv.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
@@ -23,8 +24,6 @@
 
 namespace Comm
 {
-	constexpr size_t MaxArrayNesting = 4;
-
 	class JsonDecoder
 	{
 	  public:
@@ -90,14 +89,14 @@ namespace Comm
 		// fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array
 		// index, and a ':' character indicates a field separator.
 		String<50> fieldPrefix;
-		String<200> fieldId;
-		String<4096> fieldVal; // rr_thumbnail seems to be biggest response we get
+		String<MAX_JSON_ID_LENGTH> fieldId;
+		String<MAX_JSON_VALUE_LENGTH> fieldVal; // rr_thumbnail seems to be biggest response we get
 		JsonState state = jsBegin;
 		JsonState lastState = jsBegin;
 		int serialIoErrors;
 		size_t nextOut;
 		bool inError;
-		size_t arrayIndices[MaxArrayNesting];
+		size_t arrayIndices[MAX_ARRAY_NESTING];
 		size_t arrayDepth;
 	};
 } // namespace Comm

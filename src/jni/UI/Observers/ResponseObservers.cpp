@@ -9,9 +9,9 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "manager/LanguageManager.h"
 #include "restclient-cpp/restclient.h"
 #include <algorithm>
@@ -38,10 +38,10 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 					  size_t substrlen;
 
 					  str = val;
-					  for (size_t i = 0; i < str.length(); i += MaxResponseLineLength)
+					  for (size_t i = 0; i < str.length(); i += MAX_RESPONSE_LINE_LENGTH)
 					  {
-						  String<MaxResponseLineLength> line;
-						  substrlen = std::min(str.length() - i, MaxResponseLineLength);
+						  String<MAX_RESPONSE_LINE_LENGTH> line;
+						  substrlen = std::min(str.length() - i, MAX_RESPONSE_LINE_LENGTH);
 						  dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
 						  line.copy(str.substr(i, substrlen).c_str());
 						  UI::CONSOLE->AddResponse(line.GetRef());

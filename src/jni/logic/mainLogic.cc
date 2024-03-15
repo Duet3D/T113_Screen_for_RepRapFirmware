@@ -4,6 +4,7 @@
 
 #include "Comm/Communication.h"
 #include "Comm/JsonDecoder.h"
+#include "Configuration.h"
 #include "Debug.h"
 #include "DebugCommands.h"
 #include "Hardware/Duet.h"
@@ -19,7 +20,6 @@
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "Upgrade/Upgrade.h"
 #include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
@@ -95,9 +95,8 @@ static void onUI_init()
 	InitUpgradeMountListener();
 
 	initTimer(mActivityPtr);
-	registerUserTimer(
-		TIMER_UPDATE_DATA,
-		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
+	registerUserTimer(TIMER_UPDATE_DATA,
+					  (int)DEFAULT_PRINTER_POLL_INTERVAL); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
@@ -130,7 +129,8 @@ static void onUI_init()
 
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
-	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
+	mShowSetupOnStartupPtr->setSelected(
+		StoragePreferences::getBool("show_setup_on_startup", DEFAULT_SHOW_SETUP_ON_STARTUP));
 
 	// Screensaver
 	bool screensaverEnable = StoragePreferences::getBool("screensaver_enable", true);
@@ -597,7 +597,7 @@ static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
 }
 static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_ConsoleListView !\n");
-    return MaxResponseLines;
+	return MAX_RESPONSE_LINES;
 }
 
 static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
@@ -1078,9 +1078,9 @@ static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int i
 
 static void onEditTextChanged_PollIntervalInput(const std::string& text)
 {
-	if (text.empty() || atoi(text.c_str()) < (int)Comm::minPrinterPollInterval)
+	if (text.empty() || atoi(text.c_str()) < (int)MIN_PRINTER_POLL_INTERVAL)
 	{
-		mPollIntervalInputPtr->setText((int)Comm::minPrinterPollInterval);
+		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
 		return;
 	}
 	Comm::duet.SetPollInterval(atoi(text.c_str()));

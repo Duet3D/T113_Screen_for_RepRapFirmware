@@ -7,16 +7,16 @@
 
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_WARN
+#include "Configuration.h"
 #include "Fan.h"
 #include "ListHelpers.h"
+#include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
-#include "ObjectModel/Utils.h"
 
 #include "Debug.h"
 
-typedef Vector<OM::Fan*, MaxFans> FanList;
+typedef Vector<OM::Fan*, MAX_FANS> FanList;
 static FanList fans;
 
 namespace OM

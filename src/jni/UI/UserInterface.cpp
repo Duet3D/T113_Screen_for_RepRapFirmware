@@ -623,7 +623,7 @@ namespace UI
 	void Console::AddCommand(const std::string& command)
 	{
 		dbg("AddingCommand %s", command.c_str());
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		AddLineBreak();
 		line.catf("> %s:", command.c_str());
 		AddMessage(line.GetRef());
@@ -647,7 +647,7 @@ namespace UI
 
 	void Console::AddMessage(const char* str)
 	{
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		line.copy(str);
 		buffer_.Push(line);
 		info("Adding line to Console buffer[%d] = %s", buffer_.GetHead(), line.c_str());
@@ -667,9 +667,9 @@ namespace UI
 
 	void Console::Clear()
 	{
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		line.copy("");
-		for (size_t i = 0; i < MaxResponseLines; i++)
+		for (size_t i = 0; i < MAX_RESPONSE_LINES; i++)
 		{
 			buffer_.Push(line);
 		}

@@ -6,9 +6,9 @@
  */
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 
 #include "ObjectModel/Tool.h"
 #include "ObjectModel/Utils.h"

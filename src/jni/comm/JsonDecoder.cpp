@@ -245,6 +245,8 @@ namespace Comm
 					thumbnail->context.state = ThumbnailState::DataRequest;
 				}
 				break;
+			default:
+			    break;
 			}
 			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
 
@@ -799,7 +801,7 @@ namespace Comm
 						state = jsStringVal;
 						break;
 					case '[':
-						if (arrayDepth < MaxArrayNesting && !fieldId.cat('^'))
+						if (arrayDepth < MAX_ARRAY_NESTING && !fieldId.cat('^'))
 						{
 							arrayIndices[arrayDepth] = 0; // start an array
 							++arrayDepth;

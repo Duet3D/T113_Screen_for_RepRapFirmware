@@ -11,6 +11,7 @@
 #include "utils/BrightnessHelper.h"
 
 #include "Comm/Communication.h"
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 
 #ifdef __cplusplus
@@ -33,8 +34,8 @@ const char* onStartupApp(EasyUIContext* pContext)
 {
 	if (StoragePreferences::getString("sys_lang_code_key", "") == "")
 	{
-		StoragePreferences::putString("sys_lang_code_key", "en_US");
-		LANGUAGEMANAGER->setCurrentCode("en_US");
+		StoragePreferences::putString("sys_lang_code_key", DEFAULT_LANGUAGE_CODE);
+		LANGUAGEMANAGER->setCurrentCode(DEFAULT_LANGUAGE_CODE);
 	}
 	if (StoragePreferences::getInt("sys_brightness_key", -1) == -1)
 	{

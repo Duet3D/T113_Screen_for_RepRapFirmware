@@ -31,18 +31,19 @@ namespace Comm
 	Duet::Duet()
 		: m_communicationType(CommunicationType::none), m_ipAddress(""), m_hostname(""), m_password(""),
 		  m_sessionTimeout(0), m_lastRequestTime(0), m_sessionKey(noSessionKey),
-		  m_pollInterval(defaultPrinterPollInterval)
+		  m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
 	{
 	}
 
 	void Duet::Init()
 	{
-		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", defaultPrinterPollInterval));
+		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", DEFAULT_PRINTER_POLL_INTERVAL));
 		SetBaudRate((unsigned int)StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
 		SetIPAddress(StoragePreferences::getString("ip_address", "192.168.0."));
 		SetHostname(StoragePreferences::getString("hostname", ""));
 		SetPassword(StoragePreferences::getString("password", ""));
-		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
+		SetCommunicationType(
+			(CommunicationType)StoragePreferences::getInt("communication_type", (int)DEFAULT_COMMUNICATION_TYPE));
 	}
 
 	void Duet::Reset()
@@ -74,10 +75,10 @@ namespace Comm
 
 	void Duet::SetPollInterval(uint32_t interval)
 	{
-		if (interval < minPrinterPollInterval)
+		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
-			info("Poll interval too low, setting to %d", minPrinterPollInterval);
-			interval = minPrinterPollInterval;
+			info("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
+			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
 		info("Setting poll interval to %d", interval);
 		StoragePreferences::putInt("poll_interval", (int)interval);
@@ -519,6 +520,8 @@ namespace Comm
 				true);
 			break;
 		}
+		default:
+		    break;
 		}
 	}
 

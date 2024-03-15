@@ -9,10 +9,10 @@
 #define SRC_OBJECTMODEL_UTILS_HPP_
 
 //#include <cstdint>
-#include <sys/types.h>
-#include <string>
+#include "Configuration.h"
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
+#include <string>
+#include <sys/types.h>
 
 // Custom comparator for string literals at compile time
 struct ConstCharComparator

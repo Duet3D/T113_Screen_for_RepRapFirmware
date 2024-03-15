@@ -12,14 +12,11 @@
 
 #include "FileInfo.h"
 
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "UI/UserInterface.h"
 #include "utils.h"
 #include <utils/TimeHelper.h>
-
-constexpr int32_t THUMBNAIL_REQUEST_TIMEOUT = 5000;
-constexpr size_t MAX_THUMBNAIL_CACHE_SIZE =
-	2 * 2600; // What is the largest size thumbnail that is allowed to be cached?
 
 namespace Comm
 {
@@ -238,6 +235,7 @@ namespace Comm
 		}
 		info("Queueing file info request for %s", filepath.c_str());
 		m_fileInfoRequestQueue.push_back(filepath);
+		return true;
 	}
 
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath)

@@ -6,9 +6,9 @@
  */
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "control/ZKDigitalClock.h"
 #include "utils/TimeHelper.h"
 
@@ -121,7 +121,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 				  [](OBSERVER_CHAR_ARGS) { Comm::GetBool(val, OM::currentAlert.cancelButton); }),
 	OBSERVER_CHAR("state:messageBox:choices^",
 				  [](OBSERVER_CHAR_ARGS) {
-					  if (indices[0] >= OM::alertMaxChoices)
+					  if (indices[0] >= ALERT_MAX_CHOICES)
 						  return;
 					  OM::currentAlert.choices[indices[0]].copy(val);
 					  OM::currentAlert.choices_count = indices[0] + 1;
@@ -136,7 +136,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 						  return;
 					  }
 
-					  if (TimeHelper::getCurrentTime() - lastUpdated < TimeSyncInterval)
+					  if (TimeHelper::getCurrentTime() - lastUpdated < TIME_SYNC_INTERVAL)
 					  {
 						  return;
 					  }

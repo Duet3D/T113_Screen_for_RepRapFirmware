@@ -5,11 +5,11 @@
 #include <cstddef>
 #include <sys/types.h>
 
+#include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Library/bmp.h"
 #include "Library/png.h"
 #include "Library/qoi.h"
-#include "UI/UserInterfaceConstants.h"
 #include <string>
 
 namespace Comm
@@ -87,8 +87,8 @@ namespace Comm
 	struct ThumbnailBuf
 	{
 		uint16_t size;
-		unsigned char
-			buffer[4096]; // 1024 bytes for UART, 2600 bytes for network, some extra since we have lots of memory
+		unsigned char buffer[MAX_JSON_VALUE_LENGTH]; // 1024 bytes for UART, 2600 bytes for network, some extra since we
+													 // have lots of memory
 	};
 } // namespace Comm
 

@@ -7,9 +7,9 @@
 
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"

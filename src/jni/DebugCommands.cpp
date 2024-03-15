@@ -38,7 +38,7 @@ namespace Debug
 			return nullptr;
 		}
 		auto it = commandsMap.begin();
-		for (int i = 0; i < index; i++)
+		for (size_t i = 0; i < index; i++)
 		{
 			it++;
 		}

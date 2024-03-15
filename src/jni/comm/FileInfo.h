@@ -11,9 +11,9 @@
 #include "Thumbnail.h"
 
 #include "Comm/Commands.h"
+#include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
-#include "UI/UserInterfaceConstants.h"
 #include <list>
 #include <map>
 #include <stdint.h>
@@ -27,7 +27,7 @@ namespace Comm
 		FileInfo();
 		~FileInfo();
 
-		String<MaxFileNameLength> filename;
+		String<MAX_FILENAME_LENGTH> filename;
 		uint32_t size;
 		String<20> lastModified;
 		float height;

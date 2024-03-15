@@ -11,17 +11,17 @@
 
 #include "Tool.h"
 
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
 
 #include "Debug.h"
 
-typedef Vector<OM::Tool*, MaxSlots> ToolList;
+typedef Vector<OM::Tool*, MAX_SLOTS> ToolList;
 static ToolList tools;
 
 namespace OM
@@ -37,7 +37,7 @@ namespace OM
 	void Tool::operator delete(void * p) noexcept
 	{
 		Tool* t = static_cast<Tool*>(p);
-		for (size_t i = 0; i < MaxHeatersPerTool; ++i)
+		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL; ++i)
 		{
 			if (t->heaters[i] == nullptr)
 				continue;
@@ -48,7 +48,7 @@ namespace OM
 
 	ToolHeater* Tool::GetHeater(const uint8_t toolHeaterIndex)
 	{
-		if (toolHeaterIndex >= MaxHeatersPerTool)
+		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
 			return nullptr;
 		}
@@ -73,7 +73,7 @@ namespace OM
 
 	Move::ExtruderAxis* Tool::GetExtruder(const uint8_t toolExtruderIndex) const
 	{
-		if (toolExtruderIndex >= MaxExtrudersPerTool || toolExtruderIndex < 0)
+		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL || toolExtruderIndex < 0)
 		{
 			return nullptr;
 		}
@@ -95,7 +95,7 @@ namespace OM
 
 	Fan* Tool::GetFan(const uint8_t toolFanIndex)
 	{
-		if (toolFanIndex >= MaxFans)
+		if (toolFanIndex >= MAX_FANS)
 		{
 			return nullptr;
 		}
@@ -138,7 +138,7 @@ namespace OM
 
 	bool Tool::GetHeaterTemps(const StringRef& ref, const bool active)
 	{
-		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			if (i > 0)
 			{
@@ -152,9 +152,9 @@ namespace OM
 
 	bool Tool::SetHeaterTemps(const size_t toolHeaterIndex, const int32_t temp, const bool active)
 	{
-		String<MaxCommandLength> command;
+		String<MAX_COMMAND_LENGTH> command;
 
-		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			if (i > 0)
 			{
@@ -178,13 +178,15 @@ namespace OM
 	uint8_t Tool::GetHeaterCount() const
 	{
 		uint8_t count;
-		for (count = 0; count < MaxHeatersPerTool && heaters[count] != nullptr; ++count){}
+		for (count = 0; count < MAX_HEATERS_PER_TOOL && heaters[count] != nullptr; ++count)
+		{
+		}
 		return count;
 	}
 
 	int8_t Tool::HasHeater(const uint8_t heaterIndex) const
 	{
-		for (size_t i = 0; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			if (heaters[i]->heater->index == (int) heaterIndex)
 			{
@@ -196,7 +198,7 @@ namespace OM
 
 	void Tool::IterateHeaters(function_ref<void(ToolHeater*, size_t)> func, const size_t startAt)
 	{
-		for (size_t i = startAt; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		for (size_t i = startAt; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			func(heaters[i], i);
 		}
@@ -204,7 +206,7 @@ namespace OM
 
 	void Tool::IterateExtruders(function_ref<void(Move::ExtruderAxis*, size_t)> func, const size_t startAt)
 	{
-		for (size_t i = startAt; i < MaxExtrudersPerTool && extruders[i] != nullptr; ++i)
+		for (size_t i = startAt; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
 			func(extruders[i], i);
 		}
@@ -212,7 +214,7 @@ namespace OM
 
 	void Tool::IterateFans(function_ref<void(Fan*, size_t)> func, const size_t startAt)
 	{
-		for (size_t i = startAt; i < MaxFans && fans[i] != nullptr; ++i)
+		for (size_t i = startAt; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
 			func(fans[i], i);
 		}
@@ -220,12 +222,12 @@ namespace OM
 
 	size_t Tool::RemoveHeatersFrom(const uint8_t heaterIndex)
 	{
-		if (heaterIndex >= MaxHeatersPerTool)
+		if (heaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
 			return 0;
 		}
 		size_t removed = 0;
-		for (size_t i = heaterIndex; i < MaxHeatersPerTool && heaters[i] != nullptr; ++i)
+		for (size_t i = heaterIndex; i < MAX_HEATERS_PER_TOOL && heaters[i] != nullptr; ++i)
 		{
 			delete heaters[i];
 			heaters[i] = nullptr;
@@ -236,12 +238,12 @@ namespace OM
 
 	size_t Tool::RemoveExtrudersFrom(const uint8_t extruderIndex)
 	{
-		if (extruderIndex >= MaxExtrudersPerTool)
+		if (extruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
 			return 0;
 		}
 		size_t removed = 0;
-		for (size_t i = extruderIndex; i < MaxExtrudersPerTool && extruders[i] != nullptr; ++i)
+		for (size_t i = extruderIndex; i < MAX_EXTRUDERS_PER_TOOL && extruders[i] != nullptr; ++i)
 		{
 			extruders[i] = nullptr;
 			++removed;
@@ -251,12 +253,12 @@ namespace OM
 
 	size_t Tool::RemoveFansFrom(const uint8_t fanIndex)
 	{
-		if (fanIndex >= MaxFans)
+		if (fanIndex >= MAX_FANS)
 		{
 			return 0;
 		}
 		size_t removed = 0;
-		for (size_t i = fanIndex; i < MaxFans && fans[i] != nullptr; ++i)
+		for (size_t i = fanIndex; i < MAX_FANS && fans[i] != nullptr; ++i)
 		{
 			fans[i] = nullptr;
 			++removed;
@@ -352,26 +354,26 @@ namespace OM
 	void Tool::Reset()
 	{
 		index = 0;
-		for (size_t i = 0; i < MaxHeatersPerTool; ++i)
+		for (size_t i = 0; i < MAX_HEATERS_PER_TOOL; ++i)
 		{
 			heaters[i] = nullptr;
 		}
-		for (size_t i = 0; i < MaxExtrudersPerTool; ++i)
+		for (size_t i = 0; i < MAX_EXTRUDERS_PER_TOOL; ++i)
 		{
 			extruders[i] = nullptr;
 		}
-		for (size_t i = 0; i < MaxFans; ++i)
+		for (size_t i = 0; i < MAX_FANS; ++i)
 		{
 			fans[i] = nullptr;
 		}
 		filamentExtruder = -1;
 		spindle = nullptr;
 		spindleRpm = 0;
-		for (size_t i = 0; i < MaxTotalAxes; ++i)
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
 			offsets[i] = 0.0f;
 		}
-		for (size_t i = 0; i < MaxExtrudersPerTool; ++i)
+		for (size_t i = 0; i < MAX_EXTRUDERS_PER_TOOL; ++i)
 		{
 			mix[i] = 0.0f;
 		}
@@ -407,7 +409,7 @@ namespace OM
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex)
 	{
-		if (toolHeaterIndex >= MaxHeatersPerTool)
+		if (toolHeaterIndex >= MAX_HEATERS_PER_TOOL)
 		{
 			return false;
 		}
@@ -439,7 +441,7 @@ namespace OM
 
 	bool UpdateToolExtruder(const size_t toolIndex, const size_t toolExtruderIndex, const uint8_t extruderIndex)
 	{
-		if (toolExtruderIndex >= MaxExtrudersPerTool)
+		if (toolExtruderIndex >= MAX_EXTRUDERS_PER_TOOL)
 		{
 			return false;
 		}
@@ -483,7 +485,7 @@ namespace OM
 
 	bool UpdateToolFan(const size_t toolIndex, const size_t toolFanIndex, const uint8_t fanIndex)
 	{
-		if (toolFanIndex >= MaxFans)
+		if (toolFanIndex >= MAX_FANS)
 		{
 			return false;
 		}
@@ -554,7 +556,7 @@ namespace OM
 		}
 		else
 		{
-			tool->name.copy(name, MaxToolNameLength);
+			tool->name.copy(name, MAX_TOOL_NAME_LENGTH);
 		}
 		dbg("Tool %d name=%s", tool->index, tool->name.c_str());
 		return true;

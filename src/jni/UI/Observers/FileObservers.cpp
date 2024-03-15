@@ -9,10 +9,10 @@
 #include "Debug.h"
 
 #include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "manager/LanguageManager.h"
 #include "utils.h"
 #include <string>

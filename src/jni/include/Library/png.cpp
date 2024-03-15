@@ -6,12 +6,6 @@
 #include <algorithm>
 #include <stdio.h>
 
-constexpr int BYTES_PER_PIXEL = sizeof(rgba_t); /// blue, green, red, alpha
-constexpr int FILE_HEADER_SIZE = 14;
-constexpr int INFO_HEADER_SIZE = 40;
-
-const static unsigned char padding[BYTES_PER_PIXEL] = {0};
-
 PNG::PNG() : m_imageFileName(nullptr), m_imageFile(nullptr) {}
 
 PNG::PNG(const char* imageFileName) : m_imageFileName(imageFileName)

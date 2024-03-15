@@ -6,13 +6,13 @@
  */
 
 #include "Spindle.h"
+#include "Configuration.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Utils.h"
 #include "uart/CommDef.h"
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
 
-typedef Vector<OM::Spindle*, MaxSlots> SpindleList;
+typedef Vector<OM::Spindle*, MAX_SLOTS> SpindleList;
 static SpindleList spindles;
 
 namespace OM
@@ -58,9 +58,9 @@ namespace OM
 #define SPINDLE_SETTER(funcName, valType, varName)                                                                     \
 	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-		if (index >= MaxSlots)                                                                                         \
+		if (index >= MAX_SLOTS)                                                                                        \
 		{                                                                                                              \
-			error("spindle[%d] greater than MaxSlots", index);                                                         \
+			error("spindle[%d] greater than MAX_SLOTS", index);                                                        \
 			return false;                                                                                              \
 		}                                                                                                              \
 		Spindle* spindle = GetOrCreateSpindle(index);                                                                  \
@@ -75,9 +75,9 @@ namespace OM
 
 	bool SetSpindleState(size_t index, const char* statusStr)
 	{
-		if (index >= MaxSlots)
+		if (index >= MAX_SLOTS)
 		{
-			error("spindle[%d] greater than MaxSlots", index);
+			error("spindle[%d] greater than MAX_SLOTS", index);
 			return false;
 		}
 

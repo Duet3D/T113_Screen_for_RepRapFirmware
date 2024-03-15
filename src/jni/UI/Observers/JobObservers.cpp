@@ -6,9 +6,9 @@
  */
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "manager/LanguageManager.h"
 #include <algorithm>
 

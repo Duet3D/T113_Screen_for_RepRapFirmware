@@ -9,10 +9,10 @@
 #define SRC_OBJECTMODEL_AXIS_HPP_
 
 // #include <cstdint>
+#include "Configuration.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/function_ref.h>
-#include <UI/UserInterfaceConstants.h>
 #include <sys/types.h>
 
 namespace OM::Move
@@ -60,7 +60,7 @@ namespace OM::Move
 		float stepsPerMm;
 		float filamentDiameter;
 		float pressureAdvance;
-		String<MaxFilamentNameLength> filamentName;
+		String<MAX_FILAMENT_NAME_LENGTH> filamentName;
 
 		void Reset();
 	};

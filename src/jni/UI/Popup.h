@@ -18,12 +18,12 @@
 #include <sys/types.h>
 #include <vector>
 
+#include "Configuration.h"
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Tool.h"
-#include "UI/UserInterfaceConstants.h"
 
 namespace UI
 {
@@ -128,7 +128,7 @@ namespace UI
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;
 		uint32_t seq_;
-		OM::Move::Axis* axes_[MaxTotalAxes];
+		OM::Move::Axis* axes_[MAX_TOTAL_AXES];
 		uint32_t timeout_;
 	};
 

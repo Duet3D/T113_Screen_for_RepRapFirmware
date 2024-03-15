@@ -13,6 +13,7 @@
 #include "restclient-cpp/restclient.h"
 
 #include "Comm/Network.h"
+#include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "manager/ConfigManager.h"
@@ -20,15 +21,7 @@
 
 namespace Comm
 {
-	constexpr uint32_t defaultPrinterPollInterval = 500;
-	constexpr uint32_t minPrinterPollInterval = 250;
-	constexpr uint32_t printerResponseTimeout = 2000;
-
-	constexpr size_t maxIpLength = 50;
-	constexpr size_t maxHostnameLength = 64;
-
-    constexpr const char* const duetCommunicationTypeNames[] = {
-        "UART", "Network", "USB"};
+	constexpr const char* const duetCommunicationTypeNames[] = {"UART", "Network", "USB"};
 
 	typedef struct
 	{

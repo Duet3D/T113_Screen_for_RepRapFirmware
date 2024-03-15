@@ -9,17 +9,17 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_WARN
 
 #include "BedOrChamber.h"
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ListHelpers.h"
 #include "ObjectModel/Heat.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
 
 #include "Debug.h"
 
-typedef Vector<OM::Bed*, MaxSlots> BedList;
-typedef Vector<OM::Chamber*, MaxSlots> ChamberList;
+typedef Vector<OM::Bed*, MAX_SLOTS> BedList;
+typedef Vector<OM::Chamber*, MAX_SLOTS> ChamberList;
 
 static BedList beds;
 static ChamberList chambers;
@@ -35,7 +35,7 @@ namespace OM
 		index = 0;
 		heater = -1;
 		status = BedOrChamberStatus::off;
-		slot = MaxSlots;
+		slot = MAX_SLOTS;
 	}
 
 	int32_t BedOrChamber::GetActiveTemp()
@@ -62,7 +62,7 @@ namespace OM
 		if (pheater == nullptr)
 			return false;
 
-		String<MaxCommandLength> command;
+		String<MAX_COMMAND_LENGTH> command;
 		command.catf("M140 P%d %s%d", index, active ? "S" : "R", temp);
 
 		Comm::duet.SendGcode(command.c_str());
@@ -75,7 +75,7 @@ namespace OM
 		if (pheater == nullptr)
 			return false;
 
-		String<MaxCommandLength> command;
+		String<MAX_COMMAND_LENGTH> command;
 		command.catf("M141 P%d %s%d", index, active ? "S" : "R", temp);
 
 		Comm::duet.SendGcode(command.c_str());
