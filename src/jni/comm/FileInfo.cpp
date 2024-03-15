@@ -15,6 +15,10 @@
 #include "Hardware/Duet.h"
 #include "UI/UserInterface.h"
 #include "utils.h"
+#include <utils/TimeHelper.h>
+
+constexpr int32_t THUMBNAIL_REQUEST_TIMEOUT = 5000;
+constexpr size_t MAX_THUMBNAIL_CACHE_SIZE = 2*2600; // What is the largest size thumbnail that is allowed to be cached?
 
 namespace Comm
 {
@@ -73,6 +77,16 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
+		if (m_currentThumbnail != nullptr &&
+			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
+		{
+			Thumbnail* thumbnail = m_currentThumbnail;
+			m_currentThumbnail = nullptr;
+			warn("Thumbnail request timed out for %s", thumbnail->filename.c_str());
+			DeleteCachedThumbnail(thumbnail->filename.c_str());
+			QueueThumbnailRequest(thumbnail->filename.c_str());
+		}
+
 		if (m_currentThumbnail == nullptr)
 		{
 			m_thumbnailRequestInProgress = false;
@@ -84,6 +98,7 @@ namespace Comm
 			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
 			{
 				warn("Thumbnail request failed for %s", m_currentThumbnail->filename.c_str());
+				DeleteCachedThumbnail(m_currentThumbnail->filename.c_str());
 				m_thumbnailRequestInProgress = false;
 				m_currentThumbnail = nullptr;
 				return;
@@ -99,11 +114,12 @@ namespace Comm
 				break;
 			case ThumbnailState::Data:
 			case ThumbnailState::DataWait:
-				dbg("Thumbnail request in progress for %s, state=%d",
-					m_currentThumbnail->filename.c_str(),
-					m_currentThumbnail->context.state);
+				verbose("Thumbnail request in progress for %s, state=%d",
+						m_currentThumbnail->filename.c_str(),
+						m_currentThumbnail->context.state);
 				return;
 			case ThumbnailState::DataRequest:
+				m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
 				duet.RequestThumbnail(m_currentThumbnail->filename.c_str(), m_currentThumbnail->context.next);
 				m_currentThumbnail->context.state = ThumbnailState::DataWait;
 				return;
@@ -245,7 +261,7 @@ namespace Comm
 			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
 			if (thumbnail == nullptr)
 				continue;
-			if (thumbnail->meta.size <= 5120 && thumbnail->meta.size > largestSize)
+			if (thumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE && thumbnail->meta.size > largestSize)
 			{
 				largestValidThumbnail = thumbnail;
 				largestSize = thumbnail->meta.size;
@@ -303,6 +319,7 @@ namespace Comm
 		m_currentThumbnail = thumbnail;
 		m_thumbnailRequestInProgress = true;
 		thumbnail->context.state = ThumbnailState::DataWait;
+		m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
 		duet.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
 		return true;
 	}
