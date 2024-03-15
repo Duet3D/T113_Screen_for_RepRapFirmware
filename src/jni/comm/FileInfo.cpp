@@ -210,6 +210,19 @@ namespace Comm
 		info("Cache cleared");
 	}
 
+	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath)
+	{
+		for (auto& queuedPath : m_fileInfoRequestQueue)
+		{
+			if (queuedPath == filepath)
+			{
+				return false;
+			}
+		}
+		info("Queueing file info request for %s", filepath.c_str());
+		m_fileInfoRequestQueue.push_back(filepath);
+	}
+
 	bool FileInfoCache::QueueThumbnailRequest(const std::string& filepath)
 	{
 		if (m_currentThumbnail != nullptr && m_currentThumbnail->filename.Equals(filepath.c_str()))
@@ -221,8 +234,7 @@ namespace Comm
 		FileInfo* fileInfo = GetFileInfo(filepath);
 		if (fileInfo == nullptr)
 		{
-			info("File info for %s not found, queuing...", filepath.c_str());
-			m_fileInfoRequestQueue.push_back(filepath);
+			QueueFileInfoRequest(filepath);
 			return false;
 		}
 
@@ -233,7 +245,7 @@ namespace Comm
 			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
 			if (thumbnail == nullptr)
 				continue;
-			if (thumbnail->meta.size <= 2600 && thumbnail->meta.size > largestSize)
+			if (thumbnail->meta.size <= 5120 && thumbnail->meta.size > largestSize)
 			{
 				largestValidThumbnail = thumbnail;
 				largestSize = thumbnail->meta.size;

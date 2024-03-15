@@ -145,7 +145,8 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 		"thumbnail:fileName",
 		[](OBSERVER_CHAR_ARGS) {
 			Comm::Thumbnail* thumbnail = FILEINFO_CACHE->GetCurrentThumbnail(true);
-			decoder->thumbnail = thumbnail;
+			decoder->responseType = Comm::JsonDecoder::ResponseType::thumbnail;
+			decoder->responseData = thumbnail;
 			if (thumbnail == nullptr)
 			{
 				error("Not expecting to receive thumbnail data");

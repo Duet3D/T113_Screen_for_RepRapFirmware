@@ -176,8 +176,22 @@ namespace Comm
 			OM::lastAlertSeq = OM::currentAlert.seq;
 		}
 
-		if (thumbnail != nullptr)
+		switch (responseType)
 		{
+		case ResponseType::unknown:
+			break;
+		case ResponseType::filelist: {
+			FileListData* data = static_cast<FileListData*>(responseData);
+			if (data == nullptr)
+				break;
+			delete data;
+			break;
+		}
+		case ResponseType::thumbnail: {
+			Thumbnail* thumbnail = static_cast<Thumbnail*>(responseData);
+			if (thumbnail == nullptr)
+				break;
+
 			if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
 			{
 				error("thumbnail parseErr %d err %d.\n", thumbnail->context.parseErr, thumbnail->context.err);
@@ -233,8 +247,14 @@ namespace Comm
 				break;
 			}
 			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
-			thumbnail = nullptr;
+
+			break;
 		}
+		default:
+			break;
+		}
+		responseType = ResponseType::unknown;
+		responseData = nullptr;
 	}
 
 	// Public functions called by the SerialIo module

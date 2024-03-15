@@ -135,7 +135,6 @@ namespace OM::FileSystem
 
 	void SetCurrentDir(const std::string& path)
 	{
-		ClearFileSystem();
 		sCurrentDirPath = path;
 		info("Files: current directory = %s", sCurrentDirPath.c_str());
 	}

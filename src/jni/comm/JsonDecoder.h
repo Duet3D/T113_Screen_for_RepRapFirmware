@@ -28,6 +28,21 @@ namespace Comm
 	class JsonDecoder
 	{
 	  public:
+		enum class ResponseType
+		{
+			unknown = 0,
+			filelist,
+			thumbnail,
+		};
+
+		struct FileListData
+		{
+			std::string dir = "";
+			uint32_t first = 0;
+
+			FileListData(const std::string& dir) : dir(dir), first(0) {}
+		};
+
 		// Enumeration to represent the json parsing state.
 		// We don't allow nested objects or nested arrays, so we don't need a state stack.
 		// An additional variable elementCount is 0 if we are not in an array, else the number of elements we have found
@@ -54,7 +69,9 @@ namespace Comm
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }
 
-		Thumbnail* thumbnail = nullptr;
+		// These variables are used for the
+		ResponseType responseType = ResponseType::unknown;
+		void* responseData = nullptr;
 
 	  private:
 		void StartReceivedMessage(void);
@@ -82,7 +99,6 @@ namespace Comm
 		bool inError;
 		size_t arrayIndices[MaxArrayNesting];
 		size_t arrayDepth;
-        
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */
