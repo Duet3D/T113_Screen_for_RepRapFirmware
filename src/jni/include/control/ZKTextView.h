@@ -53,22 +53,30 @@ public:
 	 */
 	void setText(int text);
 
-	int setTextf(const char* format, va_list vargs)
+	int setTextf(const char* fmt, va_list args)
 	{
-		char buffer[50];
-		const int ret = SafeVsnprintf(buffer, 50, format, vargs);
-		setText(buffer);
+		std::string tmp;
+		size_t ret = SafeVsnprintf(0, 0, fmt, args);
+		if (ret >= tmp.capacity())
+			tmp.reserve(ret + sizeof(char));
+		tmp.resize(ret);
+		ret = SafeVsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
+		setText(tmp);
 		return ret;
 	}
 
-	int setTextf(const char *format, ...)
+	int setTextf(const char* fmt, ...)
 	{
-		va_list vargs;
-		va_start(vargs, format);
-		char buffer[50];
-		const int ret = SafeVsnprintf(buffer, 50, format, vargs);
-		va_end(vargs);
-		setText(buffer);
+		std::string tmp;
+		va_list args;
+		va_start(args, fmt);
+		size_t ret = SafeVsnprintf(0, 0, fmt, args);
+		if (ret >= tmp.capacity())
+			tmp.reserve(ret + sizeof(char));
+		tmp.resize(ret);
+		SafeVsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
+		va_end(args);
+		setText(tmp);
 		return ret;
 	}
 

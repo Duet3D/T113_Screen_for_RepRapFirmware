@@ -722,7 +722,23 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 				UI::RunSelectedFile();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
+			Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+			float height = 0;
+			float layerHeight = 0;
+			tm printTime;
+			if (fileInfo != nullptr)
+			{
+				height = fileInfo->height;
+				layerHeight = fileInfo->layerHeight;
+				printTime = fileInfo->GetPrintTime();
+			}
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(),
+									   item->GetName().c_str(),
+									   height,
+									   layerHeight,
+									   printTime.tm_hour,
+									   printTime.tm_min,
+									   printTime.tm_sec);
 			SetThumbnail(mPopupImagePtr, item->GetPath().c_str());
 			UI::POPUP_WINDOW->ShowImage(true);
 			UI::POPUP_WINDOW->CancelTimeout();

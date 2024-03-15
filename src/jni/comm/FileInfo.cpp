@@ -20,7 +20,7 @@
 
 namespace Comm
 {
-	FileInfo::FileInfo() : size(0), height(0), layerHeight(0)
+	FileInfo::FileInfo() : size(0), height(0), layerHeight(0), printTime(0)
 	{
 		dbg("Created new fileinfo");
 	}
@@ -69,6 +69,16 @@ namespace Comm
 		}
 		thumbnails.resize(fromIndex);
 		return count;
+	}
+
+	tm FileInfo::GetPrintTime() const
+	{
+		tm time;
+		uint32_t seconds = printTime;
+		time.tm_hour = static_cast<int>(seconds / 3600);
+		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
+		time.tm_sec = static_cast<int>(seconds - time.tm_hour * 3600 - time.tm_min * 60);
+		return time;
 	}
 
 	FileInfoCache::FileInfoCache() {}

@@ -107,7 +107,7 @@
     <!-- Popup messages -->
     <string name="uart_buffer_overflow">UART buffer overflow</string>
     <string name="run_macro">Run Macro: %s</string>
-    <string name="start_print">Start Print: %s</string>
+    <string name="start_print">Start Print: %s&#x000A;Height: %.2f mm&#x000A;Layer Height: %.2f mm&#x000A;Print Time: %d:%d:%d</string>
     <string name="upload_file">Upload File: %s</string>
     <string name="uploading_file">Uploading File: %s</string>
     <string name="upgrade_from">Do you want to upgrade using: %s?</string>

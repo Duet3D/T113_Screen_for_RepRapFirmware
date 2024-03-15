@@ -32,6 +32,7 @@ namespace Comm
 		String<20> lastModified;
 		float height;
 		float layerHeight;
+		uint32_t printTime;
 		std::vector<float> filament;
 		String<30> generatedBy;
 
@@ -39,6 +40,8 @@ namespace Comm
 		Thumbnail* GetOrCreateThumbnail(size_t index);
 		size_t GetThumbnailCount() const { return thumbnails.size(); }
 		size_t ClearThumbnails(size_t fromIndex);
+
+		tm GetPrintTime() const;
 
 	  private:
 		std::vector<Thumbnail*> thumbnails;
