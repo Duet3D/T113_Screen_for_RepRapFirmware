@@ -25,8 +25,8 @@ const unsigned int MaxHeaters = 32;
 constexpr unsigned int MaxDisplayableAxes = 6;
 
 constexpr unsigned int MaxCommandLength = 50;
-constexpr unsigned int MaxResponseLineLength = 65;
-constexpr unsigned int MaxResponseLines = 200;
+constexpr unsigned int MaxResponseLineLength = 80;
+constexpr unsigned int MaxResponseLines = 500;
 
 constexpr unsigned int MaxToolNameLength = 10;
 constexpr unsigned int MaxFilamentNameLength = 100;

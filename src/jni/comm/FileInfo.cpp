@@ -18,7 +18,8 @@
 #include <utils/TimeHelper.h>
 
 constexpr int32_t THUMBNAIL_REQUEST_TIMEOUT = 5000;
-constexpr size_t MAX_THUMBNAIL_CACHE_SIZE = 2*2600; // What is the largest size thumbnail that is allowed to be cached?
+constexpr size_t MAX_THUMBNAIL_CACHE_SIZE =
+	2 * 2600; // What is the largest size thumbnail that is allowed to be cached?
 
 namespace Comm
 {
@@ -380,21 +381,27 @@ namespace Comm
 				Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
 				if (thumbnail == nullptr)
 					continue;
-				UI::CONSOLE->AddResponse(utils::format("      Thumbnail %u:", i).c_str());
-				UI::CONSOLE->AddResponse("        meta:");
-				UI::CONSOLE->AddResponse(utils::format("          filename: %s", thumbnail->filename.c_str()).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          width: %u", thumbnail->meta.width).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          height: %u", thumbnail->meta.height).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          format: %d", thumbnail->meta.imageFormat).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          offset: %u", thumbnail->meta.offset).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          size: %u", thumbnail->meta.size).c_str());
-				UI::CONSOLE->AddResponse("        context:");
-				UI::CONSOLE->AddResponse(utils::format("          err: %d", thumbnail->context.err).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          parseErr: %d", thumbnail->context.parseErr).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          size: %u", thumbnail->context.size).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          offset: %u", thumbnail->context.offset).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          next: %u", thumbnail->context.next).c_str());
-				UI::CONSOLE->AddResponse(utils::format("          state: %d", thumbnail->context.state).c_str());
+				UI::CONSOLE->AddResponse(utils::format("    Thumbnail %u:", i).c_str());
+				UI::CONSOLE->AddResponse("      meta:");
+				UI::CONSOLE->AddResponse(utils::format("        filename: %s", thumbnail->filename.c_str()).c_str());
+				UI::CONSOLE->AddResponse(
+					utils::format("        width(%u), height(%u), format(%d), offset(%u), size(%u)",
+								  thumbnail->meta.width,
+								  thumbnail->meta.height,
+								  thumbnail->meta.imageFormat,
+								  thumbnail->meta.offset,
+								  thumbnail->meta.size)
+						.c_str());
+				UI::CONSOLE->AddResponse("      context:");
+				UI::CONSOLE->AddResponse(
+					utils::format("        err(%d), parseErr(%d), size(%u), offset(%u), next(%u), state(%d)",
+								  thumbnail->context.err,
+								  thumbnail->context.parseErr,
+								  thumbnail->context.size,
+								  thumbnail->context.offset,
+								  thumbnail->context.next,
+								  thumbnail->context.state)
+						.c_str());
 			}
 		}
 
