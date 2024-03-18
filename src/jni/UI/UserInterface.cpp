@@ -97,6 +97,18 @@ namespace UI
 		AddToVector<ZKBase*>(overlayWindows_, overlay);
 	}
 
+	bool Window::IsOverlayOpened()
+	{
+		for (auto& window : overlayWindows_)
+		{
+			if (window->isVisible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool Window::CloseOverlay()
 	{
 		if (overlayWindows_.empty())
@@ -113,13 +125,18 @@ namespace UI
 		{
 			POPUP_WINDOW->Clear();
 		}
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(false);
+		size_t count = 0;
 		for (auto& window : overlayWindows_)
 		{
+			if (!window->isVisible())
+				continue;
 			window->setVisible(false);
 			RemoveFromVector<ZKBase*>(overlayWindows_, window);
+			count++;
 		}
-		verbose("Closed overlays, %d remaining", overlayWindows_.size());
-		return true;
+		verbose("Closed %d overlays, %d remaining", count, overlayWindows_.size());
+		return count > 0;
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)

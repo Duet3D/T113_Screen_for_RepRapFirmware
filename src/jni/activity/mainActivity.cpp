@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKButton* mOverlayModalZonePtr;
 static ZKTextView* mTextView43Ptr;
 static ZKListView* mDebugCommandListPtr;
 static ZKWindow* mDebugWindowPtr;
@@ -251,6 +252,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
     ID_MAIN_Button1, onButtonClick_Button1,
     ID_MAIN_EStopBtn, onButtonClick_EStopBtn,
     ID_MAIN_CloseGuideBtn, onButtonClick_CloseGuideBtn,
@@ -425,6 +427,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mOverlayModalZonePtr = NULL;
     mTextView43Ptr = NULL;
     mDebugCommandListPtr = NULL;
     mDebugWindowPtr = NULL;
@@ -644,6 +647,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mOverlayModalZonePtr = (ZKButton*)findControlByID(ID_MAIN_OverlayModalZone);
     mTextView43Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView43);
     mDebugCommandListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugCommandList);if(mDebugCommandListPtr!= NULL){mDebugCommandListPtr->setListAdapter(this);mDebugCommandListPtr->setItemClickListener(this);}
     mDebugWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DebugWindow);

@@ -74,6 +74,7 @@ namespace UI
 		void ClearHome();
 		void OpenWindow(ZKBase* window);
 		void OpenOverlay(ZKBase* window, bool closeAlreadyOpened = true);
+		bool IsOverlayOpened();
 		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();

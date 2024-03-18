@@ -88,6 +88,7 @@ namespace UI
 		mode_ = OM::currentAlert.mode;
 		seq_ = OM::currentAlert.seq;
 
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		if (IsBlocking())
 		{
 			noTouchWindow_->setVisible(true);
@@ -535,6 +536,7 @@ namespace UI
 		onValueChanged_ = onValueChanged;
 		onConfirm_ = onConfirm;
 		SetPosition(HorizontalPosition::right);
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		WINDOW->OpenOverlay(window_, !withSlider);
 	}
 
@@ -663,6 +665,7 @@ namespace UI
 		SetValue(value);
 		SetOnProgressChanged(onProgressChanged);
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		WINDOW->OpenOverlay(window_);
 	}
 

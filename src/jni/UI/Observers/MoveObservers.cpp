@@ -127,24 +127,9 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 	OBSERVER_CHAR("move:kinematics:name", [](OBSERVER_CHAR_ARGS) {}),
 	OBSERVER_FLOAT("move:speedFactor",
 				   [](OBSERVER_FLOAT_ARGS) {
-					   dbg("Setting speed factor");
 					   int factor = (int)(val * 100);
-					   dbg("1");
-					   ZKTextView* speedFactor = UI::GetUIControl<ZKTextView>(ID_MAIN_PrintSpeedFactor);
-					   if (speedFactor == nullptr)
-					   {
-						   error("Failed to get speed factor control");
-						   return;
-					   }
-					   speedFactor->setTextf("%d %%", factor);
-					   ZKSeekBar* speedBar = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PrintSpeedMultiplierBar);
-					   if (speedBar == nullptr)
-					   {
-						   error("Failed to get speed bar control");
-						   return;
-					   }
-					   speedBar->setMax(factor + 100);
-					   dbg("Speed factor = %d", factor);
+					   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintSpeedFactor)->setTextf("%d %%", factor);
+					   UI::GetUIControl<ZKSeekBar>(ID_MAIN_PrintSpeedMultiplierBar)->setMax(factor + 100);
 				   }),
 	OBSERVER_UINT("move:workplaceNumber",
 				  [](OBSERVER_UINT_ARGS) {

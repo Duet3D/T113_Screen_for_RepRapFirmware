@@ -271,7 +271,6 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev)
 	switch (ev.mActionStatus)
 	{
 	case MotionEvent::E_ACTION_DOWN: // touch pressed
-		//LOGD("Time = %ld Pos x = %d, y = %d", ev.mEventTime, ev.mX, ev.mY);
 		break;
 	case MotionEvent::E_ACTION_MOVE: // touch slide
 		break;
@@ -1485,4 +1484,10 @@ static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, i
 		return;
 	}
 	command->callback();
+}
+
+static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
+{
+	UI::WINDOW->CloseOverlay();
+	return false;
 }
