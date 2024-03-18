@@ -12,15 +12,21 @@ namespace utils
 {
 	std::string format(const char* fmt, ...)
 	{
-		std::string tmp;
 		va_list args;
 		va_start(args, fmt);
-		size_t num = vsnprintf(0, 0, fmt, args);
-		if (num >= tmp.capacity())
+		std::string tmp = format(fmt, args);
+		va_end(args);
+		return tmp;
+	}
+
+	std::string format(const char* fmt, va_list args)
+	{
+		std::string tmp;
+		int num = vsnprintf(0, 0, fmt, args);
+		if (num >= (int)tmp.capacity())
 			tmp.reserve(num + sizeof(char));
 		tmp.resize(num);
 		vsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
-		va_end(args);
 		return tmp;
 	}
 

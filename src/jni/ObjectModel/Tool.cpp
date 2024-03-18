@@ -26,7 +26,7 @@ static ToolList tools;
 
 namespace OM
 {
-	static size_t sCurrentTool = 0;
+	static int32_t sCurrentTool = 0;
 
 	void ToolHeater::Reset()
 	{
@@ -613,7 +613,7 @@ namespace OM
 		return true;
 	}
 
-	void SetCurrentTool(const size_t toolIndex)
+	void SetCurrentTool(const int32_t toolIndex)
 	{
 		info("Setting current tool to %d", toolIndex);
 		sCurrentTool = toolIndex;
@@ -621,6 +621,11 @@ namespace OM
 
 	Tool* GetCurrentTool()
 	{
+		if (sCurrentTool < 0)
+		{
+			dbg("No tool selected");
+			return nullptr;
+		}
 		return GetTool(sCurrentTool);
 	}
 }

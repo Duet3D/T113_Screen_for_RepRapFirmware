@@ -63,7 +63,7 @@ namespace Comm
 			jsError			// something went wrong
 		};
 
-		JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0) {}
+		JsonDecoder();
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }

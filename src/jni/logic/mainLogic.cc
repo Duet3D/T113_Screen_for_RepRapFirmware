@@ -782,12 +782,13 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
 static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
 {
 	OM::Fan* fan = OM::GetFanBySlot(index);
-	if (fan == nullptr) { return; }
-	char header[32];
-	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index);
+	if (fan == nullptr)
+	{
+		return;
+	}
 	size_t fanIndex = fan->index;
 	UI::OpenSliderNumPad(
-		header,
+		utils::format(LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index).c_str(),
 		"",
 		"",
 		"%",
@@ -855,18 +856,27 @@ static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,Z
 
 static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {
 	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
-	if (extruder == nullptr) { return; }
-	char header[32];
+	if (extruder == nullptr)
+	{
+		return;
+	}
 	size_t extruderIndex = extruder->index;
-	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex);
-	UI::OpenSliderNumPad(header, "", "", "%", 1, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
-		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
-		if (extruder == nullptr)
-		{
-			return;
-		}
-		Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
-	});
+	UI::OpenSliderNumPad(
+		utils::format(LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex).c_str(),
+		"",
+		"",
+		"%",
+		1,
+		200,
+		(int)(extruder->factor * 100),
+		[extruderIndex](int percent) {
+			OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
+			if (extruder == nullptr)
+			{
+				return;
+			}
+			Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
+		});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {

@@ -12,7 +12,7 @@
 
 #include "ZKBase.h"
 #include "manager/LanguageManager.h"
-#include <Duet3D/General/SafeVsnprintf.h>
+#include "utils.h"
 
 class ZKTextViewPrivate;
 
@@ -53,39 +53,21 @@ public:
 	 */
 	void setText(int text);
 
-	int setTextf(const char* fmt, va_list args)
+	void setTextf(const char* fmt, va_list args)
 	{
-		std::string tmp;
-		size_t ret = SafeVsnprintf(0, 0, fmt, args);
-		if (ret >= tmp.capacity())
-			tmp.reserve(ret + sizeof(char));
-		tmp.resize(ret);
-		ret = SafeVsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
+		std::string tmp = utils::format(fmt, args);
 		setText(tmp);
-		return ret;
 	}
 
-	int setTextf(const char* fmt, ...)
+	void setTextf(const char* fmt, ...)
 	{
-		std::string tmp;
 		va_list args;
 		va_start(args, fmt);
-		size_t ret = SafeVsnprintf(0, 0, fmt, args);
-		if (ret >= tmp.capacity())
-			tmp.reserve(ret + sizeof(char));
-		tmp.resize(ret);
-		SafeVsnprintf((char*)tmp.data(), tmp.capacity(), fmt, args);
+		setTextf(fmt, args);
 		va_end(args);
-		setText(tmp);
-		return ret;
 	}
 
-	void setText(float text)
-	{
-		char str[10];
-		SafeSnprintf(str, 10, "%.2f", text);
-		setText(str);
-	}
+	void setText(float text) { setTextf("%.2f", text); }
 
 	/**
 	 * @brief 获取文本内容
@@ -97,17 +79,14 @@ public:
 	 */
 	void setTextTr(const char *name);
 
-	int setTextTrf(const char *format_id, ...)
+	void setTextTrf(const char *format_id, ...)
 	{
 		// TODO: implement this so it doesn't give a compiler warning
 		va_list vargs;
-        std::string format = LANGUAGEMANAGER->getValue(format_id);
-        va_start(vargs, format.c_str());
-		char buffer[255];
-		const int ret = SafeVsnprintf(buffer, 255, format.c_str(), vargs);
+		va_start(vargs, format_id);
+		std::string format = LANGUAGEMANAGER->getValue(format_id);
+		setTextf(format.c_str(), vargs);
 		va_end(vargs);
-		setText(buffer);
-		return ret;
 	}
 
 	void reloadTextTr();

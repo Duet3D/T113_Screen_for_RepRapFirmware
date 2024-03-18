@@ -10,7 +10,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
 #include "UI/UserInterface.h"
 
@@ -154,6 +154,14 @@ namespace Comm
 	const char* _ecv_array const trCedilla = "C\xC7"
 											 "c\xE7";
 
+	JsonDecoder::JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0)
+	{
+		for (size_t i = 0; i < MAX_ARRAY_NESTING; i++)
+		{
+			arrayIndices[i] = 0;
+		}
+	}
+
 	void JsonDecoder::StartReceivedMessage() {}
 
 	void JsonDecoder::EndReceivedMessage()
@@ -202,7 +210,7 @@ namespace Comm
 			if (thumbnail->meta.imageFormat != ThumbnailMeta::ImageFormat::Invalid)
 			{
 				dbg("filename %s offset %d size %d format %d width %d height %d\n",
-					thumbnail->context.filename.c_str(),
+					thumbnail->filename.c_str(),
 					thumbnail->context.offset,
 					thumbnail->context.size,
 					thumbnail->meta.imageFormat,
@@ -460,7 +468,13 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
-		verbose();
+		dbg("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+			fieldId.c_str(),
+			arrayIndices[0],
+			arrayIndices[1],
+			arrayIndices[2],
+			arrayIndices[3],
+			arrayDepth);
 
 		ProcessArrayEnd(fieldId.c_str(), arrayIndices);
 
