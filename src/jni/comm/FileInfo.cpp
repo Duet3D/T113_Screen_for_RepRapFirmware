@@ -95,8 +95,11 @@ namespace Comm
 						 m_currentThumbnail == nullptr
 							 ? ""
 							 : utils::format("%u%% %s",
-											 (100 * m_currentThumbnail->context.offset) /
-												 (m_currentThumbnail->meta.size + m_currentThumbnail->meta.offset),
+											 std::min(100u,
+													  (100 * (std::max(m_currentThumbnail->meta.offset,
+																	   m_currentThumbnail->context.offset) -
+															  m_currentThumbnail->meta.offset)) /
+														  m_currentThumbnail->meta.size),
 											 m_currentThumbnail->filename.c_str())
 								   .c_str());
 
@@ -246,6 +249,24 @@ namespace Comm
 			return nullptr;
 		}
 		return m_cache[filepath];
+	}
+
+	void FileInfoCache::FileInfoRequestComplete()
+	{
+		m_fileInfoRequestInProgress = false;
+		if (m_currentFileInfo == nullptr)
+			return;
+
+		const OM::FileSystem::File* file = UI::GetSelectedFile();
+		if (file == nullptr)
+		{
+			return;
+		}
+		if (file->GetPath() == m_currentFileInfo->filename.c_str())
+		{
+			UI::SetPopupFileInfo();
+			QueueLargeThumbnailRequest(file->GetPath());
+		}
 	}
 
 	void FileInfoCache::ClearCache()

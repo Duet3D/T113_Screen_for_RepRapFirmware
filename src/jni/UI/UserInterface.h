@@ -198,6 +198,7 @@ namespace UI
 	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
 	void SetThumbnail(ZKTextView* thumbnail);
+	void SetPopupFileInfo();
 	ZKTextView* GetThumbnail();
 
 #define WINDOW Window::GetInstance()

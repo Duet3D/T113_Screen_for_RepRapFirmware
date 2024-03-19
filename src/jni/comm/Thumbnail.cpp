@@ -152,14 +152,14 @@ static int ThumbnailDecodeChunkQoi(Comm::Thumbnail& thumbnail, Comm::ThumbnailBu
 		if (ret < 0)
 		{
 			error("failed qoi decoding state %d %d.\n", qoi_decode_state_get(&thumbnail.image.qoi), ret);
-			return -5;
+			return -6;
 		}
 
 		if (thumbnail.image.qoi.height != thumbnail.meta.height || thumbnail.image.qoi.width != thumbnail.meta.width)
 		{
 			error("thumbnail height %d, qoi height %d", thumbnail.meta.height, thumbnail.image.qoi.height);
 			error("thumbnail width %d, qoi width %d", thumbnail.meta.width, thumbnail.image.qoi.width);
-			return -6;
+			return -7;
 		}
 
 		size_done += ret;

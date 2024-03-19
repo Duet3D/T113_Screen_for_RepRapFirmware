@@ -69,10 +69,7 @@ namespace Comm
 															// file info doesn't exist, it will be created
 		FileInfo* GetCurrentFileInfo();						// returns the current file info
 		FileInfo* GetFileInfo(const std::string& filepath); // returns the file info for the given gcode file path
-		void FileInfoRequestComplete()						// called when the file info request is complete
-		{
-			m_fileInfoRequestInProgress = false;
-		}
+		void FileInfoRequestComplete();						// called when the file info request is complete
 
 		void ClearCache(); // clears the cache
 

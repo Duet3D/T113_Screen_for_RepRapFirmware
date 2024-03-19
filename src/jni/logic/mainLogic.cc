@@ -708,28 +708,7 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 				UI::RunSelectedFile();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
-			Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
-			float height = 0;
-			float layerHeight = 0;
-			tm printTime;
-			printTime.tm_hour = printTime.tm_min = printTime.tm_sec = 0;
-			if (fileInfo != nullptr)
-			{
-				height = fileInfo->height;
-				layerHeight = fileInfo->layerHeight;
-				printTime = fileInfo->GetPrintTime();
-			}
-			UI::POPUP_WINDOW->SetTitle(item->GetName());
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
-									   height,
-									   layerHeight,
-									   printTime.tm_hour,
-									   printTime.tm_min,
-									   printTime.tm_sec);
-			UI::POPUP_WINDOW->SetTextScrollable(false);
-			UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
-			UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
-			UI::POPUP_WINDOW->CancelTimeout();
+			UI::SetPopupFileInfo();
 		}
 		break;
 	}
