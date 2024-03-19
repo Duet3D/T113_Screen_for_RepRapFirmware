@@ -88,20 +88,17 @@ namespace Comm
 	{
 		// Update status message
 		UI::GetUIControl<ZKTextView>(ID_MAIN_FileListInfo)
-			->setTextTrf(
-				"file_cache_state",
-				m_fileInfoRequestQueue.size(),
-				m_cache.size(),
-				m_currentFileInfoRequest.c_str(),
-				m_currentThumbnail == nullptr
-					? ""
-					: utils::format("%u%% %s",
-									(100 * (m_currentThumbnail->context.next == 0
-												? m_currentThumbnail->meta.size
-												: m_currentThumbnail->context.next - m_currentThumbnail->meta.offset)) /
-										m_currentThumbnail->meta.size,
-									m_currentThumbnail->filename.c_str())
-						  .c_str());
+			->setTextTrf("file_cache_state",
+						 m_fileInfoRequestQueue.size(),
+						 m_cache.size(),
+						 m_currentFileInfoRequest.c_str(),
+						 m_currentThumbnail == nullptr
+							 ? ""
+							 : utils::format("%u%% %s",
+											 (100 * m_currentThumbnail->context.offset) /
+												 (m_currentThumbnail->meta.size + m_currentThumbnail->meta.offset),
+											 m_currentThumbnail->filename.c_str())
+								   .c_str());
 
 		if (m_currentThumbnail != nullptr &&
 			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
@@ -436,8 +433,12 @@ namespace Comm
 		return m_currentThumbnail;
 	}
 
-	bool FileInfoCache::StopThumbnailRequest()
+	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
+		if (largeOnly && m_currentThumbnail != nullptr && m_currentThumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE)
+		{
+			return false;
+		}
 		m_currentThumbnail = nullptr;
 		return true;
 	}

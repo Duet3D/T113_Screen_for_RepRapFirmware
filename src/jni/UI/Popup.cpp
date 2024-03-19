@@ -13,6 +13,7 @@
 
 #include "Comm/Communication.h"
 
+#include "Comm/FileInfo.h"
 #include "Hardware/Duet.h"
 #include "UserInterface.h"
 #include "storage/StoragePreferences.h"
@@ -349,7 +350,7 @@ namespace UI
 		title_->setText("");
 		text_->setText("");
 		warningText_->setText("");
-		warningText_->setVisible(true);
+		warningText_->setVisible(false);
 		minText_->setVisible(false);
 		maxText_->setVisible(false);
 		choicesList_->setVisible(false);
@@ -373,6 +374,8 @@ namespace UI
 			axis = nullptr;
 		}
 		selectedAxis = 0;
+
+		FILEINFO_CACHE->StopThumbnailRequest(true);
 	}
 
 	bool PopupWindow::ValidateIntegerInput(const char* text)
@@ -416,6 +419,7 @@ namespace UI
 		}
 
 		int32_t value;
+		warningText_->setVisible(true);
 		if (!Comm::GetInteger(text, value))
 		{
 			warningText_->setTextTr("invalid_int_malformed");
@@ -433,6 +437,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		numberInput_->setText(value); // This is to convert float to int and revalidate
 		return true;
@@ -444,6 +449,7 @@ namespace UI
 			return false;
 
 		float value;
+		warningText_->setVisible(true);
 		if (!Comm::GetFloat(text, value))
 		{
 			warningText_->setTextTr("invalid_float_malformed");
@@ -461,6 +467,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		return true;
 	}
@@ -471,6 +478,7 @@ namespace UI
 			return false;
 
 		size_t len = Strnlen(text, ALERT_RESPONSE_LENGTH);
+		warningText_->setVisible(true);
 		if (len < (size_t)OM::currentAlert.limits.text.min)
 		{
 			warningText_->setTextTr("invalid_text_min");
@@ -482,6 +490,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		return true;
 	}

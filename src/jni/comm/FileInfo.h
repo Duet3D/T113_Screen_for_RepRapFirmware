@@ -87,7 +87,7 @@ namespace Comm
 		Thumbnail* GetCurrentThumbnail(bool force = false); // returns the current thumbnail or nullptr if not
 															// processing thumbnail request. Will return nullptr if you
 															// the response has not been received, unless you use force
-		bool StopThumbnailRequest();
+		bool StopThumbnailRequest(bool largeOnly = false);
 
 		void Debug(); // prints debug info
 
