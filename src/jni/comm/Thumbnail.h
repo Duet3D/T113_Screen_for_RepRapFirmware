@@ -71,6 +71,7 @@ namespace Comm
 		std::string imageFilename;
 
 		bool New(ThumbnailMeta& meta, const char* filename);
+		bool IsOpen() const;
 		bool Close();
 	};
 

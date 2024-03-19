@@ -703,6 +703,7 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
+			FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);

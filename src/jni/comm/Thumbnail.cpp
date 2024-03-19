@@ -13,6 +13,7 @@ extern "C"
 #include "sys/param.h"
 #include <sys/stat.h>
 
+#include "Comm/FileInfo.h"
 #include "utils.h"
 
 std::string GetThumbnailPath(const char* filepath)
@@ -59,6 +60,11 @@ namespace Comm
 			imageFormat = ImageFormat::Invalid;
 			return false;
 		}
+	}
+
+	bool ThumbnailImage::IsOpen() const
+	{
+		return png.IsOpen() || bmp.IsOpen();
 	}
 
 	bool ThumbnailImage::Close()
@@ -198,11 +204,18 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 		return -2;
 	}
 
+	if (!IsThumbnailCached(thumbnail.meta.size <= MAX_THUMBNAIL_CACHE_SIZE ? thumbnail.filename.c_str()
+																		   : Comm::largeThumbnailFilename,
+						   true))
+	{
+		return -3;
+	}
+
 	int ret = base64_decode((const char*)data.buffer, data.size, data.buffer);
 	if (ret < 0)
 	{
 		error("decode error %d size %d data\n%s\n", ret, data.size, data.buffer);
-		return -3;
+		return -4;
 	}
 
 	dbg("*** received size %d, base64 decoded size %d\n", data.size, ret);
@@ -217,7 +230,7 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 		return ThumbnailDecodeChunkQoi(thumbnail, data);
 	default:
 		// Shouldn't get here
-		return -4;
+		return -5;
 	}
 }
 

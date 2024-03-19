@@ -20,7 +20,7 @@ class BMP
 	~BMP();
 	bool New(int width, int height, const char* imageFileName);
 	bool Open();
-	bool IsOpen() { return m_imageFile != nullptr; }
+	bool IsOpen() const { return m_imageFile != nullptr; }
 	bool Close();
 	void generateBitmapImage(rgba_t* image);
 	void generateBitmapHeaders();

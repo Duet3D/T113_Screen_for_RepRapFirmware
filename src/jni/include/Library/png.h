@@ -20,7 +20,7 @@ class PNG
 	~PNG();
 	bool New(const char* imageFileName);
 	bool Open();
-	bool IsOpen() { return m_imageFile != nullptr; }
+	bool IsOpen()const { return m_imageFile != nullptr; }
 	bool Close();
 	size_t appendData(unsigned char data[], int size);
 	size_t dataSize = 0;

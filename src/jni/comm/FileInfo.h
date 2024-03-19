@@ -21,6 +21,8 @@
 
 namespace Comm
 {
+	constexpr const char* largeThumbnailFilename = "largeThumbnail";
+
 	struct FileInfo
 	{
 	  public:
@@ -74,7 +76,8 @@ namespace Comm
 
 		void ClearCache(); // clears the cache
 
-		bool QueueThumbnailRequest(const std::string& filepath); // returns true if the request was queued
+		bool QueueThumbnailRequest(const std::string& filepath);	  // returns true if the request was queued
+		bool QueueLargeThumbnailRequest(const std::string& filepath); // returns true if a thumbnail request was started
 		bool RequestThumbnail(FileInfo& fileInfo,
 							  size_t index);			 // returns true if a thumbnail request was started
 		bool RequestThumbnail(Thumbnail* thumbnail);	 // returns true if a thumbnail request was started
@@ -101,6 +104,7 @@ namespace Comm
 		bool m_thumbnailResponseInProgress = false;
 		FileInfo* m_currentFileInfo = nullptr; // the file info currently being processed
 		Thumbnail* m_currentThumbnail = nullptr;
+		Thumbnail* m_queuedLargeThumbnail = nullptr;
 		std::map<std::string, FileInfo*> m_cache; // cache of file path and their associated file info
 		std::list<std::string> m_fileInfoRequestQueue;
 		std::list<Thumbnail*> m_thumbnailRequestQueue;

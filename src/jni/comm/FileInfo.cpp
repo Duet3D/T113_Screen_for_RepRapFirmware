@@ -106,7 +106,10 @@ namespace Comm
 
 			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
 			{
-				warn("Thumbnail request failed for %s", m_currentThumbnail->filename.c_str());
+				warn("Thumbnail request failed for %s, parseErr(%d), err(%d)",
+					 m_currentThumbnail->filename.c_str(),
+					 m_currentThumbnail->context.parseErr,
+					 m_currentThumbnail->context.err);
 				DeleteCachedThumbnail(m_currentThumbnail->filename.c_str());
 				m_thumbnailRequestInProgress = false;
 				m_currentThumbnail = nullptr;
@@ -138,6 +141,15 @@ namespace Comm
 				break;
 			default:
 				break;
+			}
+		}
+
+		if (m_queuedLargeThumbnail != nullptr)
+		{
+			if (RequestThumbnail(m_queuedLargeThumbnail))
+			{
+				m_queuedLargeThumbnail = nullptr;
+				return;
 			}
 		}
 
@@ -286,6 +298,40 @@ namespace Comm
 		return true;
 	}
 
+	bool FileInfoCache::QueueLargeThumbnailRequest(const std::string& filepath)
+	{
+		m_queuedLargeThumbnail = nullptr;
+		DeleteCachedThumbnail(largeThumbnailFilename);
+
+		FileInfo* fileInfo = GetFileInfo(filepath);
+		if (fileInfo == nullptr)
+		{
+			QueueFileInfoRequest(filepath);
+			return false;
+		}
+
+		Thumbnail* largestThumbnail = nullptr;
+		size_t largestSize = 0;
+		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
+		{
+			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
+			if (thumbnail == nullptr)
+				continue;
+			if (thumbnail->meta.size > largestSize)
+			{
+				largestThumbnail = thumbnail;
+				largestSize = thumbnail->meta.size;
+			}
+		}
+		if (largestThumbnail == nullptr)
+		{
+			warn("No valid thumbnail found for %s", filepath.c_str());
+			return false;
+		}
+		m_queuedLargeThumbnail = largestThumbnail;
+		return true;
+	}
+
 	bool FileInfoCache::RequestThumbnail(FileInfo& fileInfo, size_t index)
 	{
 		if (index >= fileInfo.GetThumbnailCount())
@@ -320,9 +366,12 @@ namespace Comm
 			return false;
 		}
 
-		if (!thumbnail->image.New(thumbnail->meta, thumbnail->filename.c_str()))
+		const char* filename =
+			thumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE ? thumbnail->filename.c_str() : largeThumbnailFilename;
+
+		if (!thumbnail->image.New(thumbnail->meta, filename))
 		{
-			error("Failed to create thumbnail file.");
+			error("Failed to create thumbnail file %s.", filename);
 			return false;
 		}
 
@@ -356,6 +405,7 @@ namespace Comm
 
 	bool FileInfoCache::StopThumbnailRequest()
 	{
+		m_currentThumbnail = nullptr;
 		return true;
 	}
 
