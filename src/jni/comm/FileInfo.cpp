@@ -103,6 +103,16 @@ namespace Comm
 											 m_currentThumbnail->filename.c_str())
 								   .c_str());
 
+		long long now = TimeHelper::getCurrentTime();
+
+		if (m_fileInfoRequestInProgress && now > m_lastFileInfoRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
+		{
+			warn("File info request timed out for %s", m_currentFileInfoRequest.c_str());
+			m_fileInfoRequestInProgress = false;
+			QueueFileInfoRequest(m_currentFileInfoRequest);
+			m_currentFileInfoRequest.clear();
+		}
+
 		if (m_currentThumbnail != nullptr &&
 			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
 		{
@@ -181,6 +191,7 @@ namespace Comm
 			m_fileInfoRequestQueue.pop_front();
 			m_fileInfoRequestInProgress = true;
 			m_currentFileInfoRequest = filepath;
+			m_lastFileInfoRequestTime = TimeHelper::getCurrentTime();
 			duet.RequestFileInfo(filepath.c_str());
 			return;
 		}
@@ -274,6 +285,7 @@ namespace Comm
 		info("Clearing file info cache");
 		m_currentThumbnail = nullptr;
 		m_currentFileInfo = nullptr;
+		m_currentFileInfoRequest.clear();
 
 		for (auto& it : m_cache)
 		{

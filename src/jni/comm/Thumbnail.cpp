@@ -31,6 +31,7 @@ namespace Comm
 	bool ThumbnailImage::New(ThumbnailMeta& meta, const char* filename)
 	{
 		Close();
+		qoi.decoder_state = qoi_decoder_state::qoi_decoder_header;
 		imageFilename = GetThumbnailPath(filename);
 		switch (meta.imageFormat)
 		{

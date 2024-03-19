@@ -107,6 +107,7 @@ namespace Comm
 		std::map<std::string, FileInfo*> m_cache; // cache of file path and their associated file info
 		std::list<std::string> m_fileInfoRequestQueue;
 		std::list<Thumbnail*> m_thumbnailRequestQueue;
+		long long m_lastFileInfoRequestTime = 0;
 		long long m_lastThumbnailRequestTime = 0;
 	};
 
