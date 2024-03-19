@@ -94,12 +94,14 @@ namespace Comm
 	  private:
 		FileInfoCache();
 
-		bool QueueFileInfoRequest(const std::string& filepath); // queues a file info request if not already queued
-		void SetCurrentThumbnail(Thumbnail* thumbnail);			// set and return the current thumbnail being received
-		Thumbnail* GetNextThumbnail();							// returns the thumbnail for the next queued thumbail
-																// request, or nullptr if queue is empty.
+		bool QueueFileInfoRequest(const std::string& filepath,
+								  bool next = false);	// queues a file info request if not already queued
+		void SetCurrentThumbnail(Thumbnail* thumbnail); // set and return the current thumbnail being received
+		Thumbnail* GetNextThumbnail();					// returns the thumbnail for the next queued thumbail
+														// request, or nullptr if queue is empty.
 
 		bool m_fileInfoRequestInProgress = false;
+		std::string m_currentFileInfoRequest;
 		bool m_thumbnailRequestInProgress = false;
 		bool m_thumbnailResponseInProgress = false;
 		FileInfo* m_currentFileInfo = nullptr; // the file info currently being processed

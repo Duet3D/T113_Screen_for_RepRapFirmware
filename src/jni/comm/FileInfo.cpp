@@ -90,7 +90,7 @@ namespace Comm
 			->setTextTrf("file_cache_state",
 						 m_fileInfoRequestQueue.size(),
 						 m_cache.size(),
-						 m_currentFileInfo == nullptr ? "" : m_currentFileInfo->filename.c_str(),
+						 m_currentFileInfoRequest.c_str(),
 						 m_currentThumbnail == nullptr ? "" : m_currentThumbnail->filename.c_str());
 
 		if (m_currentThumbnail != nullptr &&
@@ -105,6 +105,7 @@ namespace Comm
 
 		if (!m_fileInfoRequestInProgress && m_currentFileInfo != nullptr)
 		{
+			m_currentFileInfoRequest.clear();
 			m_currentFileInfo = nullptr;
 		}
 
@@ -170,6 +171,7 @@ namespace Comm
 			std::string filepath = m_fileInfoRequestQueue.front();
 			m_fileInfoRequestQueue.pop_front();
 			m_fileInfoRequestInProgress = true;
+			m_currentFileInfoRequest = filepath;
 			duet.RequestFileInfo(filepath.c_str());
 			return;
 		}
@@ -259,17 +261,27 @@ namespace Comm
 		info("Cache cleared");
 	}
 
-	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath)
+	bool FileInfoCache::QueueFileInfoRequest(const std::string& filepath, bool next)
 	{
 		for (auto& queuedPath : m_fileInfoRequestQueue)
 		{
 			if (queuedPath == filepath)
 			{
-				return false;
+				if (!next)
+					return false;
+				m_fileInfoRequestQueue.remove(queuedPath);
+				break;
 			}
 		}
 		info("Queueing file info request for %s", filepath.c_str());
-		m_fileInfoRequestQueue.push_back(filepath);
+		if (next)
+		{
+			m_fileInfoRequestQueue.push_front(filepath);
+		}
+		else
+		{
+			m_fileInfoRequestQueue.push_back(filepath);
+		}
 		return true;
 	}
 
@@ -318,7 +330,7 @@ namespace Comm
 		FileInfo* fileInfo = GetFileInfo(filepath);
 		if (fileInfo == nullptr)
 		{
-			QueueFileInfoRequest(filepath);
+			QueueFileInfoRequest(filepath, true);
 			return false;
 		}
 
