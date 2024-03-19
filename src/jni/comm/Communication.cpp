@@ -307,12 +307,6 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
-	void CancelThumbnailRequest()
-	{
-		warn("Requesting thumbnail cancel");
-		FILEINFO_CACHE->StopThumbnailRequest();
-	}
-
 	void sendNext()
 	{
 		long long now = TimeHelper::getCurrentTime();
