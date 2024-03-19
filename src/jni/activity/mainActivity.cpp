@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mFileListInfoPtr;
 static ZKButton* mOverlayModalZonePtr;
 static ZKTextView* mTextView43Ptr;
 static ZKListView* mDebugCommandListPtr;
@@ -426,6 +427,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mFileListInfoPtr = NULL;
     mOverlayModalZonePtr = NULL;
     mTextView43Ptr = NULL;
     mDebugCommandListPtr = NULL;
@@ -645,6 +647,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mFileListInfoPtr = (ZKTextView*)findControlByID(ID_MAIN_FileListInfo);
     mOverlayModalZonePtr = (ZKButton*)findControlByID(ID_MAIN_OverlayModalZone);
     mTextView43Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView43);
     mDebugCommandListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugCommandList);if(mDebugCommandListPtr!= NULL){mDebugCommandListPtr->setListAdapter(this);mDebugCommandListPtr->setItemClickListener(this);}

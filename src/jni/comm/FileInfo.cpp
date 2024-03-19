@@ -86,6 +86,13 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
+		UI::GetUIControl<ZKTextView>(ID_MAIN_FileListInfo)
+			->setTextTrf("file_cache_state",
+						 m_fileInfoRequestQueue.size(),
+						 m_cache.size(),
+						 m_currentFileInfo == nullptr ? "" : m_currentFileInfo->filename.c_str(),
+						 m_currentThumbnail == nullptr ? "" : m_currentThumbnail->filename.c_str());
+
 		if (m_currentThumbnail != nullptr &&
 			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
 		{
@@ -94,6 +101,11 @@ namespace Comm
 			warn("Thumbnail request timed out for %s", thumbnail->filename.c_str());
 			DeleteCachedThumbnail(thumbnail->filename.c_str());
 			QueueThumbnailRequest(thumbnail->filename.c_str());
+		}
+
+		if (!m_fileInfoRequestInProgress && m_currentFileInfo != nullptr)
+		{
+			m_currentFileInfo = nullptr;
 		}
 
 		if (m_currentThumbnail == nullptr)

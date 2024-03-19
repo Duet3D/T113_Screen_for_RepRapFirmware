@@ -27,6 +27,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_FileListInfo    50074
 #define ID_MAIN_OverlayModalZone    20052
 #define ID_MAIN_TextView43    50073
 #define ID_MAIN_DebugCommandList    80023

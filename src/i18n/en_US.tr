@@ -101,6 +101,7 @@
     <string name="estimated">Estimated</string>
     <string name="refresh">Refresh</string>
     <string name="usb">USB Files</string>
+    <string name="file_cache_state">File Info Cache: Queued(%d) Cached(%d) Requesting(%s) Thumbnail(%s)</string>
 
     <!-- Network Page -->
 
