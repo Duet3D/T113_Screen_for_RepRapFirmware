@@ -86,12 +86,22 @@ namespace Comm
 
 	void FileInfoCache::Spin()
 	{
+		// Update status message
 		UI::GetUIControl<ZKTextView>(ID_MAIN_FileListInfo)
-			->setTextTrf("file_cache_state",
-						 m_fileInfoRequestQueue.size(),
-						 m_cache.size(),
-						 m_currentFileInfoRequest.c_str(),
-						 m_currentThumbnail == nullptr ? "" : m_currentThumbnail->filename.c_str());
+			->setTextTrf(
+				"file_cache_state",
+				m_fileInfoRequestQueue.size(),
+				m_cache.size(),
+				m_currentFileInfoRequest.c_str(),
+				m_currentThumbnail == nullptr
+					? ""
+					: utils::format("%u%% %s",
+									(100 * (m_currentThumbnail->context.next == 0
+												? m_currentThumbnail->meta.size
+												: m_currentThumbnail->context.next - m_currentThumbnail->meta.offset)) /
+										m_currentThumbnail->meta.size,
+									m_currentThumbnail->filename.c_str())
+						  .c_str());
 
 		if (m_currentThumbnail != nullptr &&
 			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
@@ -116,7 +126,6 @@ namespace Comm
 
 		if (m_thumbnailRequestInProgress)
 		{
-
 			if (m_currentThumbnail->context.parseErr != 0 || m_currentThumbnail->context.err != 0)
 			{
 				warn("Thumbnail request failed for %s, parseErr(%d), err(%d)",
