@@ -49,6 +49,26 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 					  }
 					  fileInfo->size = val;
 				  }),
+	OBSERVER_UINT("printTime",
+				  [](OBSERVER_UINT_ARGS) {
+					  Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetCurrentFileInfo();
+					  if (fileInfo == nullptr)
+					  {
+						  warn("FileInfo not found");
+						  return;
+					  }
+					  fileInfo->printTime = val;
+				  }),
+	OBSERVER_UINT("simulatedTime",
+				  [](OBSERVER_UINT_ARGS) {
+					  Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetCurrentFileInfo();
+					  if (fileInfo == nullptr)
+					  {
+						  warn("FileInfo not found");
+						  return;
+					  }
+					  fileInfo->printTime = val;
+				  }),
 	OBSERVER_FLOAT("height",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetCurrentFileInfo();

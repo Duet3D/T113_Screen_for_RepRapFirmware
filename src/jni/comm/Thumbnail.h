@@ -103,6 +103,7 @@ bool ThumbnailDataIsValid(Comm::ThumbnailBuf& data);
 int ThumbnailInit(Comm::Thumbnail& thumbnail);
 int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data);
 
+std::string GetThumbnailPath(const char* filepath);
 bool IsThumbnailCached(const char* filepath, bool includeBlank = false);
 void SetThumbnail(ZKBase* base, const char* filepath);
 bool ClearAllCachedThumbnails();

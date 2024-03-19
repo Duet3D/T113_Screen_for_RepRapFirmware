@@ -33,6 +33,24 @@ namespace OM::FileSystem
 		return sCurrentDirPath + "/" + name_;
 	}
 
+	std::string FileSystemItem::GetReadableSize() const
+	{
+		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
+		int order = 0;
+
+		if (size_ == 0)
+			return "0 B";
+
+		double len = double(size_);
+		while (len >= 1024 && order < 4)
+		{
+			order++;
+			len /= 1024;
+		}
+
+		return utils::format("%.2f %s", len, sizes[order]);
+	}
+
 	void FileSystemItem::SetName(const std::string name)
 	{
 		name_ = name.c_str();

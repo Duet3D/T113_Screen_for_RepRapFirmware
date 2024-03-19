@@ -35,6 +35,7 @@ namespace OM::FileSystem
 		const std::string& GetDate() const { return date_; }
 		void SetDate(const std::string& date) { date_ = date; }
 		size_t GetSize() const { return size_; }
+		std::string GetReadableSize() const;
 		void SetSize(const size_t size) { size_ = size; }
 		FileSystemItemType GetType() const { return type_; }
 

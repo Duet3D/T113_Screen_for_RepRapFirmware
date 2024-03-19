@@ -42,6 +42,7 @@ namespace Comm
 		size_t ClearThumbnails(size_t fromIndex);
 
 		tm GetPrintTime() const;
+		std::string GetReadableFileSize() const;
 
 	  private:
 		std::vector<Thumbnail*> thumbnails;

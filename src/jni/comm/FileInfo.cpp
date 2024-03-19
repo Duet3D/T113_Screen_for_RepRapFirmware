@@ -78,6 +78,7 @@ namespace Comm
 		time.tm_hour = static_cast<int>(seconds / 3600);
 		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
 		time.tm_sec = static_cast<int>(seconds - time.tm_hour * 3600 - time.tm_min * 60);
+		dbg("Print time (%d): %d:%02d:%02d", printTime, time.tm_hour, time.tm_min, time.tm_sec);
 		return time;
 	}
 

@@ -108,21 +108,6 @@ static void onUI_init()
 	UI::ToolsList::Create("extrude")->Init(mExtrudeToolListPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::NUMPAD_WINDOW->Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
-	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
-						   mNoTouchWindowPtr,
-						   mPopupOkBtnPtr,
-						   mPopupCancelBtnPtr,
-						   mPopupTitlePtr,
-						   mPopupTextPtr,
-						   mPopupWarningPtr,
-						   mPopupMinPtr,
-						   mPopupMaxPtr,
-						   mPopupSelectionListPtr,
-						   mPopupTextInputPtr,
-						   mPopupNumberInputPtr,
-						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr,
-						   mPopupImagePtr);
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
 	UI::SetThumbnail(mPopupImagePtr);
@@ -666,6 +651,7 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
+		pFileSize->setTextTrf("file_size", item->GetReadableSize().c_str());
 		if (IsThumbnailCached(item->GetPath().c_str()))
 		{
 			SetThumbnail(pFileThumbnail, item->GetPath().c_str());
@@ -679,10 +665,10 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
 		pFileType->setTextTr("folder");
+		pFileSize->setText("");
 		pFileThumbnail->setBackgroundPic("");
 		break;
 	}
-	pFileSize->setTextTrf("file_size", item->GetSize());
 	pFileDate->setTextTrf("file_date", item->GetDate().c_str());
 }
 
@@ -725,21 +711,23 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 			float height = 0;
 			float layerHeight = 0;
 			tm printTime;
+			printTime.tm_hour = printTime.tm_min = printTime.tm_sec = 0;
 			if (fileInfo != nullptr)
 			{
 				height = fileInfo->height;
 				layerHeight = fileInfo->layerHeight;
 				printTime = fileInfo->GetPrintTime();
 			}
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(),
-									   item->GetName().c_str(),
+			UI::POPUP_WINDOW->SetTitle(item->GetName());
+			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
 									   height,
 									   layerHeight,
 									   printTime.tm_hour,
 									   printTime.tm_min,
 									   printTime.tm_sec);
-			SetThumbnail(mPopupImagePtr, item->GetPath().c_str());
-			UI::POPUP_WINDOW->ShowImage(true);
+			UI::POPUP_WINDOW->SetTextScrollable(false);
+			UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
+			UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
 			UI::POPUP_WINDOW->CancelTimeout();
 		}
 		break;

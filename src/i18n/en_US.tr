@@ -95,7 +95,7 @@
     <!-- Files Page -->
     <string name="file">File</string>
     <string name="folder">Folder</string>
-    <string name="file_size">Size: %d</string>
+    <string name="file_size">Size: %s</string>
     <string name="file_date">Date: %s</string>
     <string name="elapsed">Elapsed</string>
     <string name="estimated">Estimated</string>
@@ -107,7 +107,8 @@
     <!-- Popup messages -->
     <string name="uart_buffer_overflow">UART buffer overflow</string>
     <string name="run_macro">Run Macro: %s</string>
-    <string name="start_print">Start Print: %s&#x000A;Height: %.2f mm&#x000A;Layer Height: %.2f mm&#x000A;Print Time: %d:%d:%d</string>
+    <string name="start_print">Start Print</string>
+    <string name="file_info">Height: %.2f mm&#x000A;Layer Height: %.2f mm&#x000A;Print Time: %d:%02d:%02d</string>
     <string name="upload_file">Upload File: %s</string>
     <string name="uploading_file">Uploading File: %s</string>
     <string name="upgrade_from">Do you want to upgrade using: %s?</string>

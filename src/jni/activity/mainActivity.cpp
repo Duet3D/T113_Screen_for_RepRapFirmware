@@ -140,7 +140,6 @@ static ZKWindow* mDuetCommSettingWindowPtr;
 static ZKSlideWindow* mSettingsSlideWindowPtr;
 static ZKWindow* mSettingsWindowPtr;
 static ZKWindow* mNetworkWindowPtr;
-static ZKWindow* mMacrosWindowPtr;
 static ZKButton* mUsbFilesPtr;
 static ZKTextView* mFolderIDPtr;
 static ZKButton* mFileRefreshBtnPtr;
@@ -563,7 +562,6 @@ mainActivity::~mainActivity() {
     mSettingsSlideWindowPtr = NULL;
     mSettingsWindowPtr = NULL;
     mNetworkWindowPtr = NULL;
-    mMacrosWindowPtr = NULL;
     mUsbFilesPtr = NULL;
     mFolderIDPtr = NULL;
     mFileRefreshBtnPtr = NULL;
@@ -783,7 +781,6 @@ void mainActivity::onCreate() {
     mSettingsSlideWindowPtr = (ZKSlideWindow*)findControlByID(ID_MAIN_SettingsSlideWindow);if(mSettingsSlideWindowPtr!= NULL){mSettingsSlideWindowPtr->setSlideItemClickListener(this);}
     mSettingsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_SettingsWindow);
     mNetworkWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_NetworkWindow);
-    mMacrosWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MacrosWindow);
     mUsbFilesPtr = (ZKButton*)findControlByID(ID_MAIN_UsbFiles);
     mFolderIDPtr = (ZKTextView*)findControlByID(ID_MAIN_FolderID);
     mFileRefreshBtnPtr = (ZKButton*)findControlByID(ID_MAIN_FileRefreshBtn);

@@ -15,7 +15,7 @@ extern "C"
 
 #include "utils.h"
 
-static std::string GetFileName(const char* filepath)
+std::string GetThumbnailPath(const char* filepath)
 {
 	std::string sanitisedFilename = filepath;
 	utils::replaceSubstring(sanitisedFilename, ":", "\%3A");
@@ -30,7 +30,7 @@ namespace Comm
 	bool ThumbnailImage::New(ThumbnailMeta& meta, const char* filename)
 	{
 		Close();
-		imageFilename = GetFileName(filename);
+		imageFilename = GetThumbnailPath(filename);
 		switch (meta.imageFormat)
 		{
 		case ThumbnailMeta::ImageFormat::Png:
@@ -223,7 +223,7 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 
 bool IsThumbnailCached(const char* filepath, bool includeBlank)
 {
-	std::string thumbnailPath = GetFileName(filepath);
+	std::string thumbnailPath = GetThumbnailPath(filepath);
 	struct stat sb;
 	if (system(utils::format("test -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0)
 	{
@@ -244,7 +244,7 @@ bool IsThumbnailCached(const char* filepath, bool includeBlank)
 
 void SetThumbnail(ZKBase* base, const char* filepath)
 {
-	std::string thumbnailPath = GetFileName(filepath);
+	std::string thumbnailPath = GetThumbnailPath(filepath);
 	base->setBackgroundPic(thumbnailPath.c_str());
 }
 
@@ -257,13 +257,13 @@ bool ClearAllCachedThumbnails()
 bool DeleteCachedThumbnail(const char* filepath)
 {
 	info("Deleting thumbnail for %s", filepath);
-	std::string thumbnailPath = GetFileName(filepath);
+	std::string thumbnailPath = GetThumbnailPath(filepath);
 	return system(utils::format("rm -f \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }
 
 bool CreateBlankThumbnailCache(const char* filepath)
 {
 	info("Creating blank thumbnail for %s", filepath);
-	std::string thumbnailPath = GetFileName(filepath);
+	std::string thumbnailPath = GetThumbnailPath(filepath);
 	return system(utils::format("echo \"\" > \"%s\"", thumbnailPath.c_str()).c_str()) == 0;
 }

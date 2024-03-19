@@ -22,39 +22,26 @@
 
 namespace UI
 {
-
-	void PopupWindow::Init(ZKWindow* window,
-						   ZKWindow* noTouchWindow,
-						   ZKButton* okBtn,
-						   ZKButton* cancelBtn,
-						   ZKTextView* title,
-						   ZKTextView* text,
-						   ZKTextView* warningText,
-						   ZKTextView* minText,
-						   ZKTextView* maxText,
-						   ZKListView* choicesList,
-						   ZKEditText* textInput,
-						   ZKEditText* numberInput,
-						   ZKListView* axisJogSelection,
-						   ZKListView* axisJogAdjustment,
-						   ZKTextView* image)
+	PopupWindow::PopupWindow() : okCb_([]() {}), cancelCb_([]() {})
 	{
-		window_ = window;
-		noTouchWindow_ = noTouchWindow;
-		okBtn_ = okBtn;
-		cancelBtn_ = cancelBtn;
-		title_ = title;
-		text_ = text;
-		warningText_ = warningText;
-		minText_ = minText;
-		maxText_ = maxText;
-		choicesList_ = choicesList;
-		textInput_ = textInput;
-		numberInput_ = numberInput;
-		axisJogSelection_ = axisJogSelection;
-		axisJogAdjustment_ = axisJogAdjustment;
-		image_ = image;
+		window_ = UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow);
+		noTouchWindow_ = UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow);
+		okBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupOkBtn);
+		cancelBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupCancelBtn);
+		title_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupTitle);
+		text_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText);
+		warningText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupWarning);
+		minText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMin);
+		maxText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMax);
+		choicesList_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupSelectionList);
+		textInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupTextInput);
+		numberInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupNumberInput);
+		axisJogSelection_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisSelection);
+		axisJogAdjustment_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisAdjusment);
+		image_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
 
+		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		text_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 		SetTimeout(StoragePreferences::getInt("info_timeout", DEFAULT_POPUP_TIMEOUT));
 	}
 
@@ -248,6 +235,11 @@ namespace UI
 		window_->setPosition(position);
 	}
 
+	void PopupWindow::SetTitle(const std::string& title)
+	{
+		title_->setText(title);
+	}
+
 	void PopupWindow::SetText(const std::string& text)
 	{
 		text_->setText(text);
@@ -264,6 +256,11 @@ namespace UI
 		va_start(vargs, format);
 		text_->setTextf(format, vargs);
 		va_end(vargs);
+	}
+
+	void PopupWindow::SetTextScrollable(bool scrollable)
+	{
+		text_->setLongMode(scrollable ? ZKTextView::E_LONG_MODE_SCROLL : ZKTextView::E_LONG_MODE_NONE);
 	}
 
 	void PopupWindow::SetOkBtnText(const char* text)
@@ -286,11 +283,14 @@ namespace UI
 	void PopupWindow::SetImage(const char* imagePath)
 	{
 		image_->setBackgroundPic(imagePath);
-		image_->setVisible(true);
+		ShowImage(true);
 	}
 
 	void PopupWindow::ShowImage(bool show)
 	{
+		LayoutPosition position = text_->getPosition();
+		position.mWidth = image_->getPosition().mLeft - position.mLeft - 10;
+		text_->setPosition(position);
 		image_->setVisible(show);
 	}
 
@@ -363,6 +363,10 @@ namespace UI
 		image_->setVisible(false);
 		image_->setText("");
 		image_->setBackgroundPic(nullptr);
+
+		LayoutPosition position = text_->getPosition();
+		position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
+		text_->setPosition(position);
 
 		for (auto& axis : axes_)
 		{

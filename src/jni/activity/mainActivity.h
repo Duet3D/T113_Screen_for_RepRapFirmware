@@ -173,7 +173,6 @@
 #define ID_MAIN_SettingsSlideWindow    30002
 #define ID_MAIN_SettingsWindow    110009
 #define ID_MAIN_NetworkWindow    110012
-#define ID_MAIN_MacrosWindow    110013
 #define ID_MAIN_UsbFiles    20039
 #define ID_MAIN_FolderID    50011
 #define ID_MAIN_FileRefreshBtn    20028
