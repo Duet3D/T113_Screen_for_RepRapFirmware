@@ -233,7 +233,7 @@ static bool onUI_Timer(int id)
 		break;
 	}
 	case TIMER_THUMBNAIL: {
-		Comm::RequestNextThumbnailChunk();
+		FILEINFO_CACHE->Spin();
 		break;
 	}
 	default:

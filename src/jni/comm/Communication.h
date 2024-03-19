@@ -52,7 +52,6 @@ namespace Comm
 	void KickWatchdog();
 
 	Seq* GetNextSeq(struct Seq* current);
-	void RequestNextThumbnailChunk();
 	void CancelThumbnailRequest();
 	void sendNext();
 	void init();

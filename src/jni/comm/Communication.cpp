@@ -307,19 +307,6 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
-	static std::vector<std::string> thumbnailQueue;
-
-	void QueueThumbnailRequest(std::string filename)
-	{
-		thumbnailQueue.push_back(filename);
-		info("Queued thumbnail request for %s", filename.c_str());
-	}
-
-	void RequestNextThumbnailChunk()
-	{
-		FILEINFO_CACHE->Spin();
-	}
-
 	void CancelThumbnailRequest()
 	{
 		warn("Requesting thumbnail cancel");
