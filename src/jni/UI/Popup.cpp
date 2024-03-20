@@ -13,6 +13,7 @@
 
 #include "Comm/Communication.h"
 
+#include "Comm/FileInfo.h"
 #include "Hardware/Duet.h"
 #include "UserInterface.h"
 #include "storage/StoragePreferences.h"
@@ -22,41 +23,27 @@
 
 namespace UI
 {
-	static constexpr uint32_t defaultTimeout = 5000;
-
-	void PopupWindow::Init(ZKWindow* window,
-						   ZKWindow* noTouchWindow,
-						   ZKButton* okBtn,
-						   ZKButton* cancelBtn,
-						   ZKTextView* title,
-						   ZKTextView* text,
-						   ZKTextView* warningText,
-						   ZKTextView* minText,
-						   ZKTextView* maxText,
-						   ZKListView* choicesList,
-						   ZKEditText* textInput,
-						   ZKEditText* numberInput,
-						   ZKListView* axisJogSelection,
-						   ZKListView* axisJogAdjustment,
-						   ZKTextView* image)
+	PopupWindow::PopupWindow() : okCb_([]() {}), cancelCb_([]() {})
 	{
-		window_ = window;
-		noTouchWindow_ = noTouchWindow;
-		okBtn_ = okBtn;
-		cancelBtn_ = cancelBtn;
-		title_ = title;
-		text_ = text;
-		warningText_ = warningText;
-		minText_ = minText;
-		maxText_ = maxText;
-		choicesList_ = choicesList;
-		textInput_ = textInput;
-		numberInput_ = numberInput;
-		axisJogSelection_ = axisJogSelection;
-		axisJogAdjustment_ = axisJogAdjustment;
-		image_ = image;
+		window_ = UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow);
+		noTouchWindow_ = UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow);
+		okBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupOkBtn);
+		cancelBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupCancelBtn);
+		title_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupTitle);
+		text_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText);
+		warningText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupWarning);
+		minText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMin);
+		maxText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMax);
+		choicesList_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupSelectionList);
+		textInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupTextInput);
+		numberInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupNumberInput);
+		axisJogSelection_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisSelection);
+		axisJogAdjustment_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisAdjusment);
+		image_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
 
-		SetTimeout(StoragePreferences::getInt("info_timeout", defaultTimeout));
+		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		text_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		SetTimeout(StoragePreferences::getInt("info_timeout", DEFAULT_POPUP_TIMEOUT));
 	}
 
 	void PopupWindow::Open()
@@ -89,6 +76,7 @@ namespace UI
 		mode_ = OM::currentAlert.mode;
 		seq_ = OM::currentAlert.seq;
 
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		if (IsBlocking())
 		{
 			noTouchWindow_->setVisible(true);
@@ -248,6 +236,11 @@ namespace UI
 		window_->setPosition(position);
 	}
 
+	void PopupWindow::SetTitle(const std::string& title)
+	{
+		title_->setText(title);
+	}
+
 	void PopupWindow::SetText(const std::string& text)
 	{
 		text_->setText(text);
@@ -264,6 +257,11 @@ namespace UI
 		va_start(vargs, format);
 		text_->setTextf(format, vargs);
 		va_end(vargs);
+	}
+
+	void PopupWindow::SetTextScrollable(bool scrollable)
+	{
+		text_->setLongMode(scrollable ? ZKTextView::E_LONG_MODE_SCROLL : ZKTextView::E_LONG_MODE_NONE);
 	}
 
 	void PopupWindow::SetOkBtnText(const char* text)
@@ -286,11 +284,14 @@ namespace UI
 	void PopupWindow::SetImage(const char* imagePath)
 	{
 		image_->setBackgroundPic(imagePath);
-		image_->setVisible(true);
+		ShowImage(true);
 	}
 
 	void PopupWindow::ShowImage(bool show)
 	{
+		LayoutPosition position = text_->getPosition();
+		position.mWidth = image_->getPosition().mLeft - position.mLeft - 10;
+		text_->setPosition(position);
 		image_->setVisible(show);
 	}
 
@@ -349,7 +350,7 @@ namespace UI
 		title_->setText("");
 		text_->setText("");
 		warningText_->setText("");
-		warningText_->setVisible(true);
+		warningText_->setVisible(false);
 		minText_->setVisible(false);
 		maxText_->setVisible(false);
 		choicesList_->setVisible(false);
@@ -364,11 +365,17 @@ namespace UI
 		image_->setText("");
 		image_->setBackgroundPic(nullptr);
 
+		LayoutPosition position = text_->getPosition();
+		position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
+		text_->setPosition(position);
+
 		for (auto& axis : axes_)
 		{
 			axis = nullptr;
 		}
 		selectedAxis = 0;
+
+		FILEINFO_CACHE->StopThumbnailRequest(true);
 	}
 
 	bool PopupWindow::ValidateIntegerInput(const char* text)
@@ -412,6 +419,7 @@ namespace UI
 		}
 
 		int32_t value;
+		warningText_->setVisible(true);
 		if (!Comm::GetInteger(text, value))
 		{
 			warningText_->setTextTr("invalid_int_malformed");
@@ -429,6 +437,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		numberInput_->setText(value); // This is to convert float to int and revalidate
 		return true;
@@ -440,6 +449,7 @@ namespace UI
 			return false;
 
 		float value;
+		warningText_->setVisible(true);
 		if (!Comm::GetFloat(text, value))
 		{
 			warningText_->setTextTr("invalid_float_malformed");
@@ -457,6 +467,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		return true;
 	}
@@ -466,7 +477,8 @@ namespace UI
 		if (mode_ != OM::Alert::Mode::Text)
 			return false;
 
-		size_t len = Strnlen(text, OM::alertResponseLength);
+		size_t len = Strnlen(text, ALERT_RESPONSE_LENGTH);
+		warningText_->setVisible(true);
 		if (len < (size_t)OM::currentAlert.limits.text.min)
 		{
 			warningText_->setTextTr("invalid_text_min");
@@ -478,6 +490,7 @@ namespace UI
 			return false;
 		}
 
+		warningText_->setVisible(false);
 		warningText_->setText("");
 		return true;
 	}
@@ -504,12 +517,14 @@ namespace UI
 	{
 		size_t count = 0;
 		dbg("axisControl %d", axisControl);
-		for (size_t i = 0; i < MaxTotalAxes; ++i)
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
 			if (!(axisControl & (1 << i)))
 				continue;
-
-			axes_[count] = OM::Move::GetAxis(i);
+			OM::Move::Axis* axis = OM::Move::GetAxis(i);
+			if (axis == nullptr)
+			    continue;
+			axes_[count] = axis;
 			dbg("Axis %d, count %d", i, count);
 			count++;
 		}
@@ -534,6 +549,7 @@ namespace UI
 		onValueChanged_ = onValueChanged;
 		onConfirm_ = onConfirm;
 		SetPosition(HorizontalPosition::right);
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		WINDOW->OpenOverlay(window_, !withSlider);
 	}
 
@@ -662,6 +678,7 @@ namespace UI
 		SetValue(value);
 		SetOnProgressChanged(onProgressChanged);
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 		WINDOW->OpenOverlay(window_);
 	}
 

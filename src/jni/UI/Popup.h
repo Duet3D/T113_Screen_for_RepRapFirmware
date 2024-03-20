@@ -18,12 +18,12 @@
 #include <sys/types.h>
 #include <vector>
 
+#include "Configuration.h"
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/StringRef.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Tool.h"
-#include "UI/UserInterfaceConstants.h"
 
 namespace UI
 {
@@ -49,30 +49,18 @@ namespace UI
 			static PopupWindow cWindow;
 			return &cWindow;
 		}
-		void Init(ZKWindow* window,
-				  ZKWindow* noTouchWindow,
-				  ZKButton* okBtn,
-				  ZKButton* cancelBtn,
-				  ZKTextView* title,
-				  ZKTextView* text,
-				  ZKTextView* warningText,
-				  ZKTextView* minText,
-				  ZKTextView* maxText,
-				  ZKListView* choicesList,
-				  ZKEditText* textInput,
-				  ZKEditText* numberInput,
-				  ZKListView* axisJogSelection,
-				  ZKListView* axisJogAdjustment,
-				  ZKTextView* image);
+
 		void Open();
 		void Open(function<void(void)> okCb);
 		void Open(function<void(void)> okCb, function<void(void)> cancelCb);
 		void Ok();
 		void Cancel(bool close = true);
 		void SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
+		void SetTitle(const std::string& title);
 		void SetText(const std::string& text);
 		void SetText(const char* text);
 		void SetTextf(const char* format, ...);
+		void SetTextScrollable(bool scrollable);
 		void SetOkBtnText(const char* text);
 		void SetCancelBtnText(const char* text);
 		void SetImage(const char* imagePath);
@@ -102,7 +90,7 @@ namespace UI
 		int selectedAxis = 0;
 
 	  private:
-		PopupWindow() : okCb_([]() {}), cancelCb_([]() {}) {}
+		PopupWindow();
 		bool ValidateIntegerInputInner(const char* text);
 		bool ValidateFloatInputInner(const char* text);
 		bool ValidateTextInputInner(const char* text);
@@ -128,7 +116,7 @@ namespace UI
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;
 		uint32_t seq_;
-		OM::Move::Axis* axes_[MaxTotalAxes];
+		OM::Move::Axis* axes_[MAX_TOTAL_AXES];
 		uint32_t timeout_;
 	};
 

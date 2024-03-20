@@ -33,6 +33,24 @@ namespace OM::FileSystem
 		return sCurrentDirPath + "/" + name_;
 	}
 
+	std::string FileSystemItem::GetReadableSize() const
+	{
+		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
+		int order = 0;
+
+		if (size_ == 0)
+			return "0 B";
+
+		double len = double(size_);
+		while (len >= 1024 && order < 4)
+		{
+			order++;
+			len /= 1024;
+		}
+
+		return utils::format("%.2f %s", len, sizes[order]);
+	}
+
 	void FileSystemItem::SetName(const std::string name)
 	{
 		name_ = name.c_str();
@@ -135,7 +153,6 @@ namespace OM::FileSystem
 
 	void SetCurrentDir(const std::string& path)
 	{
-		ClearFileSystem();
 		sCurrentDirPath = path;
 		info("Files: current directory = %s", sCurrentDirPath.c_str());
 	}
@@ -221,8 +238,6 @@ namespace OM::FileSystem
 	{
 		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
-		Comm::CancelThumbnailRequest();
-		ClearAllCachedThumbnails();
 		Comm::duet.RequestFileList(path.c_str());
 	}
 

@@ -8,6 +8,7 @@
 #ifndef JNI_UI_ALERT_H_
 #define JNI_UI_ALERT_H_
 
+#include "Configuration.h"
 #include "Duet3D/General/Bitmap.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
@@ -17,12 +18,6 @@
 
 namespace OM
 {
-	constexpr size_t alertTextLength = 165;		  // maximum characters in the alert text
-	constexpr size_t alertTitleLength = 50;		  // maximum characters in the alert title
-	constexpr size_t alertResponseLength = 50;	  // maximum characters in the alert response
-	constexpr size_t alertMaxChoices = 40;		  // maximum number of choices in the alert
-	constexpr size_t alertChoicesTextLength = 50; // maximum characters in the alert choice text
-
 	struct Alert
 	{
 		enum class Mode
@@ -42,8 +37,8 @@ namespace OM
 		uint32_t controls;
 		float timeout;
 		Bitmap<uint8_t> flags;
-		String<alertTitleLength> title;
-		String<alertTextLength> text;
+		String<ALERT_TITLE_LENGTH> title;
+		String<ALERT_TEXT_LENGTH> text;
 
 		static constexpr uint8_t GotMode = 0;
 		static constexpr uint8_t GotSeq = 1;
@@ -55,7 +50,7 @@ namespace OM
 			(1 << GotMode) | (1 << GotSeq) | (1 << GotTimeout) | (1 << GotTitle) | (1 << GotText) | (1 << GotControls);
 
 		bool cancelButton;
-		String<alertChoicesTextLength> choices[alertMaxChoices];
+		String<ALERT_CHOICES_TEXT_LENGTH> choices[ALERT_MAX_CHOICES];
 		size_t choices_count;
 
 		struct Limits
@@ -76,7 +71,7 @@ namespace OM
 			{
 				int32_t min;
 				int32_t max;
-				String<alertResponseLength> valueDefault;
+				String<ALERT_RESPONSE_LENGTH> valueDefault;
 			} text;
 		} limits;
 

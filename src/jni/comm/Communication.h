@@ -8,53 +8,12 @@
 #ifndef JNI_COMM_COMMUNICATION_HPP_
 #define JNI_COMM_COMMUNICATION_HPP_
 
-#include "Library/Thumbnail.h"
-
 #include "Comm/Commands.h"
-#include "Duet3D/General/String.h"
-#include "Duet3D/General/StringRef.h"
-#include "UI/UserInterfaceConstants.h"
 #include <stdint.h>
-#include <string>
+#include "FileInfo.h"
 
 namespace Comm
 {
-	enum ThumbnailState
-	{
-		Init = 0,
-		Header,
-		DataRequest,
-		DataWait,
-		Data
-	};
-
-	struct ThumbnailContext
-	{
-		String<MaxFileNameLength> filename;
-		enum ThumbnailState state;
-		int16_t parseErr;
-		int32_t err;
-		uint32_t size;
-		uint32_t offset;
-		uint32_t next;
-
-		void Init()
-		{
-			filename.Clear();
-			state = ThumbnailState::Init;
-			parseErr = 0;
-			err = 0;
-			size = 0;
-			offset = 0;
-			next = 0;
-		};
-	};
-
-	extern ThumbnailData thumbnailData;
-	extern Thumbnail thumbnail;
-	extern ThumbnailContext thumbnailContext;
-	extern bool stopThumbnailRequest;
-	extern bool thumbnailRequestInProgress;
 
 	enum SeqState
 	{
@@ -93,8 +52,6 @@ namespace Comm
 	void KickWatchdog();
 
 	Seq* GetNextSeq(struct Seq* current);
-	void RequestNextThumbnailChunk();
-	void CancelThumbnailRequest();
 	void sendNext();
 	void init();
 } // namespace Comm

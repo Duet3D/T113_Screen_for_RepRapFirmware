@@ -9,16 +9,16 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_WARN
 #include "Axis.h"
 
+#include "Configuration.h"
 #include "ObjectModel/Tool.h"
 #include <Duet3D/General/Vector.h>
-#include <UI/UserInterfaceConstants.h>
 #include <math.h>
 
 #include "Debug.h"
 #include "ListHelpers.h"
 
-typedef Vector<OM::Move::Axis*, MaxTotalAxes> AxisList;
-typedef Vector<OM::Move::ExtruderAxis*, MaxTotalAxes> ExtruderAxisList;
+typedef Vector<OM::Move::Axis*, MAX_TOTAL_AXES> AxisList;
+typedef Vector<OM::Move::ExtruderAxis*, MAX_TOTAL_AXES> ExtruderAxisList;
 static AxisList axes;
 static ExtruderAxisList extruderAxes;
 static uint8_t currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
@@ -39,13 +39,13 @@ namespace OM::Move
 		}
 		homed = false;
 		visible = false;
-		slot = MaxSlots;
+		slot = MAX_SLOTS;
 	}
 
 	Axis* GetAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
-		if (index >= MaxTotalAxes)
+		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
 		}
@@ -54,7 +54,7 @@ namespace OM::Move
 
 	Axis* GetAxisBySlot(const size_t slot)
 	{
-		if (slot >= MaxTotalAxes)
+		if (slot >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
 		}
@@ -63,8 +63,8 @@ namespace OM::Move
 
 	Axis* GetOrCreateAxis(const size_t index)
 	{
-		dbg("Axis index %d / max %d\n", index, MaxTotalAxes);
-		if (index >= MaxTotalAxes)
+		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
 		}
@@ -89,9 +89,9 @@ namespace OM::Move
 #define AXIS_SETTER(funcName, valType, varName)                                                                        \
 	bool funcName(size_t index, valType val)                                                                           \
 	{                                                                                                                  \
-		if (index >= MaxTotalAxes)                                                                                     \
+		if (index >= MAX_TOTAL_AXES)                                                                                   \
 		{                                                                                                              \
-			error("axis[%d] greater than MaxTotalAxes", index);                                                        \
+			error("axis[%d] greater than MAX_TOTAL_AXES", index);                                                      \
 			return false;                                                                                              \
 		}                                                                                                              \
 		Axis* axis = GetOrCreateAxis(index);                                                                           \
@@ -115,7 +115,7 @@ namespace OM::Move
 
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset)
 	{
-		if (axisIndex >= MaxTotalAxes || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
+		if (axisIndex >= MAX_TOTAL_AXES || workplaceIndex >= OM::Move::Workplaces::MaxTotalWorkplaces)
 			return false;
 		Axis* axis = GetOrCreateAxis(axisIndex);
 		if (axis == nullptr)
@@ -149,8 +149,8 @@ namespace OM::Move
 
 	ExtruderAxis* GetExtruderAxis(const size_t index)
 	{
-		dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
-		if (index >= MaxTotalAxes)
+		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		if (index >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
 		}
@@ -159,7 +159,7 @@ namespace OM::Move
 
 	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot)
 	{
-		if (slot >= MaxTotalAxes)
+		if (slot >= MAX_TOTAL_AXES)
 		{
 			return nullptr;
 		}
@@ -168,10 +168,10 @@ namespace OM::Move
 
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index)
 	{
-		dbg("ExtruderAxis index %d / max %d\n", index, MaxTotalAxes);
-		if (index >= MaxTotalAxes)
+		dbg("ExtruderAxis index %d / max %d\n", index, MAX_TOTAL_AXES);
+		if (index >= MAX_TOTAL_AXES)
 		{
-			error("ExtruderAxis index %d greater than MaxTotalAxes", index);
+			error("ExtruderAxis index %d greater than MAX_TOTAL_AXES", index);
 			return nullptr;
 		}
 		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, true);

@@ -11,6 +11,8 @@
 #ifndef JNI_COMM_JSONDECODER_H_
 #define JNI_COMM_JSONDECODER_H_
 
+#include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "ecv.h"
 #include <Duet3D/General/String.h>
 #include <cstddef>
@@ -22,11 +24,24 @@
 
 namespace Comm
 {
-	constexpr size_t MaxArrayNesting = 4;
-
 	class JsonDecoder
 	{
 	  public:
+		enum class ResponseType
+		{
+			unknown = 0,
+			filelist,
+			thumbnail,
+		};
+
+		struct FileListData
+		{
+			std::string dir = "";
+			uint32_t first = 0;
+
+			FileListData(const std::string& dir) : dir(dir), first(0) {}
+		};
+
 		// Enumeration to represent the json parsing state.
 		// We don't allow nested objects or nested arrays, so we don't need a state stack.
 		// An additional variable elementCount is 0 if we are not in an array, else the number of elements we have found
@@ -48,10 +63,14 @@ namespace Comm
 			jsError			// something went wrong
 		};
 
-		JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0) {}
+		JsonDecoder();
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
 		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }
+
+		// These variables are used for the
+		ResponseType responseType = ResponseType::unknown;
+		void* responseData = nullptr;
 
 	  private:
 		void StartReceivedMessage(void);
@@ -70,16 +89,15 @@ namespace Comm
 		// fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array
 		// index, and a ':' character indicates a field separator.
 		String<50> fieldPrefix;
-		String<200> fieldId;
-		String<4096> fieldVal; // rr_thumbnail seems to be biggest response we get
+		String<MAX_JSON_ID_LENGTH> fieldId;
+		String<MAX_JSON_VALUE_LENGTH> fieldVal; // rr_thumbnail seems to be biggest response we get
 		JsonState state = jsBegin;
 		JsonState lastState = jsBegin;
 		int serialIoErrors;
 		size_t nextOut;
 		bool inError;
-		size_t arrayIndices[MaxArrayNesting];
+		size_t arrayIndices[MAX_ARRAY_NESTING];
 		size_t arrayDepth;
-        
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */

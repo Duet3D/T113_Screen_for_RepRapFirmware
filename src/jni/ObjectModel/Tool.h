@@ -8,17 +8,17 @@
 #ifndef SRC_OBJECTMODEL_TOOL_HPP_
 #define SRC_OBJECTMODEL_TOOL_HPP_
 
-//#include <cstdint>
-#include <sys/types.h>
+// #include <cstdint>
 #include "Axis.h"
+#include "Configuration.h"
 #include "Fan.h"
-#include "Spindle.h"
 #include "Heat.h"
+#include "Spindle.h"
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringRef.h>
 #include <Duet3D/General/function_ref.h>
-#include <UI/UserInterfaceConstants.h>
+#include <sys/types.h>
 
 namespace OM
 {
@@ -63,14 +63,14 @@ namespace OM
 
 		// tool number
 		uint8_t index;
-		String<MaxToolNameLength> name;
-		ToolHeater* heaters[MaxHeatersPerTool];
-		Move::ExtruderAxis* extruders[MaxExtrudersPerTool];
-		float mix[MaxExtrudersPerTool];
-		Fan* fans[MaxFans];
+		String<MAX_TOOL_NAME_LENGTH> name;
+		ToolHeater* heaters[MAX_HEATERS_PER_TOOL];
+		Move::ExtruderAxis* extruders[MAX_EXTRUDERS_PER_TOOL];
+		float mix[MAX_EXTRUDERS_PER_TOOL];
+		Fan* fans[MAX_FANS];
 		Spindle* spindle;
 		int32_t spindleRpm;
-		float offsets[MaxTotalAxes];
+		float offsets[MAX_TOTAL_AXES];
 		ToolStatus status;
 		int8_t filamentExtruder;
 
@@ -130,7 +130,7 @@ namespace OM
 	bool UpdateToolSpindle(const size_t toolIndex, const int8_t spindleIndex);
 	bool UpdateToolSpindleRpm(const size_t toolIndex, const int32_t rpm);
 
-	void SetCurrentTool(const size_t toolIndex);
+	void SetCurrentTool(const int32_t toolIndex);
 	Tool* GetCurrentTool();
 }
 

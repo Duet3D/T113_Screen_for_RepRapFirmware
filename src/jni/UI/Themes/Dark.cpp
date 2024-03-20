@@ -280,10 +280,14 @@ namespace UI::Theme
 			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_NumPadWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow)->setBackgroundColor(Colors::Clear);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundColor(NULL);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow)->setBackgroundColor(Colors::DarkerGray);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DebugWindow)->setBackgroundColor(Colors::DarkerGray);
 
 			// Scrollable text
-			UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
+			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
 
 			// EStop Button
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);

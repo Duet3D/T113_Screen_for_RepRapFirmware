@@ -4,7 +4,9 @@
 
 #include "Comm/Communication.h"
 #include "Comm/JsonDecoder.h"
+#include "Configuration.h"
 #include "Debug.h"
+#include "DebugCommands.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
 #include "Library/bmp.h"
@@ -18,7 +20,6 @@
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 #include "Upgrade/Upgrade.h"
 #include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
@@ -94,9 +95,8 @@ static void onUI_init()
 	InitUpgradeMountListener();
 
 	initTimer(mActivityPtr);
-	registerUserTimer(
-		TIMER_UPDATE_DATA,
-		(int)Comm::defaultPrinterPollInterval); // Register here so it can be reset with stored poll interval
+	registerUserTimer(TIMER_UPDATE_DATA,
+					  (int)DEFAULT_PRINTER_POLL_INTERVAL); // Register here so it can be reset with stored poll interval
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
@@ -108,31 +108,19 @@ static void onUI_init()
 	UI::ToolsList::Create("extrude")->Init(mExtrudeToolListPtr);
 	UI::CONSOLE->Init(mConsoleListViewPtr, mEditText1Ptr);
 	UI::NUMPAD_WINDOW->Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
-	UI::POPUP_WINDOW->Init(mPopupWindowPtr,
-						   mNoTouchWindowPtr,
-						   mPopupOkBtnPtr,
-						   mPopupCancelBtnPtr,
-						   mPopupTitlePtr,
-						   mPopupTextPtr,
-						   mPopupWarningPtr,
-						   mPopupMinPtr,
-						   mPopupMaxPtr,
-						   mPopupSelectionListPtr,
-						   mPopupTextInputPtr,
-						   mPopupNumberInputPtr,
-						   mPopupAxisSelectionPtr,
-						   mPopupAxisAdjusmentPtr,
-						   mPopupImagePtr);
 	UI::SLIDER_WINDOW->Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
 	UI::SetThumbnail(mPopupImagePtr);
 
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
-	mShowSetupOnStartupPtr->setSelected(StoragePreferences::getBool("show_setup_on_startup", true));
+	mShowSetupOnStartupPtr->setSelected(
+		StoragePreferences::getBool("show_setup_on_startup", DEFAULT_SHOW_SETUP_ON_STARTUP));
 
 	// Screensaver
-	mScreensaverEnablePtr->setSelected(StoragePreferences::getBool("screensaver_enable", true));
+	bool screensaverEnable = StoragePreferences::getBool("screensaver_enable", true);
+	mScreensaverEnablePtr->setSelected(screensaverEnable);
+	EASYUICONTEXT->setScreensaverEnable(screensaverEnable);
 	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt("screensaver_timeout", 120));
 
 	// Duet communication settings
@@ -245,7 +233,7 @@ static bool onUI_Timer(int id)
 		break;
 	}
 	case TIMER_THUMBNAIL: {
-		Comm::RequestNextThumbnailChunk();
+		FILEINFO_CACHE->Spin();
 		break;
 	}
 	default:
@@ -268,7 +256,6 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev)
 	switch (ev.mActionStatus)
 	{
 	case MotionEvent::E_ACTION_DOWN: // touch pressed
-		//LOGD("Time = %ld Pos x = %d, y = %d", ev.mEventTime, ev.mX, ev.mY);
 		break;
 	case MotionEvent::E_ACTION_MOVE: // touch slide
 		break;
@@ -594,7 +581,7 @@ static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
 }
 static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_ConsoleListView !\n");
-    return MaxResponseLines;
+	return MAX_RESPONSE_LINES;
 }
 
 static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
@@ -636,6 +623,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
 
 static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
 	UI::POPUP_WINDOW->Close();
+	FILEINFO_CACHE->ClearCache();
 	OM::FileSystem::ClearFileSystem();
 	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
     return false;
@@ -663,9 +651,10 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::file: {
 		pListItem->setSelected(false);
 		pFileType->setTextTr("file");
-		if (IsThumbnailCached(item->GetName().c_str()))
+		pFileSize->setTextTrf("file_size", item->GetReadableSize().c_str());
+		if (IsThumbnailCached(item->GetPath().c_str()))
 		{
-			SetThumbnail(pFileThumbnail, item->GetName().c_str());
+			SetThumbnail(pFileThumbnail, item->GetPath().c_str());
 		}
 		else
 		{
@@ -676,10 +665,10 @@ static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZK
 	case OM::FileSystem::FileSystemItemType::folder:
 		pListItem->setSelected(true);
 		pFileType->setTextTr("folder");
+		pFileSize->setText("");
 		pFileThumbnail->setBackgroundPic("");
 		break;
 	}
-	pFileSize->setTextTrf("file_size", item->GetSize());
 	pFileDate->setTextTrf("file_date", item->GetDate().c_str());
 }
 
@@ -714,14 +703,12 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 		}
 		else
 		{
+			FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
 			UI::POPUP_WINDOW->Open([]() {
 				UI::RunSelectedFile();
 				UI::WINDOW->OpenWindow(mPrintWindowPtr);
 			});
-			// Comm::duet.RequestFileInfo(item->GetPath().c_str());
-			UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("start_print").c_str(), item->GetName().c_str());
-			UI::POPUP_WINDOW->ShowImage(true);
-			UI::POPUP_WINDOW->CancelTimeout();
+			UI::SetPopupFileInfo();
 		}
 		break;
 	}
@@ -762,12 +749,13 @@ static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZK
 static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
 {
 	OM::Fan* fan = OM::GetFanBySlot(index);
-	if (fan == nullptr) { return; }
-	char header[32];
-	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index);
+	if (fan == nullptr)
+	{
+		return;
+	}
 	size_t fanIndex = fan->index;
 	UI::OpenSliderNumPad(
-		header,
+		utils::format(LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index).c_str(),
 		"",
 		"",
 		"%",
@@ -835,18 +823,27 @@ static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,Z
 
 static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {
 	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
-	if (extruder == nullptr) { return; }
-	char header[32];
+	if (extruder == nullptr)
+	{
+		return;
+	}
 	size_t extruderIndex = extruder->index;
-	SafeSnprintf(header, sizeof(header), LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex);
-	UI::OpenSliderNumPad(header, "", "", "%", 1, 200, (int)(extruder->factor * 100), [extruderIndex](int percent) {
-		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
-		if (extruder == nullptr)
-		{
-			return;
-		}
-		Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
-	});
+	UI::OpenSliderNumPad(
+		utils::format(LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex).c_str(),
+		"",
+		"",
+		"%",
+		1,
+		200,
+		(int)(extruder->factor * 100),
+		[extruderIndex](int percent) {
+			OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
+			if (extruder == nullptr)
+			{
+				return;
+			}
+			Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
+		});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
@@ -1074,9 +1071,9 @@ static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int i
 
 static void onEditTextChanged_PollIntervalInput(const std::string& text)
 {
-	if (text.empty() || atoi(text.c_str()) < (int)Comm::minPrinterPollInterval)
+	if (text.empty() || atoi(text.c_str()) < (int)MIN_PRINTER_POLL_INTERVAL)
 	{
-		mPollIntervalInputPtr->setText((int)Comm::minPrinterPollInterval);
+		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
 		return;
 	}
 	Comm::duet.SetPollInterval(atoi(text.c_str()));
@@ -1117,7 +1114,7 @@ static bool onButtonClick_UsbFiles(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("M36 \"QOI_32x32.gcode\"");
+	UI::WINDOW->OpenOverlay(mDebugWindowPtr);
 	return false;
 }
 
@@ -1348,6 +1345,7 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 
 static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
 {
+	info("Screensaver %s", isChecked ? "enabled" : "disabled");
 	StoragePreferences::putBool("screensaver_enable", isChecked);
 	EASYUICONTEXT->setScreensaverEnable(isChecked);
 }
@@ -1428,4 +1426,36 @@ static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
 		return;
 	}
 	UI::Theme::SetTheme(theme);
+}
+static int getListItemCount_DebugCommandList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_DebugCommandList !\n");
+	return Debug::GetCommandCount();
+}
+
+static void obtainListItemData_DebugCommandList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(command->id);
+}
+
+static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, int id)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		return;
+	}
+	command->callback();
+}
+
+static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
+{
+	UI::WINDOW->CloseOverlay();
+	return false;
 }

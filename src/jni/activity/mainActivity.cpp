@@ -4,6 +4,11 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mFileListInfoPtr;
+static ZKButton* mOverlayModalZonePtr;
+static ZKTextView* mTextView43Ptr;
+static ZKListView* mDebugCommandListPtr;
+static ZKWindow* mDebugWindowPtr;
 static ZKTextView* mTextView42Ptr;
 static ZKListView* mThemesListPtr;
 static ZKWindow* mThemeSelectionWindowPtr;
@@ -136,7 +141,6 @@ static ZKWindow* mDuetCommSettingWindowPtr;
 static ZKSlideWindow* mSettingsSlideWindowPtr;
 static ZKWindow* mSettingsWindowPtr;
 static ZKWindow* mNetworkWindowPtr;
-static ZKWindow* mMacrosWindowPtr;
 static ZKButton* mUsbFilesPtr;
 static ZKTextView* mFolderIDPtr;
 static ZKButton* mFileRefreshBtnPtr;
@@ -248,6 +252,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
     ID_MAIN_Button1, onButtonClick_Button1,
     ID_MAIN_EStopBtn, onButtonClick_EStopBtn,
     ID_MAIN_CloseGuideBtn, onButtonClick_CloseGuideBtn,
@@ -327,6 +332,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_DebugCommandList, getListItemCount_DebugCommandList, obtainListItemData_DebugCommandList, onListItemClick_DebugCommandList,
     ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
@@ -421,6 +427,11 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mFileListInfoPtr = NULL;
+    mOverlayModalZonePtr = NULL;
+    mTextView43Ptr = NULL;
+    mDebugCommandListPtr = NULL;
+    mDebugWindowPtr = NULL;
     mTextView42Ptr = NULL;
     mThemesListPtr = NULL;
     mThemeSelectionWindowPtr = NULL;
@@ -553,7 +564,6 @@ mainActivity::~mainActivity() {
     mSettingsSlideWindowPtr = NULL;
     mSettingsWindowPtr = NULL;
     mNetworkWindowPtr = NULL;
-    mMacrosWindowPtr = NULL;
     mUsbFilesPtr = NULL;
     mFolderIDPtr = NULL;
     mFileRefreshBtnPtr = NULL;
@@ -637,6 +647,11 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mFileListInfoPtr = (ZKTextView*)findControlByID(ID_MAIN_FileListInfo);
+    mOverlayModalZonePtr = (ZKButton*)findControlByID(ID_MAIN_OverlayModalZone);
+    mTextView43Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView43);
+    mDebugCommandListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugCommandList);if(mDebugCommandListPtr!= NULL){mDebugCommandListPtr->setListAdapter(this);mDebugCommandListPtr->setItemClickListener(this);}
+    mDebugWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DebugWindow);
     mTextView42Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView42);
     mThemesListPtr = (ZKListView*)findControlByID(ID_MAIN_ThemesList);if(mThemesListPtr!= NULL){mThemesListPtr->setListAdapter(this);mThemesListPtr->setItemClickListener(this);}
     mThemeSelectionWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_ThemeSelectionWindow);
@@ -769,7 +784,6 @@ void mainActivity::onCreate() {
     mSettingsSlideWindowPtr = (ZKSlideWindow*)findControlByID(ID_MAIN_SettingsSlideWindow);if(mSettingsSlideWindowPtr!= NULL){mSettingsSlideWindowPtr->setSlideItemClickListener(this);}
     mSettingsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_SettingsWindow);
     mNetworkWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_NetworkWindow);
-    mMacrosWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MacrosWindow);
     mUsbFilesPtr = (ZKButton*)findControlByID(ID_MAIN_UsbFiles);
     mFolderIDPtr = (ZKTextView*)findControlByID(ID_MAIN_FolderID);
     mFileRefreshBtnPtr = (ZKButton*)findControlByID(ID_MAIN_FileRefreshBtn);

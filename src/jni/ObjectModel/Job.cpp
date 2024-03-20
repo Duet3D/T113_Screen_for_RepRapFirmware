@@ -6,8 +6,8 @@
  */
 
 #include "Job.h"
+#include "Configuration.h"
 #include "Duet3D/General/String.h"
-#include "UI/UserInterfaceConstants.h"
 
 #define ATTR_SETTR_GETTR(funcName, type, varName)                                                                      \
     void Set##funcName(const type value)                                                                               \
@@ -21,8 +21,8 @@
 
 namespace OM
 {
-    static String<MaxFileNameLength> jobName;
-    static uint32_t printTime = 0;
+	static String<MAX_FILENAME_LENGTH> jobName;
+	static uint32_t printTime = 0;
     static uint32_t printDuration = 0;
     static uint32_t printRemaining = 0;
 

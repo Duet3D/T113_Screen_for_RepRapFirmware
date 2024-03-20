@@ -91,7 +91,7 @@ namespace USB
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 		contents.resize(size);
-		dbg("Reading %d bytes", size);
+		dbg("Reading %ld bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
 			UI::CONSOLE->AddResponse(utils::format("Failed to read file %s", fullPath.c_str()).c_str());

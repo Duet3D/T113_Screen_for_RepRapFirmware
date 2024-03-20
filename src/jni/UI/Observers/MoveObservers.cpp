@@ -4,11 +4,13 @@
  *  Created on: 9 Jan 2024
  *      Author: Andy Everitt
  */
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "Configuration.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
-#include "UI/UserInterfaceConstants.h"
 
 #include "ObjectModel/Axis.h"
 

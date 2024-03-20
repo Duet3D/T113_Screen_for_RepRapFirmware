@@ -27,6 +27,11 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_FileListInfo    50074
+#define ID_MAIN_OverlayModalZone    20052
+#define ID_MAIN_TextView43    50073
+#define ID_MAIN_DebugCommandList    80023
+#define ID_MAIN_DebugWindow    110038
 #define ID_MAIN_FileNameSubItem    24036
 #define ID_MAIN_TextView42    50072
 #define ID_MAIN_ThemesList    80022
@@ -169,7 +174,6 @@
 #define ID_MAIN_SettingsSlideWindow    30002
 #define ID_MAIN_SettingsWindow    110009
 #define ID_MAIN_NetworkWindow    110012
-#define ID_MAIN_MacrosWindow    110013
 #define ID_MAIN_UsbFiles    20039
 #define ID_MAIN_FolderID    50011
 #define ID_MAIN_FileRefreshBtn    20028

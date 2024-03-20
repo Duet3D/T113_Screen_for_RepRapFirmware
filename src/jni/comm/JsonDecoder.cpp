@@ -10,7 +10,7 @@
  */
 
 #include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
 #include "UI/UserInterface.h"
 
@@ -154,15 +154,15 @@ namespace Comm
 	const char* _ecv_array const trCedilla = "C\xC7"
 											 "c\xE7";
 
-	void JsonDecoder::StartReceivedMessage()
+	JsonDecoder::JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0)
 	{
-		if (thumbnailContext.state == ThumbnailState::Init)
+		for (size_t i = 0; i < MAX_ARRAY_NESTING; i++)
 		{
-			thumbnailContext.Init();
-			ThumbnailInit(thumbnail);
-			memset(&thumbnailData, 0, sizeof(thumbnailData));
+			arrayIndices[i] = 0;
 		}
 	}
+
+	void JsonDecoder::StartReceivedMessage() {}
 
 	void JsonDecoder::EndReceivedMessage()
 	{
@@ -184,90 +184,91 @@ namespace Comm
 			OM::lastAlertSeq = OM::currentAlert.seq;
 		}
 
-		if (thumbnailContext.parseErr != 0 || thumbnailContext.err != 0)
+		switch (responseType)
 		{
-			error("thumbnail parseErr %d err %d.\n", thumbnailContext.parseErr, thumbnailContext.err);
-			thumbnailContext.state = ThumbnailState::Init;
+		case ResponseType::unknown:
+			break;
+		case ResponseType::filelist: {
+			FileListData* data = static_cast<FileListData*>(responseData);
+			if (data == nullptr)
+				break;
+			delete data;
+			break;
 		}
+		case ResponseType::thumbnail: {
+			Thumbnail* thumbnail = static_cast<Thumbnail*>(responseData);
+			if (thumbnail == nullptr)
+				break;
+
+			if (thumbnail->context.parseErr != 0 || thumbnail->context.err != 0)
+			{
+				error("thumbnail parseErr %d err %d.\n", thumbnail->context.parseErr, thumbnail->context.err);
+				thumbnail->context.state = ThumbnailState::Init;
+			}
 
 #if 1 // && DEBUG
-		if (thumbnail.imageFormat != Thumbnail::ImageFormat::Invalid)
-		{
-			dbg("filename %s offset %d size %d format %d width %d height %d\n",
-				thumbnailContext.filename.c_str(),
-				thumbnailContext.offset,
-				thumbnailContext.size,
-				thumbnail.imageFormat,
-				thumbnail.width,
-				thumbnail.height);
-		}
+			if (thumbnail->meta.imageFormat != ThumbnailMeta::ImageFormat::Invalid)
+			{
+				dbg("filename %s offset %d size %d format %d width %d height %d\n",
+					thumbnail->filename.c_str(),
+					thumbnail->context.offset,
+					thumbnail->context.size,
+					thumbnail->meta.imageFormat,
+					thumbnail->meta.width,
+					thumbnail->meta.height);
+			}
 #endif
-		int ret;
+			int ret;
 
-		if (stopThumbnailRequest)
-		{
-			warn("Thumbnail request cancelled");
-			thumbnailContext.state = ThumbnailState::Init;
-			thumbnailRequestInProgress = false;
-		}
+			verbose("thumbnail->context state %d", thumbnail->context.state);
+			switch (thumbnail->context.state)
+			{
+			case ThumbnailState::Init:
+			case ThumbnailState::DataRequest:
+			case ThumbnailState::DataWait:
+				break;
+			case ThumbnailState::Data:
+				if (!ThumbnailDataIsValid(thumbnailBuf))
+				{
+					error("thumbnail meta or data invalid.\n");
+					thumbnail->context.state = ThumbnailState::Init;
+					break;
+				}
+				if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
+				{
+					error("failed to decode thumbnail chunk %d.\n", ret);
+					thumbnail->context.state = ThumbnailState::Init;
+					break;
+				}
+				if (thumbnail->context.next == 0)
+				{
+					thumbnail->image.Close();
+					info("Updating thumbnail %s", thumbnail->filename.c_str());
+					UI::GetThumbnail()->setText("");
+					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
+					if (thumbnail->meta.size > MAX_THUMBNAIL_CACHE_SIZE)
+					{
+						UI::POPUP_WINDOW->SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
+					}
+					thumbnail->context.state = ThumbnailState::Cached;
+				}
+				else
+				{
+					thumbnail->context.state = ThumbnailState::DataRequest;
+				}
+				break;
+			default:
+			    break;
+			}
+			FILEINFO_CACHE->ReceivingThumbnailResponse(false);
 
-		if (thumbnail.imageFormat == Thumbnail::ImageFormat::Invalid)
-			thumbnailRequestInProgress = false;
-
-		verbose("thumbnailContext state %d", thumbnailContext.state);
-		switch (thumbnailContext.state)
-		{
-		case ThumbnailState::Init:
-		case ThumbnailState::DataRequest:
-		case ThumbnailState::DataWait:
-			break;
-		case ThumbnailState::Header:
-			if (!ThumbnailIsValid(thumbnail))
-			{
-				error("thumbnail meta invalid.\n");
-				break;
-			}
-			if (!thumbnail.New(thumbnail.width, thumbnail.height, thumbnailContext.filename.c_str()))
-			{
-				error("Failed to create thumbnail file.");
-				break;
-			}
-			thumbnailContext.state = ThumbnailState::DataRequest;
-			break;
-		case ThumbnailState::Data:
-			if (!ThumbnailDataIsValid(thumbnailData))
-			{
-				error("thumbnail meta or data invalid.\n");
-				thumbnailContext.state = ThumbnailState::Init;
-				break;
-			}
-			if ((ret = ThumbnailDecodeChunk(thumbnail, thumbnailData)) < 0)
-			{
-				error("failed to decode thumbnail chunk %d.\n", ret);
-				thumbnailContext.state = ThumbnailState::Init;
-				break;
-			}
-			if (thumbnailContext.next == 0)
-			{
-				thumbnail.Close();
-				info("Updating thumbnail %s", thumbnailContext.filename.c_str());
-				UI::GetThumbnail()->setText("");
-				thumbnailContext.state = ThumbnailState::Init;
-				thumbnailRequestInProgress = false;
-			}
-			else
-			{
-				thumbnailContext.state = ThumbnailState::DataRequest;
-			}
-
-			if (stopThumbnailRequest)
-			{
-				warn("Thumbnail request cancelled");
-				thumbnailContext.state = ThumbnailState::Init;
-				thumbnailRequestInProgress = false;
-			}
 			break;
 		}
+		default:
+			break;
+		}
+		responseType = ResponseType::unknown;
+		responseData = nullptr;
 	}
 
 	// Public functions called by the SerialIo module
@@ -304,7 +305,7 @@ namespace Comm
 			dbg("found %d observers for %s\n", observers.size(), id.c_str());
 			for (auto& observer : observers)
 			{
-				observer.Update(data, indices);
+				observer.Update(this, data, indices);
 			}
 		}
 
@@ -403,7 +404,7 @@ namespace Comm
 		{
 			for (auto& observer : observers)
 			{
-				observer.Update(indices);
+				observer.Update(this, indices);
 			}
 		}
 	}
@@ -471,7 +472,13 @@ namespace Comm
 
 	void JsonDecoder::EndArray()
 	{
-		verbose();
+		dbg("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+			fieldId.c_str(),
+			arrayIndices[0],
+			arrayIndices[1],
+			arrayIndices[2],
+			arrayIndices[3],
+			arrayDepth);
 
 		ProcessArrayEnd(fieldId.c_str(), arrayIndices);
 
@@ -812,7 +819,7 @@ namespace Comm
 						state = jsStringVal;
 						break;
 					case '[':
-						if (arrayDepth < MaxArrayNesting && !fieldId.cat('^'))
+						if (arrayDepth < MAX_ARRAY_NESTING && !fieldId.cat('^'))
 						{
 							arrayIndices[arrayDepth] = 0; // start an array
 							++arrayDepth;

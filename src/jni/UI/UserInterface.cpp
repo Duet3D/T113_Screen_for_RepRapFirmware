@@ -97,6 +97,18 @@ namespace UI
 		AddToVector<ZKBase*>(overlayWindows_, overlay);
 	}
 
+	bool Window::IsOverlayOpened()
+	{
+		for (auto& window : overlayWindows_)
+		{
+			if (window->isVisible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool Window::CloseOverlay()
 	{
 		if (overlayWindows_.empty())
@@ -113,13 +125,18 @@ namespace UI
 		{
 			POPUP_WINDOW->Clear();
 		}
+		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(false);
+		size_t count = 0;
 		for (auto& window : overlayWindows_)
 		{
+			if (!window->isVisible())
+				continue;
 			window->setVisible(false);
 			RemoveFromVector<ZKBase*>(overlayWindows_, window);
+			count++;
 		}
-		verbose("Closed overlays, %d remaining", overlayWindows_.size());
-		return true;
+		verbose("Closed %d overlays, %d remaining", count, overlayWindows_.size());
+		return count > 0;
 	}
 
 	size_t Window::ReOpenLastWindow(size_t numWindows)
@@ -623,7 +640,7 @@ namespace UI
 	void Console::AddCommand(const std::string& command)
 	{
 		dbg("AddingCommand %s", command.c_str());
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		AddLineBreak();
 		line.catf("> %s:", command.c_str());
 		AddMessage(line.GetRef());
@@ -647,7 +664,7 @@ namespace UI
 
 	void Console::AddMessage(const char* str)
 	{
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		line.copy(str);
 		buffer_.Push(line);
 		info("Adding line to Console buffer[%d] = %s", buffer_.GetHead(), line.c_str());
@@ -667,9 +684,9 @@ namespace UI
 
 	void Console::Clear()
 	{
-		String<MaxResponseLineLength> line;
+		String<MAX_RESPONSE_LINE_LENGTH> line;
 		line.copy("");
-		for (size_t i = 0; i < MaxResponseLines; i++)
+		for (size_t i = 0; i < MAX_RESPONSE_LINES; i++)
 		{
 			buffer_.Push(line);
 		}
@@ -721,6 +738,37 @@ namespace UI
 	void SetThumbnail(ZKTextView* thumbnail)
 	{
 		s_thumbnail = thumbnail;
+	}
+
+	void SetPopupFileInfo()
+	{
+		const OM::FileSystem::File* item = GetSelectedFile();
+		if (item == nullptr)
+			return;
+
+		Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+
+		float height = 0;
+		float layerHeight = 0;
+		tm printTime;
+		printTime.tm_hour = printTime.tm_min = printTime.tm_sec = 0;
+		if (fileInfo != nullptr)
+		{
+			height = fileInfo->height;
+			layerHeight = fileInfo->layerHeight;
+			printTime = fileInfo->GetPrintTime();
+		}
+		UI::POPUP_WINDOW->SetTitle(item->GetName());
+		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
+								   height,
+								   layerHeight,
+								   printTime.tm_hour,
+								   printTime.tm_min,
+								   printTime.tm_sec);
+		UI::POPUP_WINDOW->SetTextScrollable(false);
+		UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
+		UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
+		UI::POPUP_WINDOW->CancelTimeout();
 	}
 
 	ZKTextView* GetThumbnail()

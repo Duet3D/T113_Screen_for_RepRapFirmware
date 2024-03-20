@@ -59,12 +59,6 @@ namespace Comm
 
 	static bool initialized = false;
 
-	ThumbnailData thumbnailData;
-	Thumbnail thumbnail;
-	ThumbnailContext thumbnailContext;
-	bool stopThumbnailRequest = false;
-	bool thumbnailRequestInProgress = false;
-
 	Seq seqs[] = {
 #if FETCH_NETWORK
 		{.event = rcvOMKeyNetwork,
@@ -313,112 +307,10 @@ namespace Comm
 
 	//------------------------------------------------------------------------------------------------------------------
 
-	static std::vector<std::string> thumbnailQueue;
-
-	void QueueThumbnailRequest(std::string filename)
-	{
-		thumbnailQueue.push_back(filename);
-		info("Queued thumbnail request for %s", filename.c_str());
-	}
-
-	void RequestNextThumbnailChunk()
-	{
-		const OM::FileSystem::FileSystemItem* selectedFile = UI::GetSelectedFile();
-		if (UI::POPUP_WINDOW->IsOpen() && selectedFile != nullptr)
-		{
-			if (IsThumbnailCached(selectedFile->GetName().c_str()) && !thumbnailRequestInProgress)
-			{
-				UI::GetThumbnail()->setText("");
-				SetThumbnail(UI::GetThumbnail(), selectedFile->GetName().c_str());
-			}
-		}
-
-		if (!thumbnailRequestInProgress)
-			stopThumbnailRequest = false;
-
-		if (!OM::FileSystem::GetListView()->isVisible())
-		{
-			CancelThumbnailRequest();
-			return;
-		}
-
-		size_t size = OM::FileSystem::GetListView()->getListItemCount();
-		size_t visibleCount =
-			std::min(OM::FileSystem::GetListView()->getRows() * OM::FileSystem::GetListView()->getCols() +
-						 OM::FileSystem::GetListView()->getCols(),
-					 size);
-		size_t first = OM::FileSystem::GetListView()->getFirstVisibleItemIndex();
-
-		OM::FileSystem::FileSystemItem* item;
-		for (size_t i = 0; i < size; i++)
-		{
-			item = OM::FileSystem::GetItem(i);
-			if (item == nullptr || item->GetType() != OM::FileSystem::FileSystemItemType::file)
-			{
-				continue;
-			}
-
-			bool exists = IsThumbnailCached(item->GetName().c_str(), true);
-			if ((i < first || i >= first + visibleCount))
-			{
-				// Are we requesting a thumbnail for an item that is not visible?
-				if (thumbnailContext.filename.c_str() == item->GetPath())
-				{
-					warn("Requesting thumbnail cancel for %s", item->GetName().c_str());
-					stopThumbnailRequest = true;
-				}
-
-				// If the thumbnail exists and is not visible, delete it
-				if (exists)
-				{
-					DeleteCachedThumbnail(item->GetName().c_str());
-				}
-				continue;
-			}
-
-			// If the thumbnail
-			if (exists)
-			{
-				continue;
-			}
-			info("Queueing thumbnail request for %s", item->GetName().c_str());
-			CreateBlankThumbnailCache(item->GetName().c_str());
-			thumbnailQueue.push_back(item->GetPath());
-		}
-
-		if (thumbnailContext.state == ThumbnailState::DataRequest)
-		{
-			// Request thumbnail data
-			info("Requesting thumbnail data for %s at offset %d\n",
-				 thumbnailContext.filename.c_str(),
-				 thumbnailContext.next);
-			duet.RequestThumbnail(thumbnailContext.filename.c_str(), thumbnailContext.next);
-			thumbnailContext.state = ThumbnailState::DataWait;
-			return;
-		}
-
-		if (!thumbnailRequestInProgress && thumbnailContext.state == ThumbnailState::Init && !thumbnailQueue.empty())
-		{
-			// Request thumbnail info
-			duet.RequestFileInfo(thumbnailQueue[0].c_str());
-			thumbnailQueue.erase(thumbnailQueue.begin());
-		}
-	}
-
-	void CancelThumbnailRequest()
-	{
-		warn("Requesting thumbnail cancel");
-		thumbnailContext.state = ThumbnailState::Init;
-		thumbnailContext.filename.Clear();
-		thumbnailContext.next = 0;
-		thumbnailQueue.clear();
-		stopThumbnailRequest = true;
-	}
-
 	void sendNext()
 	{
 		long long now = TimeHelper::getCurrentTime();
-		if (now > (lastResponseTime + duet.GetPollInterval() + printerResponseTimeout))
+		if (now > (lastResponseTime + duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT))
 		{
 			Reconnect();
 		}

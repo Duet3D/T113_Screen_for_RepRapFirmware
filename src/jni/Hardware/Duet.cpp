@@ -31,18 +31,19 @@ namespace Comm
 	Duet::Duet()
 		: m_communicationType(CommunicationType::none), m_ipAddress(""), m_hostname(""), m_password(""),
 		  m_sessionTimeout(0), m_lastRequestTime(0), m_sessionKey(noSessionKey),
-		  m_pollInterval(defaultPrinterPollInterval)
+		  m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
 	{
 	}
 
 	void Duet::Init()
 	{
-		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", defaultPrinterPollInterval));
+		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", DEFAULT_PRINTER_POLL_INTERVAL));
 		SetBaudRate((unsigned int)StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
 		SetIPAddress(StoragePreferences::getString("ip_address", "192.168.0."));
 		SetHostname(StoragePreferences::getString("hostname", ""));
 		SetPassword(StoragePreferences::getString("password", ""));
-		SetCommunicationType((CommunicationType)StoragePreferences::getInt("communication_type", 0));
+		SetCommunicationType(
+			(CommunicationType)StoragePreferences::getInt("communication_type", (int)DEFAULT_COMMUNICATION_TYPE));
 	}
 
 	void Duet::Reset()
@@ -74,10 +75,10 @@ namespace Comm
 
 	void Duet::SetPollInterval(uint32_t interval)
 	{
-		if (interval < minPrinterPollInterval)
+		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
-			info("Poll interval too low, setting to %d", minPrinterPollInterval);
-			interval = minPrinterPollInterval;
+			info("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
+			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
 		info("Setting poll interval to %d", interval);
 		StoragePreferences::putInt("poll_interval", (int)interval);
@@ -337,9 +338,7 @@ namespace Comm
 
 	void Duet::RequestFileInfo(const char* filename)
 	{
-		stopThumbnailRequest = false;
-		thumbnailRequestInProgress = true;
-
+	    dbg("for %s", filename);
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
@@ -349,9 +348,8 @@ namespace Comm
 			JsonDecoder decoder;
 			QueryParameters_t query;
 			query["name"] = filename;
-			UI::GetThumbnail()->setText("Loading...");
 
-#if 0
+#if 1
 			AsyncGet(
 				"/rr_fileinfo",
 				query,
@@ -370,7 +368,7 @@ namespace Comm
 #endif
 
 /* This way is quicker but duplicates code to decode the received data */
-#if 1
+#if 0
 			std::string name(filename);
 			AsyncGet(
 				"/rr_fileinfo",
@@ -385,7 +383,6 @@ namespace Comm
 						UI::CONSOLE->AddResponse(
 							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
 								.c_str());
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					reader.parse(r.body, body);
@@ -395,13 +392,11 @@ namespace Comm
 							utils::format(
 								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
 								.c_str());
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					if (!body.isMember("thumbnails"))
 					{
 						info("No thumbnails found for %s", filename);
-						thumbnailRequestInProgress = false;
 						return false;
 					}
 					Json::Value thumbnailsJson = body["thumbnails"];
@@ -414,13 +409,13 @@ namespace Comm
 						{
 							continue;
 						}
-						thumbnail.width = thumbnailsJson[i]["width"].asInt();
+						thumbnail.meta.width = thumbnailsJson[i]["width"].asInt();
 
 						if (!thumbnailsJson[i].isMember("height"))
 						{
 							continue;
 						}
-						thumbnail.height = thumbnailsJson[i]["height"].asInt();
+						thumbnail.meta.height = thumbnailsJson[i]["height"].asInt();
 
 						if (!thumbnailsJson[i].isMember("offset"))
 						{
@@ -433,12 +428,12 @@ namespace Comm
 							continue;
 						}
 						std::string format = thumbnailsJson[i]["format"].asString();
-						if (!thumbnail.SetImageFormat(format.c_str()))
+						if (!thumbnail.meta.SetImageFormat(format.c_str()))
 						{
 							warn("Unsupported thumbnail format: %s", format.c_str());
 							continue;
 						}
-						thumbnail.New(thumbnail.width, thumbnail.height, filename);
+						thumbnail.image.New(thumbnail.meta, filename);
 
 						info("File %s has thumbnail %d: %dx%d", filename, i, thumbnail.width, thumbnail.height);
 
@@ -446,12 +441,6 @@ namespace Comm
 						query["name"] = filename;
 						while (context.next != 0)
 						{
-							if (stopThumbnailRequest)
-							{
-								warn("Thumbnail request cancelled");
-								thumbnailRequestInProgress = false;
-								return false;
-							}
 							// Request thumbnail data
 							query["offset"] = utils::format("%d", context.next);
 							info("Requesting thumbnail data for %s at offset %d\n", filename, context.next);
@@ -481,7 +470,7 @@ namespace Comm
 							dbg("Decoding thumbnail data");
 							if (body.isMember("data"))
 							{
-								ThumbnailData data;
+								ThumbnailBuf data;
 								data.size = std::min(body["data"].asString().size(), sizeof(data.buffer));
 								memcpy(data.buffer, body["data"].asString().c_str(), data.size);
 								ThumbnailDecodeChunk(thumbnail, data);
@@ -491,7 +480,6 @@ namespace Comm
 						OM::FileSystem::GetListView()->refreshListView();
 					}
 					UI::GetThumbnail()->setText("");
-					thumbnailRequestInProgress = false;
 					return true;
 				},
 				true);
@@ -506,7 +494,7 @@ namespace Comm
 
 	void Duet::RequestThumbnail(const char* filename, uint32_t offset)
 	{
-		UI::GetThumbnail()->setText("Loading...");
+		dbg("for %s, offset=%u", filename, offset);
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart:
@@ -532,6 +520,8 @@ namespace Comm
 				true);
 			break;
 		}
+		default:
+		    break;
 		}
 	}
 

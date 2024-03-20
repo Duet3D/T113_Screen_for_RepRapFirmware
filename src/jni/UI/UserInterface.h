@@ -20,16 +20,16 @@
 #include <sys/types.h>
 #include <vector>
 
+#include "Comm/FileInfo.h"
+#include "Configuration.h"
 #include "Duet3D/General/CircularBuffer.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/StringRef.h"
 #include "Duet3D/General/Vector.h"
-#include "Library/Thumbnail.h"
 #include "ObjectModel/BedOrChamber.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
 #include "UI/Popup.h"
-#include "UI/UserInterfaceConstants.h"
 
 namespace UI
 {
@@ -74,6 +74,7 @@ namespace UI
 		void ClearHome();
 		void OpenWindow(ZKBase* window);
 		void OpenOverlay(ZKBase* window, bool closeAlreadyOpened = true);
+		bool IsOverlayOpened();
 		bool CloseOverlay();
 		size_t ReOpenLastWindow(size_t numWindows);
 		void CloseLastWindow();
@@ -165,7 +166,7 @@ namespace UI
 		void AddResponse(const char* str);
 		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
-		String<MaxResponseLineLength> GetItem(size_t index) { return buffer_.GetItem(index); }
+		String<MAX_RESPONSE_LINE_LENGTH> GetItem(size_t index) { return buffer_.GetItem(index); }
 		void Refresh();
 		void Clear();
 
@@ -173,7 +174,7 @@ namespace UI
 		void AddMessage(const StringRef& ref);
 		void AddMessage(const char* str);
 
-		CircularBuffer<String<MaxResponseLineLength>, MaxResponseLines> buffer_;
+		CircularBuffer<String<MAX_RESPONSE_LINE_LENGTH>, MAX_RESPONSE_LINES> buffer_;
 		ZKListView* pConsole_ = nullptr;
 		ZKEditText* pInput_ = nullptr;
 	};
@@ -197,6 +198,7 @@ namespace UI
 	const OM::FileSystem::File* GetSelectedFile();
 	void RunSelectedFile();
 	void SetThumbnail(ZKTextView* thumbnail);
+	void SetPopupFileInfo();
 	ZKTextView* GetThumbnail();
 
 #define WINDOW Window::GetInstance()

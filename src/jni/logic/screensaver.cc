@@ -98,7 +98,11 @@ static bool onUI_Timer(int id)
 	switch (id)
 	{
 	case 0: {
-		static ZKTextView* textPtr = mScreensaverTextPtr;
+		ZKTextView* textPtr = mScreensaverTextPtr;
+		if (textPtr == nullptr)
+		{
+			return true;
+		}
 		LayoutPosition position = textPtr->getPosition();
 		if (position.mLeft < 10)
 		{

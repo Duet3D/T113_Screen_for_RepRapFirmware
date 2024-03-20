@@ -10,6 +10,7 @@
 
 #include "Comm/Communication.h"
 
+#include "Comm/JsonDecoder.h"
 #include "ObjectModel/Utils.h"
 #include <Duet3D/General/String.h>
 #include <Duet3D/General/StringFunctions.h>
@@ -18,28 +19,29 @@
 
 #include "Debug.h"
 
-#define OBSERVER_CHAR_ARGS const char *val, const size_t indices[]
-#define OBSERVER_FLOAT_ARGS const float &val, const size_t indices[]
-#define OBSERVER_INT_ARGS const int32_t &val, const size_t indices[]
-#define OBSERVER_UINT_ARGS const uint32_t &val, const size_t indices[]
-#define OBSERVER_BOOL_ARGS const bool &val, const size_t indices[]
-#define OBSERVER_ARRAY_END_ARGS const size_t indices[]
+#define OBSERVER_CHAR_ARGS Comm::JsonDecoder *decoder, const char *val, const size_t indices[]
+#define OBSERVER_FLOAT_ARGS Comm::JsonDecoder *decoder, const float &val, const size_t indices[]
+#define OBSERVER_INT_ARGS Comm::JsonDecoder *decoder, const int32_t &val, const size_t indices[]
+#define OBSERVER_UINT_ARGS Comm::JsonDecoder *decoder, const uint32_t &val, const size_t indices[]
+#define OBSERVER_BOOL_ARGS Comm::JsonDecoder *decoder, const bool &val, const size_t indices[]
+#define OBSERVER_ARRAY_END_ARGS Comm::JsonDecoder *decoder, const size_t indices[]
 
 #define OBSERVER_ARRAY_END(key, callback)                                                                              \
 	UI::Observer<UI::ui_array_end_update_cb>                                                                           \
 	{                                                                                                                  \
-		key, [](const size_t indices[]) { callback(indices); }, UI::omArrayEndObserverHead,                            \
+		key, [](Comm::JsonDecoder* decoder, const size_t indices[]) { callback(decoder, indices); },                   \
+			UI::omArrayEndObserverHead,                                                                                \
 	}
 
 #define OBSERVER_TEMPLATE(key, callback, type, convertor)                                                              \
 	UI::Observer<UI::ui_field_update_cb>                                                                               \
 	{                                                                                                                  \
 		key,                                                                                                           \
-			[](const char* data, const size_t indices[]) {                                                             \
+			[](Comm::JsonDecoder* decoder, const char* data, const size_t indices[]) {                                 \
 				type val;                                                                                              \
 				if (convertor(data, val))                                                                              \
 				{                                                                                                      \
-					callback(val, indices);                                                                            \
+					callback(decoder, val, indices);                                                                   \
 				}                                                                                                      \
 			},                                                                                                         \
 			UI::omFieldObserverHead,                                                                                   \
@@ -57,7 +59,7 @@
 
 #define OBSERVER_IF_CHANGED_TEMPLATE(key, callback, type, convertor)                                                   \
 	OBSERVER_TEMPLATE(key,                                                                                             \
-					  ([](const type val, const size_t indices[]) {                                                    \
+					  ([](Comm::JsonDecoder* decoder, const type val, const size_t indices[]) {                        \
 						  int32_t packedIndex = 0;                                                                     \
 						  packedIndex |= (static_cast<int32_t>(indices[0]) & 0xFF) << 24;                              \
 						  packedIndex |= (static_cast<int32_t>(indices[1]) & 0xFF) << 16;                              \
@@ -68,7 +70,7 @@
 						  if (val != prevVal)                                                                          \
 						  {                                                                                            \
 							  prevVal = val;                                                                           \
-							  callback(val, indices);                                                                  \
+							  callback(decoder, val, indices);                                                         \
 						  }                                                                                            \
 						  else                                                                                         \
 						  {                                                                                            \
@@ -91,8 +93,8 @@
 
 namespace UI
 {
-	typedef void (*ui_field_update_cb)(const char* data, const size_t arrayIndices[]);
-	typedef void (*ui_array_end_update_cb)(const size_t arrayIndices[]);
+	typedef void (*ui_field_update_cb)(Comm::JsonDecoder* decoder, const char* data, const size_t arrayIndices[]);
+	typedef void (*ui_array_end_update_cb)(Comm::JsonDecoder* decoder, const size_t arrayIndices[]);
 
 	template <typename cbType>
 	class ObserverMap;
@@ -107,18 +109,18 @@ namespace UI
 			head = this;
 		}
 		void Init(ObserverMap<cbType>& observerMap) { observerMap.RegisterObserver(key, *this); }
-		void Update(const size_t arrayIndices[])
+		void Update(Comm::JsonDecoder* decoder, const size_t arrayIndices[])
 		{
 			if (cb != nullptr)
 			{
-				cb(arrayIndices);
+				cb(decoder, arrayIndices);
 			}
 		}
-		void Update(const char data[], const size_t arrayIndices[])
+		void Update(Comm::JsonDecoder* decoder, const char data[], const size_t arrayIndices[])
 		{
 			if (cb != nullptr)
 			{
-				cb(data, arrayIndices);
+				cb(decoder, data, arrayIndices);
 			}
 		}
 		const char* GetKey() { return key; }

@@ -8,6 +8,7 @@
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 
+#include "Configuration.h"
 #include "Debug.h"
 #include "Network.h"
 #include "curl/curl.h"
@@ -18,10 +19,6 @@
 
 namespace Comm
 {
-	// Duet 2 seems to only support 3 concurrent connections. We need 1 connection for synchronous requests, so we can
-	// only have 2 threads.
-	constexpr size_t maxThreadPoolSize = 2;
-
 	struct AsyncGetData
 	{
 		std::string url;
@@ -145,7 +142,7 @@ namespace Comm
 			return true;
 		}
 
-		if (threadPool.size() >= maxThreadPoolSize)
+		if (threadPool.size() >= MAX_THREAD_POOL_SIZE)
 		{
 			error("Thread pool is full, cannot add more threads");
 			return false;

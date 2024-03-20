@@ -95,19 +95,21 @@
     <!-- Files Page -->
     <string name="file">File</string>
     <string name="folder">Folder</string>
-    <string name="file_size">Size: %d</string>
+    <string name="file_size">Size: %s</string>
     <string name="file_date">Date: %s</string>
     <string name="elapsed">Elapsed</string>
     <string name="estimated">Estimated</string>
     <string name="refresh">Refresh</string>
     <string name="usb">USB Files</string>
+    <string name="file_cache_state">File Info Cache: Queued(%d) Cached(%d) Requesting(%s) Thumbnail(%s)</string>
 
     <!-- Network Page -->
 
     <!-- Popup messages -->
     <string name="uart_buffer_overflow">UART buffer overflow</string>
     <string name="run_macro">Run Macro: %s</string>
-    <string name="start_print">Start Print: %s</string>
+    <string name="start_print">Start Print</string>
+    <string name="file_info">Height: %.2f mm&#x000A;Layer Height: %.2f mm&#x000A;Print Time: %d:%02d:%02d</string>
     <string name="upload_file">Upload File: %s</string>
     <string name="uploading_file">Uploading File: %s</string>
     <string name="upgrade_from">Do you want to upgrade using: %s?</string>
@@ -143,18 +145,24 @@
     <string name="zk_setting">ZK Settings</string>
     <string name="touch_calibration">Touch Calibration</string>
     <string name="info_timeout">Info Timeout</string>
-    <string name="brightness">Brigthness</string>
+    <string name="brightness">Brightness</string>
     <string name="theme">Theme</string>
     <string name="themes">Themes</string>
     <string name="screensaver">Screensaver</string>
     <string name="timeout">Timeout</string>
     <string name="enabled">Enabled</string>
-    <string name="set_brightness">Set Brigthness</string>
+    <string name="set_brightness">Set Brightness</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>
     <string name="clear">Clear</string>
     <string name="send">Send</string>
+
+    <!-- Debug Menu -->
+    <string name="open_debug_commands">Debug</string>
+    <string name="dbg_commands">Debug Commands</string>
+    <string name="dbg_file_info_cache">Display File Info Cache</string>
+
 
     <!-- Guide Settup Page -->
     <string name="show_on_startup">Show On Startup</string>
