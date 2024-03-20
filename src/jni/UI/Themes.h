@@ -8,6 +8,7 @@
 #ifndef JNI_UI_COLORS_HPP_
 #define JNI_UI_COLORS_HPP_
 
+#include "Configuration.h"
 #include "UI/UserInterface.h"
 #include "std_fixed/functional.h"
 #include <sys/types.h>
@@ -135,6 +136,12 @@ namespace UI::Theme
 			ControlState foreground;
 			Images images;
 		} slideWindowItem;
+		struct
+		{
+			uint32_t bgDefault;
+			const char* bgImage;
+			uint32_t colors[MAX_SENSORS];
+		} diagram;
 	};
 
 	class Theme
@@ -144,13 +151,13 @@ namespace UI::Theme
 			const char* id,
 			ThemeColors* colors,
 			function<void(void)> overrides,
-			function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides =
-				[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {});
+			function<void(ZKListView*, ZKListView::ZKListItem*, int)> listItemOverrides =
+				[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {});
 
 		std::string id;
 		ThemeColors* colors;
 		function<void(void)> overrides;
-		function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides;
+		function<void(ZKListView*, ZKListView::ZKListItem*, int)> listItemOverrides;
 	};
 
 	void CreateTheme(Theme* theme);
@@ -159,7 +166,7 @@ namespace UI::Theme
 	Theme* GetThemeByIndex(int index);
 	void SetTheme(const std::string& id);
 	void SetTheme(Theme* theme);
-	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem);
+	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index);
 } // namespace UI
 
 #endif /* JNI_UI_COLORS_HPP_ */

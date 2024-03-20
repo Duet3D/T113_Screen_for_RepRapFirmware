@@ -45,6 +45,7 @@ constexpr unsigned int MAX_FILENAME_LENGTH = 100;
 constexpr unsigned int MAX_SLOTS = 32;
 constexpr unsigned int MAX_FANS = 12;
 constexpr unsigned int MAX_HEATERS = 32;
+constexpr unsigned int MAX_SENSORS = 32;
 
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;

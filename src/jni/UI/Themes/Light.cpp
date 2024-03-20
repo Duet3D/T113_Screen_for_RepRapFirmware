@@ -260,6 +260,46 @@ namespace UI::Theme
 						.invalid = nullptr,
 					},
 			},
+		.diagram =
+			{
+				.bgDefault = NULL,
+				.bgImage = nullptr,
+				.colors =
+					{
+						0xFF0000FF, // Blue
+						0xFF00FF00, // Green
+						0xFFFF0000, // Red
+						0xFFFFFF00, // Yellow
+						0xFF00FFFF, // Cyan
+						0xFFFF00FF, // Magenta
+						0xFF800000, // Maroon
+						0xFF008000, // Green
+						0xFF000080, // Navy
+						0xFF808000, // Olive
+						0xFF800080, // Purple
+						0xFF008080, // Teal
+						0xFF808080, // Gray
+						0xFFC0C0C0, // Silver
+						0xFFFFA500, // Orange
+						0xFFA52A2A, // Brown
+						0xFF800000, // Maroon
+						0xFF008000, // Green
+						0xFF000080, // Navy
+						0xFF808000, // Olive
+						0xFF800080, // Purple
+						0xFF008080, // Teal
+						0xFF808080, // Gray
+						0xFFC0C0C0, // Silver
+						0xFFFFA500, // Orange
+						0xFFA52A2A, // Brown
+						0xFF800000, // Maroon
+						0xFF008000, // Green
+						0xFF000080, // Navy
+						0xFF808000, // Olive
+						0xFF800080, // Purple
+						0xFF008080, // Teal
+					},
+			},
 	};
 
 	static Theme theme(
@@ -293,7 +333,7 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
 		},
-		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem) {
+		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {
 			if (pListView == nullptr || pListItem == nullptr)
 				return;
 

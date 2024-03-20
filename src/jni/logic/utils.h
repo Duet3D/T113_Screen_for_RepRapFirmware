@@ -8,6 +8,7 @@
 #ifndef JNI_LOGIC_UTILS_H_
 #define JNI_LOGIC_UTILS_H_
 
+#include <cstdarg>
 #include <string>
 
 namespace utils

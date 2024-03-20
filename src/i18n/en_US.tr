@@ -39,6 +39,9 @@
     <string name="active">Active</string>
     <string name="standby">Standby</string>
 
+    <!-- Temperature Graph -->
+    <string name="temperature_graph">Temperature Graph</string>
+
     <!-- Side Bar -->
     <string name="back">Back</string>
     <string name="home">Home</string>

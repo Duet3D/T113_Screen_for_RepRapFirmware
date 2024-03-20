@@ -16,6 +16,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Gcodes.h"
+#include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
@@ -100,6 +101,7 @@ static void onUI_init()
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
+	UI::TemperatureGraph.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
 	UI::Theme::SetTheme(StoragePreferences::getString("theme", "dark"));
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
@@ -1458,4 +1460,35 @@ static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
 {
 	UI::WINDOW->CloseOverlay();
 	return false;
+}
+static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_TempGraphXLabels !\n");
+	return 5;
+}
+
+static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ TempGraphXLabels  !!!\n");
+}
+
+static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ TempGraphXLabels  !!!\n");
+}
+
+static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_TempGraphYLabels !\n");
+	return 5;
+}
+
+static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ TempGraphYLabels  !!!\n");
+}
+
+static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ TempGraphYLabels  !!!\n");
 }

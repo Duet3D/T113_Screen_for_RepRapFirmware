@@ -17,7 +17,7 @@ namespace UI::Theme
 	Theme::Theme(const char* id,
 				 ThemeColors* colors,
 				 function<void(void)> overrides,
-				 function<void(ZKListView*, ZKListView::ZKListItem*)> listItemOverrides)
+				 function<void(ZKListView*, ZKListView::ZKListItem*, int)> listItemOverrides)
 		: id(id), colors(colors), overrides(overrides), listItemOverrides(listItemOverrides)
 	{
 		CreateTheme(this);
@@ -249,6 +249,19 @@ namespace UI::Theme
 				list->setBgStatusColor(ZK_CONTROL_STATUS_INVALID, colors->list.background.invalid);
 				continue;
 			}
+			if (typeid(*control) == typeid(ZKDiagram))
+			{
+				ZKDiagram* diagram = static_cast<ZKDiagram*>(control);
+				// Background
+				diagram->setBackgroundColor(colors->diagram.bgDefault);
+				diagram->setBackgroundPic(colors->diagram.bgImage);
+
+				for (size_t i = 0; i < sizeof(colors->diagram.colors) / sizeof(colors->diagram.colors[0]); i++)
+				{
+					diagram->setPenColor(i, colors->diagram.colors[i]);
+				}
+				continue;
+			}
 		}
 	}
 
@@ -291,7 +304,7 @@ namespace UI::Theme
 		s_currentTheme->overrides();
 	}
 
-	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem)
+	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 	{
 		if (s_currentTheme == nullptr)
 		{
@@ -311,6 +324,12 @@ namespace UI::Theme
 			return;
 		}
 
+		// For this list we want to apply different colours to each item
+		if (pListView->getID() == ID_MAIN_TemperatureGraphLegend)
+		{
+			goto applyTheme;
+		}
+
 		if (s_themedListItems.find(pListItem) == s_themedListItems.end())
 		{
 			s_themedListItems[pListItem] = s_currentTheme;
@@ -325,6 +344,7 @@ namespace UI::Theme
 			return;
 		}
 
+	applyTheme:
 		ThemeColors* colors = s_currentTheme->colors;
 		dbg("Applying %s theme to list item %p", s_currentTheme->id.c_str(), pListItem);
 
@@ -390,6 +410,16 @@ namespace UI::Theme
 
 			// pSubItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 		}
-		s_currentTheme->listItemOverrides(pListView, pListItem);
+		s_currentTheme->listItemOverrides(pListView, pListItem, index);
+
+		// Temperature graph legend
+		if (pListView->getID() == ID_MAIN_TemperatureGraphLegend)
+		{
+			if (index >= sizeof(colors->diagram.colors) / sizeof(colors->diagram.colors[0]))
+			{
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->diagram.bgDefault);
+			}
+			pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->diagram.colors[index]);
+		}
 	}
 } // namespace UI::Theme

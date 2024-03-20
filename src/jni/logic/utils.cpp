@@ -6,7 +6,6 @@
  */
 
 #include "utils.h"
-#include <cstdarg>
 
 namespace utils
 {

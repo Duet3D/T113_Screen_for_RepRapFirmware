@@ -4,6 +4,15 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mTempGraphYLabelsPtr;
+static ZKListView* mTempGraphXLabelsPtr;
+static ZKTextView* mGraphYLabelBottomPtr;
+static ZKTextView* mGraphYLabelMidPtr;
+static ZKTextView* mGraphYLabelTopPtr;
+static ZKTextView* mGraphXLabelRightPtr;
+static ZKTextView* mGraphXLabelMidPtr;
+static ZKTextView* mGraphXLabelLeftPtr;
+static ZKTextView* mTextView44Ptr;
 static ZKTextView* mFileListInfoPtr;
 static ZKButton* mOverlayModalZonePtr;
 static ZKTextView* mTextView43Ptr;
@@ -197,7 +206,6 @@ static ZKWindow* mMoveWindowPtr;
 static ZKSlideWindow* mSlideWindow1Ptr;
 static ZKWindow* mWindowSelectWindowPtr;
 static ZKListView* mTemperatureGraphLegendPtr;
-static ZKTextView* mTextView1Ptr;
 static ZKDiagram* mTempGraphPtr;
 static ZKWindow* mTemperatureGraphWindowPtr;
 static ZKTextView* mToolListHeadingStandbyPtr;
@@ -332,20 +340,20 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
-    ID_MAIN_DebugCommandList, getListItemCount_DebugCommandList, obtainListItemData_DebugCommandList, onListItemClick_DebugCommandList,
-    ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
     ID_MAIN_PopupSelectionList, getListItemCount_PopupSelectionList, obtainListItemData_PopupSelectionList, onListItemClick_PopupSelectionList,
+    ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
+    ID_MAIN_GuidesList, getListItemCount_GuidesList, obtainListItemData_GuidesList, onListItemClick_GuidesList,
+    ID_MAIN_BaudRateList, getListItemCount_BaudRateList, obtainListItemData_BaudRateList, onListItemClick_BaudRateList,
+    ID_MAIN_DuetCommList, getListItemCount_DuetCommList, obtainListItemData_DuetCommList, onListItemClick_DuetCommList,
     ID_MAIN_PrintTemperatureList, getListItemCount_PrintTemperatureList, obtainListItemData_PrintTemperatureList, onListItemClick_PrintTemperatureList,
     ID_MAIN_PrintExtruderPositionList, getListItemCount_PrintExtruderPositionList, obtainListItemData_PrintExtruderPositionList, onListItemClick_PrintExtruderPositionList,
     ID_MAIN_PrintPositionList, getListItemCount_PrintPositionList, obtainListItemData_PrintPositionList, onListItemClick_PrintPositionList,
     ID_MAIN_PrintFanList, getListItemCount_PrintFanList, obtainListItemData_PrintFanList, onListItemClick_PrintFanList,
-    ID_MAIN_GuidesList, getListItemCount_GuidesList, obtainListItemData_GuidesList, onListItemClick_GuidesList,
-    ID_MAIN_BaudRateList, getListItemCount_BaudRateList, obtainListItemData_BaudRateList, onListItemClick_BaudRateList,
-    ID_MAIN_DuetCommList, getListItemCount_DuetCommList, obtainListItemData_DuetCommList, onListItemClick_DuetCommList,
     ID_MAIN_FileListView, getListItemCount_FileListView, obtainListItemData_FileListView, onListItemClick_FileListView,
+    ID_MAIN_DebugCommandList, getListItemCount_DebugCommandList, obtainListItemData_DebugCommandList, onListItemClick_DebugCommandList,
     ID_MAIN_GcodeListView, getListItemCount_GcodeListView, obtainListItemData_GcodeListView, onListItemClick_GcodeListView,
     ID_MAIN_ConsoleListView, getListItemCount_ConsoleListView, obtainListItemData_ConsoleListView, onListItemClick_ConsoleListView,
     ID_MAIN_FilamentList, getListItemCount_FilamentList, obtainListItemData_FilamentList, onListItemClick_FilamentList,
@@ -353,10 +361,111 @@ static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
     ID_MAIN_ExtruderFeedrate, getListItemCount_ExtruderFeedrate, obtainListItemData_ExtruderFeedrate, onListItemClick_ExtruderFeedrate,
     ID_MAIN_ExtruderFeedDist, getListItemCount_ExtruderFeedDist, obtainListItemData_ExtruderFeedDist, onListItemClick_ExtruderFeedDist,
     ID_MAIN_AxisControlListView, getListItemCount_AxisControlListView, obtainListItemData_AxisControlListView, onListItemClick_AxisControlListView,
+    ID_MAIN_TempGraphYLabels, getListItemCount_TempGraphYLabels, obtainListItemData_TempGraphYLabels, onListItemClick_TempGraphYLabels,
+    ID_MAIN_TempGraphXLabels, getListItemCount_TempGraphXLabels, obtainListItemData_TempGraphXLabels, onListItemClick_TempGraphXLabels,
     ID_MAIN_TemperatureGraphLegend, getListItemCount_TemperatureGraphLegend, obtainListItemData_TemperatureGraphLegend, onListItemClick_TemperatureGraphLegend,
     ID_MAIN_ToolListView, getListItemCount_ToolListView, obtainListItemData_ToolListView, onListItemClick_ToolListView,
+	ID_MAIN_TempGraphYLabels,
+	getListItemCount_TempGraphYLabels,
+	obtainListItemData_TempGraphYLabels,
+	onListItemClick_TempGraphYLabels,
+	ID_MAIN_TempGraphXLabels,
+	getListItemCount_TempGraphXLabels,
+	obtainListItemData_TempGraphXLabels,
+	onListItemClick_TempGraphXLabels,
+	ID_MAIN_DebugCommandList,
+	getListItemCount_DebugCommandList,
+	obtainListItemData_DebugCommandList,
+	onListItemClick_DebugCommandList,
+	ID_MAIN_ThemesList,
+	getListItemCount_ThemesList,
+	obtainListItemData_ThemesList,
+	onListItemClick_ThemesList,
+	ID_MAIN_ListView1,
+	getListItemCount_ListView1,
+	obtainListItemData_ListView1,
+	onListItemClick_ListView1,
+	ID_MAIN_PopupAxisAdjusment,
+	getListItemCount_PopupAxisAdjusment,
+	obtainListItemData_PopupAxisAdjusment,
+	onListItemClick_PopupAxisAdjusment,
+	ID_MAIN_PopupAxisSelection,
+	getListItemCount_PopupAxisSelection,
+	obtainListItemData_PopupAxisSelection,
+	onListItemClick_PopupAxisSelection,
+	ID_MAIN_PopupSelectionList,
+	getListItemCount_PopupSelectionList,
+	obtainListItemData_PopupSelectionList,
+	onListItemClick_PopupSelectionList,
+	ID_MAIN_PrintTemperatureList,
+	getListItemCount_PrintTemperatureList,
+	obtainListItemData_PrintTemperatureList,
+	onListItemClick_PrintTemperatureList,
+	ID_MAIN_PrintExtruderPositionList,
+	getListItemCount_PrintExtruderPositionList,
+	obtainListItemData_PrintExtruderPositionList,
+	onListItemClick_PrintExtruderPositionList,
+	ID_MAIN_PrintPositionList,
+	getListItemCount_PrintPositionList,
+	obtainListItemData_PrintPositionList,
+	onListItemClick_PrintPositionList,
+	ID_MAIN_PrintFanList,
+	getListItemCount_PrintFanList,
+	obtainListItemData_PrintFanList,
+	onListItemClick_PrintFanList,
+	ID_MAIN_GuidesList,
+	getListItemCount_GuidesList,
+	obtainListItemData_GuidesList,
+	onListItemClick_GuidesList,
+	ID_MAIN_BaudRateList,
+	getListItemCount_BaudRateList,
+	obtainListItemData_BaudRateList,
+	onListItemClick_BaudRateList,
+	ID_MAIN_DuetCommList,
+	getListItemCount_DuetCommList,
+	obtainListItemData_DuetCommList,
+	onListItemClick_DuetCommList,
+	ID_MAIN_FileListView,
+	getListItemCount_FileListView,
+	obtainListItemData_FileListView,
+	onListItemClick_FileListView,
+	ID_MAIN_GcodeListView,
+	getListItemCount_GcodeListView,
+	obtainListItemData_GcodeListView,
+	onListItemClick_GcodeListView,
+	ID_MAIN_ConsoleListView,
+	getListItemCount_ConsoleListView,
+	obtainListItemData_ConsoleListView,
+	onListItemClick_ConsoleListView,
+	ID_MAIN_FilamentList,
+	getListItemCount_FilamentList,
+	obtainListItemData_FilamentList,
+	onListItemClick_FilamentList,
+	ID_MAIN_ExtrudeToolList,
+	getListItemCount_ExtrudeToolList,
+	obtainListItemData_ExtrudeToolList,
+	onListItemClick_ExtrudeToolList,
+	ID_MAIN_ExtruderFeedrate,
+	getListItemCount_ExtruderFeedrate,
+	obtainListItemData_ExtruderFeedrate,
+	onListItemClick_ExtruderFeedrate,
+	ID_MAIN_ExtruderFeedDist,
+	getListItemCount_ExtruderFeedDist,
+	obtainListItemData_ExtruderFeedDist,
+	onListItemClick_ExtruderFeedDist,
+	ID_MAIN_AxisControlListView,
+	getListItemCount_AxisControlListView,
+	obtainListItemData_AxisControlListView,
+	onListItemClick_AxisControlListView,
+	ID_MAIN_TemperatureGraphLegend,
+	getListItemCount_TemperatureGraphLegend,
+	obtainListItemData_TemperatureGraphLegend,
+	onListItemClick_TemperatureGraphLegend,
+	ID_MAIN_ToolListView,
+	getListItemCount_ToolListView,
+	obtainListItemData_ToolListView,
+	onListItemClick_ToolListView,
 };
-
 
 typedef void (*SlideWindowItemClickCallback)(ZKSlideWindow *pSlideWindow, int index);
 typedef struct {
@@ -427,7 +536,16 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
-    mFileListInfoPtr = NULL;
+	mTempGraphYLabelsPtr = NULL;
+	mTempGraphXLabelsPtr = NULL;
+	mGraphYLabelBottomPtr = NULL;
+	mGraphYLabelMidPtr = NULL;
+	mGraphYLabelTopPtr = NULL;
+	mGraphXLabelRightPtr = NULL;
+	mGraphXLabelMidPtr = NULL;
+	mGraphXLabelLeftPtr = NULL;
+	mTextView44Ptr = NULL;
+	mFileListInfoPtr = NULL;
     mOverlayModalZonePtr = NULL;
     mTextView43Ptr = NULL;
     mDebugCommandListPtr = NULL;
@@ -619,9 +737,8 @@ mainActivity::~mainActivity() {
     mMoveWindowPtr = NULL;
     mSlideWindow1Ptr = NULL;
     mWindowSelectWindowPtr = NULL;
-    mTemperatureGraphLegendPtr = NULL;
-    mTextView1Ptr = NULL;
-    mTempGraphPtr = NULL;
+	mTemperatureGraphLegendPtr = NULL;
+	mTempGraphPtr = NULL;
     mTemperatureGraphWindowPtr = NULL;
     mToolListHeadingStandbyPtr = NULL;
     mToolListHeadingActivePtr = NULL;
@@ -647,7 +764,29 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
-    mFileListInfoPtr = (ZKTextView*)findControlByID(ID_MAIN_FileListInfo);
+    mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);if(mTempGraphYLabelsPtr!= NULL){mTempGraphYLabelsPtr->setListAdapter(this);mTempGraphYLabelsPtr->setItemClickListener(this);}
+    mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);if(mTempGraphXLabelsPtr!= NULL){mTempGraphXLabelsPtr->setListAdapter(this);mTempGraphXLabelsPtr->setItemClickListener(this);}
+    mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);if(mTemperatureGraphLegendPtr!= NULL){mTemperatureGraphLegendPtr->setListAdapter(this);mTemperatureGraphLegendPtr->setItemClickListener(this);}
+	mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);
+	if (mTempGraphYLabelsPtr != NULL)
+	{
+		mTempGraphYLabelsPtr->setListAdapter(this);
+		mTempGraphYLabelsPtr->setItemClickListener(this);
+	}
+	mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);
+	if (mTempGraphXLabelsPtr != NULL)
+	{
+		mTempGraphXLabelsPtr->setListAdapter(this);
+		mTempGraphXLabelsPtr->setItemClickListener(this);
+	}
+	mGraphYLabelBottomPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelBottom);
+	mGraphYLabelMidPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelMid);
+	mGraphYLabelTopPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelTop);
+	mGraphXLabelRightPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphXLabelRight);
+	mGraphXLabelMidPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphXLabelMid);
+	mGraphXLabelLeftPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphXLabelLeft);
+	mTextView44Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView44);
+	mFileListInfoPtr = (ZKTextView*)findControlByID(ID_MAIN_FileListInfo);
     mOverlayModalZonePtr = (ZKButton*)findControlByID(ID_MAIN_OverlayModalZone);
     mTextView43Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView43);
     mDebugCommandListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugCommandList);if(mDebugCommandListPtr!= NULL){mDebugCommandListPtr->setListAdapter(this);mDebugCommandListPtr->setItemClickListener(this);}
@@ -839,9 +978,13 @@ void mainActivity::onCreate() {
     mMoveWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MoveWindow);
     mSlideWindow1Ptr = (ZKSlideWindow*)findControlByID(ID_MAIN_SlideWindow1);if(mSlideWindow1Ptr!= NULL){mSlideWindow1Ptr->setSlideItemClickListener(this);}
     mWindowSelectWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WindowSelectWindow);
-    mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);if(mTemperatureGraphLegendPtr!= NULL){mTemperatureGraphLegendPtr->setListAdapter(this);mTemperatureGraphLegendPtr->setItemClickListener(this);}
-    mTextView1Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView1);
-    mTempGraphPtr = (ZKDiagram*)findControlByID(ID_MAIN_TempGraph);
+	mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);
+	if (mTemperatureGraphLegendPtr != NULL)
+	{
+		mTemperatureGraphLegendPtr->setListAdapter(this);
+		mTemperatureGraphLegendPtr->setItemClickListener(this);
+	}
+	mTempGraphPtr = (ZKDiagram*)findControlByID(ID_MAIN_TempGraph);
     mTemperatureGraphWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_TemperatureGraphWindow);
     mToolListHeadingStandbyPtr = (ZKTextView*)findControlByID(ID_MAIN_ToolListHeadingStandby);
     mToolListHeadingActivePtr = (ZKTextView*)findControlByID(ID_MAIN_ToolListHeadingActive);
@@ -934,7 +1077,7 @@ int mainActivity::getListItemCount(const ZKListView *pListView) const{
 }
 
 void mainActivity::obtainListItemData(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index){
-	UI::Theme::ThemeListItem(pListView, pListItem);
+	UI::Theme::ThemeListItem(pListView, pListItem, index);
 	int tablen = sizeof(SListViewFunctionsCallbackTab) / sizeof(S_ListViewFunctionsCallback);
 	for (int i = 0; i < tablen; ++i) {
         if (SListViewFunctionsCallbackTab[i].id == pListView->getID()) {
