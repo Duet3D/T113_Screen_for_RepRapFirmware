@@ -21,8 +21,9 @@ constexpr size_t MAX_HOSTNAME_LENGTH = 64;
 constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchronize time with the Duet in milliseconds
 
 /* Thumbnails */
-constexpr int32_t THUMBNAIL_REQUEST_TIMEOUT = 5000;
+constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
 constexpr size_t MAX_THUMBNAIL_CACHE_SIZE = 2 * 2600; // Largest size thumbnail that is allowed to be cached
+constexpr int32_t BACKGROUND_FILE_CACHE_POLL_INTERVAL = 2000;
 
 /* Json Decoder */
 constexpr size_t MAX_ARRAY_NESTING = 4;

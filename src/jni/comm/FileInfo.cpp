@@ -14,6 +14,7 @@
 
 #include "Configuration.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
 #include "utils.h"
 #include <utils/TimeHelper.h>
@@ -105,7 +106,15 @@ namespace Comm
 
 		long long now = TimeHelper::getCurrentTime();
 
-		if (m_fileInfoRequestInProgress && now > m_lastFileInfoRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
+		if ((OM::PrintInProgress() || !UI::GetUIControl<ZKWindow>(ID_MAIN_FilesWindow)->isVisible()) &&
+			(now - m_lastFileInfoRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL ||
+			 now - m_lastThumbnailRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL))
+		{
+			verbose("Skipping file info cache spin");
+			return;
+		}
+
+		if (m_fileInfoRequestInProgress && now > m_lastFileInfoRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
 		{
 			warn("File info request timed out for %s", m_currentFileInfoRequest.c_str());
 			m_fileInfoRequestInProgress = false;
@@ -114,7 +123,7 @@ namespace Comm
 		}
 
 		if (m_currentThumbnail != nullptr &&
-			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + THUMBNAIL_REQUEST_TIMEOUT)
+			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
 		{
 			Thumbnail* thumbnail = m_currentThumbnail;
 			m_currentThumbnail = nullptr;
