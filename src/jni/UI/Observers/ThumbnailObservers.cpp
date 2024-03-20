@@ -160,6 +160,8 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 						  warn("FileInfo not found");
 						  return;
 					  }
+					  fileInfo->generatedBy.copy(val);
+					  FILEINFO_CACHE->FileInfoRequestComplete();
 				  }),
 	OBSERVER_CHAR(
 		"thumbnail:fileName",
@@ -278,6 +280,5 @@ static UI::Observer<UI::ui_array_end_update_cb> ThumbnailObserversArrayEnd[] = {
 					 thumbnail->meta.height,
 					 thumbnail->meta.imageFormat);
 			}
-			FILEINFO_CACHE->FileInfoRequestComplete();
 		}),
 };

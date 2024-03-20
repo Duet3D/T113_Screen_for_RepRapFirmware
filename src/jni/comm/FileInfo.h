@@ -36,7 +36,7 @@ namespace Comm
 		float layerHeight;
 		uint32_t printTime;
 		std::vector<float> filament;
-		String<30> generatedBy;
+		String<64> generatedBy;
 
 		Thumbnail* GetThumbnail(size_t index);
 		Thumbnail* GetOrCreateThumbnail(size_t index);

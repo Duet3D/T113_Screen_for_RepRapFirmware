@@ -7,10 +7,11 @@
 
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
-#include "UserInterface.h"
 #include "Debug.h"
+
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "UserInterface.h"
 #include "utils.h"
 #include <algorithm>
 #include <map>
@@ -752,11 +753,13 @@ namespace UI
 		float layerHeight = 0;
 		tm printTime;
 		printTime.tm_hour = printTime.tm_min = printTime.tm_sec = 0;
+		std::string generatedBy = "";
 		if (fileInfo != nullptr)
 		{
 			height = fileInfo->height;
 			layerHeight = fileInfo->layerHeight;
 			printTime = fileInfo->GetPrintTime();
+			generatedBy = fileInfo->generatedBy.c_str();
 		}
 		UI::POPUP_WINDOW->SetTitle(item->GetName());
 		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
@@ -764,9 +767,17 @@ namespace UI
 								   layerHeight,
 								   printTime.tm_hour,
 								   printTime.tm_min,
-								   printTime.tm_sec);
+								   printTime.tm_sec,
+								   generatedBy.c_str());
 		UI::POPUP_WINDOW->SetTextScrollable(false);
-		UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
+		if (IsThumbnailCached(item->GetPath().c_str()) || IsThumbnailCached(Comm::largeThumbnailFilename))
+		{
+			UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
+		}
+		else
+		{
+			UI::POPUP_WINDOW->ShowImage(false);
+		}
 		UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
 		UI::POPUP_WINDOW->CancelTimeout();
 	}

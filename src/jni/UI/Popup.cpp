@@ -290,7 +290,14 @@ namespace UI
 	void PopupWindow::ShowImage(bool show)
 	{
 		LayoutPosition position = text_->getPosition();
-		position.mWidth = image_->getPosition().mLeft - position.mLeft - 10;
+		if (show)
+		{
+			position.mWidth = image_->getPosition().mLeft - 2 * position.mLeft - 10;
+		}
+		else
+		{
+			position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
+		}
 		text_->setPosition(position);
 		image_->setVisible(show);
 	}
