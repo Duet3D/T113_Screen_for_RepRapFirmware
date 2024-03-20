@@ -507,7 +507,10 @@ namespace UI
 		{
 		case HeaterType::tool: {
 			if (data.toolData.tool == nullptr)
+			{
+				warn("Tool is null");
 				return;
+			}
 
 			numPadData_.toolData = data.toolData;
 
@@ -520,7 +523,10 @@ namespace UI
 
 				OM::ToolHeater* toolHeater = data.toolData.toolHeater;
 				if (toolHeater == nullptr)
+				{
+					warn("Tool heater is null");
 					return;
+				}
 
 				currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
 				UI::NUMPAD_WINDOW->Open(
@@ -549,13 +555,17 @@ namespace UI
 												 ? OM::GetBed(data.bedOrChamberIndex)
 												 : OM::GetChamber(data.bedOrChamberIndex);
 			if (bedOrChamber == nullptr)
+			{
+				warn("Bed or chamber is null, type=%d, index=%u", (int)data.heaterType, data.bedOrChamberIndex);
 				return;
+			}
 			currentTarget = data.active ? bedOrChamber->GetActiveTemp() : bedOrChamber->GetStandbyTemp();
-			break;
-		}
 			UI::NUMPAD_WINDOW->Open(
 				header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
+			return;
 		}
+		}
+		warn("Unknown heater type");
 	}
 
 	bool ToolsList::SendTempTarget(int target)

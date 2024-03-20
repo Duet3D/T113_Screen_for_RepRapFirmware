@@ -9,7 +9,6 @@
 #define JNI_INCLUDE_DUET3D_GENERAL_CIRCULARBUFFER_HPP_
 
 #include <cstddef>
-#include "Debug.h"
 
 template <typename T, size_t Size>
 class CircularBuffer {
