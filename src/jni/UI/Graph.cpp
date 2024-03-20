@@ -17,7 +17,7 @@ namespace UI
 {
 	Graph TemperatureGraph;
 
-	Graph::Graph() : m_yMax(DEFAULT_TEMP_GRAPH_MAX) {}
+	Graph::Graph() : m_xRange(DEFAULT_TEMP_GRAPH_TIME_RANGE), m_yMax(DEFAULT_TEMP_GRAPH_MAX) {}
 
 	void Graph::Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend)
 	{
@@ -25,6 +25,9 @@ namespace UI
 		m_xLabels = xLabels;
 		m_yLabels = yLabels;
 		m_legend = legend;
+
+		SetTimeRange(DEFAULT_TEMP_GRAPH_TIME_RANGE);
+		ScaleYAxis(DEFAULT_TEMP_GRAPH_MAX);
 
 		for (size_t i = 0; i < MAX_SENSORS; i++)
 		{
@@ -42,7 +45,10 @@ namespace UI
 		UpdateDiagram(index);
 	}
 
-	void Graph::RefreshLegend() {}
+	void Graph::RefreshLegend()
+	{
+		m_legend->refreshListView();
+	}
 
 	void Graph::UpdateDiagram(int index)
 	{
@@ -87,6 +93,21 @@ namespace UI
 		dbg("Setting data for index %d", index);
 		ScaleYAxis(maxVal);
 		m_diagram->setData(index, points, GRAPH_DATAPOINTS);
+	}
+
+	void Graph::SetTimeRange(int range)
+	{
+		if (range <= 0)
+		{
+			range = DEFAULT_TEMP_GRAPH_TIME_RANGE;
+		}
+
+		m_xRange = range;
+		float scale = 100.0 / m_xRange;
+		for (size_t i = 0; i < MAX_SENSORS; i++)
+		{
+			m_diagram->setXScale(i, scale);
+		}
 	}
 
 	void Graph::ScaleYAxis(float max)

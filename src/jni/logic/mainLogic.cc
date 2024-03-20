@@ -1475,7 +1475,8 @@ static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
 
 static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	int time = -100 + (index * 100 / (pListView->getCols() - 1));
+	int range = UI::TemperatureGraph.GetTimeRange();
+	int time = -range + (index * range / (pListView->getCols() - 1));
 	pListItem->setTextf("%ds", time);
 }
 

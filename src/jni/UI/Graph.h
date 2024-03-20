@@ -23,11 +23,9 @@ namespace UI
 		Graph();
 		void Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend);
 
-		void SetXRange(int min, int max);
-		void SetXLabels(const char* labels[], size_t count);
-		void SetYRange(int min, int max);
-		void SetYLabels(const char* labels[], size_t count);
 		float GetYMax() const { return m_yMax; }
+		void SetTimeRange(int range);
+		int GetTimeRange() const { return m_xRange; }
 
 		void RefreshLegend();
 
@@ -48,6 +46,7 @@ namespace UI
 		ZKListView* m_yLabels;
 		ZKListView* m_legend;
 
+		int m_xRange;
 		float m_yMax;
 
 		CircularBuffer<DataPoint, GRAPH_DATAPOINTS> m_data[MAX_SENSORS];
