@@ -267,7 +267,7 @@ namespace UI::Theme
 		.diagram =
 			{
 				.bgDefault = NULL,
-				.bgImage = nullptr,
+				.bgImage = "GraphBg.png",
 				.colors =
 					{
 						0xFF0000FF, // Blue

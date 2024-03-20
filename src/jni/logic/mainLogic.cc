@@ -365,13 +365,18 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 }
 static int getListItemCount_TemperatureGraphLegend(const ZKListView *pListView)
 {
-	//LOGD("getListItemCount_TemperatureGraphLegend !\n");
-	return 5;
+	return OM::GetAnalogSensorCount();
 }
 
 static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
-	//LOGD(" obtainListItemData_ TemperatureGraphLegend  !!!\n");
+	OM::AnalogSensor* sensor = OM::GetAnalogSensorBySlot(index);
+	if (sensor == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setText(sensor->name.c_str());
 }
 
 static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id)
@@ -1461,15 +1466,17 @@ static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
 	UI::WINDOW->CloseOverlay();
 	return false;
 }
+
 static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_TempGraphXLabels !\n");
-	return 5;
+	return pListView->getCols();
 }
 
 static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ TempGraphXLabels  !!!\n");
+	int time = -100 + (index * 100 / (pListView->getCols() - 1));
+	pListItem->setTextf("%ds", time);
 }
 
 static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, int id)
@@ -1480,12 +1487,18 @@ static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, i
 static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_TempGraphYLabels !\n");
-	return 5;
+	return pListView->getRows();
 }
 
 static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ TempGraphYLabels  !!!\n");
+	float yMax = UI::TemperatureGraph.GetYMax();
+	int rows = pListView->getRows();
+	dbg("yMax = %f, rows = %d", yMax, rows);
+	float label = yMax - (yMax / (rows - 1)) * index;
+	dbg("label[%d] = %f", index, label);
+
+	pListItem->setTextf("%.1f", label);
 }
 
 static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id)

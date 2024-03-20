@@ -27,11 +27,10 @@ namespace UI
 		void SetXLabels(const char* labels[], size_t count);
 		void SetYRange(int min, int max);
 		void SetYLabels(const char* labels[], size_t count);
+		float GetYMax() const { return m_yMax; }
 
 		void RefreshLegend();
 
-		size_t GetLineCount() const;
-		void AddLine();
 		void AddData(int index, float value);
 
 	  private:
@@ -41,12 +40,17 @@ namespace UI
 			float value;
 		};
 
+		void UpdateDiagram(int index);
+		void ScaleYAxis(float max);
+
 		ZKDiagram* m_diagram;
 		ZKListView* m_xLabels;
 		ZKListView* m_yLabels;
 		ZKListView* m_legend;
 
-		CircularBuffer<DataPoint, 100> m_data[MAX_SENSORS];
+		float m_yMax;
+
+		CircularBuffer<DataPoint, GRAPH_DATAPOINTS> m_data[MAX_SENSORS];
 	};
 
 	extern Graph TemperatureGraph;
