@@ -51,31 +51,6 @@ namespace UI
 			UpdateWave(index);
 	}
 
-	void Graph::Update()
-	{
-		for (size_t i = 0; i < m_waveCount; i++)
-		{
-			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i);
-			if (sensor == nullptr || sensor->name.IsEmpty())
-			{
-				verbose("Sensor incomplete or does not exist");
-				Clear(i);
-				continue;
-			}
-
-			float value = sensor->lastReading;
-#if 0
-			long long now = TimeHelper::getCurrentTime();
-			if (now - sensor->lastReadingTime > 3 * Comm::duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
-			{
-				dbg("Sensor %d has timed out", i);
-				value = -273;
-			}
-#endif
-			AddData(i, value);
-		}
-	}
-
 	void Graph::RefreshLegend()
 	{
 		m_legend->refreshListView();
@@ -190,4 +165,28 @@ namespace UI
 		m_yLabels->refreshListView();
 	}
 
+	void UpdateTemperatureGraph()
+	{
+		for (size_t i = 0; i < TemperatureGraph.GetWaveCount(); i++)
+		{
+			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i);
+			if (sensor == nullptr || sensor->name.IsEmpty())
+			{
+				verbose("Sensor incomplete or does not exist");
+				TemperatureGraph.Clear(i);
+				continue;
+			}
+
+			float value = sensor->lastReading;
+#if 0
+			long long now = TimeHelper::getCurrentTime();
+			if (now - sensor->lastReadingTime > 3 * Comm::duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
+			{
+				dbg("Sensor %d has timed out", i);
+				value = -273;
+			}
+#endif
+			TemperatureGraph.AddData(i, value);
+		}
+	}
 } // namespace UI

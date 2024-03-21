@@ -23,11 +23,12 @@ namespace UI
 		Graph();
 		void Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend);
 
+		size_t GetWaveCount() const { return m_waveCount; }
 		float GetYMax() const { return m_yMax; }
 		void SetTimeRange(int range);
 		int GetTimeRange() const { return m_xRange; }
+		void AddData(int index, float value);
 		void RefreshLegend();
-		void Update();
 		void ClearAll();
 		void Clear(int index);
 
@@ -38,7 +39,6 @@ namespace UI
 			float value;
 		};
 
-		void AddData(int index, float value);
 		void UpdateWave(int index);
 		void ScaleYAxis(float max);
 
@@ -54,6 +54,7 @@ namespace UI
 		CircularBuffer<DataPoint, GRAPH_DATAPOINTS> m_data[MAX_SENSORS];
 	};
 
+	void UpdateTemperatureGraph();
 	extern Graph TemperatureGraph;
 } // namespace UI
 

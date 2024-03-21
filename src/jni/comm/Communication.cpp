@@ -334,7 +334,7 @@ namespace Comm
 
 			Comm::duet.RequestModel("d99f");
 		}
-		UI::TemperatureGraph.Update();
+		UI::UpdateTemperatureGraph();
 	}
 
 	void init()
