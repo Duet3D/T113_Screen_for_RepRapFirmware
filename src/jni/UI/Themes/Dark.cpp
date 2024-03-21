@@ -171,7 +171,7 @@ namespace UI::Theme
 			},
 		.list =
 			{
-				.bgDefault = NULL,
+				.bgDefault = Colors::DarkerGray,
 				.bgImage = nullptr,
 				.background =
 					{
@@ -314,7 +314,7 @@ namespace UI::Theme
 			// Windows
 			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkGray);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Blue4);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuideSelectionWindow)->setBackgroundColor(Colors::Black);
@@ -356,6 +356,18 @@ namespace UI::Theme
 			}
 			case ID_MAIN_TemperatureGraphLegend: {
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
+				break;
+			}
+			case ID_MAIN_TempGraphXLabels: {
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
+				pListItem->setBackgroundColor(NULL);
+				break;
+			}
+			case ID_MAIN_TempGraphYLabels: {
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
+				pListItem->setBackgroundColor(NULL);
 				break;
 			}
 			default:

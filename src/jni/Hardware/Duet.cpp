@@ -15,6 +15,7 @@
 #include "Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "ObjectModel/Utils.h"
 #include "UI/Graph.h"
 #include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
@@ -55,6 +56,7 @@ namespace Comm
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
 
+		OM::RemoveAll();
 		Comm::ResetSeqs();
 		FILEINFO_CACHE->ClearCache();
 		UI::TemperatureGraph.ClearAll();

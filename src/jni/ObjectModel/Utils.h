@@ -40,7 +40,9 @@ int compareValue(const void *lp, const void *rp)
 		return 0;
 }
 
-namespace OM {
+namespace OM
+{
+	void RemoveAll();
 }
 
 #endif /* SRC_OBJECTMODEL_UTILS_HPP_ */
