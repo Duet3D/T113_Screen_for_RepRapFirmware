@@ -69,7 +69,7 @@ constexpr size_t ALERT_CHOICES_TEXT_LENGTH = 50; // maximum characters in the al
 
 /* Temperature Graph */
 constexpr float DEFAULT_TEMP_GRAPH_MAX = 300;
-constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 100;
+constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 60;
 constexpr float TEMP_GRAPH_Y_AXIS_PADDING = 10;
 constexpr size_t GRAPH_DATAPOINTS = 200;
 

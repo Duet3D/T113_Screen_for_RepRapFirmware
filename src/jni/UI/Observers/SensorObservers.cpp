@@ -31,7 +31,6 @@ static UI::Observer<UI::ui_field_update_cb> SensorObserversField[] = {
 						   error("Failed to update sensor reading; sensor %d = %f", indices[0], val);
 						   return;
 					   }
-					   UI::TemperatureGraph.AddData(indices[0], val);
 				   }), /* Update what tool heaters active temperature */
 	OBSERVER_CHAR("sensors:analog^:name",
 				  [](OBSERVER_CHAR_ARGS) {

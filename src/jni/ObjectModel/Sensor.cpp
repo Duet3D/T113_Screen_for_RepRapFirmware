@@ -11,6 +11,7 @@
 
 #include "ListHelpers.h"
 #include "Sensor.h"
+#include "utils/TimeHelper.h"
 #include <Duet3D/General/Vector.h>
 
 typedef Vector<OM::AnalogSensor*, MAX_SENSORS> AnalogSensorList;
@@ -25,6 +26,7 @@ namespace OM
 	{
 		index = 0;
 		lastReading = 0.0;
+		lastReadingTime = 0;
 		name.Clear();
 	}
 
@@ -73,6 +75,7 @@ namespace OM
 		}
 
 		sensor->lastReading = reading;
+		sensor->lastReadingTime = TimeHelper::getCurrentTime();
 		return true;
 	}
 

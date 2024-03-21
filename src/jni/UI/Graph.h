@@ -27,8 +27,9 @@ namespace UI
 		void SetTimeRange(int range);
 		int GetTimeRange() const { return m_xRange; }
 		void RefreshLegend();
-		void AddData(int index, float value);
-		void Clear();
+		void Update();
+		void ClearAll();
+		void Clear(int index);
 
 	  private:
 		struct DataPoint
@@ -37,7 +38,8 @@ namespace UI
 			float value;
 		};
 
-		void UpdateDiagram(int index);
+		void AddData(int index, float value);
+		void UpdateWave(int index);
 		void ScaleYAxis(float max);
 
 		ZKDiagram* m_diagram;

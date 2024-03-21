@@ -56,7 +56,7 @@ namespace Comm
 		m_lastRequestTime = 0;
 
 		FILEINFO_CACHE->ClearCache();
-		UI::TemperatureGraph.Clear();
+		UI::TemperatureGraph.ClearAll();
 	}
 
 	void Duet::Reconnect()

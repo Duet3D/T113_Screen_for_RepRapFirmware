@@ -22,6 +22,7 @@ namespace OM
 
 		uint8_t index;
 		float lastReading;
+		long long lastReadingTime;
 		String<MAX_TOOL_NAME_LENGTH> name;
 
 		void Reset();

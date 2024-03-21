@@ -10,6 +10,8 @@
 #include "Debug.h"
 
 #include "Graph.h"
+#include "Hardware/Duet.h"
+#include "ObjectModel/Sensor.h"
 #include "uart/CommDef.h"
 #include "utils/TimeHelper.h"
 
@@ -26,14 +28,16 @@ namespace UI
 		m_yLabels = yLabels;
 		m_legend = legend;
 
-		SetTimeRange(DEFAULT_TEMP_GRAPH_TIME_RANGE);
-		ScaleYAxis(DEFAULT_TEMP_GRAPH_MAX);
-
 		for (size_t i = 0; i < MAX_SENSORS; i++)
 		{
+			// TODO each line takes ~245KB of memory, can this be made more efficient?
+			// There does not appear to be a way to delete lines once they have been created
 			m_diagram->addDiagramInfo(2, 0xFFFFFFFF, ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
 			m_waveCount++;
 		}
+
+		SetTimeRange(DEFAULT_TEMP_GRAPH_TIME_RANGE);
+		ScaleYAxis(DEFAULT_TEMP_GRAPH_MAX);
 	}
 
 	void Graph::AddData(int index, float value)
@@ -43,7 +47,33 @@ namespace UI
 		DataPoint dp = {now, value};
 		m_data[index].Push(dp);
 
-		UpdateDiagram(index);
+		if (m_diagram->isVisible())
+			UpdateWave(index);
+	}
+
+	void Graph::Update()
+	{
+		for (size_t i = 0; i < m_waveCount; i++)
+		{
+			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i);
+			if (sensor == nullptr || sensor->name.IsEmpty())
+			{
+				verbose("Sensor incomplete or does not exist");
+				Clear(i);
+				continue;
+			}
+
+			float value = sensor->lastReading;
+#if 0
+			long long now = TimeHelper::getCurrentTime();
+			if (now - sensor->lastReadingTime > 3 * Comm::duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
+			{
+				dbg("Sensor %d has timed out", i);
+				value = -273;
+			}
+#endif
+			AddData(i, value);
+		}
 	}
 
 	void Graph::RefreshLegend()
@@ -51,17 +81,28 @@ namespace UI
 		m_legend->refreshListView();
 	}
 
-	void Graph::Clear()
+	void Graph::ClearAll()
 	{
 		info("Clearing graph");
 		for (size_t i = 0; i < m_waveCount; i++)
 		{
-			m_data[i].Reset();
-			m_diagram->clear(i);
+			Clear(i);
 		}
 	}
 
-	void Graph::UpdateDiagram(int index)
+	void Graph::Clear(int index)
+	{
+		if (index >= (int)m_waveCount || index >= (int)ARRAY_SIZE(m_data))
+		{
+			warn("index %d out of range", index);
+			return;
+		}
+		verbose("Clearing graph data for sensor %d", index);
+		m_data[index].Reset();
+		m_diagram->clear(index);
+	}
+
+	void Graph::UpdateWave(int index)
 	{
 		if (index >= (int)ARRAY_SIZE(m_data))
 		{
@@ -78,7 +119,7 @@ namespace UI
 		SZKPoint points[GRAPH_DATAPOINTS];
 
 		float maxVal = DEFAULT_TEMP_GRAPH_MAX;
-		dbg("m_data[%d].size = %d", index, m_data[index].GetFilled());
+		verbose("m_data[%d].size = %d", index, m_data[index].GetFilled());
 		for (size_t i = 0; i < GRAPH_DATAPOINTS; i++)
 		{
 			// points[i].x = i;
