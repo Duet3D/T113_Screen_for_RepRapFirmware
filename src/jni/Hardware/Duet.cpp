@@ -217,7 +217,7 @@ namespace Comm
 		}
 	}
 
-	bool Duet::UploadFile(const char* filename, std::string& contents)
+	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
 		UI::POPUP_WINDOW->Open();

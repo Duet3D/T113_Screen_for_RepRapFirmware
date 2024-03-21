@@ -2,13 +2,34 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
-#include "DebugCommands.h"
 #include "UI/UserInterface.h"
+
+#include "DebugCommands.h"
+#include "Hardware/Duet.h"
+#include "Hardware/Usb.h"
 #include <map>
 
 namespace Debug
 {
 	static std::map<const char*, DebugCommand*> commandsMap;
+
+	static DebugCommand verbose_log("dbg_verbose_log", []() {
+		// Create a log file and send it to the Duet
+		system("logcat -v threadtime -d *:V > /tmp/DuetScreen_log.txt");
+		std::string logs;
+		USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
+		Comm::duet.UploadFile("/sys/DuetScreen_log.txt", logs);
+		system("rm /tmp/DuetScreen_log.txt");
+	});
+
+	static DebugCommand error_log("dbg_error_log", []() {
+		// Create a log file and send it to the Duet
+		system("logcat -v threadtime -d *:W > /tmp/DuetScreen_log.txt");
+		std::string logs;
+		USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
+		Comm::duet.UploadFile("/sys/DuetScreen_error_log.txt", logs);
+		system("rm /tmp/DuetScreen_log.txt");
+	});
 
 	void CreateCommand(const char* id, function<void(void)> callback)
 	{

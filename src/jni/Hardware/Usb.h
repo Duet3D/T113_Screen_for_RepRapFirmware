@@ -29,6 +29,7 @@ namespace USB
 	} FileInfo;
 
 	std::vector<FileInfo> ListEntriesInDirectory(const std::string& directoryPath);
+	bool ReadUsbFileContents(const std::string& filePath, std::string& contents);
 	bool ReadFileContents(const std::string& filePath, std::string& contents);
 } // namespace USB
 

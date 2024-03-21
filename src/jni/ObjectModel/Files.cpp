@@ -294,7 +294,7 @@ namespace OM::FileSystem
 	void UploadFile(const File* file)
 	{
 		std::string contents;
-		if (!USB::ReadFileContents(file->GetPath(), contents))
+		if (!USB::ReadUsbFileContents(file->GetPath(), contents))
 			return;
 		Comm::duet.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
 	}

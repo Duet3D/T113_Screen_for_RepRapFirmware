@@ -75,7 +75,7 @@ namespace Comm
 		void RequestReply(RestClient::Response& r);
 		void ProcessReply(const RestClient::Response& r);
 
-		bool UploadFile(const char* filename, std::string& contents);
+		bool UploadFile(const char* filename, const std::string& contents);
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);

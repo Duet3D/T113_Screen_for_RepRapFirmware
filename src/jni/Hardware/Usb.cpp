@@ -65,7 +65,7 @@ namespace USB
 		return files;
 	}
 
-	bool ReadFileContents(const std::string& filePath, std::string& contents)
+	bool ReadUsbFileContents(const std::string& filePath, std::string& contents)
 	{
 	    std::string fullPath;
 	    if (filePath.rfind("/mnt/usb1") == 0)
@@ -77,14 +77,18 @@ namespace USB
 	        fullPath = std::string("/mnt/usb1/") + filePath;
 	    }
 
+		return ReadFileContents(fullPath, contents);
+	}
 
-		info("Reading file %s", fullPath.c_str());
-		std::ifstream file(fullPath.c_str(), std::ios::in | std::ios::ate);
+	bool ReadFileContents(const std::string& filePath, std::string& contents)
+	{
+		info("Reading file %s", filePath.c_str());
+		std::ifstream file(filePath.c_str(), std::ios::in | std::ios::ate);
 
 		if (!file.is_open())
 		{
-			UI::CONSOLE->AddResponse(utils::format("Unable to open file %s", fullPath.c_str()).c_str());
-			error("Unable to open file %s", fullPath.c_str());
+			UI::CONSOLE->AddResponse(utils::format("Unable to open file %s", filePath.c_str()).c_str());
+			error("Unable to open file %s", filePath.c_str());
 			return false;
 		}
 
@@ -94,8 +98,8 @@ namespace USB
 		dbg("Reading %ld bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
-			UI::CONSOLE->AddResponse(utils::format("Failed to read file %s", fullPath.c_str()).c_str());
-			error("Failed to read file %s", fullPath.c_str());
+			UI::CONSOLE->AddResponse(utils::format("Failed to read file %s", filePath.c_str()).c_str());
+			error("Failed to read file %s", filePath.c_str());
 			return false;
 		}
 		dbg("Read %d bytes", contents.size());
