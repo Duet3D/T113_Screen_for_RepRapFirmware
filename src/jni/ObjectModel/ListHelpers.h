@@ -13,8 +13,8 @@
 #include <Duet3D/General/function_ref.h>
 #include "Debug.h"
 
-template<typename L, typename T>
-T* GetOrCreate(L& list, const size_t index, const bool create)
+template <typename L, typename T>
+T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent = false)
 {
 	const size_t count = list.Size();
 	for (size_t i = 0; i < count; ++i)
@@ -37,7 +37,8 @@ T* GetOrCreate(L& list, const size_t index, const bool create)
 		return elem;
 	}
 
-	error("Failed to get%s index=%d", create ? " or create" : "", index);
+	if (!silent)
+		error("Failed to get%s index=%d", create ? " or create" : "", index);
 	return nullptr;
 }
 

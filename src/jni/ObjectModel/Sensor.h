@@ -40,7 +40,7 @@ namespace OM
 	};
 
 	const size_t GetAnalogSensorCount();
-	AnalogSensor* GetAnalogSensor(const size_t index);
+	AnalogSensor* GetAnalogSensor(const size_t index, const bool silent = false);
 	AnalogSensor* GetOrCreateAnalogSensor(const size_t index);
 	AnalogSensor* GetAnalogSensorBySlot(const size_t index);
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing);

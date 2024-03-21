@@ -202,7 +202,7 @@ namespace UI
 	{
 		for (size_t i = 0; i < TemperatureGraph.GetWaveCount(); i++)
 		{
-			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i);
+			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i, true);
 			if (sensor == nullptr || sensor->name.IsEmpty())
 			{
 				verbose("Sensor incomplete or does not exist");

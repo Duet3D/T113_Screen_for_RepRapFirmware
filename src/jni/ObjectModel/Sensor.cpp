@@ -41,9 +41,9 @@ namespace OM
 		return analogSensors.Size();
 	}
 
-	AnalogSensor* GetAnalogSensor(const size_t index)
+	AnalogSensor* GetAnalogSensor(const size_t index, const bool silent)
 	{
-		return GetOrCreate<AnalogSensorList, AnalogSensor>(analogSensors, index, false);
+		return GetOrCreate<AnalogSensorList, AnalogSensor>(analogSensors, index, false, silent);
 	}
 
 	AnalogSensor* GetOrCreateAnalogSensor(const size_t index)
