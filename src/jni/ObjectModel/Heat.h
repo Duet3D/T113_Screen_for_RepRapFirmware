@@ -9,6 +9,7 @@
 #define JNI_OBJECTMODEL_HEAT_HPP_
 
 #include "Configuration.h"
+#include "Sensor.h"
 #include <Duet3D/General/Bitmap.h>
 #include <Duet3D/General/FreelistManager.h>
 #include <Duet3D/General/String.h>
@@ -59,6 +60,7 @@ namespace OM
 			float current;
 			float avgPwm;
 			HeaterStatus status;
+			AnalogSensor* sensor;
 
 			void Reset();
 			int32_t GetTemperature();
@@ -75,6 +77,7 @@ namespace OM
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status);
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
+		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
 
 		extern size_t lastHeater;

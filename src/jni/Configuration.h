@@ -45,6 +45,8 @@ constexpr unsigned int MAX_FILENAME_LENGTH = 100;
 constexpr unsigned int MAX_SLOTS = 32;
 constexpr unsigned int MAX_FANS = 12;
 constexpr unsigned int MAX_HEATERS = 32;
+constexpr unsigned int MAX_SENSORS = 32;
+constexpr unsigned int MAX_ENDSTOPS = 20;
 
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;
@@ -64,5 +66,11 @@ constexpr size_t ALERT_TITLE_LENGTH = 50;		 // maximum characters in the alert t
 constexpr size_t ALERT_RESPONSE_LENGTH = 50;	 // maximum characters in the alert response
 constexpr size_t ALERT_MAX_CHOICES = 40;		 // maximum number of choices in the alert
 constexpr size_t ALERT_CHOICES_TEXT_LENGTH = 50; // maximum characters in the alert choice text
+
+/* Temperature Graph */
+constexpr float DEFAULT_TEMP_GRAPH_MAX = 300;
+constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 60;
+constexpr float TEMP_GRAPH_Y_AXIS_PADDING = 10;
+constexpr size_t GRAPH_DATAPOINTS = 200;
 
 #endif /* JNI_CONFIGURATION_H_ */

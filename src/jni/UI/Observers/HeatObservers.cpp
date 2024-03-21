@@ -32,7 +32,6 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 						   return;
 					   }
 					   UI::ToolsList::RefreshAllToolLists(false);
-					   UI::GetUIControl<ZKDiagram>(ID_MAIN_TempGraph)->addData(indices[0], val);
 				   }), /* Update what tool heaters active temperature */
 	OBSERVER_INT("heat:heaters^:active",
 				 [](OBSERVER_INT_ARGS) {
@@ -52,6 +51,14 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 						 return;
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);
+				 }),
+	OBSERVER_INT("heat:heaters^:sensor",
+				 [](OBSERVER_INT_ARGS) {
+					 if (!OM::Heat::UpdateHeaterSensor(indices[0], val))
+					 {
+						 error("Failed to update heater %d sensor to %d", indices[0], val);
+						 return;
+					 }
 				 }),
 	OBSERVER_CHAR("heat:heaters^:state", [](OBSERVER_CHAR_ARGS) { OM::Heat::UpdateHeaterStatus(indices[0], val); }),
 	OBSERVER_INT("heat:bedHeaters^",

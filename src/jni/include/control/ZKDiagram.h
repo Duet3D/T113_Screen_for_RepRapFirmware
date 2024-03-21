@@ -16,15 +16,15 @@
 class ZKDiagramPrivate;
 
 /**
- * @brief 波形图控件
+ * @brief Waveform chart control
  */
 class ZKDiagram : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKDiagram)
 
 public:
 	typedef enum {
-		E_DIAGRAM_STYLE_LINE,		// 折线
-		E_DIAGRAM_STYLE_CURVE		// 曲线
+		E_DIAGRAM_STYLE_LINE, // Line
+		E_DIAGRAM_STYLE_CURVE // Curve
 	} EDiagramStyle;
 
 public:
@@ -32,58 +32,58 @@ public:
 	virtual ~ZKDiagram();
 
 	/**
-	 * @brief 设置波形线宽
-	 * @param index 波形索引值
-	 * @param width 波形线宽
+	 * @brief Set the waveform line width
+	 * @param index Waveform index
+	 * @param width Waveform line width
 	 */
 	void setPenWidth(int index, uint32_t width);
 
 	/**
-	 * @brief 设置波形颜色
-	 * @param index 波形索引值
-	 * @param color 波形颜色值：0x RGB
+	 * @brief Set the waveform color
+	 * @param index Waveform index
+	 * @param color Waveform color value: 0xRGB
 	 */
 	void setPenColor(int index, uint32_t color);
 
 	/**
-	 * @brief 设置波形X轴方向缩放比例
-	 * @param index 波形索引值
-	 * @param xScale X轴方向缩放比例
+	 * @brief Set the X-axis scaling factor of the waveform
+	 * @param index Waveform index
+	 * @param xScale X-axis scaling factor
 	 */
 	void setXScale(int index, float xScale);
 
 	/**
-	 * @brief 设置波形Y轴方向缩放比例
-	 * @param index 波形索引值
-	 * @param yScale Y轴方向缩放比例
+	 * @brief Set the Y-axis scaling factor of the waveform
+	 * @param index Waveform index
+	 * @param yScale Y-axis scaling factor
 	 */
 	void setYScale(int index, float yScale);
 
 	/**
-	 * @brief 设置波形步进值
-	 * @param index 波形索引值
-	 * @param step 步进值
+	 * @brief Set the waveform step value
+	 * @param index Waveform index
+	 * @param step Step value
 	 */
 	void setStep(int index, float step);
 
 	/**
-	 * @brief 设置波形数据
-	 * @param index 波形索引值
-	 * @param pPoints 坐标数组
-	 * @param count 数组长度
+	 * @brief Set the waveform data
+	 * @param index Waveform index
+	 * @param pPoints Coordinate array
+	 * @param count Array length
 	 */
 	void setData(int index, const SZKPoint *pPoints, int count);
 
 	/**
-	 * @brief 添加波形数据
-	 * @param index 波形索引值
-	 * @param data Y轴方向数据值
+	 * @brief Add waveform data
+	 * @param index Waveform index
+	 * @param data Y-axis data value
 	 */
 	void addData(int index, float data);
 
 	/**
-	 * @brief 清除波形图
-	 * @param index 波形索引值
+	 * @brief Clear the waveform chart
+	 * @param index Waveform index
 	 */
 	void clear(int index);
 

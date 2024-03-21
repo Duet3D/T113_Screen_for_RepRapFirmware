@@ -16,6 +16,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Gcodes.h"
+#include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
@@ -100,6 +101,7 @@ static void onUI_init()
 
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
+	UI::TemperatureGraph.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
 	UI::Theme::SetTheme(StoragePreferences::getString("theme", "dark"));
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
@@ -363,18 +365,24 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 }
 static int getListItemCount_TemperatureGraphLegend(const ZKListView *pListView)
 {
-	//LOGD("getListItemCount_TemperatureGraphLegend !\n");
-	return 5;
+	return OM::GetAnalogSensorCount();
 }
 
 static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
-	//LOGD(" obtainListItemData_ TemperatureGraphLegend  !!!\n");
+	OM::AnalogSensor* sensor = OM::GetAnalogSensorBySlot(index);
+	if (sensor == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setText(sensor->name.c_str());
+	pListItem->setSelected(!UI::TemperatureGraph.IsWaveVisible(index));
 }
 
 static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id)
 {
-	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
+	UI::TemperatureGraph.SetWaveVisible(index, !UI::TemperatureGraph.IsWaveVisible(index));
 }
 
 static bool onButtonClick_NumPad0(ZKButton* pButton)
@@ -1458,4 +1466,40 @@ static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
 {
 	UI::WINDOW->CloseOverlay();
 	return false;
+}
+
+static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_TempGraphXLabels !\n");
+	return pListView->getCols();
+}
+
+static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	int range = UI::TemperatureGraph.GetTimeRange();
+	int time = -range + (index * range / (pListView->getCols() - 1));
+	pListItem->setTextf("%ds", time);
+}
+
+static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ TempGraphXLabels  !!!\n");
+}
+
+static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_TempGraphYLabels !\n");
+	return pListView->getRows();
+}
+
+static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	float yMax = UI::TemperatureGraph.GetYMax();
+	float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
+	pListItem->setTextf("%.1f", label);
+}
+
+static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ TempGraphYLabels  !!!\n");
 }

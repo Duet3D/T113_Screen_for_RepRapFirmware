@@ -12,7 +12,6 @@
 #include "Debug.h"
 
 #include "Hardware/Usb.h"
-#include "Library/CRC.h"
 #include "ObjectModel/Files.h"
 #include "entry/EasyUIContext.h"
 #include "os/UpgradeMonitor.h"

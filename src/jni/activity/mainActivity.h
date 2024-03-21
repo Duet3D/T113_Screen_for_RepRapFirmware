@@ -27,6 +27,15 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_TempGraphYLabels    80025
+#define ID_MAIN_TempGraphXLabels    80024
+#define ID_MAIN_GraphYLabelBottom    50080
+#define ID_MAIN_GraphYLabelMid    50079
+#define ID_MAIN_GraphYLabelTop    50078
+#define ID_MAIN_GraphXLabelRight    50076
+#define ID_MAIN_GraphXLabelMid    50077
+#define ID_MAIN_GraphXLabelLeft    50003
+#define ID_MAIN_TextView44    50075
 #define ID_MAIN_FileListInfo    50074
 #define ID_MAIN_OverlayModalZone    20052
 #define ID_MAIN_TextView43    50073
@@ -251,7 +260,6 @@
 #define ID_MAIN_SlideWindow1    30001
 #define ID_MAIN_WindowSelectWindow    110005
 #define ID_MAIN_TemperatureGraphLegend    80002
-#define ID_MAIN_TextView1    50003
 #define ID_MAIN_TempGraph    120001
 #define ID_MAIN_TemperatureGraphWindow    110001
 #define ID_MAIN_ToolListHeadingStandby    50005

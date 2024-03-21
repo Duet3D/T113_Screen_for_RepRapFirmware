@@ -52,12 +52,20 @@ public:
     	tail_ = 0;
     }
 
-    size_t GetSize() const {
-        return Size;
-    }
-    
-    size_t GetTail() const { return tail_; }
-    size_t GetHead() const { return head_; }
+	size_t GetFilled() const
+	{
+		if (full_)
+		{
+			return Size;
+		}
+
+		return head_ - tail_;
+	}
+
+	size_t GetSize() const { return Size; }
+
+	size_t GetTail() const { return tail_; }
+	size_t GetHead() const { return head_; }
     const T& GetItem(const size_t index) const
     {
     	size_t i = (tail_ + index) % Size;
