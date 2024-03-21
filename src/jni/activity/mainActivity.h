@@ -27,6 +27,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_PopupProgress    91004
 #define ID_MAIN_TempGraphYLabels    80025
 #define ID_MAIN_TempGraphXLabels    80024
 #define ID_MAIN_GraphYLabelBottom    50080

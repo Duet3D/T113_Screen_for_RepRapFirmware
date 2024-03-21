@@ -221,7 +221,13 @@ namespace Comm
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
 		UI::POPUP_WINDOW->Open();
-		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("uploading_file").c_str(), filename);
+		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("uploading_file").c_str());
+		UI::POPUP_WINDOW->SetText(filename);
+		UI::POPUP_WINDOW->SetTextScrollable(false);
+		UI::POPUP_WINDOW->CancelTimeout();
+		UI::POPUP_WINDOW->PreventClosing(true);
+		Thread::sleep(50);
+
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart: {
@@ -235,11 +241,20 @@ namespace Comm
 				prevPosition = position + 1;
 				position = contents.find("\n", position + 1); // Find the next occurrence, if any
 				SendGcode(line.c_str());
+				UI::POPUP_WINDOW->SetProgress((int)((100 * prevPosition / contents.size())));
 			}
 			SendGcode("M29");
 			break;
 		}
 		case CommunicationType::network: {
+			registerDelayedCallback("upload_file_progress", 1000, []() {
+				static int progress = 0;
+				if (progress >= 90)
+					return false;
+				UI::POPUP_WINDOW->SetProgress(progress);
+				progress += 10;
+				return true;
+			});
 			RestClient::Response r;
 			QueryParameters_t query;
 			query["name"] = filename;
@@ -247,6 +262,10 @@ namespace Comm
 			{
 				UI::CONSOLE->AddResponse(
 					utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
+				unregisterDelayedCallback("upload_file_progress");
+				UI::POPUP_WINDOW->Open();
+				UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("upload_failed").c_str());
+				UI::POPUP_WINDOW->SetText(r.body.c_str());
 				return false;
 			}
 			break;
@@ -254,6 +273,10 @@ namespace Comm
 		default:
 			break;
 		}
+		UI::POPUP_WINDOW->Open();
+		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("finished_uploading").c_str());
+		UI::POPUP_WINDOW->SetText(filename);
+		UI::POPUP_WINDOW->SetProgress(100);
 		return true;
 	}
 

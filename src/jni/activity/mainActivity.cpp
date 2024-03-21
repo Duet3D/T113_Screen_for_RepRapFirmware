@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKSeekBar* mPopupProgressPtr;
 static ZKListView* mTempGraphYLabelsPtr;
 static ZKListView* mTempGraphXLabelsPtr;
 static ZKTextView* mGraphYLabelBottomPtr;
@@ -323,6 +324,7 @@ typedef struct {
 }S_ZKSeekBarCallback;
 /*TAG:SeekBarCallbackTab*/
 static S_ZKSeekBarCallback SZKSeekBarCallbackTab[] = {
+    ID_MAIN_PopupProgress, onProgressChanged_PopupProgress,
     ID_MAIN_SeekBar1, onProgressChanged_SeekBar1,
     ID_MAIN_Slider, onProgressChanged_Slider,
     ID_MAIN_PrintSpeedMultiplierBar, onProgressChanged_PrintSpeedMultiplierBar,
@@ -536,6 +538,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mPopupProgressPtr = NULL;
 	mTempGraphYLabelsPtr = NULL;
 	mTempGraphXLabelsPtr = NULL;
 	mGraphYLabelBottomPtr = NULL;
@@ -764,6 +767,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mPopupProgressPtr = (ZKSeekBar*)findControlByID(ID_MAIN_PopupProgress);if(mPopupProgressPtr!= NULL){mPopupProgressPtr->setSeekBarChangeListener(this);}
     mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);if(mTempGraphYLabelsPtr!= NULL){mTempGraphYLabelsPtr->setListAdapter(this);mTempGraphYLabelsPtr->setItemClickListener(this);}
     mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);if(mTempGraphXLabelsPtr!= NULL){mTempGraphXLabelsPtr->setListAdapter(this);mTempGraphXLabelsPtr->setItemClickListener(this);}
     mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);if(mTemperatureGraphLegendPtr!= NULL){mTemperatureGraphLegendPtr->setListAdapter(this);mTemperatureGraphLegendPtr->setItemClickListener(this);}

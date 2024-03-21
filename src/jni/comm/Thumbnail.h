@@ -83,6 +83,7 @@ namespace Comm
 		ThumbnailImage image;
 
 		Thumbnail(StringRef filename) : filename(filename) {}
+		uint32_t GetProgress() const;
 	};
 
 	struct ThumbnailBuf

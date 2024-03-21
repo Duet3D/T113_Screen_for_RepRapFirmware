@@ -89,20 +89,20 @@ namespace Comm
 	{
 		// Update status message
 		UI::GetUIControl<ZKTextView>(ID_MAIN_FileListInfo)
-			->setTextTrf("file_cache_state",
-						 m_fileInfoRequestQueue.size(),
-						 m_cache.size(),
-						 m_currentFileInfoRequest.c_str(),
-						 m_currentThumbnail == nullptr
-							 ? ""
-							 : utils::format("%u%% %s",
-											 std::min(100u,
-													  (100 * (std::max(m_currentThumbnail->meta.offset,
-																	   m_currentThumbnail->context.offset) -
-															  m_currentThumbnail->meta.offset)) /
-														  m_currentThumbnail->meta.size),
-											 m_currentThumbnail->filename.c_str())
-								   .c_str());
+			->setTextTrf(
+				"file_cache_state",
+				m_fileInfoRequestQueue.size(),
+				m_cache.size(),
+				m_currentFileInfoRequest.c_str(),
+				m_currentThumbnail == nullptr
+					? ""
+					: utils::format("%u%% %s", m_currentThumbnail->GetProgress(), m_currentThumbnail->filename.c_str())
+						  .c_str());
+
+		if (m_currentThumbnail != nullptr && m_currentThumbnail->meta.size > MAX_THUMBNAIL_CACHE_SIZE)
+		{
+			UI::POPUP_WINDOW->SetProgress(m_currentThumbnail->GetProgress());
+		}
 
 		long long now = TimeHelper::getCurrentTime();
 

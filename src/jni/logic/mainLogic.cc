@@ -706,7 +706,9 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 			else
 			{
 				UI::POPUP_WINDOW->Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
-				UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("upload_file").c_str(), item->GetName().c_str());
+				UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("upload_file").c_str());
+				UI::POPUP_WINDOW->SetText(item->GetName().c_str());
+				UI::POPUP_WINDOW->SetTextScrollable(false);
 			}
 		}
 		else
@@ -1502,4 +1504,8 @@ static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListVie
 static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id)
 {
 	// LOGD(" onListItemClick_ TempGraphYLabels  !!!\n");
+}
+static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress)
+{
+	// LOGD(" ProgressChanged PopupProgress %d !!!\n", progress);
 }

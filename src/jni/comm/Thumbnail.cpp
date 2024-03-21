@@ -73,6 +73,10 @@ namespace Comm
 		return png.Close() && bmp.Close();
 	}
 
+	uint32_t Thumbnail::GetProgress() const
+	{
+		return std::min(100u, (100 * (std::max(meta.offset, context.offset) - meta.offset)) / meta.size);
+	}
 } // namespace Comm
 
 bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)

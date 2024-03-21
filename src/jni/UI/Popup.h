@@ -65,6 +65,8 @@ namespace UI
 		void SetCancelBtnText(const char* text);
 		void SetImage(const char* imagePath);
 		void ShowImage(bool show);
+		void SetProgress(int percent);
+		void PreventClosing(bool prevent);
 		void Close();
 
 		void CancelTimeout();
@@ -112,6 +114,7 @@ namespace UI
 		ZKListView* axisJogSelection_ = nullptr;
 		ZKListView* axisJogAdjustment_ = nullptr;
 		ZKTextView* image_ = nullptr;
+		ZKSeekBar* progress_ = nullptr;
 		function<void(void)> okCb_;
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;

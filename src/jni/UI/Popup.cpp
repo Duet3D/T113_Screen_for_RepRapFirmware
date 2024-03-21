@@ -40,6 +40,7 @@ namespace UI
 		axisJogSelection_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisSelection);
 		axisJogAdjustment_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisAdjusment);
 		image_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
+		progress_ = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress);
 
 		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 		text_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
@@ -302,6 +303,19 @@ namespace UI
 		image_->setVisible(show);
 	}
 
+	void PopupWindow::SetProgress(int percent)
+	{
+		progress_->setVisible(true);
+		progress_->setProgress(percent);
+	}
+
+	void PopupWindow::PreventClosing(bool prevent)
+	{
+		noTouchWindow_->setVisible(prevent);
+		okBtn_->setVisible(!prevent);
+		cancelBtn_->setVisible(!prevent);
+	}
+
 	void PopupWindow::CancelTimeout()
 	{
 
@@ -371,6 +385,7 @@ namespace UI
 		image_->setVisible(false);
 		image_->setText("");
 		image_->setBackgroundPic(nullptr);
+		progress_->setVisible(false);
 
 		LayoutPosition position = text_->getPosition();
 		position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
