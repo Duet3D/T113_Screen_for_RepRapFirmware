@@ -26,6 +26,8 @@ namespace UI
 		size_t GetWaveCount() const { return m_waveCount; }
 		float GetYMax() const { return m_yMax; }
 		void SetTimeRange(int range);
+		bool IsWaveVisible(int index);
+		void SetWaveVisible(int index, bool visible);
 		int GetTimeRange() const { return m_xRange; }
 		void AddData(int index, float value);
 		void RefreshLegend();
@@ -50,6 +52,7 @@ namespace UI
 		int m_xRange;
 		float m_yMax;
 		size_t m_waveCount = 0;
+		bool m_waveVisible[MAX_SENSORS];
 
 		CircularBuffer<DataPoint, GRAPH_DATAPOINTS> m_data[MAX_SENSORS];
 	};

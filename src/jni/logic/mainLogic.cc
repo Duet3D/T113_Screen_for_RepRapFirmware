@@ -377,11 +377,12 @@ static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView, ZKL
 		return;
 	}
 	pListItem->setText(sensor->name.c_str());
+	pListItem->setSelected(!UI::TemperatureGraph.IsWaveVisible(index));
 }
 
 static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id)
 {
-	//LOGD(" onListItemClick_ TemperatureGraphLegend  !!!\n");
+	UI::TemperatureGraph.SetWaveVisible(index, !UI::TemperatureGraph.IsWaveVisible(index));
 }
 
 static bool onButtonClick_NumPad0(ZKButton* pButton)

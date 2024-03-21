@@ -354,6 +354,10 @@ namespace UI::Theme
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
 				break;
 			}
+			case ID_MAIN_TemperatureGraphLegend: {
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
+				break;
+			}
 			default:
 				break;
 			}

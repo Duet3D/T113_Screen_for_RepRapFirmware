@@ -33,6 +33,7 @@ namespace UI
 			// TODO each line takes ~245KB of memory, can this be made more efficient?
 			// There does not appear to be a way to delete lines once they have been created
 			m_diagram->addDiagramInfo(2, 0xFFFFFFFF, ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
+			m_waveVisible[i] = true;
 			m_waveCount++;
 		}
 
@@ -85,9 +86,15 @@ namespace UI
 			return;
 		}
 
+		if (!m_waveVisible[index])
+		{
+			return;
+		}
+
 		if (m_data[index].Empty())
 		{
 			m_diagram->clear(index);
+			return;
 		}
 
 		long long now = TimeHelper::getCurrentTime();
@@ -135,6 +142,32 @@ namespace UI
 		{
 			m_diagram->setXScale(i, scale);
 		}
+	}
+
+	bool Graph::IsWaveVisible(int index)
+	{
+		if (index >= (int)m_waveCount)
+		{
+			return false;
+		}
+
+		return m_waveVisible[index];
+	}
+
+	void Graph::SetWaveVisible(int index, bool visible)
+	{
+		if (index >= (int)m_waveCount)
+		{
+			return;
+		}
+
+		m_waveVisible[index] = visible;
+		if (!visible)
+		{
+			m_diagram->clear(index);
+			return;
+		}
+		UpdateWave(index);
 	}
 
 	void Graph::ScaleYAxis(float max)
