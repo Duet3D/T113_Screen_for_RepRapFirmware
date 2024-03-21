@@ -55,6 +55,7 @@ namespace Comm
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
 
+		Comm::ResetSeqs();
 		FILEINFO_CACHE->ClearCache();
 		UI::TemperatureGraph.ClearAll();
 	}
