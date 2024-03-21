@@ -1494,11 +1494,7 @@ static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
 static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
 	float yMax = UI::TemperatureGraph.GetYMax();
-	int rows = pListView->getRows();
-	dbg("yMax = %f, rows = %d", yMax, rows);
-	float label = yMax - (yMax / (rows - 1)) * index;
-	dbg("label[%d] = %f", index, label);
-
+	float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
 	pListItem->setTextf("%.1f", label);
 }
 

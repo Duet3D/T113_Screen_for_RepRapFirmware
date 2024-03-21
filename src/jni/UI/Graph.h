@@ -26,10 +26,9 @@ namespace UI
 		float GetYMax() const { return m_yMax; }
 		void SetTimeRange(int range);
 		int GetTimeRange() const { return m_xRange; }
-
 		void RefreshLegend();
-
 		void AddData(int index, float value);
+		void Clear();
 
 	  private:
 		struct DataPoint
@@ -48,6 +47,7 @@ namespace UI
 
 		int m_xRange;
 		float m_yMax;
+		size_t m_waveCount = 0;
 
 		CircularBuffer<DataPoint, GRAPH_DATAPOINTS> m_data[MAX_SENSORS];
 	};

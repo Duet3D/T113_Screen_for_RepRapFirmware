@@ -32,6 +32,7 @@ namespace UI
 		for (size_t i = 0; i < MAX_SENSORS; i++)
 		{
 			m_diagram->addDiagramInfo(2, 0xFFFFFFFF, ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
+			m_waveCount++;
 		}
 	}
 
@@ -48,6 +49,16 @@ namespace UI
 	void Graph::RefreshLegend()
 	{
 		m_legend->refreshListView();
+	}
+
+	void Graph::Clear()
+	{
+		info("Clearing graph");
+		for (size_t i = 0; i < m_waveCount; i++)
+		{
+			m_data[i].Reset();
+			m_diagram->clear(i);
+		}
 	}
 
 	void Graph::UpdateDiagram(int index)

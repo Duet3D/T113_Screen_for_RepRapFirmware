@@ -9,11 +9,13 @@
 #include "timer.h"
 
 #include "Comm/Communication.h"
+#include "Comm/FileInfo.h"
 #include "Comm/JsonDecoder.h"
 #include "Debug.h"
 #include "Duet.h"
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "UI/Graph.h"
 #include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
@@ -52,6 +54,9 @@ namespace Comm
 		m_sessionKey = noSessionKey;
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
+
+		FILEINFO_CACHE->ClearCache();
+		UI::TemperatureGraph.Clear();
 	}
 
 	void Duet::Reconnect()
