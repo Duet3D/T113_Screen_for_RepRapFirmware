@@ -169,6 +169,7 @@
     <string name="dbg_file_info_cache">Display File Info Cache</string>
     <string name="dbg_verbose_log">Create Verbose Log File</string>
     <string name="dbg_error_log">Create Error Log File</string>
+    <string name="dbg_log_OM">Print Object Model</string>
 
 
     <!-- Guide Settup Page -->

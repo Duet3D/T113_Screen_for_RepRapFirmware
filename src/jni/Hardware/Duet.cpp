@@ -220,6 +220,7 @@ namespace Comm
 	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
+		// TODO work out why the UI doesn't actually get updated in this function
 		UI::POPUP_WINDOW->Open();
 		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("uploading_file").c_str());
 		UI::POPUP_WINDOW->SetText(filename);

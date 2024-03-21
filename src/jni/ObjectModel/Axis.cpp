@@ -39,7 +39,6 @@ namespace OM::Move
 		}
 		homed = false;
 		visible = false;
-		slot = MAX_SLOTS;
 	}
 
 	Axis* GetAxis(const size_t index)

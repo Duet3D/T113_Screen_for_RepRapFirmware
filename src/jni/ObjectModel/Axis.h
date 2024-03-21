@@ -42,9 +42,7 @@ namespace OM::Move
 		float workplaceOffsets[Workplaces::MaxTotalWorkplaces];
 		float userPosition;
 		float machinePosition;
-		uint8_t homed : 1,
-			visible : 1,
-			slot : 6;
+		uint8_t homed : 1, visible : 1;
 
 		void Reset();
 	};
