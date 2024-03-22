@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mPrinterNamePtr;
 static ZKSeekBar* mPopupProgressPtr;
 static ZKListView* mTempGraphYLabelsPtr;
 static ZKListView* mTempGraphXLabelsPtr;
@@ -538,6 +539,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mPrinterNamePtr = NULL;
     mPopupProgressPtr = NULL;
 	mTempGraphYLabelsPtr = NULL;
 	mTempGraphXLabelsPtr = NULL;
@@ -767,6 +769,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mPrinterNamePtr = (ZKTextView*)findControlByID(ID_MAIN_PrinterName);
     mPopupProgressPtr = (ZKSeekBar*)findControlByID(ID_MAIN_PopupProgress);if(mPopupProgressPtr!= NULL){mPopupProgressPtr->setSeekBarChangeListener(this);}
     mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);if(mTempGraphYLabelsPtr!= NULL){mTempGraphYLabelsPtr->setListAdapter(this);mTempGraphYLabelsPtr->setItemClickListener(this);}
     mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);if(mTempGraphXLabelsPtr!= NULL){mTempGraphXLabelsPtr->setListAdapter(this);mTempGraphXLabelsPtr->setItemClickListener(this);}

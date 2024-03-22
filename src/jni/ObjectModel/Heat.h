@@ -68,6 +68,7 @@ namespace OM
 			const char * GetHeaterStatusStr();
 			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }
+			void UpdatePwm(const float pwm) { avgPwm = pwm; }
 		};
 
 		Heater* GetHeater(const size_t heaterIndex);
@@ -75,6 +76,7 @@ namespace OM
 		bool IterateHeatersWhile(function_ref<bool(Heater*&, size_t)> func, const size_t startAt = 0);
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
+		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm);
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status);
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);

@@ -9,14 +9,15 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "Hardware/Duet.h"
+#include "ObjectModel/Utils.h"
 #include "PrinterStatus.h"
 #include "uart/CommDef.h"
-#include "ObjectModel/Utils.h"
-#include "Hardware/Duet.h"
-
+#include <string>
 
 namespace OM
 {
+	static std::string sPrinterName;
 	static PrinterStatus sStatus = PrinterStatus::connecting;
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
@@ -83,5 +84,15 @@ namespace OM
 				Comm::duet.SendGcode("M999");
 			}
 		}
+	}
+
+	const std::string& GetPrinterName()
+	{
+		return sPrinterName;
+	}
+
+	void SetPrinterName(const char* name)
+	{
+		sPrinterName = name;
 	}
 }

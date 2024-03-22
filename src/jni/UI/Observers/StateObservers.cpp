@@ -24,6 +24,11 @@
  * time function was called. This is unique to each combination of indices.
  */
 static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
+	OBSERVER_CHAR("network:name",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::SetPrinterName(val);
+					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrinterName)->setText(val);
+				  }),
 	OBSERVER_CHAR("state:status",
 				  [](OBSERVER_CHAR_ARGS) {
 					  OM::SetStatus(val);

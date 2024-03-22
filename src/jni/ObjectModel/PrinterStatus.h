@@ -63,6 +63,8 @@ namespace OM {
 	const char* GetStatusText();
 	void SetStatus(const char* status);
 	void SetStatus(const PrinterStatus status);
+	const std::string& GetPrinterName();
+	void SetPrinterName(const char* name);
 }
 
 #endif /* SRC_OBJECTMODEL_PRINTERSTATUS_HPP_ */

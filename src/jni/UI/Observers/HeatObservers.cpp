@@ -52,6 +52,15 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 					 }
 					 UI::ToolsList::RefreshAllToolLists(false);
 				 }),
+	OBSERVER_FLOAT("heat:heaters^:avgPwm",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Heat::UpdateHeaterPwm(indices[0], val))
+					   {
+						   error("Failed to update heater %d avgPwm to %.3f", indices[0], val);
+						   return;
+					   }
+					   UI::ToolsList::RefreshAllToolLists(false);
+				   }),
 	OBSERVER_INT("heat:heaters^:sensor",
 				 [](OBSERVER_INT_ARGS) {
 					 if (!OM::Heat::UpdateHeaterSensor(indices[0], val))

@@ -102,6 +102,20 @@ namespace OM
 			return true;
 		}
 
+		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm)
+		{
+			Heater* heater = GetOrCreateHeater(heaterIndex);
+
+			// If we do not handle this heater back off
+			if (heater == nullptr)
+			{
+				return false;
+			}
+
+			heater->UpdatePwm(pwm);
+			return true;
+		}
+
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char* statusStr)
 		{
 			const HeaterStatusMapEntry key = {statusStr, HeaterStatus::off};
