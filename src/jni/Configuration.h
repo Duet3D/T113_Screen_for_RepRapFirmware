@@ -22,7 +22,7 @@ constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchro
 
 /* Thumbnails */
 constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
-constexpr size_t MAX_THUMBNAIL_CACHE_SIZE = 2 * 2600; // Largest size thumbnail that is allowed to be cached
+constexpr size_t MAX_THUMBNAIL_CACHE_PIXELS = 64; // Largest pixel width/height thumbnail that is allowed to be cached
 constexpr int32_t BACKGROUND_FILE_CACHE_POLL_INTERVAL = 2000;
 
 /* Json Decoder */

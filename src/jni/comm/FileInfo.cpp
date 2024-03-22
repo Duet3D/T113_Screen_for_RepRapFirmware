@@ -99,7 +99,7 @@ namespace Comm
 					: utils::format("%u%% %s", m_currentThumbnail->GetProgress(), m_currentThumbnail->filename.c_str())
 						  .c_str());
 
-		if (m_currentThumbnail != nullptr && m_currentThumbnail->meta.size > MAX_THUMBNAIL_CACHE_SIZE)
+		if (m_currentThumbnail != nullptr && m_currentThumbnail->AboveCacheLimit())
 		{
 			UI::POPUP_WINDOW->SetProgress(m_currentThumbnail->GetProgress());
 		}
@@ -273,6 +273,7 @@ namespace Comm
 
 	void FileInfoCache::FileInfoRequestComplete()
 	{
+		dbg("File info request complete for %s", m_currentFileInfoRequest.c_str());
 		m_fileInfoRequestInProgress = false;
 		if (m_currentFileInfo == nullptr)
 			return;
@@ -355,10 +356,10 @@ namespace Comm
 			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
 			if (thumbnail == nullptr)
 				continue;
-			if (thumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE && thumbnail->meta.size > largestSize)
+			if (!thumbnail->AboveCacheLimit() && thumbnail->meta.width * thumbnail->meta.height > largestSize)
 			{
 				largestValidThumbnail = thumbnail;
-				largestSize = thumbnail->meta.size;
+				largestSize = thumbnail->meta.width * thumbnail->meta.height;
 			}
 		}
 		if (largestValidThumbnail == nullptr)
@@ -383,16 +384,22 @@ namespace Comm
 		}
 
 		Thumbnail* largestThumbnail = nullptr;
-		size_t largestSize = 0;
+		LayoutPosition pos = UI::GetThumbnail()->getPosition();
+		int closestDistance = INT_MAX;
 		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 		{
 			Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
-			if (thumbnail == nullptr)
+			if (thumbnail == nullptr || !thumbnail->AboveCacheLimit())
 				continue;
-			if (thumbnail->meta.size > largestSize)
+
+			int xDiff = (int)thumbnail->meta.width - pos.mWidth;
+			int yDiff = (int)thumbnail->meta.height - pos.mHeight;
+			int distance = xDiff * xDiff + yDiff * yDiff;
+
+			if (distance < closestDistance)
 			{
 				largestThumbnail = thumbnail;
-				largestSize = thumbnail->meta.size;
+				closestDistance = distance;
 			}
 		}
 		if (largestThumbnail == nullptr)
@@ -438,8 +445,7 @@ namespace Comm
 			return false;
 		}
 
-		const char* filename =
-			thumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE ? thumbnail->filename.c_str() : largeThumbnailFilename;
+		const char* filename = thumbnail->AboveCacheLimit() ? largeThumbnailFilename : thumbnail->filename.c_str();
 
 		if (!thumbnail->image.New(thumbnail->meta, filename))
 		{
@@ -477,7 +483,7 @@ namespace Comm
 
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		if (largeOnly && m_currentThumbnail != nullptr && m_currentThumbnail->meta.size <= MAX_THUMBNAIL_CACHE_SIZE)
+		if (largeOnly && m_currentThumbnail != nullptr && !m_currentThumbnail->AboveCacheLimit())
 		{
 			return false;
 		}

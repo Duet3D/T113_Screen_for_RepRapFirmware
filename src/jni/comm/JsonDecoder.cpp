@@ -246,7 +246,7 @@ namespace Comm
 					info("Updating thumbnail %s", thumbnail->filename.c_str());
 					UI::GetThumbnail()->setText("");
 					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
-					if (thumbnail->meta.size > MAX_THUMBNAIL_CACHE_SIZE)
+					if (thumbnail->AboveCacheLimit())
 					{
 						UI::POPUP_WINDOW->SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
 					}

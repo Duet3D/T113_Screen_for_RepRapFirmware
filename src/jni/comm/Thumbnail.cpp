@@ -77,6 +77,11 @@ namespace Comm
 	{
 		return std::min(100u, (100 * (std::max(meta.offset, context.offset) - meta.offset)) / meta.size);
 	}
+
+	bool Thumbnail::AboveCacheLimit() const
+	{
+		return meta.width > MAX_THUMBNAIL_CACHE_PIXELS || meta.height > MAX_THUMBNAIL_CACHE_PIXELS;
+	}
 } // namespace Comm
 
 bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)
@@ -209,8 +214,7 @@ int ThumbnailDecodeChunk(Comm::Thumbnail& thumbnail, Comm::ThumbnailBuf& data)
 		return -2;
 	}
 
-	if (!IsThumbnailCached(thumbnail.meta.size <= MAX_THUMBNAIL_CACHE_SIZE ? thumbnail.filename.c_str()
-																		   : Comm::largeThumbnailFilename,
+	if (!IsThumbnailCached(thumbnail.AboveCacheLimit() ? Comm::largeThumbnailFilename : thumbnail.filename.c_str(),
 						   true))
 	{
 		return -3;

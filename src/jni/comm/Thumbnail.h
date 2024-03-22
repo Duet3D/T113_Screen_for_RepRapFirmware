@@ -84,6 +84,7 @@ namespace Comm
 
 		Thumbnail(StringRef filename) : filename(filename) {}
 		uint32_t GetProgress() const;
+		bool AboveCacheLimit() const;
 	};
 
 	struct ThumbnailBuf
