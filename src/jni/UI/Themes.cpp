@@ -415,7 +415,7 @@ namespace UI::Theme
 		// Temperature graph legend
 		if (pListView->getID() == ID_MAIN_TemperatureGraphLegend)
 		{
-			if (index >= sizeof(colors->diagram.colors) / sizeof(colors->diagram.colors[0]))
+			if (index >= (int)(sizeof(colors->diagram.colors) / sizeof(colors->diagram.colors[0])))
 			{
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->diagram.bgDefault);
 			}

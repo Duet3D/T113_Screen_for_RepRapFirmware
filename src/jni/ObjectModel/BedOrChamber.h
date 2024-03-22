@@ -60,6 +60,8 @@ namespace OM
 		void Reset();
 		int32_t GetActiveTemp();
 		int32_t GetStandbyTemp();
+		float GetMin();
+		float GetMax();
 		bool SetBedTemp(const int32_t temp, const bool active);
 		bool SetChamberTemp(const int32_t temp, const bool active);
 		bool ToggleBedState();

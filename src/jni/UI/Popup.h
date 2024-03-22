@@ -134,6 +134,8 @@ namespace UI
 
 		void Init(ZKWindow* window, ZKTextView* header, ZKTextView* value);
 		void Open(const char* header,
+				  const int min,
+				  const int max,
 				  const int value,
 				  function<void(int)> onValueChanged,
 				  function<void(int)> onConfirm,
@@ -154,10 +156,12 @@ namespace UI
 			: window_(nullptr), header_(nullptr), value_(nullptr), onValueChanged_([](int) {}), onConfirm_([](int) {})
 		{
 		}
+		bool ValidateInput(int value);
 		void Callback();
 
 		ZKWindow* window_;
 		ZKTextView* header_;
+		int min_, max_;
 		ZKTextView* value_;
 		function<void(int)> onValueChanged_;
 		function<void(int)> onConfirm_;

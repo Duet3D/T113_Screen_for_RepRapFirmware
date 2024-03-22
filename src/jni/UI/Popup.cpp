@@ -561,12 +561,16 @@ namespace UI
 	}
 
 	void NumPadWindow::Open(const char* header,
+							const int min,
+							const int max,
 							const int value,
 							function<void(int)> onValueChanged,
 							function<void(int)> onConfirm,
 							bool withSlider)
 	{
 		header_->setText(header);
+		min_ = min;
+		max_ = max;
 		value_->setText(value);
 		onValueChanged_ = onValueChanged;
 		onConfirm_ = onConfirm;
@@ -587,6 +591,13 @@ namespace UI
 	{
 		Clear();
 		WINDOW->CloseOverlay();
+	}
+
+	bool NumPadWindow::ValidateInput(int value)
+	{
+		bool valid = value >= min_ && value <= max_;
+		UI::GetUIControl<ZKButton>(ID_MAIN_NumPadConfirm)->setInvalid(!valid);
+		return valid;
 	}
 
 	void NumPadWindow::Callback()
@@ -634,18 +645,20 @@ namespace UI
 		if (value == GetValue())
 			return;
 		value_->setText(value);
-		Callback();
+		if (ValidateInput(value))
+			Callback();
 	}
 
 	void NumPadWindow::SetValue(const char* value)
 	{
 		value_->setText(value);
-		Callback();
+		if (ValidateInput(GetValue()))
+			Callback();
 	}
 
 	void NumPadWindow::ClearValue()
 	{
-		value_->setText("");
+		SetValue("");
 	}
 
 	void NumPadWindow::AddOneChar(char ch)
@@ -846,12 +859,10 @@ namespace UI
 		SLIDER_WINDOW->SetPosition(VerticalPosition::center, HorizontalPosition::left);
 		NUMPAD_WINDOW->Open(
 			"",
+			min,
+			max,
 			defaultValue,
 			[](int value) {
-				if (value < SLIDER_WINDOW->GetMin() || value > SLIDER_WINDOW->GetMax())
-				{
-					return;
-				}
 				warn("Numpad value %d", value);
 				SLIDER_WINDOW->SetValue(value);
 			},

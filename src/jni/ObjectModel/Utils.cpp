@@ -121,16 +121,19 @@ namespace OM
 			Heat::Heater* heater = Heat::GetHeater(i);
 			if (heater != nullptr)
 			{
-				UI::CONSOLE->AddResponse(
-					utils::format("    [%u]: status(%d), a(%d), s(%d), current(%.2f), pwm(%.2f), sensor(%u)",
-								  heater->index,
-								  heater->status,
-								  heater->activeTemp,
-								  heater->standbyTemp,
-								  heater->current,
-								  heater->avgPwm,
-								  heater->sensor == nullptr ? -1 : heater->sensor->index)
-						.c_str());
+				UI::CONSOLE->AddResponse(utils::format("    [%u]: status(%d), active(%d), standby(%d), current(%.2f),",
+													   heater->index,
+													   heater->status,
+													   heater->activeTemp,
+													   heater->standbyTemp,
+													   heater->current)
+											 .c_str());
+				UI::CONSOLE->AddResponse(utils::format("             min(%.1f), max(%.1f), pwm(%.2f), sensor(%d)",
+													   heater->min,
+													   heater->max,
+													   heater->avgPwm,
+													   heater->sensor == nullptr ? -1 : heater->sensor->index)
+											 .c_str());
 			}
 		}
 		UI::CONSOLE->AddResponse("  Job:");

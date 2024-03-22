@@ -116,6 +116,34 @@ namespace OM
 			return true;
 		}
 
+		bool UpdateHeaterMin(const size_t heaterIndex, const float min)
+		{
+			Heater* heater = GetOrCreateHeater(heaterIndex);
+
+			// If we do not handle this heater back off
+			if (heater == nullptr)
+			{
+				return false;
+			}
+
+			heater->UpdateMin(min);
+			return true;
+		}
+
+		bool UpdateHeaterMax(const size_t heaterIndex, const float max)
+		{
+			Heater* heater = GetOrCreateHeater(heaterIndex);
+
+			// If we do not handle this heater back off
+			if (heater == nullptr)
+			{
+				return false;
+			}
+
+			heater->UpdateMax(max);
+			return true;
+		}
+
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char* statusStr)
 		{
 			const HeaterStatusMapEntry key = {statusStr, HeaterStatus::off};

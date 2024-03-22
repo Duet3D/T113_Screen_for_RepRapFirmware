@@ -162,6 +162,7 @@
     <string name="gcodes">Gcodes</string>
     <string name="clear">Clear</string>
     <string name="send">Send</string>
+    <string name="enter_command">Enter Command</string>
 
     <!-- Debug Menu -->
     <string name="open_debug_commands">Debug</string>

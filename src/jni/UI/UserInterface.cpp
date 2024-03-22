@@ -528,18 +528,35 @@ namespace UI
 					return;
 				}
 
+				if (toolHeater->heater == nullptr)
+				{
+					warn("Heater is null");
+					return;
+				}
+
 				currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
 				UI::NUMPAD_WINDOW->Open(
-					header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
+					header.c_str(),
+					toolHeater->heater->min,
+					toolHeater->heater->max,
+					currentTarget,
+					[](int) {},
+					[this](int value) { SendTempTarget(value); });
 				return;
 			}
 
 			if (data.toolData.spindle != nullptr)
 			{
+				OM::Spindle* spindle = data.toolData.spindle;
 				header = utils::format("Tool %d Spindle", data.toolData.tool->index);
-				currentTarget = data.toolData.spindle->active;
+				currentTarget = spindle->active;
 				UI::NUMPAD_WINDOW->Open(
-					header.c_str(), currentTarget, [](int) {}, [this](int value) { SendSpindleTarget(value); });
+					header.c_str(),
+					spindle->min,
+					spindle->max,
+					currentTarget,
+					[](int) {},
+					[this](int value) { SendSpindleTarget(value); });
 				return;
 			}
 			break;
@@ -561,7 +578,12 @@ namespace UI
 			}
 			currentTarget = data.active ? bedOrChamber->GetActiveTemp() : bedOrChamber->GetStandbyTemp();
 			UI::NUMPAD_WINDOW->Open(
-				header.c_str(), currentTarget, [](int) {}, [this](int value) { SendTempTarget(value); });
+				header.c_str(),
+				bedOrChamber->GetMin(),
+				bedOrChamber->GetMax(),
+				currentTarget,
+				[](int) {},
+				[this](int value) { SendTempTarget(value); });
 			return;
 		}
 		}

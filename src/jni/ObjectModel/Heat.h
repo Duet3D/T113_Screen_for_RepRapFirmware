@@ -59,6 +59,8 @@ namespace OM
 			int32_t standbyTemp;
 			float current;
 			float avgPwm;
+			float min;
+			float max;
 			HeaterStatus status;
 			AnalogSensor* sensor;
 
@@ -69,6 +71,8 @@ namespace OM
 			void UpdateTarget(const int32_t temp, const bool active);
 			void UpdateTemp(const float temp) { current = temp; }
 			void UpdatePwm(const float pwm) { avgPwm = pwm; }
+			void UpdateMin(const float min) { this->min = min; }
+			void UpdateMax(const float max) { this->max = max; }
 		};
 
 		Heater* GetHeater(const size_t heaterIndex);
@@ -77,6 +81,8 @@ namespace OM
 		bool UpdateHeaterTarget(const size_t heaterIndex, const int32_t temp, const bool active);
 		bool UpdateHeaterTemp(const size_t heaterIndex, const float temp);
 		bool UpdateHeaterPwm(const size_t heaterIndex, const float pwm);
+		bool UpdateHeaterMin(const size_t heaterIndex, const float min);
+		bool UpdateHeaterMax(const size_t heaterIndex, const float max);
 		bool UpdateHeaterStatus(const size_t heaterIndex, HeaterStatus status);
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);

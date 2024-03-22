@@ -56,6 +56,24 @@ namespace OM
 		return pheater->standbyTemp;
 	}
 
+	float BedOrChamber::GetMin()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		return pheater->min;
+	}
+
+	float BedOrChamber::GetMax()
+	{
+		Heat::Heater* pheater = Heat::GetHeater(heater);
+		if (pheater == nullptr)
+			return 0;
+
+		return pheater->max;
+	}
+
 	bool BedOrChamber::SetBedTemp(const int32_t temp, const bool active)
 	{
 		Heat::Heater* pheater = Heat::GetHeater(heater);
