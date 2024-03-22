@@ -28,13 +28,17 @@ If the firmware becomes corrupted or it is not prompting you to upgrade, rename 
 
 ## Developer Documentation
 
+The screen is developed in C++ using the Flythings SDK to provide a GUI framework. All the logic is contained in `src/jni/` with the GUI defined in `src/ui/main.ftu`.
+
+Flythings provides a *What You See Is What You Get* (WYSIWYG) way of creating and modifying the GUI. This requires the use of the Flythings IDE.
+
 Flythings has some documentation on the SDK, it is split between a more up-to-date Chinese version and an older English version. The English version is still useful for understanding the basics of the SDK, but the Chinese version is more up-to-date and has more information.
 - https://developer.flythings.cn/zh-hans/system_introdoction.html
 - https://developer.flythings.cn/en/system_introdoction.html
 
 ### Setup
 
-> [!NOTE]
+> [!WARNING]
 >
 > It is advised to use a virtual machine for development.
 
@@ -82,6 +86,20 @@ It is possible to debug the screen using `adb` from the command line without hav
   * To you can chain multiple filters together
 
 ### Modifying GUI
+
+To make fundamental changes to the GUI, you will need to use the Flythings IDE. This lets you move, add, deleted UI elements and set their properties. An overview of what UI elements are available can be found in the [Flythings documentation](https://developer.flythings.cn/en/ctrl_common.html).
+
+> [!IMPORTANT]
+> To interact with the UI elements in the code, you need to use the `ID` of the element. Ensure that any element you create has a unique and descriptive `ID` field.
+
+After you have modified and saved the `main.ftu` file with your changes to the GUI, any element that has been added will not be added into the code until you compile the project.
+- Flythings will automatically generate the relevant code to interact with the UI elements, this code is placed in the `activity` folder. **DO NOT MODIFY THE CONTENTS OF THE ACTIVITY FOLDER MANUALLY!**.
+- Flythings will also add any control functions relevant to the UI element into `src/jni/logic/mainLogic.cc`. Details on these are described in the Flythings documentation.
+- Flythings will **NOT** delete any code in `mainLogic.cc` for elements that have been removed from the GUI, you will need to manually remove these.
+
+There are some parts of the UI for this screen that are more complex than a single UI element. Where possible these have be created in a way that allows them to be reused across the GUI. Some examples are the tools list, number pad, slider, popup, and guides.
+
+#### Themes
 
 #### Reusable Components
 
