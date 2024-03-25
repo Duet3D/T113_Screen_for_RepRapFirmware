@@ -15,6 +15,7 @@
 void InitUpgradeMountListener();
 
 bool UpgradeFromUSB(const std::string& filePath);
+bool UpgradeFromDuet();
 
 class UpgradeMountListener : public MountMonitor::IMountListener
 {

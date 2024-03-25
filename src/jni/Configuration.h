@@ -10,6 +10,8 @@
 
 #include <sys/types.h>
 
+constexpr const char* UPGRADE_FILE_NAME = "DuetScreen.bin";
+
 /* Duet */
 constexpr uint32_t DEFAULT_PRINTER_POLL_INTERVAL = 500;
 constexpr uint32_t MIN_PRINTER_POLL_INTERVAL = 250;

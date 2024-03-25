@@ -117,6 +117,8 @@
     <string name="uploading_file">Uploading File</string>
     <string name="finished_uploading">Finished Uploading File</string>
     <string name="upload_failed">Upload Failed!</string>
+    <string name="upgrade_firmware">Do you want to upgrade from Duet?</string>
+    <string name="upgrade_failed">Upgrade Failed</string>
     <string name="upgrade_from">Do you want to upgrade using: %s?</string>
     <string name="open_console">Open Console</string>
     <string name="ok">Ok</string>

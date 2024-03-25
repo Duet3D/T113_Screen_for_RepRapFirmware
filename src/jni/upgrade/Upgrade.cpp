@@ -11,8 +11,10 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
-#include "Hardware/Usb.h"
 #include "ObjectModel/Files.h"
+
+#include "Hardware/Duet.h"
+#include "Hardware/Usb.h"
 #include "entry/EasyUIContext.h"
 #include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
@@ -58,6 +60,38 @@ bool UpgradeFromUSB(const std::string& filePath)
 	return true;
 }
 
+bool UpgradeFromDuet()
+{
+	std::string filePath = utils::format("/firmware/%s", UPGRADE_FILE_NAME);
+
+	info("Attempting upgrade from Duet file %s", filePath.c_str());
+	system("rm /tmp/update.img"); // Remove any previous upgrade file
+
+	std::string contents;
+	if (!Comm::duet.DownloadFile(filePath.c_str(), contents))
+	{
+		error("Failed to download file \"%s\" from Duet", filePath.c_str());
+		return false;
+	}
+
+	std::ofstream file("/tmp/update.img", std::ios::binary);
+	if (!file.is_open())
+	{
+		error("Failed to create file \"/tmp/update.img\"");
+		return false;
+	}
+	file.write(contents.c_str(), contents.size());
+	file.close();
+
+	if (!UPGRADEMONITOR->checkUpgradeFile("/tmp"))
+	{
+		error("No upgrade file found");
+		return false;
+	}
+
+	return true;
+}
+
 void UpgradeMountListener::notify(int what, int status, const char* msg)
 {
 	switch (status)
@@ -67,7 +101,7 @@ void UpgradeMountListener::notify(int what, int status, const char* msg)
 		std::vector<USB::FileInfo> files = USB::ListEntriesInDirectory(msg);
 		for (auto& file : files)
 		{
-			if (strcmp(file.d_name, "DuetScreen.img") != 0)
+			if (strcmp(file.d_name, UPGRADE_FILE_NAME) != 0)
 			{
 				continue;
 			}
@@ -77,7 +111,7 @@ void UpgradeMountListener::notify(int what, int status, const char* msg)
 				return;
 			}
 		}
-		UpgradeFromUSB("DuetScreen.img");
+		UpgradeFromUSB(UPGRADE_FILE_NAME);
 		break;
 	}
 	case MountMonitor::E_MOUNT_STATUS_REMOVE:

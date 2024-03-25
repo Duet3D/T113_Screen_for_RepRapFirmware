@@ -3,6 +3,7 @@
 # libs and obj directories are generated at each compilation
 */libs/*
 */obj/*
+*.bin
 *.img
 *Thumbs.db
 *ui_resource_usage_analysis.txt

@@ -915,7 +915,18 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		UI::WINDOW->OpenOverlay(mDuetCommSettingWindowPtr);
 		break;
 	case (int)UI::SettingsSlideWindowIndex::update:
-		EASYUICONTEXT->openActivity("UpgradeActivity");
+		// EASYUICONTEXT->openActivity("UpgradeActivity");
+		UI::POPUP_WINDOW->Open([]() {
+			if (!UpgradeFromDuet())
+			{
+				registerDelayedCallback("upgrade_failed", 100, []() {
+					UI::POPUP_WINDOW->Open();
+					UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
+					return false;
+				});
+			}
+		});
+		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
 		break;
 	case (int)UI::SettingsSlideWindowIndex::restart:
 		// Synchronise data and save cached data to prevent data loss

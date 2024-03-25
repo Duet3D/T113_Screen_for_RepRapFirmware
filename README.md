@@ -4,7 +4,17 @@ This firmware provides a graphical user interface to control a Duet3D control bo
 
 ## Upgrading
 
-* Copy the `DuetScreen.img` file onto a USB stick.
+### Network
+
+> [!NOTE]
+> This only works if the screen is connected to the Duet via network.
+
+* Upload the `DuetScreen.bin` file to the `/firmware` directory on the Duet.
+* From the screen, navigate to `Settings` -> `Update`
+
+### USB
+
+* Copy the `DuetScreen.bin` file onto a USB stick.
 * Insert the USB stick into the screen.
 * The screen will prompt you to upgrade the firmware.
 * Press the `Upgrade` button to start the upgrade process.
@@ -12,7 +22,7 @@ This firmware provides a graphical user interface to control a Duet3D control bo
 
 ### Fallback
 
-If the firmware becomes corrupted or it is not prompting you to upgrade, rename the file from `DuetScreen.img` to `upgrade.img` and repeat the progress.
+If the firmware becomes corrupted or it is not prompting you to upgrade, rename the file from `DuetScreen.bin` to `upgrade.img` and repeat the progress.
 * If this file is found then the screen will continually prompt you to upgrade the firmware even if the upgrade completes successfully.
 * Make sure to remove the USB stick once the upgrade is complete to prevent this from happening. 
 

@@ -197,7 +197,7 @@ namespace Comm
 		RestClient::Connection* conn = new RestClient::Connection(url);
 
 		// set connection timeout in seconds
-		conn->SetTimeout(3);
+		conn->SetTimeout(30);
 
 		// enable following of redirects (default is off)
 		conn->FollowRedirects(true);
