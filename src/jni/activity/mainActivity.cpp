@@ -144,8 +144,6 @@ static ZKEditText* mPasswordInputPtr;
 static ZKTextView* mTextView21Ptr;
 static ZKEditText* mHostnameInputPtr;
 static ZKTextView* mTextView19Ptr;
-static ZKTextView* mTextView18Ptr;
-static ZKEditText* mIpAddressInputPtr;
 static ZKWindow* mDuetNetworkCommSettingWindowPtr;
 static ZKListView* mDuetCommListPtr;
 static ZKWindow* mDuetCommSettingWindowPtr;
@@ -498,7 +496,6 @@ static S_EditTextInputCallback SEditTextInputCallbackTab[] = {
     ID_MAIN_PollIntervalInput, onEditTextChanged_PollIntervalInput,
     ID_MAIN_PasswordInput, onEditTextChanged_PasswordInput,
     ID_MAIN_HostnameInput, onEditTextChanged_HostnameInput,
-    ID_MAIN_IpAddressInput, onEditTextChanged_IpAddressInput,
     ID_MAIN_EditText1, onEditTextChanged_EditText1,
 };
 
@@ -679,8 +676,6 @@ mainActivity::~mainActivity() {
     mTextView21Ptr = NULL;
     mHostnameInputPtr = NULL;
     mTextView19Ptr = NULL;
-    mTextView18Ptr = NULL;
-    mIpAddressInputPtr = NULL;
     mDuetNetworkCommSettingWindowPtr = NULL;
     mDuetCommListPtr = NULL;
     mDuetCommSettingWindowPtr = NULL;
@@ -922,8 +917,6 @@ void mainActivity::onCreate() {
     mTextView21Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView21);
     mHostnameInputPtr = (ZKEditText*)findControlByID(ID_MAIN_HostnameInput);if(mHostnameInputPtr!= NULL){mHostnameInputPtr->setTextChangeListener(this);}
     mTextView19Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView19);
-    mTextView18Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView18);
-    mIpAddressInputPtr = (ZKEditText*)findControlByID(ID_MAIN_IpAddressInput);if(mIpAddressInputPtr!= NULL){mIpAddressInputPtr->setTextChangeListener(this);}
     mDuetNetworkCommSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DuetNetworkCommSettingWindow);
     mDuetCommListPtr = (ZKListView*)findControlByID(ID_MAIN_DuetCommList);if(mDuetCommListPtr!= NULL){mDuetCommListPtr->setListAdapter(this);mDuetCommListPtr->setItemClickListener(this);}
     mDuetCommSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DuetCommSettingWindow);

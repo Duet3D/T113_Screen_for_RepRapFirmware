@@ -206,6 +206,8 @@ namespace Comm
 
 		// set headers
 		conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+		conn->AppendHeader("Accept", "application/json");
+		conn->AppendHeader("Content-Type", "application/json");
 
 		// if using a non-standard Certificate Authority (CA) trust file
 		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));

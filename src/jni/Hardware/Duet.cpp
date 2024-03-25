@@ -32,9 +32,8 @@ namespace Comm
 	Duet duet;
 
 	Duet::Duet()
-		: m_communicationType(CommunicationType::none), m_ipAddress(""), m_hostname(""), m_password(""),
-		  m_sessionTimeout(0), m_lastRequestTime(0), m_sessionKey(noSessionKey),
-		  m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
+		: m_communicationType(CommunicationType::none), m_hostname(""), m_password(""), m_sessionTimeout(0),
+		  m_lastRequestTime(0), m_sessionKey(noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
 	{
 	}
 
@@ -42,7 +41,7 @@ namespace Comm
 	{
 		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", DEFAULT_PRINTER_POLL_INTERVAL));
 		SetBaudRate((unsigned int)StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
-		SetIPAddress(StoragePreferences::getString("ip_address", "192.168.0."));
+		SetIPAddress("");
 		SetHostname(StoragePreferences::getString("hostname", ""));
 		SetPassword(StoragePreferences::getString("password", ""));
 		SetCommunicationType(
@@ -55,6 +54,7 @@ namespace Comm
 		m_sessionKey = noSessionKey;
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
+		ClearIPAddress();
 
 		OM::RemoveAll();
 		Comm::ResetSeqs();
@@ -112,7 +112,7 @@ namespace Comm
 				return false;
 			}
 		}
-		if (!Comm::AsyncGet(m_ipAddress, subUrl, queryParameters, callback, m_sessionKey, queue))
+		if (!Comm::AsyncGet(GetBaseUrl(), subUrl, queryParameters, callback, m_sessionKey, queue))
 		{
 			warn("Failed to send async get request %s", subUrl);
 			return false;
@@ -136,13 +136,13 @@ namespace Comm
 				return false;
 			}
 		}
-		if (!Comm::Get(m_ipAddress, subUrl, r, queryParameters, m_sessionKey))
+		if (!Comm::Get(GetBaseUrl(), subUrl, r, queryParameters, m_sessionKey))
 		{
 			if (r.code == 401 || r.code == 403)
 			{
 				error("HTTP error %d: Likely invalid sessionKey %u. Running rr_connect", r.code, m_sessionKey);
 				Connect();
-				return Comm::Get(m_ipAddress, subUrl, r, queryParameters, m_sessionKey);
+				return Comm::Get(GetBaseUrl(), subUrl, r, queryParameters, m_sessionKey);
 			}
 			return false;
 		}
@@ -167,13 +167,13 @@ namespace Comm
 				return false;
 			}
 		}
-		if (!Comm::Post(m_ipAddress, subUrl, r, queryParameters, data, m_sessionKey))
+		if (!Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey))
 		{
 			if (r.code == 401 || r.code == 403)
 			{
 				error("HTTP error %d: Likely invalid sessionKey %d. Running rr_connect", r.code, m_sessionKey);
 				Connect();
-				return Comm::Post(m_ipAddress, subUrl, r, queryParameters, data, m_sessionKey);
+				return Comm::Post(GetBaseUrl(), subUrl, r, queryParameters, data, m_sessionKey);
 			}
 			return false;
 		}
@@ -278,6 +278,31 @@ namespace Comm
 		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("finished_uploading").c_str());
 		UI::POPUP_WINDOW->SetText(filename);
 		UI::POPUP_WINDOW->SetProgress(100);
+		return true;
+	}
+
+	bool Duet::DownloadFile(const char* filename, std::string& contents)
+	{
+		info("Downloading file %s", filename);
+		switch (m_communicationType)
+		{
+		case CommunicationType::network: {
+			RestClient::Response r;
+			QueryParameters_t query;
+			query["name"] = filename;
+			if (!Get("/rr_download", r, query))
+			{
+				UI::CONSOLE->AddResponse(
+					utils::format("HTTP error %d: Failed to download file: %s", r.code, filename).c_str());
+				return false;
+			}
+			contents = r.body;
+			break;
+		}
+		default:
+			warn("Communication type not supported for downloading files");
+			return false;
+		}
 		return true;
 	}
 
@@ -615,7 +640,7 @@ namespace Comm
 			return UARTCONTEXT->openUart(CONFIGMANAGER->getUartName().c_str(), m_baudRate.internal);
 		}
 		case CommunicationType::network: {
-			info("Connecting to Duet at %s", m_ipAddress.c_str());
+			info("Connecting to Duet at %s", GetBaseUrl().c_str());
 
 			RestClient::Response r;
 			QueryParameters_t query;
@@ -624,7 +649,7 @@ namespace Comm
 				query["sessionKey"] = "yes";
 
 			return Comm::AsyncGet(
-				m_ipAddress,
+				GetBaseUrl(),
 				"/rr_connect",
 				query,
 				[this](RestClient::Response& r) {
@@ -687,7 +712,7 @@ namespace Comm
 			}
 			RestClient::Response r;
 			QueryParameters_t query;
-			if (!Comm::Get(m_ipAddress, "/rr_disconnect", r, query, m_sessionKey))
+			if (!Comm::Get(GetBaseUrl(), "/rr_disconnect", r, query, m_sessionKey))
 			{
 				error("rr_disconnect failed, returned response %d", r.code);
 				return r.code;
@@ -699,6 +724,17 @@ namespace Comm
 			break;
 		}
 		return 0;
+	}
+
+	const std::string& Duet::GetBaseUrl() const
+	{
+		if (!m_ipAddress.empty())
+		{
+			dbg("Using IP address %s", m_ipAddress.c_str());
+			return m_ipAddress;
+		}
+		dbg("Using hostname %s", m_hostname.c_str());
+		return m_hostname;
 	}
 
 	void Duet::SetBaudRate(const unsigned int baudRateCode)
@@ -729,25 +765,35 @@ namespace Comm
 
 	void Duet::SetIPAddress(const std::string& ipAddress)
 	{
-		if (m_communicationType == CommunicationType::network)
-			Disconnect();
+		// if (m_communicationType == CommunicationType::network)
+		// 	Disconnect();
 
-		StoragePreferences::putString("ip_address", ipAddress);
+		// StoragePreferences::putString("ip_address", ipAddress);
 		m_ipAddress = ipAddress;
-
-		if (m_communicationType == CommunicationType::network)
-			Connect();
 	}
 
-	void Duet::SetHostname(const std::string& hostname)
+	void Duet::ClearIPAddress()
 	{
+		m_ipAddress.clear();
+		dbg("IP address cleared \"%s\"", m_ipAddress.c_str());
+	}
+
+	void Duet::SetHostname(const std::string hostname)
+	{
+		dbg("Hostname = %s", hostname.c_str());
 		StoragePreferences::putString("hostname", hostname);
 		m_hostname.clear();
-		if (!m_hostname.rfind("http://", 0))
+
+		if (hostname.find("http://") != 0)
 		{
 			m_hostname += "http://";
 		}
-		m_hostname += hostname;
+
+		m_hostname += hostname.c_str();
+		ClearIPAddress();
+		info("Set Duet hostname to %s", m_hostname.c_str());
+		if (m_communicationType == CommunicationType::network)
+			Connect();
 	}
 
 	void Duet::SetPassword(const std::string& password)

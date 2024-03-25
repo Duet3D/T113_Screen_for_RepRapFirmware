@@ -6,6 +6,7 @@
 #include "entry/EasyUIContext.h"
 #include "manager/ConfigManager.h"
 #include "manager/LanguageManager.h"
+#include "restclient-cpp/restclient.h"
 #include "storage/StoragePreferences.h"
 #include "uart/UartContext.h"
 #include "utils/BrightnessHelper.h"
@@ -32,6 +33,7 @@ void onEasyUIDeinit(EasyUIContext *pContext) {
 
 const char* onStartupApp(EasyUIContext* pContext)
 {
+	RestClient::init();
 	if (StoragePreferences::getString("sys_lang_code_key", "") == "")
 	{
 		StoragePreferences::putString("sys_lang_code_key", DEFAULT_LANGUAGE_CODE);

@@ -177,8 +177,6 @@
 #define ID_MAIN_TextView21    50047
 #define ID_MAIN_HostnameInput    51005
 #define ID_MAIN_TextView19    50045
-#define ID_MAIN_TextView18    50044
-#define ID_MAIN_IpAddressInput    51004
 #define ID_MAIN_DuetNetworkCommSettingWindow    110027
 #define ID_MAIN_DuetCommList    80015
 #define ID_MAIN_DuetCommSettingWindow    110026

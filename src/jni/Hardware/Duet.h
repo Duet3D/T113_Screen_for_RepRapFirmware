@@ -76,6 +76,7 @@ namespace Comm
 		void ProcessReply(const RestClient::Response& r);
 
 		bool UploadFile(const char* filename, const std::string& contents);
+		bool DownloadFile(const char* filename, std::string& contents);
 
 		void RequestModel(const char* flags = "d99f");
 		void RequestModel(const char* key, const char* flags);
@@ -92,14 +93,17 @@ namespace Comm
 		const bool Connect(bool useSessionKey = true);
 		const error_code Disconnect();
 
-		void SetIPAddress(const std::string& ipAddress);
-		const std::string GetIPAddress() const { return m_ipAddress; }
+		const std::string& GetBaseUrl() const;
 
-		void SetHostname(const std::string& hostname);
-		const std::string GetHostname() const { return m_hostname; }
+		void SetIPAddress(const std::string& ipAddress);
+		const std::string& GetIPAddress() const { return m_ipAddress; }
+		void ClearIPAddress();
+
+		void SetHostname(const std::string hostname);
+		const std::string& GetHostname() const { return m_hostname; }
 
 		void SetPassword(const std::string& password);
-		const std::string GetPassword() const { return m_password; }
+		const std::string& GetPassword() const { return m_password; }
 
 		void SetSessionKey(const uint32_t sessionKey);
 

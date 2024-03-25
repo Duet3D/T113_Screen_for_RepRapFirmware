@@ -12,6 +12,7 @@
 #include "control/ZKDigitalClock.h"
 #include "utils/TimeHelper.h"
 
+#include "Hardware/Duet.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/PrinterStatus.h"
 
@@ -29,6 +30,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  OM::SetPrinterName(val);
 					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrinterName)->setText(val);
 				  }),
+	OBSERVER_CHAR("network:interfaces^:actualIP", [](OBSERVER_CHAR_ARGS) { Comm::duet.SetIPAddress(val); }),
 	OBSERVER_CHAR("state:status",
 				  [](OBSERVER_CHAR_ARGS) {
 					  OM::SetStatus(val);

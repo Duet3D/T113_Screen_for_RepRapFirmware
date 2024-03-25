@@ -127,7 +127,6 @@ static void onUI_init()
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
-	mIpAddressInputPtr->setText(Comm::duet.GetIPAddress());
 	mHostnameInputPtr->setText(Comm::duet.GetHostname());
 	mPasswordInputPtr->setText(Comm::duet.GetPassword());
 	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
@@ -1089,13 +1088,9 @@ static void onEditTextChanged_PollIntervalInput(const std::string& text)
 	Comm::duet.SetPollInterval(atoi(text.c_str()));
 }
 
-static void onEditTextChanged_IpAddressInput(const std::string& text)
-{
-	Comm::duet.SetIPAddress(text);
-}
-
 static void onEditTextChanged_HostnameInput(const std::string& text)
 {
+	dbg("Hostname input changed to %s", text.c_str());
 	Comm::duet.SetHostname(text);
 }
 
