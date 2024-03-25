@@ -181,6 +181,7 @@ namespace Comm
 		if (OM::currentAlert.mode != OM::Alert::Mode::None && OM::currentAlert.seq != OM::lastAlertSeq)
 		{
 			UI::POPUP_WINDOW->Open();
+			UI::SetM291Popup(OM::currentAlert);
 			OM::lastAlertSeq = OM::currentAlert.seq;
 		}
 

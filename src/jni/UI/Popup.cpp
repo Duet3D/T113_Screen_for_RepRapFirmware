@@ -74,93 +74,20 @@ namespace UI
 
 		Clear();
 
-		mode_ = OM::currentAlert.mode;
 		seq_ = OM::currentAlert.seq;
 
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
-		if (IsBlocking())
-		{
-			noTouchWindow_->setVisible(true);
-		}
 
-		if (mode_ == OM::Alert::Mode::None)
+		if (timeout_ > 0)
 		{
-			if (timeout_ <= 0)
-				return;
-
-			title_->setText("Gcode Response");
-			cancelBtn_->setVisible(true);
-			okBtn_->setVisible(true);
 			registerDelayedCallback("popup_timeout", timeout_, []() {
 				UI::POPUP_WINDOW->Close();
 				return false;
 			});
 		}
-		else
-		{
-			title_->setText(OM::currentAlert.title.c_str());
-			text_->setText(OM::currentAlert.text.c_str());
 
-			switch (mode_)
-			{
-			case OM::Alert::Mode::Info:
-				cancelBtn_->setVisible(false);
-				okBtn_->setVisible(false);
-				break;
-			case OM::Alert::Mode::InfoClose:
-				cancelBtn_->setVisible(true);
-				okBtn_->setVisible(false);
-				break;
-			case OM::Alert::Mode::InfoConfirm:
-			case OM::Alert::Mode::ConfirmCancel:
-				cancelBtn_->setVisible(mode_ == OM::Alert::Mode::ConfirmCancel);
-				okBtn_->setVisible(true);
-
-				// Axis jog controls
-				SetAxisJogSelection(OM::currentAlert.controls);
-				axisJogSelection_->setVisible(OM::currentAlert.controls > 0);
-				axisJogAdjustment_->setVisible(OM::currentAlert.controls > 0);
-				break;
-			case OM::Alert::Mode::Choices:
-				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
-				okBtn_->setVisible(false);
-				choicesList_->setVisible(true);
-				break;
-			case OM::Alert::Mode::NumberInt:
-				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
-				okBtn_->setVisible(true);
-				minText_->setTextf("Min: %d", OM::currentAlert.limits.numberInt.min);
-				maxText_->setTextf("Max: %d", OM::currentAlert.limits.numberInt.max);
-				numberInput_->setText(OM::currentAlert.limits.numberInt.valueDefault);
-				minText_->setVisible(true);
-				maxText_->setVisible(true);
-				numberInput_->setVisible(true);
-				break;
-			case OM::Alert::Mode::NumberFloat:
-				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
-				okBtn_->setVisible(true);
-				minText_->setTextf("Min: %.2f", OM::currentAlert.limits.numberFloat.min);
-				maxText_->setTextf("Max: %.2f", OM::currentAlert.limits.numberFloat.max);
-				numberInput_->setText(OM::currentAlert.limits.numberFloat.valueDefault);
-				minText_->setVisible(true);
-				maxText_->setVisible(true);
-				numberInput_->setVisible(true);
-				break;
-			case OM::Alert::Mode::Text:
-				cancelBtn_->setVisible(OM::currentAlert.cancelButton == true);
-				okBtn_->setVisible(true);
-				minText_->setTextf("Min Length: %d", OM::currentAlert.limits.text.min);
-				maxText_->setTextf("Max Length: %d", OM::currentAlert.limits.text.max);
-				textInput_->setText(OM::currentAlert.limits.text.valueDefault.c_str());
-				ValidateTextInput(textInput_->getText().c_str());
-				minText_->setVisible(true);
-				maxText_->setVisible(true);
-				textInput_->setVisible(true);
-				break;
-			default:
-				break;
-			}
-		}
+		cancelBtn_->setVisible(true);
+		okBtn_->setVisible(true);
 
 		SetOkBtnText(LANGUAGEMANAGER->getValue("ok").c_str());
 		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
@@ -172,25 +99,6 @@ namespace UI
 
 	void PopupWindow::Ok()
 	{
-		if (!IsResponse())
-		{
-			switch (mode_)
-			{
-			case OM::Alert::Mode::InfoConfirm:
-			case OM::Alert::Mode::ConfirmCancel:
-				Comm::duet.SendGcodef("M292 P0 S%lu\n", seq_);
-				break;
-			case OM::Alert::Mode::NumberInt:
-			case OM::Alert::Mode::NumberFloat:
-				Comm::duet.SendGcodef("M292 P0 R{%s} S%lu\n", numberInput_->getText().c_str(), seq_);
-				break;
-			case OM::Alert::Mode::Text:
-				Comm::duet.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", textInput_->getText().c_str(), seq_);
-				break;
-			default:
-				break;
-			}
-		}
 		okCb_();
 		Close();
 	}
@@ -282,6 +190,96 @@ namespace UI
 		WINDOW->CloseOverlay();
 	}
 
+	void PopupWindow::OkVisible(bool visible)
+	{
+		okBtn_->setVisible(visible);
+	}
+
+	void PopupWindow::CancelVisible(bool visible)
+	{
+		cancelBtn_->setVisible(visible);
+	}
+
+	void PopupWindow::SelectionVisible(bool visible)
+	{
+		choicesList_->setVisible(visible);
+	}
+
+	void PopupWindow::NumberInputVisible(bool visible)
+	{
+		numberInput_->setVisible(visible);
+	}
+
+	void PopupWindow::TextInputVisible(bool visible)
+	{
+		textInput_->setVisible(visible);
+	}
+
+	void PopupWindow::WarningTextVisible(bool visible)
+	{
+		warningText_->setVisible(visible);
+	}
+
+	void PopupWindow::MinTextVisible(bool visible)
+	{
+		minText_->setVisible(visible);
+	}
+
+	void PopupWindow::MaxTextVisible(bool visible)
+	{
+		maxText_->setVisible(visible);
+	}
+
+	void PopupWindow::AxisJogVisible(bool visible)
+	{
+		axisJogAdjustment_->setVisible(visible);
+		axisJogSelection_->setVisible(visible);
+	}
+
+	void PopupWindow::SetMinTextf(const char* format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		minText_->setTextf(format, vargs);
+		va_end(vargs);
+	}
+
+	void PopupWindow::SetMaxTextf(const char* format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		maxText_->setTextf(format, vargs);
+		va_end(vargs);
+	}
+
+	void PopupWindow::SetWarningTextf(const char* format, ...)
+	{
+		va_list vargs;
+		va_start(vargs, format);
+		warningText_->setTextf(format, vargs);
+		va_end(vargs);
+	}
+
+	void PopupWindow::SetNumberInput(int32_t val)
+	{
+		numberInput_->setText(val);
+	}
+
+	void PopupWindow::SetNumberInput(float val)
+	{
+		numberInput_->setText(val);
+	}
+
+	void PopupWindow::SetNumberInput(const char* text)
+	{
+		numberInput_->setText(text);
+	}
+
+	void PopupWindow::SetTextInput(const char* text)
+	{
+		textInput_->setText(text);
+	}
+
 	void PopupWindow::SetImage(const char* imagePath)
 	{
 		image_->setBackgroundPic(imagePath);
@@ -309,6 +307,20 @@ namespace UI
 		progress_->setProgress(percent);
 	}
 
+	void PopupWindow::SetMode(OM::Alert::Mode mode)
+	{
+		mode_ = mode;
+		if (IsResponse())
+		{
+			return;
+		}
+		CancelTimeout();
+		if (IsBlocking())
+		{
+			noTouchWindow_->setVisible(true);
+		}
+	}
+
 	void PopupWindow::PreventClosing(bool prevent)
 	{
 		noTouchWindow_->setVisible(prevent);
@@ -318,16 +330,10 @@ namespace UI
 
 	void PopupWindow::CancelTimeout()
 	{
-
+		info("Cancelling timeout");
 		if (!IsOpen())
 		{
 			warn("Cannot cancel timeout when popup is not open");
-			return;
-		}
-
-		if (!IsResponse())
-		{
-			warn("Cannot cancel timeout for non-response alerts");
 			return;
 		}
 
@@ -551,6 +557,16 @@ namespace UI
 			count++;
 		}
 		axisJogSelection_->setSelection(0);
+	}
+
+	const char* PopupWindow::GetNumberInput() const
+	{
+		return numberInput_->getText().c_str();
+	}
+
+	const char* PopupWindow::GetTextInput() const
+	{
+		return textInput_->getText().c_str();
 	}
 
 	void NumPadWindow::Init(ZKWindow* window, ZKTextView* header, ZKTextView* value)

@@ -66,8 +66,31 @@ namespace UI
 		void SetImage(const char* imagePath);
 		void ShowImage(bool show);
 		void SetProgress(int percent);
+		void SetMode(OM::Alert::Mode mode);
 		void PreventClosing(bool prevent);
 		void Close();
+
+		void OkVisible(bool visible);
+		void CancelVisible(bool visible);
+		void SelectionVisible(bool visible);
+		void NumberInputVisible(bool visible);
+		void TextInputVisible(bool visible);
+		void WarningTextVisible(bool visible);
+		void MinTextVisible(bool visible);
+		void MaxTextVisible(bool visible);
+		void AxisJogVisible(bool visible);
+
+		void SetMinTextf(const char* format, ...);
+		void SetMaxTextf(const char* format, ...);
+		void SetWarningTextf(const char* format, ...);
+		void SetNumberInput(int32_t val);
+		void SetNumberInput(float val);
+		void SetNumberInput(const char* text);
+		void SetTextInput(const char* text);
+		void SetAxisJogSelection(uint32_t axisControl);
+
+		const char* GetNumberInput() const;
+		const char* GetTextInput() const;
 
 		void CancelTimeout();
 		void SetTimeout(uint32_t timeout);
@@ -96,8 +119,6 @@ namespace UI
 		bool ValidateIntegerInputInner(const char* text);
 		bool ValidateFloatInputInner(const char* text);
 		bool ValidateTextInputInner(const char* text);
-
-		void SetAxisJogSelection(uint32_t axisControl);
 
 		ZKWindow* window_ = nullptr;
 		ZKWindow* noTouchWindow_ = nullptr;
