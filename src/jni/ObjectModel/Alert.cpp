@@ -11,7 +11,7 @@ namespace OM
 
 	void Alert::Reset()
 	{
-		dbg("Resetting alert");
+		verbose("Resetting alert");
 		mode = Mode::None;
 		flags.Clear();
 		for (size_t i = 0; i < ARRAY_SIZE(choices); i++)

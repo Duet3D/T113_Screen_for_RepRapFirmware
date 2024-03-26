@@ -55,6 +55,8 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 							  UI::WINDOW->CloseLastWindow();
 							  UI::WINDOW->OpenWindow(UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow));
 						  });
+
+						  UI::POPUP_WINDOW->SetTitle("Gcode Response");
 						  UI::POPUP_WINDOW->SetText(val);
 						  UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
 					  }

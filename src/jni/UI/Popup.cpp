@@ -23,7 +23,7 @@
 
 namespace UI
 {
-	PopupWindow::PopupWindow() : okCb_([]() {}), cancelCb_([]() {})
+	PopupWindow::PopupWindow() : okCb_([]() {}), cancelCb_([]() {}), mode_(OM::Alert::Mode::None)
 	{
 		window_ = UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow);
 		noTouchWindow_ = UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow);
@@ -43,7 +43,6 @@ namespace UI
 		progress_ = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress);
 
 		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
-		text_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 		SetTimeout(StoragePreferences::getInt("info_timeout", DEFAULT_POPUP_TIMEOUT));
 	}
 
@@ -90,6 +89,7 @@ namespace UI
 		SetOkBtnText(LANGUAGEMANAGER->getValue("ok").c_str());
 		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
+		SetTextScrollable(false);
 		WINDOW->OpenOverlay(window_);
 		okCb_ = okCb;
 		cancelCb_ = cancelCb;

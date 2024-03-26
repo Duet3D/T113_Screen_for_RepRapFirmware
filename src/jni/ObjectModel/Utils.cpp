@@ -10,6 +10,7 @@
 
 #include "UI/UserInterface.h"
 
+#include "Alert.h"
 #include "Axis.h"
 #include "BedOrChamber.h"
 #include "Configuration.h"
@@ -26,6 +27,8 @@ namespace OM
 {
 	void RemoveAll()
 	{
+		currentAlert.Reset();
+		lastAlertSeq = 0;
 		Move::RemoveAxis(0, true);
 		Move::RemoveExtruderAxis(0, true);
 		RemoveBed(0, true);

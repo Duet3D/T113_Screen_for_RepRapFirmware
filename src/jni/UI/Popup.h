@@ -105,7 +105,6 @@ namespace UI
 		bool ValidateFloatInput(const char* text);
 		bool ValidateTextInput(const char* text);
 
-		uint32_t GetSeq() const { return seq_; }
 		const OM::Alert::Mode GetMode() const { return mode_; }
 
 		OM::Move::Axis* GetJogAxis(int listIndex) const;
@@ -139,7 +138,6 @@ namespace UI
 		function<void(void)> okCb_;
 		function<void(void)> cancelCb_;
 		OM::Alert::Mode mode_;
-		uint32_t seq_;
 		OM::Move::Axis* axes_[MAX_TOTAL_AXES];
 		uint32_t timeout_;
 	};
