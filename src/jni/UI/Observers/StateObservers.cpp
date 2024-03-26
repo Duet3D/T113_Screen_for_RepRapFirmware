@@ -4,6 +4,8 @@
  *  Created on: 9 Jan 2024
  *      Author: Andy Everitt
  */
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Configuration.h"
@@ -71,10 +73,12 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  if (val[0] != 0)
 						  return;
 					  UI::PopupWindow* popup = UI::PopupWindow::GetInstance();
-					  if (!popup->IsOpen() || popup->IsResponse())
-						  return;
-					  popup->Close();
 					  OM::currentAlert.Reset();
+					  if (!popup->IsOpen() || popup->IsResponse())
+					  {
+						  return;
+					  }
+					  popup->Close();
 				  }),
 	OBSERVER_UINT("state:messageBox:axisControls",
 				  [](OBSERVER_UINT_ARGS) {
@@ -88,6 +92,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 				  }),
 	OBSERVER_INT("state:messageBox:mode",
 				 [](OBSERVER_INT_ARGS) {
+					 dbg("Received alert mode %d", val);
 					 OM::currentAlert.mode = static_cast<OM::Alert::Mode>(val);
 					 OM::currentAlert.flags.SetBit(OM::Alert::GotMode);
 				 }),

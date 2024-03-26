@@ -777,6 +777,7 @@ namespace UI
 
 	void SetM291Popup(OM::Alert alert)
 	{
+		info("Setting M291 popup, mode=%d", (int)alert.mode);
 		OM::Alert::Mode mode_ = alert.mode;
 		uint32_t seq_ = alert.seq;
 
@@ -870,6 +871,7 @@ namespace UI
 			return;
 
 		Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
+		info("Setting file info popup for \"%s\"", item->GetPath().c_str());
 
 		float height = 0;
 		float layerHeight = 0;

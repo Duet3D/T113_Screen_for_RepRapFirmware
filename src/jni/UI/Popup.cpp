@@ -74,8 +74,6 @@ namespace UI
 
 		Clear();
 
-		seq_ = OM::currentAlert.seq;
-
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 
 		if (timeout_ > 0)
@@ -367,7 +365,7 @@ namespace UI
 
 	bool PopupWindow::IsResponse() const
 	{
-		return OM::currentAlert.mode == OM::Alert::Mode::None;
+		return mode_ == OM::Alert::Mode::None;
 	}
 
 	void PopupWindow::Clear()

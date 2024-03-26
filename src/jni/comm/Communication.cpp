@@ -319,7 +319,7 @@ namespace Comm
 		currentReqSeq = GetNextSeq(currentReqSeq);
 		if (currentReqSeq != nullptr)
 		{
-			Comm::duet.RequestModel("state", "f"); // Check if state is halted, if so we need to send M999
+			Comm::duet.RequestModel("state", "vn"); // Check if state is halted, if so we need to send M999
 			info("requesting %s\n", currentReqSeq->key);
 			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
 		}

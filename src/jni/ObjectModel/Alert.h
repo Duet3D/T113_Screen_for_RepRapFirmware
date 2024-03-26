@@ -78,21 +78,7 @@ namespace OM
 		Alert() : mode(Mode::Info), seq(0), controls(0), timeout(0.0) { Reset(); }
 
 		bool AllFlagsSet() const { return flags.GetRaw() == GotAll; }
-		void Reset()
-		{
-			mode = Mode::None;
-			flags.Clear();
-			for (size_t i = 0; i < ARRAY_SIZE(choices); i++)
-			{
-				choices[i].Clear();
-			}
-			limits.numberInt.min = 0;
-			limits.numberInt.max = INT32_MAX;
-			limits.numberFloat.min = 0;
-			limits.numberFloat.max = FLT_MAX;
-			limits.text.min = 1;
-			limits.text.max = 10;
-		}
+		void Reset();
 	};
 
 	extern Alert currentAlert;
