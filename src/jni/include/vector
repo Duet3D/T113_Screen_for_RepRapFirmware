@@ -24,6 +24,7 @@
 #include <func_exception>
 #include <algorithm>
 #include <type_traits>
+#include <std_fixed/initializer_list>
 
 
 #ifndef __STD_HEADER_VECTOR
@@ -72,6 +73,19 @@ namespace std{
 			data = a.allocate(data_size);
 
 			resize(n, value);
+		}
+
+		// Constructor with brace initialization
+		explicit _UCXXEXPORT vector(std::initializer_list<T> initList, const Allocator& al = Allocator()) :
+		    data(0), data_size(0), elements(0), a(al)
+		{
+		    data_size = initList.size() + __UCLIBCXX_STL_BUFFER_SIZE__;
+		    data = a.allocate(data_size);
+
+		    // Initialize elements using initializer list
+		    for (const auto& element : initList) {
+		        a.construct(data + elements++, element);
+		    }
 		}
 
 		template <class InputIterator> _UCXXEXPORT
@@ -127,6 +141,13 @@ namespace std{
 			}
 
 			return *this;
+		}
+
+		// Assignment operator with brace initialization
+		_UCXXEXPORT vector<T, Allocator>& operator=(std::initializer_list<T> initList)
+		{
+		    assign(initList.begin(), initList.end());
+		    return *this;
 		}
 
 		template <class InputIterator> _UCXXEXPORT void assign(InputIterator first, InputIterator last){
