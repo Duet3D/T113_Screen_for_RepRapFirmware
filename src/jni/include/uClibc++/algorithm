@@ -61,6 +61,15 @@ namespace std{
 		return first;
 	}
 
+    template<class InputIterator, class Predicate> _UCXXEXPORT
+        bool all_of(InputIterator first, InputIterator last, Predicate pred)
+    {
+        while(first !=last && pred(*first)){
+            ++first;
+        }
+        return first == last;
+    }
+
 	template<class ForwardIterator1, class ForwardIterator2> _UCXXEXPORT ForwardIterator1
 		find_end(ForwardIterator1 first1, ForwardIterator1 last1,
 			ForwardIterator2 first2, ForwardIterator2 last2)

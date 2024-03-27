@@ -13,6 +13,10 @@
 
 #pragma once
 
+#include "Debug.h"
+
+#include "utils.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -20,13 +24,16 @@
 #include <codecvt>
 #include <locale>
 #endif
+#include "std_fixed/functional.h"
+#include "vector"
 #include <fstream>
-#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
 #include <sstream>
+#include <stdexcept>
+#include <stdlib.h>
 #include <string>
 #include <typeinfo>
 #include <vector>
@@ -38,7 +45,7 @@ namespace rapidcsv
 #else
 	static const bool sPlatformHasCR = false;
 #endif
-	static const std::vector<char> s_Utf8BOM = {'\xef', '\xbb', '\xbf'};
+	static const std::vector<char> s_Utf8BOM{'\xef', '\xbb', '\xbf'};
 
 	/**
 	 * @brief     Datastructure holding parameters controlling how invalid numbers (including
@@ -162,32 +169,32 @@ namespace rapidcsv
 			{
 				if (typeid(T) == typeid(int))
 				{
-					pVal = static_cast<T>(std::stoi(pStr));
+					pVal = static_cast<T>(atoi(pStr.c_str()));
 					return;
 				}
 				else if (typeid(T) == typeid(long))
 				{
-					pVal = static_cast<T>(std::stol(pStr));
+					pVal = static_cast<T>(atol(pStr.c_str()));
 					return;
 				}
 				else if (typeid(T) == typeid(long long))
 				{
-					pVal = static_cast<T>(std::stoll(pStr));
+					pVal = static_cast<T>(atoll(pStr.c_str()));
 					return;
 				}
 				else if (typeid(T) == typeid(unsigned))
 				{
-					pVal = static_cast<T>(std::stoul(pStr));
+					strtoul(pStr, pVal);
 					return;
 				}
 				else if (typeid(T) == typeid(unsigned long))
 				{
-					pVal = static_cast<T>(std::stoul(pStr));
+					strtoul(pStr, pVal);
 					return;
 				}
 				else if (typeid(T) == typeid(unsigned long long))
 				{
-					pVal = static_cast<T>(std::stoull(pStr));
+					strtoull(pStr, pVal);
 					return;
 				}
 			}
@@ -210,17 +217,17 @@ namespace rapidcsv
 				{
 					if (typeid(T) == typeid(float))
 					{
-						pVal = static_cast<T>(std::stof(pStr));
+						strtof(pStr, pVal);
 						return;
 					}
 					else if (typeid(T) == typeid(double))
 					{
-						pVal = static_cast<T>(std::stod(pStr));
+						strtod(pStr, pVal);
 						return;
 					}
 					else if (typeid(T) == typeid(long double))
 					{
-						pVal = static_cast<T>(std::stold(pStr));
+						strtold(pStr, pVal);
 						return;
 					}
 				}
@@ -229,13 +236,13 @@ namespace rapidcsv
 					if ((typeid(T) == typeid(float)) || (typeid(T) == typeid(double)) ||
 						(typeid(T) == typeid(long double)))
 					{
-						std::istringstream iss(pStr);
-						iss.imbue(std::locale::classic());
-						iss >> pVal;
-						if (iss.fail() || iss.bad() || !iss.eof())
-						{
-							throw std::invalid_argument("istringstream: no conversion");
-						}
+						//						std::istringstream iss(pStr);
+						//						iss.imbue(std::locale::classic());
+						//						iss >> pVal;
+						//						if (iss.fail() || iss.bad() || !iss.eof())
+						//						{
+						//							throw std::invalid_argument("istringstream: no conversion");
+						//						}
 						return;
 					}
 				}
@@ -291,7 +298,7 @@ namespace rapidcsv
 	}
 
 	template <typename T>
-	using ConvFunc = std::function<void(const std::string& pStr, T& pVal)>;
+	using ConvFunc = function<void(const std::string& pStr, T& pVal)>;
 
 	/**
 	 * @brief     Datastructure holding parameters controlling which row and column should be
@@ -313,14 +320,14 @@ namespace rapidcsv
 		{
 			if (mColumnNameIdx < -1)
 			{
-				const std::string errStr = "invalid column name index " + std::to_string(mColumnNameIdx) + " < -1";
-				throw std::out_of_range(errStr);
+				warn("Column index can not be less than 1");
+				mColumnNameIdx = -1;
 			}
 
 			if (mRowNameIdx < -1)
 			{
-				const std::string errStr = "invalid row name index " + std::to_string(mRowNameIdx) + " < -1";
-				throw std::out_of_range(errStr);
+				warn("Row index can not be less than 1");
+				mRowNameIdx = -1;
 			}
 		}
 
@@ -606,16 +613,6 @@ namespace rapidcsv
 						converter.ToVal(itRow->at(dataColumnIdx), val);
 						column.push_back(val);
 					}
-					else
-					{
-						const std::string errStr =
-							"requested column index " + std::to_string(pColumnIdx) +
-							" >= " + std::to_string(itRow->size() - GetDataColumnIndex(0)) +
-							" (number of columns on row index " +
-							std::to_string(std::distance(mData.begin(), itRow) - (mLabelParams.mColumnNameIdx + 1)) +
-							")";
-						throw std::out_of_range(errStr);
-					}
 				}
 			}
 			return column;
@@ -655,7 +652,9 @@ namespace rapidcsv
 			const int columnIdx = GetColumnIdx(pColumnName);
 			if (columnIdx < 0)
 			{
-				throw std::out_of_range("column not found: " + pColumnName);
+				warn("column not found: %s", pColumnName);
+				std::vector<T> empty;
+				return empty;
 			}
 			return GetColumn<T>(static_cast<size_t>(columnIdx));
 		}
@@ -672,7 +671,9 @@ namespace rapidcsv
 			const int columnIdx = GetColumnIdx(pColumnName);
 			if (columnIdx < 0)
 			{
-				throw std::out_of_range("column not found: " + pColumnName);
+				warn("column not found: %s", pColumnName);
+				std::vector<T> empty;
+				return empty;
 			}
 			return GetColumn<T>(static_cast<size_t>(columnIdx), pToVal);
 		}
@@ -726,6 +727,7 @@ namespace rapidcsv
 			const int columnIdx = GetColumnIdx(pColumnName);
 			if (columnIdx < 0)
 			{
+				warn("column not found: %s", pColumnName);
 				throw std::out_of_range("column not found: " + pColumnName);
 			}
 			SetColumn<T>(static_cast<size_t>(columnIdx), pColumn);
@@ -1333,7 +1335,7 @@ namespace rapidcsv
 			const size_t dataColumnIdx = GetDataColumnIndex(pColumnIdx);
 			if (mLabelParams.mColumnNameIdx < 0)
 			{
-				throw std::out_of_range("column name row index < 0: " + std::to_string(mLabelParams.mColumnNameIdx));
+				throw std::out_of_range(utils::format("column name row index < 0: %d", mLabelParams.mColumnNameIdx));
 			}
 
 			return mData.at(static_cast<size_t>(mLabelParams.mColumnNameIdx)).at(dataColumnIdx);
@@ -1348,7 +1350,7 @@ namespace rapidcsv
 		{
 			if (mLabelParams.mColumnNameIdx < 0)
 			{
-				throw std::out_of_range("column name row index < 0: " + std::to_string(mLabelParams.mColumnNameIdx));
+				throw std::out_of_range(utils::format("column name row index < 0: %d", mLabelParams.mColumnNameIdx));
 			}
 
 			const size_t dataColumnIdx = GetDataColumnIndex(pColumnIdx);
@@ -1395,7 +1397,7 @@ namespace rapidcsv
 			const size_t dataRowIdx = GetDataRowIndex(pRowIdx);
 			if (mLabelParams.mRowNameIdx < 0)
 			{
-				throw std::out_of_range("row name column index < 0: " + std::to_string(mLabelParams.mRowNameIdx));
+				throw std::out_of_range(utils::format("row name column index < 0: %d", mLabelParams.mRowNameIdx));
 			}
 
 			return mData.at(dataRowIdx).at(static_cast<size_t>(mLabelParams.mRowNameIdx));
@@ -1412,7 +1414,7 @@ namespace rapidcsv
 			mRowNames[pRowName] = dataRowIdx;
 			if (mLabelParams.mRowNameIdx < 0)
 			{
-				throw std::out_of_range("row name column index < 0: " + std::to_string(mLabelParams.mRowNameIdx));
+				throw std::out_of_range(utils::format("row name column index < 0: %d", mLabelParams.mRowNameIdx));
 			}
 
 			// increase table size if necessary:
@@ -1454,7 +1456,7 @@ namespace rapidcsv
 		{
 			std::ifstream stream;
 			stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-			stream.open(mPath, std::ios::binary);
+			stream.open(mPath.c_str(), std::ios::binary);
 			ReadCsv(stream);
 		}
 
@@ -1469,7 +1471,7 @@ namespace rapidcsv
 			std::vector<char> bom2b(2, '\0');
 			if (length >= 2)
 			{
-				pStream.read(bom2b.data(), 2);
+				pStream.read(&bom2b.front(), 2);
 				pStream.seekg(0, std::ios::beg);
 			}
 
@@ -1482,7 +1484,7 @@ namespace rapidcsv
 
 				std::wifstream wstream;
 				wstream.exceptions(std::wifstream::failbit | std::wifstream::badbit);
-				wstream.open(mPath, std::ios::binary);
+				wstream.open(mPath.c_str(), std::ios::binary);
 				if (mIsLE)
 				{
 					wstream.imbue(std::locale(wstream.getloc(),
@@ -1509,7 +1511,7 @@ namespace rapidcsv
 				if (length >= 3)
 				{
 					std::vector<char> bom3b(3, '\0');
-					pStream.read(bom3b.data(), 3);
+					pStream.read(&bom3b.front(), 3);
 
 					if (bom3b != s_Utf8BOM)
 					{
@@ -1541,7 +1543,7 @@ namespace rapidcsv
 			while (p_FileLength > 0)
 			{
 				const std::streamsize toReadLength = std::min<std::streamsize>(p_FileLength, bufLength);
-				pStream.read(buffer.data(), toReadLength);
+				pStream.read(&buffer.front(), toReadLength);
 
 				// With user-specified istream opened in non-binary mode on windows, we may have a
 				// data length mismatch, so ensure we don't parse outside actual data length read.
@@ -1679,7 +1681,7 @@ namespace rapidcsv
 
 				std::wofstream wstream;
 				wstream.exceptions(std::wofstream::failbit | std::wofstream::badbit);
-				wstream.open(mPath, std::ios::binary | std::ios::trunc);
+				wstream.open(mPath.c_str(), std::ios::binary | std::ios::trunc);
 
 				if (mIsLE)
 				{
@@ -1700,10 +1702,10 @@ namespace rapidcsv
 			{
 				std::ofstream stream;
 				stream.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-				stream.open(mPath, std::ios::binary | std::ios::trunc);
+				stream.open(mPath.c_str(), std::ios::binary | std::ios::trunc);
 				if (mHasUtf8BOM)
 				{
-					stream.write(s_Utf8BOM.data(), 3);
+					stream.write(&s_Utf8BOM.front(), 3);
 				}
 
 				WriteCsv(stream);

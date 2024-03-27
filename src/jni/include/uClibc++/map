@@ -22,6 +22,7 @@
 #include <utility>
 #include <iterator>
 #include <associative_base>
+#include <stdexcept>
 
 
 #ifndef __STD_HEADER_MAP
@@ -139,6 +140,26 @@ public:
 		iterator i = lower_bound(k);
 		if (i == end() || base::c(k, i->first)) {
 			i = insert(make_pair(k, T())).first;
+		}
+		return i->second;
+	}
+
+	reference at(const key_type& k)
+	{
+		const_iterator i = find(k);
+		if (i == end())
+		{
+			throw out_of_range("map::at");
+		}
+		return i->second;
+	}
+
+	const_reference at(const key_type& k) const
+	{
+		const_iterator i = find(k);
+		if (i == end())
+		{
+			throw out_of_range("map::at");
 		}
 		return i->second;
 	}
