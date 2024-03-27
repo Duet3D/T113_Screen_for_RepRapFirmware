@@ -1,9 +1,11 @@
 # Do not track FlyThings IDE config
 .metadata/*
 # libs and obj directories are generated at each compilation
-*/libs/*
+*/libs/armeabi/*
 */obj/*
 *.bin
 *.img
 *Thumbs.db
 *ui_resource_usage_analysis.txt
+*/Debug/*
+*/Release/*

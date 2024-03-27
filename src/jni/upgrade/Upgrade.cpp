@@ -5,7 +5,7 @@
  *      Author: andy
  */
 
-#include "Upgrade/Upgrade.h"
+#include "Upgrade.h"
 
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
