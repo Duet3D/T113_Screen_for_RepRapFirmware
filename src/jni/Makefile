@@ -1,8 +1,6 @@
 #一般情况无需修改该文件
 
 LOCAL_PATH=$(dir  $(abspath $(lastword $(MAKEFILE_LIST))))
-ZKSW_PREBUILT_LIB_PATH := $(ZKSW_REAL_PREBUILT)/lib/
-ZKSW_PREBUILT_INCLUDE_PATH := $(ZKSW_REAL_PREBUILT)/include
 
 EASYUI_COMMON_INCLUDE := $(LOCAL_PATH)/include
 
@@ -39,15 +37,14 @@ CXXFLAGS=-Os -fPIC -pipe -Wformat -Werror=format-security -fstack-protector -D_F
 CXXFLAGS+= -fexceptions -Wall -nostdinc++ -std=c++11
 
 INCLUDE_DIR := -I$(EASYUI_COMMON_INCLUDE) \
-               -I$(ZKSW_PREBUILT_INCLUDE_PATH) \
-               -I$(ZKSW_PREBUILT_INCLUDE_PATH)/system \
-               -I$(ZKSW_PREBUILT_INCLUDE_PATH)/uClibc++ \
+               -I$(EASYUI_COMMON_INCLUDE)/system \
+               -I$(EASYUI_COMMON_INCLUDE)/uClibc++ \
 			   -I$(LOCAL_PATH)/logic \
                -I.
 
-LDFLAGS += -lcurl -lssl -lcrypto  -lz -Linclude/libs/network
+LDFLAGS += -lcurl -lssl -lcrypto  -lz -L../libs/network
 LDFLAGS += -lzkhardware -lzknet -leasyui -llog -luClibc++
-LDFLAGS += -L$(ZKSW_PREBUILT_LIB_PATH) -L. 
+LDFLAGS += -L../libs -L. 
 
 TARGET=../libs/armeabi/libzkgui.so
 

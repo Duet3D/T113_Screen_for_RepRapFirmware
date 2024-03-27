@@ -27,10 +27,10 @@
 									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_TOOLCHAIN}/arm-unknown-linux-musleabihf/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_TOOLCHAIN}/arm-unknown-linux-musleabihf/sysroot/usr/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_TOOLCHAIN}/lib/gcc/arm-unknown-linux-musleabihf/6.4.1/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_PREBUILT}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_PREBUILT}/include/system&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_PREBUILT}/include/uClibc++&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${LOCAL_PATH}/logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:${LOCAL_PATH}/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:${LOCAL_PATH}/include/system}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:${LOCAL_PATH}/include/uClibc++}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:${LOCAL_PATH}/logic}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1947386254" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

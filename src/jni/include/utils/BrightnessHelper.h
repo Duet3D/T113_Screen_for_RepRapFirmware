@@ -13,85 +13,85 @@
  */
 class BrightnessHelper {
 public:
-    /**
-     * @brief 获取最大亮度值，目前最大值为100
-     */
-    int getMaxBrightness() const;
+	/**
+	 * @brief 获取最大亮度值，目前最大值为100
+	 */
+	int getMaxBrightness() const;
 
-    /**
-     * @brief 获取当前亮度值
-     */
-    int getBrightness() const;
+	/**
+	 * @brief 获取当前亮度值
+	 */
+	int getBrightness() const;
 
-    /**
-     * @brief 设置亮度值
-     * @param brightness 范围：0 ~ 100
-     */
-    void setBrightness(int brightness);
+	/**
+	 * @brief 设置亮度值
+	 * @param brightness 范围：0 ~ 100
+	 */
+	void setBrightness(int brightness);
 
-    /**
-     * @brief 关屏
-     */
-    void screenOff();
+	/**
+	 * @brief 关屏
+	 */
+	void screenOff();
 
-    /**
-     * @brief 开屏
-     */
-    void screenOn();
+	/**
+	 * @brief 开屏
+	 */
+	void screenOn();
 
-    /**
-     * @brief 关背光
-     */
-    void backlightOff();
+	/**
+	 * @brief 关背光
+	 */
+	void backlightOff();
 
-    /**
-     * @brief 开背光
-     */
-    void backlightOn();
+	/**
+	 * @brief 开背光
+	 */
+	void backlightOn();
 
-    bool screenOffEx();
-    bool screenOnEx();
+	bool screenOffEx();
+	bool screenOnEx();
 
-    void setLCDEnable(bool enable);
+	void setLCDEnable(bool enable);
 
-    /**
-     * @brief 是否是开屏状态
-     */
-    bool isScreenOn() const;
+	/**
+	 * @brief 是否是开屏状态
+	 */
+	bool isScreenOn() const;
 
-    /**
-     * @brief 设置对比度
-     * @param contrast 范围：0 ~ 100
-     */
-    void setContrast(int contrast);
+	/**
+	 * @brief 设置对比度
+	 * @param contrast 范围：0 ~ 100
+	 */
+	void setContrast(int contrast);
 
-    /**
-     * @brief 设置饱和度
-     * @param saturation 范围：0 ~ 100
-     */
-    void setSaturation(int saturation);
+	/**
+	 * @brief 设置饱和度
+	 * @param saturation 范围：0 ~ 100
+	 */
+	void setSaturation(int saturation);
 
-    /**
-     * @brief 设置色调
-     * @param hue 范围：0 ~ 100
-     */
-    void setHue(int hue);
+	/**
+	 * @brief 设置色调
+	 * @param hue 范围：0 ~ 100
+	 */
+	void setHue(int hue);
 
-    static BrightnessHelper* getInstance();
-
-private:
-    BrightnessHelper();
+	static BrightnessHelper* getInstance();
 
 private:
-    int mMinBrightness;
-    int mMaxBrightness;
-    int mBrightness;
+	BrightnessHelper();
 
-    float mRatio;
+private:
+	int mMinBrightness;
+	int mMaxBrightness;
+	int mBrightness;
 
-    bool mIsScreenOn;
+	float mRatio;
+
+	bool mIsScreenOn;
 };
 
-#define BRIGHTNESSHELPER        BrightnessHelper::getInstance()
+#define BRIGHTNESSHELPER		BrightnessHelper::getInstance()
 
 #endif /* _UTILS_BRIGHTNESS_HELPER_H_ */
