@@ -1,5 +1,10 @@
 # No need to modify this file in general
 
+CC=arm-unknown-linux-musleabihf-gcc
+CROSS_COMPILE=arm-unknown-linux-musleabihf-
+ZKSW_REAL_PREBUILT="c:/flythings/sdk/platforms/t113/prebuilt"
+ZKSW_REAL_TOOLCHAIN="c:/flythings/sdk/platforms/t113/toolchain"
+
 # Set the local path to the directory of the current Makefile
 LOCAL_PATH=$(dir  $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -46,12 +51,18 @@ CXXFLAGS += -MMD -MP
 # Additional compiler flags
 CXXFLAGS+= -fexceptions -Wall -nostdinc++ -std=c++11
 
+# Compiler flags for debugging
+# CXXFLAGS+= -ftime-report -v
+
 # Include directories
-INCLUDE_DIR := -I$(EASYUI_COMMON_INCLUDE) \
-               -I$(EASYUI_COMMON_INCLUDE)/system \
-               -I$(EASYUI_COMMON_INCLUDE)/uClibc++ \
-			   -I$(LOCAL_PATH)/logic \
-               -I.
+# INCLUDE_DIR += -I$(ZKSW_REAL_PREBUILT)/include
+# INCLUDE_DIR += -I$(ZKSW_REAL_PREBUILT)/include/system
+INCLUDE_DIR += -I$(EASYUI_COMMON_INCLUDE)/system
+INCLUDE_DIR += -I$(EASYUI_COMMON_INCLUDE)/uClibc++			# some files have been modified
+INCLUDE_DIR += -I$(ZKSW_REAL_PREBUILT)/include/uClibc++		# including all the files slowed down the compilation for some reason
+INCLUDE_DIR += -I$(EASYUI_COMMON_INCLUDE)
+INCLUDE_DIR += -I$(EASYUI_COMMON_INCLUDE)/../logic
+INCLUDE_DIR += -I.
 
 # Linker flags
 LDFLAGS += -lcurl -lssl -lcrypto  -lz -L../libs/network
@@ -85,7 +96,7 @@ DEP_FILES := $(OBJS:.o=.d)
 -include $(DEP_FILES)
 
 # Default target
-all: prepare $(TARGET)
+all: prepare $(OBJS) $(TARGET)
 	@$(ECHO) 
 	@$(ECHO) "[armeabi] Install        : libzkgui.so => libs/armeabi/libzkgui.so"
 	
@@ -108,8 +119,8 @@ $(TARGET):$(OBJS)
 # Prepare the build environment
 prepare: 
 	@$(ECHO) "[armeabi] GCC            : "$(CC) 
-	@-$(MKDIR) ../libs/armeabi -p 
-	@-$(MKDIR) $(OBJS_DIR_TREE) -p
+	@-$(MKDIR) -p ../libs/armeabi
+	@-$(MKDIR) -p $(OBJS_DIR_TREE)
 	@-$(RM) $(TARGET) -rf
 	
 # Clean the build artifacts

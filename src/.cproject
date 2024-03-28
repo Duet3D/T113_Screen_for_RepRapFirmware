@@ -34,6 +34,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_TOOLCHAIN}/lib/gcc/arm-unknown-linux-musleabihf/6.4.1/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/jni/include/system}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/jni/include/uClibc++}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ZKSW_REAL_PREBUILT}/include/uClibc++&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/jni}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/jni/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/jni/logic}&quot;"/>

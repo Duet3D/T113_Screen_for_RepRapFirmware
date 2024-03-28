@@ -5,8 +5,12 @@
  *      Author: andy
  */
 
-#include "Heightmap.h"
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
+#include "Debug.h"
+
 #include "Hardware/Duet.h"
+#include "Heightmap.h"
 #include "rapidcsv/rapidcsv.h"
 
 namespace OM
