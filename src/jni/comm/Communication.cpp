@@ -341,6 +341,7 @@ namespace Comm
 	{
 		// Sort the fieldTable prior searching using binary search
 		system("mkdir /tmp/thumbnails");
+		system("mkdir /tmp/heightmaps");
 		SortFieldTable();
 	}
 } // namespace Comm

@@ -8,9 +8,9 @@
 #ifndef JNI_HARDWARE_DUET_H_
 #define JNI_HARDWARE_DUET_H_
 
-#include "utils.h"
 #include "curl/curl.h"
 #include "restclient-cpp/restclient.h"
+#include "utils/utils.h"
 
 #include "Comm/Network.h"
 #include "Configuration.h"

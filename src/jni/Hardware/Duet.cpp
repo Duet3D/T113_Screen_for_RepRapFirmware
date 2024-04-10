@@ -21,8 +21,8 @@
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
 #include "uart/UartContext.h"
-#include "utils.h"
 #include "utils/TimeHelper.h"
+#include "utils/utils.h"
 #include "json/json.h"
 #include <map>
 #include <string>

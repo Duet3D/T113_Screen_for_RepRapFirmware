@@ -16,14 +16,12 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-
-
-#include <memory>
-#include <utility>
-#include <iterator>
 #include <associative_base>
+#include <iterator>
+#include <memory>
 #include <stdexcept>
-
+#include <utility>
+#include <utils/Log.h>
 
 #ifndef __STD_HEADER_MAP
 #define __STD_HEADER_MAP
@@ -149,6 +147,7 @@ public:
 		const_iterator i = find(k);
 		if (i == end())
 		{
+			LOGE("map key not found, out of range error");
 			throw out_of_range("map::at");
 		}
 		return i->second;
@@ -159,6 +158,7 @@ public:
 		const_iterator i = find(k);
 		if (i == end())
 		{
+			LOGE("map key not found, out of range error");
 			throw out_of_range("map::at");
 		}
 		return i->second;

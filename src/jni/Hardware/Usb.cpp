@@ -8,10 +8,10 @@
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 
-#include "Usb.h"
 #include "UI/UserInterface.h"
+#include "Usb.h"
 #include "sys/stat.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <fstream>
 
 namespace USB

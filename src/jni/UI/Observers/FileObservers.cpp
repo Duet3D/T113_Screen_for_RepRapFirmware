@@ -14,7 +14,7 @@
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "manager/LanguageManager.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <string>
 
 #include "ObjectModel/Files.h"

@@ -16,7 +16,7 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/UserInterface.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <utils/TimeHelper.h>
 
 namespace Comm

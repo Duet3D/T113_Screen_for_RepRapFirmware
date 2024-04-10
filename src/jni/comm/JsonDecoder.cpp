@@ -24,7 +24,7 @@
 #include "ObjectModel/Utils.h"
 #include "UI/OmObserver.h"
 #include "uart/UartContext.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <string>
 
 #include "Debug.h"

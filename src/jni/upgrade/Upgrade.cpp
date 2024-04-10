@@ -18,7 +18,7 @@
 #include "entry/EasyUIContext.h"
 #include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <vector>

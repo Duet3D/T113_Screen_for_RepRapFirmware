@@ -1,10 +1,5 @@
 # No need to modify this file in general
 
-CC=arm-unknown-linux-musleabihf-gcc
-CROSS_COMPILE=arm-unknown-linux-musleabihf-
-ZKSW_REAL_PREBUILT="c:/flythings/sdk/platforms/t113/prebuilt"
-ZKSW_REAL_TOOLCHAIN="c:/flythings/sdk/platforms/t113/toolchain"
-
 # Set the local path to the directory of the current Makefile
 LOCAL_PATH=$(dir  $(abspath $(lastword $(MAKEFILE_LIST))))
 

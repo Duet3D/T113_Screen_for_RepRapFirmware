@@ -13,7 +13,7 @@
 #include "Network.h"
 #include "curl/curl.h"
 #include "restclient-cpp/connection.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <system/Thread.h>
 #include <vector>
 

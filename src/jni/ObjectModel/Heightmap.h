@@ -20,21 +20,24 @@ namespace OM
 		HeightmapMeta();
 		~HeightmapMeta();
 
+		void Reset();
+		void Parse(const std::string& meta);
+
 		Move::Axis* GetAxis(size_t index);
-		float GetMin(size_t index);
-		float GetMax(size_t index);
-		float GetSpacing(size_t index);
-		float GetSamples(size_t index);
-		float GetRadius();
+		double GetMin(size_t index);
+		double GetMax(size_t index);
+		double GetSpacing(size_t index);
+		size_t GetSamples(size_t index);
+		double GetRadius();
 
 	  private:
-		char m_axis0[2];
-		char m_axis1[2];
-		float m_min[2];
-		float m_max[2];
-		float m_radius;
-		float m_spacing[2];
-		float m_samples[2];
+		std::string m_axis0;
+		std::string m_axis1;
+		double m_min[2];
+		double m_max[2];
+		double m_radius;
+		double m_spacing[2];
+		size_t m_samples[2];
 	};
 
 	class Heightmap
@@ -45,12 +48,15 @@ namespace OM
 		HeightmapMeta meta;
 
 	  private:
+		void ParseMeta(const std::string& csvContents);
+		void ParseData(const std::string& csvContents);
+
 		std::string m_fileName;
-		float m_minError;
-		float m_maxError;
-		float m_meanError;
-		float m_stdDev;
-		std::vector<std::vector<float>> m_heightmap;
+		double m_minError;
+		double m_maxError;
+		double m_meanError;
+		double m_stdDev;
+		std::vector<std::vector<double>> m_heightmap;
 	};
 } // namespace OM
 

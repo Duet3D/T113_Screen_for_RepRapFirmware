@@ -14,7 +14,7 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include <algorithm>
 #include <map>
 

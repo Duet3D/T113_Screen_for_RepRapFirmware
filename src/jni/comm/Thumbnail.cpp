@@ -14,7 +14,7 @@ extern "C"
 #include <sys/stat.h>
 
 #include "Comm/FileInfo.h"
-#include "utils.h"
+#include "utils/utils.h"
 
 std::string GetThumbnailPath(const char* filepath)
 {
