@@ -6,6 +6,7 @@
                 "${workspaceFolder}/src/jni/include",
                 "${workspaceFolder}/src/jni/include/system",
                 "${workspaceFolder}/src/jni/include/uClibc++",
+                "${workspaceFolder}/../t113/prebuilt/include/uClibc++",
                 "${workspaceFolder}/src/jni/logic",
                 "${workspaceFolder}/src/jni/"
             ],
@@ -16,10 +17,13 @@
                 "_FORTIFY_SOURCE=1",
                 "USE_ANDROID_LOG"
             ],
-            "compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
+            "compilerPath": "${workspaceFolder}/../t113/toolchain/bin/arm-unknown-linux-musleabihf-gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "intelliSenseMode": "linux-gcc-arm64"
+            "intelliSenseMode": "linux-gcc-arm64",
+            "compilerArgs": [
+                "-nostdinc++"
+            ]
         }
     ],
     "version": 4
