@@ -18,30 +18,39 @@ namespace utils
 	{
 		size_t col = 0;
 		size_t row = 0;
+		size_t dataOffset = hasHeaders ? 1 : 0;
 		bool inQuote = false;
+
+		info("Parsing CSV: hasHeaders=%d", hasHeaders);
+		dbg("CSV contents: %s", csvContents.c_str());
 
 		for (size_t i = 0; i < csvContents.size(); i++)
 		{
 			const char c = csvContents[i];
 			const char n = i < csvContents.size() - 1 ? csvContents[i + 1] : 0;
 
+			verbose("c=%c, n=%c, inQuote=%d, col=%u, row=%u", c, n, inQuote, col, row);
+
 			// Make sure we have enough rows and columns
 			if (hasHeaders && row == 0)
 			{
 				if (m_headers.size() <= col)
 				{
+					verbose("Adding col %u to headers", col);
 					m_headers.push_back("");
 				}
 			}
 			else
 			{
-				if (m_data.size() < row)
+				if (m_data.size() <= row - dataOffset)
 				{
+					verbose("Adding row %u", row - dataOffset);
 					m_data.push_back(std::vector<std::string>());
 				}
-				if (m_data[row - 1].size() <= col)
+				if (m_data[row - dataOffset].size() <= col)
 				{
-					m_data[row - 1].push_back("");
+					verbose("Adding col %u to m_data[%u]", col, row - dataOffset);
+					m_data[row - dataOffset].push_back("");
 				}
 			}
 
@@ -54,7 +63,7 @@ namespace utils
 				}
 				else
 				{
-					m_data[row - 1][col] += c;
+					m_data[row][col] += c;
 				}
 				i++;
 				continue;
@@ -77,7 +86,6 @@ namespace utils
 			// Check if we can move on to the next row
 			if (c == '\n' && !inQuote)
 			{
-				m_data.push_back(std::vector<std::string>());
 				col = 0;
 				row++;
 				continue;
@@ -95,7 +103,7 @@ namespace utils
 			}
 			else
 			{
-				m_data[row - 1][col] += c;
+				m_data[row - dataOffset][col] += c;
 			}
 		}
 
@@ -103,6 +111,7 @@ namespace utils
 		{
 			m_data.pop_back();
 		}
+		dbg("CSV: %u rows, %u cols", m_data.size(), m_data.size() > 0 ? m_data[0].size() : 0);
 	}
 
 	const std::vector<std::string>& CSV::GetHeaders() const
@@ -110,7 +119,17 @@ namespace utils
 		return m_headers;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, std::string& val)
+	size_t CSV::GetRowCount() const
+	{
+		return m_data.size();
+	}
+
+	size_t CSV::GetColumnCount() const
+	{
+		return m_data.size() > 0 ? m_data[0].size() : 0;
+	}
+
+	bool CSV::GetCell(const std::string& header, size_t row, std::string& val) const
 	{
 		if (!m_hasHeaders)
 		{
@@ -130,7 +149,7 @@ namespace utils
 		return false;
 	}
 
-	bool CSV::GetCell(size_t col, size_t row, std::string& val)
+	bool CSV::GetCell(size_t col, size_t row, std::string& val) const
 	{
 		if (row >= m_data.size())
 		{
@@ -148,7 +167,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, size_t& val)
+	bool CSV::GetCell(const std::string& header, size_t row, size_t& val) const
 	{
 		std::string str;
 		if (!GetCell(header, row, str))
@@ -160,7 +179,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(size_t col, size_t row, size_t& val)
+	bool CSV::GetCell(size_t col, size_t row, size_t& val) const
 	{
 		std::string str;
 		if (!GetCell(col, row, str))
@@ -172,7 +191,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(const std::string& header, size_t row, double& val)
+	bool CSV::GetCell(const std::string& header, size_t row, double& val) const
 	{
 		std::string str;
 		if (!GetCell(header, row, str))
@@ -184,7 +203,7 @@ namespace utils
 		return true;
 	}
 
-	bool CSV::GetCell(size_t col, size_t row, double& val)
+	bool CSV::GetCell(size_t col, size_t row, double& val) const
 	{
 		std::string str;
 		if (!GetCell(col, row, str))

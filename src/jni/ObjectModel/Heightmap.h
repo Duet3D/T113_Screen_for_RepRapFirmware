@@ -23,16 +23,15 @@ namespace OM
 		void Reset();
 		void Parse(const std::string& meta);
 
-		Move::Axis* GetAxis(size_t index);
-		double GetMin(size_t index);
-		double GetMax(size_t index);
-		double GetSpacing(size_t index);
-		size_t GetSamples(size_t index);
-		double GetRadius();
+		Move::Axis* GetAxis(size_t index) const;
+		double GetMin(size_t index) const { return m_min[index]; }
+		double GetMax(size_t index) const { return m_max[index]; }
+		double GetSpacing(size_t index) const { return m_spacing[index]; }
+		size_t GetSamples(size_t index) const { return m_samples[index]; }
+		double GetRadius() const { return m_radius; }
 
 	  private:
-		std::string m_axis0;
-		std::string m_axis1;
+		std::string m_axis[2];
 		double m_min[2];
 		double m_max[2];
 		double m_radius;
@@ -45,6 +44,14 @@ namespace OM
 	  public:
 		Heightmap(const char* filename);
 
+		struct Point
+		{
+			double x;
+			double y;
+			double z = 0.0f;
+			bool isNull = false;
+		};
+
 		HeightmapMeta meta;
 
 	  private:
@@ -56,7 +63,7 @@ namespace OM
 		double m_maxError;
 		double m_meanError;
 		double m_stdDev;
-		std::vector<std::vector<double>> m_heightmap;
+		std::vector<std::vector<Point>> m_heightmap;
 	};
 } // namespace OM
 

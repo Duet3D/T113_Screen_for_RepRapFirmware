@@ -21,14 +21,17 @@ namespace utils
 
 		const std::vector<std::string>& GetHeaders() const;
 
-		bool GetCell(const std::string& header, size_t row, std::string& val);
-		bool GetCell(size_t col, size_t row, std::string& val);
+		size_t GetRowCount() const;
+		size_t GetColumnCount() const;
 
-		bool GetCell(const std::string& header, size_t row, size_t& val);
-		bool GetCell(size_t col, size_t row, size_t& val);
+		bool GetCell(const std::string& header, size_t row, std::string& val) const;
+		bool GetCell(size_t col, size_t row, std::string& val) const;
 
-		bool GetCell(const std::string& header, size_t row, double& val);
-		bool GetCell(size_t col, size_t row, double& val);
+		bool GetCell(const std::string& header, size_t row, size_t& val) const;
+		bool GetCell(size_t col, size_t row, size_t& val) const;
+
+		bool GetCell(const std::string& header, size_t row, double& val) const;
+		bool GetCell(size_t col, size_t row, double& val) const;
 
 	  private:
 		std::vector<std::string> m_headers;

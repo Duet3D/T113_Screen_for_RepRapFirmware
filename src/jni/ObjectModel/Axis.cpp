@@ -60,6 +60,19 @@ namespace OM::Move
 		return axes[slot];
 	}
 
+	Axis* GetAxisByLetter(const char letter)
+	{
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
+		{
+			Axis* axis = GetAxis(i);
+			if (axis != nullptr && axis->letter[0] == letter)
+			{
+				return axis;
+			}
+		}
+		return nullptr;
+	}
+
 	Axis* GetOrCreateAxis(const size_t index)
 	{
 		dbg("Axis index %d / max %d\n", index, MAX_TOTAL_AXES);

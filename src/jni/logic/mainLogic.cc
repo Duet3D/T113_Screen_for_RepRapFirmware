@@ -360,7 +360,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mPrintWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::heightmap: {
-		OM::Heightmap("heightmap.csv");
+		OM::Heightmap("heightmap_delta.csv");
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;
 	}
