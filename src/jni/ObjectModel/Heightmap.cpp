@@ -11,7 +11,6 @@
 
 #include "Hardware/Duet.h"
 #include "Heightmap.h"
-#include "rapidcsv/rapidcsv.h"
 #include "utils/csv.h"
 #include <sstream>
 
