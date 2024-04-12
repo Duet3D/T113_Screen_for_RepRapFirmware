@@ -8,6 +8,8 @@
 #ifndef JNI_OBJECTMODEL_HEIGHTMAP_H_
 #define JNI_OBJECTMODEL_HEIGHTMAP_H_
 
+#include "Files.h"
+
 #include "Axis.h"
 #include <string>
 #include <vector>
@@ -65,6 +67,9 @@ namespace OM
 		double m_stdDev;
 		std::vector<std::vector<Point>> m_heightmap;
 	};
+
+	void RequestHeightMapFiles();
+	std::vector<FileSystem::FileSystemItem*> GetHeightMapFiles();
 } // namespace OM
 
 #endif /* JNI_OBJECTMODEL_HEIGHTMAP_H_ */

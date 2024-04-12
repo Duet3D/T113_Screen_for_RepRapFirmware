@@ -21,6 +21,9 @@ constexpr const char* DEFAULT_IP_ADDRESS = "192.168.0.";
 constexpr size_t MAX_IP_LENGTH = 50;
 constexpr size_t MAX_HOSTNAME_LENGTH = 64;
 constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchronize time with the Duet in milliseconds
+constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
+constexpr const char* DEFAULT_FILAMENTS_FILE = "filaments.csv";
+constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
 
 /* Thumbnails */
 constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;

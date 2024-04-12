@@ -346,6 +346,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mPrintWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::heightmap: {
+		OM::RequestHeightMapFiles();
 		OM::Heightmap("heightmap_delta.csv");
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;
@@ -1515,7 +1516,58 @@ static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, i
 {
 	// LOGD(" onListItemClick_ TempGraphYLabels  !!!\n");
 }
+
 static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress)
 {
 	// LOGD(" ProgressChanged PopupProgress %d !!!\n", progress);
+}
+
+static int getListItemCount_HeightMapList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_HeightMapList !\n");
+	return OM::GetHeightMapFiles().size();
+}
+
+static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	std::vector<OM::FileSystem::FileSystemItem*> files = OM::GetHeightMapFiles();
+	if (index < 0 || index >= (int)files.size())
+	{
+		warn("Invalid index %d, %u csv files", index, files.size());
+		return;
+	}
+	OM::FileSystem::FileSystemItem* item = files.at(index);
+	if (item == nullptr)
+	{
+		return;
+	}
+
+	pListItem->setText(item->GetName());
+}
+
+static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ HeightMapList  !!!\n");
+}
+
+static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
+{
+	OM::RequestHeightMapFiles();
+	return false;
+}
+
+static int getListItemCount_HeightMapScaleList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_HeightMapScaleList !\n");
+	return 5;
+}
+
+static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	// LOGD(" obtainListItemData_ HeightMapScaleList  !!!\n");
+}
+
+static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ HeightMapScaleList  !!!\n");
 }

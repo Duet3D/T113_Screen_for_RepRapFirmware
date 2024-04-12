@@ -114,6 +114,11 @@ namespace OM::FileSystem
 		return sItems.size();
 	}
 
+	const std::vector<FileSystemItem*>& GetItems()
+	{
+		return sItems;
+	}
+
 	FileSystemItem* GetItem(const size_t index)
 	{
 		if (index >= GetItemCount())
@@ -236,6 +241,7 @@ namespace OM::FileSystem
 
 	void RequestFiles(const std::string& path)
 	{
+		ClearFileSystem();
 		sUsbFolder = false;
 		sInMacroFolder = path.find("macro") != std::string::npos;
 		Comm::duet.RequestFileList(path.c_str());

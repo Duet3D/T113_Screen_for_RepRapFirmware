@@ -13,6 +13,7 @@
 
 #include "utils/Log.h"
 #include "control/ZKDigitalClock.h"
+#include "control/ZKPainter.h"
 #include "control/ZKButton.h"
 #include "control/ZKCircleBar.h"
 #include "control/ZKDiagram.h"
@@ -27,6 +28,23 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_HMStatisticsMean    50088
+#define ID_MAIN_HMStatisticsRMS    50087
+#define ID_MAIN_HMStatisticsMax    50086
+#define ID_MAIN_HMStatisticsMin    50085
+#define ID_MAIN_HMStatisticsArea    50084
+#define ID_MAIN_HMStatisticsNumPoints    50083
+#define ID_MAIN_TextView18    50082
+#define ID_MAIN_HeightMapStatisticsWindow    110040
+#define ID_MAIN_NoHeightMapLoadedText    50089
+#define ID_MAIN_HeightMapScaleList    80027
+#define ID_MAIN_HeightMapScale    52002
+#define ID_MAIN_HeightMapPainter    52001
+#define ID_MAIN_HeightMapPainterWindow    110039
+#define ID_MAIN_HeightMapRefresh    20053
+#define ID_MAIN_HeightMapList    80026
+#define ID_MAIN_HeightMapListWindow    110013
+#define ID_MAIN_TextView1    50044
 #define ID_MAIN_PrinterName    50081
 #define ID_MAIN_PopupProgress    91004
 #define ID_MAIN_TempGraphYLabels    80025

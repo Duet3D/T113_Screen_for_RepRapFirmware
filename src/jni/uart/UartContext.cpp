@@ -6,6 +6,7 @@
  */
 #include "DebugLevels.h"
 #define DEBUG_LEVEL DEBUG_LEVEL_INFO
+#include "Debug.h"
 
 #include <stdio.h>
 #include <unistd.h>

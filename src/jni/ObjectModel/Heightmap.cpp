@@ -9,8 +9,9 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
-#include "Hardware/Duet.h"
 #include "Heightmap.h"
+
+#include "Hardware/Duet.h"
 #include "utils/csv.h"
 #include <sstream>
 
@@ -200,5 +201,33 @@ namespace OM
 			m_minError,
 			m_maxError,
 			m_meanError);
+	}
+
+	void RequestHeightMapFiles()
+	{
+		FileSystem::RequestFiles("/sys");
+	}
+
+	std::vector<FileSystem::FileSystemItem*> GetHeightMapFiles()
+	{
+		std::vector<FileSystem::FileSystemItem*> files = FileSystem::GetItems();
+		std::vector<FileSystem::FileSystemItem*> csvFiles;
+
+		for (FileSystem::FileSystemItem* item : files)
+		{
+			if (item->GetType() != FileSystem::FileSystemItemType::file)
+				continue;
+
+			// Ignore non CSV files
+			if (item->GetName().find(".csv\0") == std::string::npos)
+				continue;
+
+			if (item->GetName().find(DEFAULT_FILAMENTS_FILE) != std::string::npos)
+				continue;
+
+			csvFiles.push_back(item);
+		}
+
+		return csvFiles;
 	}
 } // namespace OM

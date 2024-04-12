@@ -8,7 +8,6 @@
 #ifndef JNI_OBJECTMODEL_FILES_HPP_
 #define JNI_OBJECTMODEL_FILES_HPP_
 
-#include "Debug.h"
 #include "control/ZKListView.h"
 #include <string>
 #include <vector>
@@ -24,22 +23,20 @@ namespace OM::FileSystem
 	class FileSystemItem
 	{
 	public:
-		FileSystemItem(const FileSystemItemType type) : type_(type), size_(0) {
-			dbg("Files: Creating item of type %d", (int)type_);
-		}
-		FileSystemItem(const FileSystemItemType type, const std::string& name) : name_(name), type_(type), size_(0) {}
+	  FileSystemItem(const FileSystemItemType type) : type_(type), size_(0) {}
+	  FileSystemItem(const FileSystemItemType type, const std::string& name) : name_(name), type_(type), size_(0) {}
 
-		const std::string& GetName() const { return name_; }
-		void SetName(const std::string name);
-		std::string GetPath() const;
-		const std::string& GetDate() const { return date_; }
-		void SetDate(const std::string& date) { date_ = date; }
-		size_t GetSize() const { return size_; }
-		std::string GetReadableSize() const;
-		void SetSize(const size_t size) { size_ = size; }
-		FileSystemItemType GetType() const { return type_; }
+	  const std::string& GetName() const { return name_; }
+	  void SetName(const std::string name);
+	  std::string GetPath() const;
+	  const std::string& GetDate() const { return date_; }
+	  void SetDate(const std::string& date) { date_ = date; }
+	  size_t GetSize() const { return size_; }
+	  std::string GetReadableSize() const;
+	  void SetSize(const size_t size) { size_ = size; }
+	  FileSystemItemType GetType() const { return type_; }
 
-		~FileSystemItem();
+	  ~FileSystemItem();
 	private:
 		std::string name_;
 		FileSystemItemType type_;
@@ -67,6 +64,7 @@ namespace OM::FileSystem
 	File* AddFileAt(const size_t index);
 	Folder* AddFolderAt(const size_t index);
 	const size_t GetItemCount();
+	const std::vector<FileSystemItem*>& GetItems();
 	FileSystemItem* GetItem(const size_t index);
 	File* GetFile(const std::string& name);
 	Folder* GetSubFolder(const std::string& name);

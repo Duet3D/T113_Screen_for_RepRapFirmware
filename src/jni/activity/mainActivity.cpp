@@ -4,6 +4,23 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mHMStatisticsMeanPtr;
+static ZKTextView* mHMStatisticsRMSPtr;
+static ZKTextView* mHMStatisticsMaxPtr;
+static ZKTextView* mHMStatisticsMinPtr;
+static ZKTextView* mHMStatisticsAreaPtr;
+static ZKTextView* mHMStatisticsNumPointsPtr;
+static ZKTextView* mTextView18Ptr;
+static ZKWindow* mHeightMapStatisticsWindowPtr;
+static ZKTextView* mNoHeightMapLoadedTextPtr;
+static ZKListView* mHeightMapScaleListPtr;
+static ZKPainter* mHeightMapScalePtr;
+static ZKPainter* mHeightMapPainterPtr;
+static ZKWindow* mHeightMapPainterWindowPtr;
+static ZKButton* mHeightMapRefreshPtr;
+static ZKListView* mHeightMapListPtr;
+static ZKWindow* mHeightMapListWindowPtr;
+static ZKTextView* mTextView1Ptr;
 static ZKTextView* mPrinterNamePtr;
 static ZKSeekBar* mPopupProgressPtr;
 static ZKListView* mTempGraphYLabelsPtr;
@@ -260,6 +277,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_HeightMapRefresh, onButtonClick_HeightMapRefresh,
     ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
     ID_MAIN_Button1, onButtonClick_Button1,
     ID_MAIN_EStopBtn, onButtonClick_EStopBtn,
@@ -341,6 +359,8 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_HeightMapScaleList, getListItemCount_HeightMapScaleList, obtainListItemData_HeightMapScaleList, onListItemClick_HeightMapScaleList,
+    ID_MAIN_HeightMapList, getListItemCount_HeightMapList, obtainListItemData_HeightMapList, onListItemClick_HeightMapList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
@@ -536,6 +556,23 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mHMStatisticsMeanPtr = NULL;
+    mHMStatisticsRMSPtr = NULL;
+    mHMStatisticsMaxPtr = NULL;
+    mHMStatisticsMinPtr = NULL;
+    mHMStatisticsAreaPtr = NULL;
+    mHMStatisticsNumPointsPtr = NULL;
+    mTextView18Ptr = NULL;
+    mHeightMapStatisticsWindowPtr = NULL;
+    mNoHeightMapLoadedTextPtr = NULL;
+    mHeightMapScaleListPtr = NULL;
+    mHeightMapScalePtr = NULL;
+    mHeightMapPainterPtr = NULL;
+    mHeightMapPainterWindowPtr = NULL;
+    mHeightMapRefreshPtr = NULL;
+    mHeightMapListPtr = NULL;
+    mHeightMapListWindowPtr = NULL;
+    mTextView1Ptr = NULL;
     mPrinterNamePtr = NULL;
     mPopupProgressPtr = NULL;
 	mTempGraphYLabelsPtr = NULL;
@@ -764,6 +801,23 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mHMStatisticsMeanPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMean);
+    mHMStatisticsRMSPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsRMS);
+    mHMStatisticsMaxPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMax);
+    mHMStatisticsMinPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMin);
+    mHMStatisticsAreaPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsArea);
+    mHMStatisticsNumPointsPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsNumPoints);
+    mTextView18Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView18);
+    mHeightMapStatisticsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapStatisticsWindow);
+    mNoHeightMapLoadedTextPtr = (ZKTextView*)findControlByID(ID_MAIN_NoHeightMapLoadedText);
+    mHeightMapScaleListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapScaleList);if(mHeightMapScaleListPtr!= NULL){mHeightMapScaleListPtr->setListAdapter(this);mHeightMapScaleListPtr->setItemClickListener(this);}
+    mHeightMapScalePtr = (ZKPainter*)findControlByID(ID_MAIN_HeightMapScale);
+    mHeightMapPainterPtr = (ZKPainter*)findControlByID(ID_MAIN_HeightMapPainter);
+    mHeightMapPainterWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapPainterWindow);
+    mHeightMapRefreshPtr = (ZKButton*)findControlByID(ID_MAIN_HeightMapRefresh);
+    mHeightMapListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapList);if(mHeightMapListPtr!= NULL){mHeightMapListPtr->setListAdapter(this);mHeightMapListPtr->setItemClickListener(this);}
+    mHeightMapListWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapListWindow);
+    mTextView1Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView1);
     mPrinterNamePtr = (ZKTextView*)findControlByID(ID_MAIN_PrinterName);
     mPopupProgressPtr = (ZKSeekBar*)findControlByID(ID_MAIN_PopupProgress);if(mPopupProgressPtr!= NULL){mPopupProgressPtr->setSeekBarChangeListener(this);}
     mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);if(mTempGraphYLabelsPtr!= NULL){mTempGraphYLabelsPtr->setListAdapter(this);mTempGraphYLabelsPtr->setItemClickListener(this);}

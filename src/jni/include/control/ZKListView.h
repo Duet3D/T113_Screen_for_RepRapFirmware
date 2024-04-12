@@ -16,7 +16,7 @@ class ZKListViewPrivate;
 class ZKListSubItemPrivate;
 
 /**
- * @brief 列表控件
+ * @brief List control
  */
 class ZKListView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKListView)
@@ -53,7 +53,7 @@ public:
 		virtual ~ZKListItem();
 
 		/**
-		 * @brief 通过ID值获取子项
+		 * @brief Get subitem by ID
 		 */
 		ZKListSubItem* findSubItemByID(int id) const;
 		int getSubItemCount() const { return mSubItemCount; }
@@ -82,7 +82,7 @@ public:
 	};
 
 	/**
-	 * @brief 数据与UI绑定适配器
+	 * @brief Data and UI binding adapter
 	 */
 	class AbsListAdapter {
 		friend class ZKListView;
@@ -92,7 +92,7 @@ public:
 		virtual void obtainListItemData(ZKListView *pListView, ZKListItem *pListItem, int index) = 0;
 
 		/**
-		 * 数据更新，重绘UI
+		 * Update data and redraw UI
 		 */
 		void notifyDataSetChanged(ZKListView *pListView) {
 			if (pListView) {
@@ -102,7 +102,7 @@ public:
 	};
 
 	/**
-	 * @brief 列表项点击监听接口
+	 * @brief List item click listener interface
 	 */
 	class IItemClickListener {
 	public:
@@ -111,7 +111,7 @@ public:
 	};
 
 	/**
-	 * @brief 列表项长按监听接口
+	 * @brief List item long click listener interface
 	 */
 	class IItemLongClickListener {
 	public:
@@ -124,53 +124,53 @@ public:
 	void setItemLongClickListener(IItemLongClickListener *pListener);
 
 	/**
-	 * @brief 刷新列表
+	 * @brief Refresh the list
 	 */
 	void refreshListView();
 
 	/**
-	 * @brief 跳转到指定行或列
+	 * @brief Jump to the specified row or column
 	 */
 	void setSelection(int index);
 
 	/**
-	 * @brief 获取列表项宽
+	 * @brief Get the item width
 	 */
 	uint32_t getItemWidth() const;
 
 	/**
-	 * @brief 获取列表项高
+	 * @brief Get the item height
 	 */
 	uint32_t getItemHeight() const;
 
 	/**
-	 * @brief 获取列表行数
+	 * @brief Get the number of rows in the list
 	 */
 	uint32_t getRows() const;
 
 	/**
-	 * @brief 获取列表列数
+	 * @brief Get the number of columns in the list
 	 */
 	uint32_t getCols() const;
 
 	/**
-	 * @brief 获取列表总项数
+	 * @brief Get the total number of list items
 	 */
 	int getListItemCount() const;
 
 	/**
-	 * @brief 获取第一个可见项的索引值
+	 * @brief Get the index value of the first visible item
 	 */
 	int getFirstVisibleItemIndex() const;
 
 	/**
-	 * @brief 获取第一个可见项的偏移值
+	 * @brief Get the offset value of the first visible item
 	 */
 	int getFirstVisibleItemOffset() const;
 
 	/**
-	 * @brief 设置惯性滑动减速比例
-	 * @param ratio 减速比例 范围： 0 < ratio < 1
+	 * @brief Set the deceleration ratio for inertial scrolling
+	 * @param ratio Deceleration ratio Range: 0 < ratio < 1
 	 */
 	void setDecRatio(float ratio);
 
