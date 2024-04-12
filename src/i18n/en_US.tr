@@ -105,6 +105,7 @@
     <string name="refresh">Refresh</string>
     <string name="usb">USB Files</string>
     <string name="file_cache_state">File Info Cache: Queued(%d) Cached(%d) Requesting(%s) Thumbnail(%s)</string>
+    <string name="file_too_large_uart">File too large to upload via UART</string>
 
     <!-- Network Page -->
 

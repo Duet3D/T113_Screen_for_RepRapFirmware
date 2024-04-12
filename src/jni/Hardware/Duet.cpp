@@ -217,6 +217,14 @@ namespace Comm
 		}
 	}
 
+	void Duet::SendGcodef(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+		SendGcode(utils::format(fmt, args).c_str());
+		va_end(args);
+	}
+
 	bool Duet::UploadFile(const char* filename, const std::string& contents)
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
@@ -232,6 +240,17 @@ namespace Comm
 		switch (m_communicationType)
 		{
 		case CommunicationType::uart: {
+			/* UART is too slow to support uploading files */
+			if (contents.size() > MAX_UART_UPLOAD_SIZE)
+			{
+				warn("File too large (%u) to upload via UART, limit is %u", contents.size(), MAX_UART_UPLOAD_SIZE);
+				UI::CONSOLE->AddResponse(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
+				UI::POPUP_WINDOW->Open();
+				UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
+				UI::POPUP_WINDOW->SetText(filename);
+				return false;
+			}
+
 			SendGcodef("M28 \"%s\"", filename);
 			size_t prevPosition = 0;
 			size_t position = contents.find("\n"); // Find the first occurrence of \n

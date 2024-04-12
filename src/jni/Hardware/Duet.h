@@ -66,12 +66,8 @@ namespace Comm
 		void ScalePollInterval(float scale);
 		const uint32_t GetPollInterval() const { return m_pollInterval; }
 
-		template <typename... Args>
-		void SendGcodef(const char* fmt, Args... args)
-		{
-			SendGcode(utils::format(fmt, args...).c_str());
-		}
 		void SendGcode(const char* gcode);
+		void SendGcodef(const char* fmt, ...);
 		void RequestReply(RestClient::Response& r);
 		void ProcessReply(const RestClient::Response& r);
 
