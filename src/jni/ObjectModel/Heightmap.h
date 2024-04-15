@@ -58,8 +58,8 @@ namespace OM
 		bool LoadFromDuet(const char* filename);
 
 		const std::string& GetFileName() const { return m_fileName; }
-		size_t GetWidth() const { return m_heightmap.size(); }
-		size_t GetHeight() const { return m_heightmap.empty() ? 0 : m_heightmap[0].size(); }
+		size_t GetHeight() const { return m_heightmap.size(); }
+		size_t GetWidth() const { return m_heightmap.empty() ? 0 : m_heightmap[0].size(); }
 		const Point* const GetPoint(size_t x, size_t y) const;
 		double GetMinError() const { return m_minError; }
 		double GetMaxError() const { return m_maxError; }

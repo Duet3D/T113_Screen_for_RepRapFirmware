@@ -94,7 +94,7 @@ namespace UI
 
 				uint32_t color = GetColorForHeight(heightmap, point->z);
 				canvas->setSourceColor(color);
-				canvas->fillRect(x * 5, y * 5, 5, 5, 0);
+				canvas->fillRect(x * 20, y * 20, 20, 20, 0);
 			}
 		}
 

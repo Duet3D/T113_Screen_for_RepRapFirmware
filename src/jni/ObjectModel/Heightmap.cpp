@@ -152,7 +152,7 @@ namespace OM
 			error("Invalid point %u, %u, heightmap size (%u, %u)", x, y, GetWidth(), GetHeight());
 			return nullptr;
 		}
-		return &m_heightmap[x][y];
+		return &m_heightmap[y][x];
 	}
 
 	bool Heightmap::ParseMeta(const std::string& csvContents)
