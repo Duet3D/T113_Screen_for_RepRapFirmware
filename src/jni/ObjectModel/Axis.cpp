@@ -123,6 +123,8 @@ namespace OM::Move
 	AXIS_SETTER(SetAxisLetter, char, letter[0]);
 	AXIS_SETTER(SetAxisUserPosition, float, userPosition);
 	AXIS_SETTER(SetAxisMachinePosition, float, machinePosition);
+	AXIS_SETTER(SetAxisMinPosition, float, minPosition);
+	AXIS_SETTER(SetAxisMaxPosition, float, maxPosition);
 	AXIS_SETTER(SetAxisVisible, bool, visible);
 
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset)

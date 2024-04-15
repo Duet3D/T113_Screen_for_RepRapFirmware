@@ -55,8 +55,22 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						   return;
 					   }
 				   }),
-	OBSERVER_FLOAT("move:axes^:min", [](OBSERVER_FLOAT_ARGS) {}),
-	OBSERVER_FLOAT("move:axes^:max", [](OBSERVER_FLOAT_ARGS) {}),
+	OBSERVER_FLOAT("move:axes^:min",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetAxisMinPosition(indices[0], val))
+					   {
+						   error("Failed to set axis[%d]->min = %f", indices[0], val);
+						   return;
+					   }
+				   }),
+	OBSERVER_FLOAT("move:axes^:max",
+				   [](OBSERVER_FLOAT_ARGS) {
+					   if (!OM::Move::SetAxisMaxPosition(indices[0], val))
+					   {
+						   error("Failed to set axis[%d]->max = %f", indices[0], val);
+						   return;
+					   }
+				   }),
 	OBSERVER_FLOAT("move:axes^:userPosition",
 				   [](OBSERVER_FLOAT_ARGS) {
 					   if (!OM::Move::SetAxisUserPosition(indices[0], val))

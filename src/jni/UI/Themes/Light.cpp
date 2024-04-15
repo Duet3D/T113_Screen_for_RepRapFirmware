@@ -300,6 +300,13 @@ namespace UI::Theme
 						0xFF008080, // Teal
 					},
 			},
+		.heightmap =
+			{
+				.bgDefault = Colors::DarkerGray,
+				.max = Colors::Red,
+				.zero = Colors::White,
+				.min = Colors::Blue,
+			},
 	};
 
 	static Theme theme(

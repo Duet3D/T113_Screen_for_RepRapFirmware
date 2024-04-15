@@ -142,6 +142,13 @@ namespace UI::Theme
 			const char* bgImage;
 			uint32_t colors[MAX_SENSORS];
 		} diagram;
+		struct
+		{
+			uint32_t bgDefault; // Colour of no data
+			uint32_t max;		// Colour of maximum value
+			uint32_t zero;		// Colour of zero value / mid point
+			uint32_t min;		// Colour of minimum value
+		} heightmap;
 	};
 
 	class Theme
@@ -162,7 +169,7 @@ namespace UI::Theme
 
 	void CreateTheme(Theme* theme);
 	int GetThemeCount();
-	const Theme* GetCurrentTheme();
+	const Theme* const GetCurrentTheme();
 	Theme* GetThemeByIndex(int index);
 	void SetTheme(const std::string& id);
 	void SetTheme(Theme* theme);

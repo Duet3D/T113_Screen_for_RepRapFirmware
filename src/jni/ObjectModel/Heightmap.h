@@ -44,6 +44,7 @@ namespace OM
 	class Heightmap
 	{
 	  public:
+		Heightmap();
 		Heightmap(const char* filename);
 
 		struct Point
@@ -54,11 +55,22 @@ namespace OM
 			bool isNull = false;
 		};
 
+		bool LoadFromDuet(const char* filename);
+
+		const std::string& GetFileName() const { return m_fileName; }
+		size_t GetWidth() const { return m_heightmap.size(); }
+		size_t GetHeight() const { return m_heightmap.empty() ? 0 : m_heightmap[0].size(); }
+		const Point* const GetPoint(size_t x, size_t y) const;
+		double GetMinError() const { return m_minError; }
+		double GetMaxError() const { return m_maxError; }
+		double GetMeanError() const { return m_meanError; }
+		double GetStdDev() const { return m_stdDev; }
+
 		HeightmapMeta meta;
 
 	  private:
-		void ParseMeta(const std::string& csvContents);
-		void ParseData(const std::string& csvContents);
+		bool ParseMeta(const std::string& csvContents);
+		bool ParseData(const std::string& csvContents);
 
 		std::string m_fileName;
 		double m_minError;
@@ -68,8 +80,14 @@ namespace OM
 		std::vector<std::vector<Point>> m_heightmap;
 	};
 
-	void RequestHeightMapFiles();
-	std::vector<FileSystem::FileSystemItem*> GetHeightMapFiles();
+	void SetCurrentHeightmap(int index);
+	void SetCurrentHeightmap(const char* filename);
+	const std::string& GetCurrentHeightmap();
+	const Heightmap& GetHeightmapData(const char* filename);
+	size_t ClearHeightmapCache();
+
+	void RequestHeightmapFiles();
+	std::vector<FileSystem::FileSystemItem*> GetHeightmapFiles();
 } // namespace OM
 
 #endif /* JNI_OBJECTMODEL_HEIGHTMAP_H_ */

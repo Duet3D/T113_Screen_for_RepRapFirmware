@@ -19,6 +19,7 @@
 #include "UI/Gcodes.h"
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
+#include "UI/Heightmap.h"
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
@@ -346,7 +347,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		UI::WINDOW->OpenWindow(mPrintWindowPtr);
 		break;
 	case (int)UI::SlideWindowIndex::heightmap: {
-		OM::RequestHeightMapFiles();
+		OM::RequestHeightmapFiles();
 		OM::Heightmap("heightmap_delta.csv");
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;
@@ -1525,12 +1526,12 @@ static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress)
 static int getListItemCount_HeightMapList(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_HeightMapList !\n");
-	return OM::GetHeightMapFiles().size();
+	return OM::GetHeightmapFiles().size();
 }
 
 static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	std::vector<OM::FileSystem::FileSystemItem*> files = OM::GetHeightMapFiles();
+	std::vector<OM::FileSystem::FileSystemItem*> files = OM::GetHeightmapFiles();
 	if (index < 0 || index >= (int)files.size())
 	{
 		warn("Invalid index %d, %u csv files", index, files.size());
@@ -1547,12 +1548,14 @@ static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::
 
 static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
 {
-	// LOGD(" onListItemClick_ HeightMapList  !!!\n");
+	OM::SetCurrentHeightmap(index);
+	const OM::Heightmap heightmap = OM::GetHeightmapData(OM::GetCurrentHeightmap().c_str());
+	UI::RenderHeightmap(heightmap);
 }
 
 static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
 {
-	OM::RequestHeightMapFiles();
+	OM::RequestHeightmapFiles();
 	return false;
 }
 

@@ -39,7 +39,7 @@ namespace UI::Theme
 		return s_themes.size();
 	}
 
-	const Theme* GetCurrentTheme()
+	const Theme* const GetCurrentTheme()
 	{
 		return s_currentTheme;
 	}

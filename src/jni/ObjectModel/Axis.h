@@ -42,6 +42,8 @@ namespace OM::Move
 		float workplaceOffsets[Workplaces::MaxTotalWorkplaces];
 		float userPosition;
 		float machinePosition;
+		float minPosition;
+		float maxPosition;
 		uint8_t homed : 1, visible : 1;
 
 		void Reset();
@@ -76,6 +78,8 @@ namespace OM::Move
 	bool SetAxisLetter(size_t index, char letter);
 	bool SetAxisUserPosition(size_t index, float f);
 	bool SetAxisMachinePosition(size_t index, float f);
+	bool SetAxisMinPosition(size_t index, float f);
+	bool SetAxisMaxPosition(size_t index, float f);
 	bool SetAxisVisible(size_t index, bool visible);
 	bool SetAxisWorkplaceOffset(size_t axisIndex, size_t workplaceIndex, float offset);
 	bool SetCurrentWorkplaceNumber(uint8_t workplaceNumber);
