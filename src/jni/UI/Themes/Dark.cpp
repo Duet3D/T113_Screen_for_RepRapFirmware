@@ -370,18 +370,6 @@ namespace UI::Theme
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
 				break;
 			}
-			case ID_MAIN_TempGraphXLabels: {
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
-				pListItem->setBackgroundColor(NULL);
-				break;
-			}
-			case ID_MAIN_TempGraphYLabels: {
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
-				pListItem->setBackgroundColor(NULL);
-				break;
-			}
 			default:
 				break;
 			}

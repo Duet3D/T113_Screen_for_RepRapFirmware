@@ -302,6 +302,11 @@ namespace OM
 		s_currentHeightmapName = filename;
 	}
 
+	void ClearCurrentHeightmap()
+	{
+		s_currentHeightmapName = "";
+	}
+
 	const std::string& GetCurrentHeightmap()
 	{
 		return s_currentHeightmapName;

@@ -75,7 +75,7 @@
     <string name="feed_amount"> Feed amount in mm</string>
     <string name="filament">Filament</string>
     <string name="choose_filament">Please choose a filament</string>
-    <string name="load_filament">load_Filament</string>
+    <string name="load_filament">Load Filament</string>
     <string name="unload_filament">Unload Filament</string>
     <string name="change_filament">Change Filament</string>
     <string name="tool_filament_control">Tool %d Filament Control</string>
@@ -96,6 +96,8 @@
     <!-- Heightmap -->
     <string name="height_map">Height Map</string>
     <string name="height_maps">Height Maps</string>
+    <string name="load_heightmap">Load</string>
+    <string name="unload_heightmap">Unload</string>
     <string name="hm_color_scheme">Color scheme:</string>
     <string name="hm_render_mode_fixed">Fixed</string>
     <string name="hm_render_mode_deviation">Deviation</string>

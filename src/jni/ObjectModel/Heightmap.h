@@ -84,6 +84,7 @@ namespace OM
 
 	void SetCurrentHeightmap(int index);
 	void SetCurrentHeightmap(const char* filename);
+	void ClearCurrentHeightmap();
 	const std::string& GetCurrentHeightmap();
 	const Heightmap& GetHeightmapData(const char* filename);
 	size_t ClearHeightmapCache();

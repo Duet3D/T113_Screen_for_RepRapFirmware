@@ -65,6 +65,54 @@ namespace UI
 		}
 	}
 
+	std::string GetHeightmapXAxisText(int index)
+	{
+		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapXAxis);
+
+		if (axisList == nullptr)
+		{
+			error("Failed to get axis list");
+			return "";
+		}
+
+		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
+		OM::Move::Axis* axis = heightmap.meta.GetAxis(0);
+		if (axis == nullptr)
+		{
+			error("Failed to get axis");
+			return "";
+		}
+
+		float min = axis->minPosition;
+		float max = axis->maxPosition;
+
+		return utils::format("%.0f", min + (max - min) * (float)index / (axisList->getCols() - 1));
+	}
+
+	std::string GetHeightmapYAxisText(int index)
+	{
+		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis);
+
+		if (axisList == nullptr)
+		{
+			error("Failed to get axis list");
+			return "";
+		}
+
+		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
+		OM::Move::Axis* axis = heightmap.meta.GetAxis(1);
+		if (axis == nullptr)
+		{
+			error("Failed to get axis");
+			return "";
+		}
+
+		float min = axis->minPosition;
+		float max = axis->maxPosition;
+
+		return utils::format("%.0f", max - (max - min) * (float)index / (axisList->getRows() - 1));
+	}
+
 	static HeightmapRange GetHeightmapRange(const OM::Heightmap& heightmap)
 	{
 		HeightmapRange range;
@@ -267,8 +315,7 @@ namespace UI
 			 theme->id.c_str());
 
 		// Clear the canvas
-		canvas->setSourceColor(theme->colors->heightmap.bgDefault);
-		canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
+		ClearHeightmap();
 
 		// Get the printer limits
 		OM::Move::Axis* axisX = heightmap.meta.GetAxis(0);
@@ -337,5 +384,15 @@ namespace UI
 		RenderStatistics(heightmap);
 
 		return true;
+	}
+
+	void ClearHeightmap()
+	{
+		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
+		static LayoutPosition canvasPos = canvas->getPosition();
+		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
+
+		canvas->setSourceColor(theme->colors->heightmap.bgDefault);
+		canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
 	}
 } // namespace UI

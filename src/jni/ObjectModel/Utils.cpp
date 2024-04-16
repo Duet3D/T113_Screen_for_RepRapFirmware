@@ -16,6 +16,7 @@
 #include "Configuration.h"
 #include "DebugCommands.h"
 #include "Files.h"
+#include "Heightmap.h"
 #include "Job.h"
 #include "ListHelpers.h"
 #include "PrinterStatus.h"
@@ -39,6 +40,7 @@ namespace OM
 		RemoveEndstop(0, true);
 		RemoveSpindle(0, true);
 		RemoveTool(0, true);
+		ClearCurrentHeightmap();
 	}
 
 	static Debug::DebugCommand log_OM("dbg_log_OM", []() {

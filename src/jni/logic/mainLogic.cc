@@ -1290,8 +1290,9 @@ static void obtainListItemData_ExtrudeToolList(ZKListView* pListView, ZKListView
 	}
 
 	StringRef filament = data.tool->GetFilament();
-	pfilament->setText((data.tool->filamentExtruder >= 0 && filament.IsEmpty()) ? "Load Filament"
-																				: data.tool->GetFilament().c_str());
+	pfilament->setText((data.tool->filamentExtruder >= 0 && filament.IsEmpty())
+						   ? LANGUAGEMANAGER->getValue("load_filament")
+						   : data.tool->GetFilament().c_str());
 }
 
 static OM::Tool* g_filamentDialogTool = nullptr;
@@ -1547,6 +1548,7 @@ static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::
 	}
 
 	pListItem->setText(item->GetName());
+	pListItem->setSelected(pListItem->getText() == OM::GetCurrentHeightmap().c_str());
 }
 
 static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
@@ -1558,6 +1560,7 @@ static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int 
 static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
 {
 	OM::RequestHeightmapFiles();
+	UI::ClearHeightmap();
 	return false;
 }
 
@@ -1593,4 +1596,35 @@ static void obtainListItemData_HeightMapColorSchemeList(ZKListView* pListView, Z
 static void onListItemClick_HeightMapColorSchemeList(ZKListView* pListView, int index, int id)
 {
 	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(index));
+}
+static int getListItemCount_HeightMapYAxis(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_HeightMapYAxis !\n");
+	return 5;
+}
+
+static void obtainListItemData_HeightMapYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::GetHeightmapYAxisText(index));
+}
+
+static void onListItemClick_HeightMapYAxis(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ HeightMapYAxis  !!!\n");
+}
+
+static int getListItemCount_HeightMapXAxis(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_HeightMapXAxis !\n");
+	return 5;
+}
+
+static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::GetHeightmapXAxisText(index));
+}
+
+static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id)
+{
+	// LOGD(" onListItemClick_ HeightMapXAxis  !!!\n");
 }

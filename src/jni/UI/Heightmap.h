@@ -21,8 +21,11 @@ namespace UI
 	void SetHeightmapRenderMode(HeightmapRenderMode mode);
 	HeightmapRenderMode GetHeightmapRenderMode();
 	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode);
+	std::string GetHeightmapXAxisText(int index);
+	std::string GetHeightmapYAxisText(int index);
 	double GetHeightmapScaleAt(int index);
 	bool RenderHeightmap(const std::string& heightmapName);
+	void ClearHeightmap();
 } // namespace UI
 
 #endif /* JNI_UI_HEIGHTMAP_H_ */

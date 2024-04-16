@@ -411,7 +411,22 @@ namespace UI::Theme
 
 			// pSubItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 		}
-		s_currentTheme->listItemOverrides(pListView, pListItem, index);
+
+		// Lists used as graph axes
+		switch (pListView->getID())
+		{
+		case ID_MAIN_TempGraphXLabels:
+		case ID_MAIN_TempGraphYLabels:
+		case ID_MAIN_HeightMapXAxis:
+		case ID_MAIN_HeightMapYAxis:
+		case ID_MAIN_HeightMapScaleList:
+			pListView->setBackgroundColor(NULL);
+			pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
+			pListItem->setBackgroundColor(NULL);
+			break;
+		default:
+			break;
+		}
 
 		// Temperature graph legend
 		if (pListView->getID() == ID_MAIN_TemperatureGraphLegend)
@@ -422,5 +437,8 @@ namespace UI::Theme
 			}
 			pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, colors->diagram.colors[index]);
 		}
+
+		// Overrides
+		s_currentTheme->listItemOverrides(pListView, pListItem, index);
 	}
 } // namespace UI::Theme

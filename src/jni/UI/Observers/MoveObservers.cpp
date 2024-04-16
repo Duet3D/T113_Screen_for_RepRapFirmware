@@ -62,6 +62,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						   error("Failed to set axis[%d]->min = %f", indices[0], val);
 						   return;
 					   }
+					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapXAxis)->refreshListView();
+					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis)->refreshListView();
 				   }),
 	OBSERVER_FLOAT("move:axes^:max",
 				   [](OBSERVER_FLOAT_ARGS) {
@@ -70,6 +72,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 						   error("Failed to set axis[%d]->max = %f", indices[0], val);
 						   return;
 					   }
+					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapXAxis)->refreshListView();
+					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis)->refreshListView();
 				   }),
 	OBSERVER_FLOAT("move:axes^:userPosition",
 				   [](OBSERVER_FLOAT_ARGS) {

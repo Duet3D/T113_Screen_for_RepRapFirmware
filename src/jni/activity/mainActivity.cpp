@@ -4,6 +4,8 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mHeightMapXAxisPtr;
+static ZKListView* mHeightMapYAxisPtr;
 static ZKTextView* mTextView47Ptr;
 static ZKTextView* mTextView46Ptr;
 static ZKListView* mHeightMapColorSchemeListPtr;
@@ -365,6 +367,8 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_HeightMapXAxis, getListItemCount_HeightMapXAxis, obtainListItemData_HeightMapXAxis, onListItemClick_HeightMapXAxis,
+    ID_MAIN_HeightMapYAxis, getListItemCount_HeightMapYAxis, obtainListItemData_HeightMapYAxis, onListItemClick_HeightMapYAxis,
     ID_MAIN_HeightMapColorSchemeList, getListItemCount_HeightMapColorSchemeList, obtainListItemData_HeightMapColorSchemeList, onListItemClick_HeightMapColorSchemeList,
     ID_MAIN_HeightMapScaleList, getListItemCount_HeightMapScaleList, obtainListItemData_HeightMapScaleList, onListItemClick_HeightMapScaleList,
     ID_MAIN_HeightMapList, getListItemCount_HeightMapList, obtainListItemData_HeightMapList, onListItemClick_HeightMapList,
@@ -564,6 +568,8 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mHeightMapXAxisPtr = NULL;
+    mHeightMapYAxisPtr = NULL;
     mTextView47Ptr = NULL;
     mTextView46Ptr = NULL;
     mHeightMapColorSchemeListPtr = NULL;
@@ -815,6 +821,8 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mHeightMapXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapXAxis);if(mHeightMapXAxisPtr!= NULL){mHeightMapXAxisPtr->setListAdapter(this);mHeightMapXAxisPtr->setItemClickListener(this);}
+    mHeightMapYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapYAxis);if(mHeightMapYAxisPtr!= NULL){mHeightMapYAxisPtr->setListAdapter(this);mHeightMapYAxisPtr->setItemClickListener(this);}
     mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);
     mTextView46Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView46);
     mHeightMapColorSchemeListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapColorSchemeList);if(mHeightMapColorSchemeListPtr!= NULL){mHeightMapColorSchemeListPtr->setListAdapter(this);mHeightMapColorSchemeListPtr->setItemClickListener(this);}
