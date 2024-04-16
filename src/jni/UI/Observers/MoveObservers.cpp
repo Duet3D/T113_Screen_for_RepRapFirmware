@@ -13,6 +13,7 @@
 #include "UI/UserInterface.h"
 
 #include "ObjectModel/Axis.h"
+#include "ObjectModel/Heightmap.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -171,6 +172,11 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 			float volumetricFlow = OM::Move::GetVolumetricFlow();
 			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintVolFlow)->setTextTrf("volumetric_flow", volumetricFlow);
 		}),
+	OBSERVER_CHAR("move:compensation:file",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::SetCurrentHeightmap(val);
+					  UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapList)->refreshListView();
+				  }),
 };
 
 /*

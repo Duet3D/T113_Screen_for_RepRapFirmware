@@ -353,6 +353,7 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 	case (int)UI::SlideWindowIndex::heightmap: {
 		OM::RequestHeightmapFiles();
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
+		UI::RenderHeightmap(OM::GetCurrentHeightmap());
 		break;
 	}
 	case (int)UI::SlideWindowIndex::fans:
@@ -1535,26 +1536,40 @@ static int getListItemCount_HeightMapList(const ZKListView* pListView)
 
 static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	std::vector<OM::FileSystem::FileSystemItem*> files = OM::GetHeightmapFiles();
-	if (index < 0 || index >= (int)files.size())
-	{
-		warn("Invalid index %d, %u csv files", index, files.size());
-		return;
-	}
-	OM::FileSystem::FileSystemItem* item = files.at(index);
-	if (item == nullptr)
-	{
-		return;
-	}
+	ZKListView::ZKListSubItem* pLoad = pListItem->findSubItemByID(ID_MAIN_HeightmapLoad);
 
-	pListItem->setText(item->GetName());
-	pListItem->setSelected(pListItem->getText() == OM::GetCurrentHeightmap().c_str());
+	std::string filename = OM::GetHeightmapNameAt(index);
+
+	bool shown = filename == UI::GetVisibleHeightmapName().c_str();
+	bool loaded = filename == OM::GetCurrentHeightmap().c_str();
+
+	verbose("Heightmap %d: %s, shown: %d (%s), loaded: %d (%s)",
+			index,
+			filename.c_str(),
+			shown,
+			UI::GetVisibleHeightmapName().c_str(),
+			loaded,
+			OM::GetCurrentHeightmap().c_str());
+
+	pListItem->setText(filename);
+	pListItem->setSelected(shown);
+	pLoad->setTextTr(loaded ? "unload_heightmap" : "load_heightmap");
 }
 
 static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
 {
-	OM::SetCurrentHeightmap(index);
-	UI::RenderHeightmap(OM::GetCurrentHeightmap());
+	dbg("Selected heightmap %d", index);
+	std::string filename = OM::GetHeightmapNameAt(index);
+	dbg("heightmap = %s", filename.c_str());
+	if (filename.empty())
+	{
+		return;
+	}
+	if (id == ID_MAIN_HeightmapLoad)
+	{
+		OM::ToggleHeightmap(filename.c_str());
+	}
+	UI::RenderHeightmap(filename);
 }
 
 static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)

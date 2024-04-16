@@ -78,7 +78,12 @@ namespace Comm
 		 .flags = "v"},
 #endif
 #if FETCH_MOVE
-		{.event = rcvOMKeyMove, .seqid = rcvSeqsMove, .lastSeq = 0, .state = SeqStateInit, .key = "move", .flags = "v"},
+		{.event = rcvOMKeyMove,
+		 .seqid = rcvSeqsMove,
+		 .lastSeq = 0,
+		 .state = SeqStateInit,
+		 .key = "move",
+		 .flags = "vn"},
 #endif
 #if FETCH_HEAT
 		{.event = rcvOMKeyHeat, .seqid = rcvSeqsHeat, .lastSeq = 0, .state = SeqStateInit, .key = "heat", .flags = "v"},

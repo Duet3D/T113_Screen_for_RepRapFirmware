@@ -18,6 +18,7 @@ namespace UI
 		Deviation,
 	};
 
+	const std::string& GetVisibleHeightmapName();
 	void SetHeightmapRenderMode(HeightmapRenderMode mode);
 	HeightmapRenderMode GetHeightmapRenderMode();
 	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode);

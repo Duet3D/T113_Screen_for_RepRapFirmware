@@ -20,6 +20,7 @@ namespace OM
 {
 	static std::string s_currentHeightmapName;
 	static std::map<std::string, Heightmap> s_heightmapCache;
+	static std::string emptyStr = "";
 
 	static std::string GetLocalFilePath(const char* filename)
 	{
@@ -286,25 +287,65 @@ namespace OM
 		return !parseError;
 	}
 
-	void SetCurrentHeightmap(int index)
+	const std::string& GetHeightmapNameAt(int index)
 	{
 		std::vector<FileSystem::FileSystemItem*> filenames = GetHeightmapFiles();
 		if (index < 0 || index >= (int)filenames.size())
 		{
 			error("Invalid heightmap index %d", index);
-			return;
+			return emptyStr;
 		}
-		SetCurrentHeightmap(filenames[index]->GetName().c_str());
+		FileSystem::FileSystemItem* item = filenames[index];
+		if (item == nullptr)
+		{
+			error("Filesystem item at index %d is null", index);
+			return emptyStr;
+		}
+		return item->GetName();
 	}
 
-	void SetCurrentHeightmap(const char* filename)
+	void SetCurrentHeightmap(const std::string& filename)
 	{
-		s_currentHeightmapName = filename;
+		size_t pos = filename.find_last_of('/');
+		if (pos != std::string::npos)
+		{
+			s_currentHeightmapName = filename.substr(pos + 1);
+		}
+		else
+		{
+			s_currentHeightmapName = filename;
+		}
+		dbg("Set current heightmap to \"%s\" (%s)", s_currentHeightmapName.c_str(), filename.c_str());
 	}
 
 	void ClearCurrentHeightmap()
 	{
 		s_currentHeightmapName = "";
+	}
+
+	/* Sends command to Duet to use the heightmap called `filename` */
+	void LoadHeightmap(const char* filename)
+	{
+		info("Loading heightmap %s", filename);
+		Comm::duet.SendGcodef("G29 S1 P\"%s\"", filename);
+	}
+
+	/* Sends command to Duet to unload the heightmap */
+	void UnloadHeightmap()
+	{
+		info("Unloading heightmap");
+		Comm::duet.SendGcode("G29 S2");
+	}
+
+	void ToggleHeightmap(const char* filename)
+	{
+		if (s_currentHeightmapName != filename)
+		{
+			LoadHeightmap(filename);
+			return;
+		}
+		UnloadHeightmap();
+		ClearCurrentHeightmap();
 	}
 
 	const std::string& GetCurrentHeightmap()

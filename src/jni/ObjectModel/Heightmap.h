@@ -82,10 +82,15 @@ namespace OM
 		std::vector<std::vector<Point>> m_heightmap;
 	};
 
-	void SetCurrentHeightmap(int index);
-	void SetCurrentHeightmap(const char* filename);
+	const std::string& GetHeightmapNameAt(int index);
+	void SetCurrentHeightmap(const std::string& filename);
 	void ClearCurrentHeightmap();
 	const std::string& GetCurrentHeightmap();
+
+	void LoadHeightmap(const char* filename);
+	void UnloadHeightmap();
+	void ToggleHeightmap(const char* filename);
+
 	const Heightmap& GetHeightmapData(const char* filename);
 	size_t ClearHeightmapCache();
 

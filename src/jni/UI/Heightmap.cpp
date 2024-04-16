@@ -35,6 +35,11 @@ namespace UI
 		double operator()() const { return max - min; }
 	};
 
+	const std::string& GetVisibleHeightmapName()
+	{
+		return s_currentHeightmap;
+	}
+
 	void SetHeightmapRenderMode(HeightmapRenderMode mode)
 	{
 		info("Setting heightmap render mode to %d", (int)mode);
@@ -145,6 +150,7 @@ namespace UI
 		return utils::format("%.2f mm", range.min + (range() * (1.0 - (double)index / (scaleText->getRows() - 1))));
 	}
 
+#if 0
 	static uint32_t BlendColors(uint32_t color1, uint32_t color2, double ratio)
 	{
 		uint8_t r1 = (uint8_t)(color1 >> 16);
@@ -161,6 +167,7 @@ namespace UI
 
 		return (0xFF << 24) | (r << 16) | (g << 8) | b;
 	}
+#endif
 
 	static uint32_t GetColorForHeight(const OM::Heightmap& heightmap, double height)
 	{
@@ -224,13 +231,13 @@ namespace UI
 		// Combine the RGB values into a single color
 		uint32_t color = (0xFF << 24) | (red << 16) | (green << 8) | blue;
 
-		dbg("Height %.3f, Min %.3f, Max %.3f, Range %.3f, Percent %.3f, Color %08X",
-			height,
-			range.min,
-			range.max,
-			range(),
-			percent,
-			color);
+		verbose("Height %.3f, Min %.3f, Max %.3f, Range %.3f, Percent %.3f, Color %08X",
+				height,
+				range.min,
+				range.max,
+				range(),
+				percent,
+				color);
 		return color;
 	}
 
@@ -238,6 +245,8 @@ namespace UI
 	{
 		static ZKPainter* scale = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapScale);
 		static ZKListView* scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
+
+		dbg("Heightmap \"%s\"", heightmap.GetFileName().c_str());
 
 		if (!scale || !scaleText)
 		{
@@ -382,15 +391,15 @@ namespace UI
 
 				xPos = utils::bound<double>(xPos, 0, (double)canvasPos.mWidth - pixXSpacing);
 				yPos = utils::bound<double>(yPos, 0, (double)canvasPos.mHeight - pixYSpacing);
-				dbg("Drawing point %u, %u at pixel (%d, %d) size=(%d, %d), point (%.2f, %.2f)",
-					x,
-					y,
-					static_cast<int>(xPos),
-					static_cast<int>(yPos),
-					static_cast<int>(pixXSpacing),
-					static_cast<int>(pixYSpacing),
-					point->x,
-					point->y);
+				verbose("Drawing point %u, %u at pixel (%d, %d) size=(%d, %d), point (%.2f, %.2f)",
+						x,
+						y,
+						static_cast<int>(xPos),
+						static_cast<int>(yPos),
+						static_cast<int>(pixXSpacing),
+						static_cast<int>(pixYSpacing),
+						point->x,
+						point->y);
 				canvas->fillRect(static_cast<int>(xPos),
 								 static_cast<int>(yPos),
 								 static_cast<int>(pixXSpacing) + 1,
