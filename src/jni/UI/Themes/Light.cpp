@@ -303,9 +303,7 @@ namespace UI::Theme
 		.heightmap =
 			{
 				.bgDefault = Colors::DarkerGray,
-				.max = Colors::Red,
-				.mid = Colors::White,
-				.min = Colors::Blue,
+				.gridColor = Colors::LightGray,
 			},
 	};
 

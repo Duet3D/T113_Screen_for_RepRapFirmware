@@ -1571,7 +1571,7 @@ static int getListItemCount_HeightMapScaleList(const ZKListView* pListView)
 
 static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setTextf("%.2f mm", UI::GetHeightmapScaleAt(index));
+	pListItem->setText(UI::GetHeightmapScaleAt(index));
 }
 
 static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id) {}

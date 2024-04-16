@@ -23,7 +23,7 @@ namespace UI
 	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode);
 	std::string GetHeightmapXAxisText(int index);
 	std::string GetHeightmapYAxisText(int index);
-	double GetHeightmapScaleAt(int index);
+	std::string GetHeightmapScaleAt(int index);
 	bool RenderHeightmap(const std::string& heightmapName);
 	void ClearHeightmap();
 } // namespace UI

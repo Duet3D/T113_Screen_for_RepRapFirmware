@@ -145,9 +145,7 @@ namespace UI::Theme
 		struct
 		{
 			uint32_t bgDefault; // Colour of no data
-			uint32_t max;		// Colour of maximum value
-			uint32_t mid;		// Colour of zero value / mid point
-			uint32_t min;		// Colour of minimum value
+			uint32_t gridColor;
 		} heightmap;
 	};
 

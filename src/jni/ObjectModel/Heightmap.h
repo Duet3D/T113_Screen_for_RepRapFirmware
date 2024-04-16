@@ -75,10 +75,10 @@ namespace OM
 		bool ParseData(const std::string& csvContents);
 
 		std::string m_fileName;
-		double m_minError;
-		double m_maxError;
-		double m_meanError;
-		double m_stdDev;
+		double m_minError = 0.0f;
+		double m_maxError = 0.0f;
+		double m_meanError = 0.0f;
+		double m_stdDev = 0.0f;
 		std::vector<std::vector<Point>> m_heightmap;
 	};
 

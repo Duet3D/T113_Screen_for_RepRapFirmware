@@ -131,18 +131,18 @@ namespace UI
 		return range;
 	}
 
-	double GetHeightmapScaleAt(int index)
+	std::string GetHeightmapScaleAt(int index)
 	{
 		static ZKListView* scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
 
 		if (!scaleText)
 		{
 			error("Failed to get UI controls");
-			return 0.0f;
+			return "";
 		}
 		HeightmapRange range = GetHeightmapRange(OM::GetHeightmapData(s_currentHeightmap.c_str()));
 
-		return range.min + (range() * (1.0 - (double)index / (scaleText->getRows() - 1)));
+		return utils::format("%.2f mm", range.min + (range() * (1.0 - (double)index / (scaleText->getRows() - 1))));
 	}
 
 	static uint32_t BlendColors(uint32_t color1, uint32_t color2, double ratio)
@@ -304,18 +304,23 @@ namespace UI
 		static LayoutPosition canvasPos = canvas->getPosition();
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
 
+		// Clear the canvas
+		ClearHeightmap();
+
 		// Save the heightmap for scale text rendering
 		s_currentHeightmap = heightmapName;
 		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
+		if (heightmap.GetPointCount() <= 0)
+		{
+			error("Heightmap %s has no points", heightmapName.c_str());
+			return false;
+		}
 
 		info("Rendering heightmap %s (%u, %u) using theme %s",
 			 heightmap.GetFileName().c_str(),
 			 heightmap.GetWidth(),
 			 heightmap.GetHeight(),
 			 theme->id.c_str());
-
-		// Clear the canvas
-		ClearHeightmap();
 
 		// Get the printer limits
 		OM::Move::Axis* axisX = heightmap.meta.GetAxis(0);
@@ -331,6 +336,19 @@ namespace UI
 		const float axisMaxX = axisX->maxPosition;
 		const float axisMinY = axisY->minPosition;
 		const float axisMaxY = axisY->maxPosition;
+		double pixXSpacing = heightmap.meta.GetSpacing(0) * canvasPos.mWidth / (axisMaxX - axisMinX);
+		double pixYSpacing = heightmap.meta.GetSpacing(1) * canvasPos.mHeight / (axisMaxY - axisMinY);
+
+		canvas->setSourceColor(theme->colors->heightmap.gridColor);
+		for (int x = 0; x < canvasPos.mWidth; x += pixXSpacing)
+		{
+			canvas->fillRect(x, 0, 1, canvasPos.mHeight, 0);
+		}
+
+		for (int y = 0; y < canvasPos.mHeight; y += pixYSpacing)
+		{
+			canvas->fillRect(0, y, canvasPos.mWidth, 1, 0);
+		}
 
 		// Render the heightmap
 		for (size_t x = 0; x < heightmap.GetWidth(); x++)
@@ -343,17 +361,18 @@ namespace UI
 					error("Failed to get point %u, %u", x, y);
 					continue;
 				}
+				if (point->isNull)
+				{
+					continue;
+				}
 
 				uint32_t color = GetColorForHeight(heightmap, point->z);
-				canvas->setSourceColor(point->isNull ? theme->colors->heightmap.bgDefault : color);
+				canvas->setSourceColor(color);
 
 				// Calculate the position of the point on the canvas
-				double pixXSpacing = heightmap.meta.GetSpacing(0) * canvasPos.mWidth / (axisMaxX - axisMinX);
-				double pixYSpacing = heightmap.meta.GetSpacing(1) * canvasPos.mHeight / (axisMaxY - axisMinY);
-				double xPos =
-					std::ceil(canvasPos.mWidth * (point->x - axisMinX) / (axisMaxX - axisMinX) - pixXSpacing / 2);
-				double yPos = std::ceil(canvasPos.mHeight * (1.0f - (point->y - axisMinY) / (axisMaxY - axisMinY)) -
-										pixYSpacing / 2);
+				double xPos = canvasPos.mWidth * (point->x - axisMinX) / (axisMaxX - axisMinX) - pixXSpacing / 2;
+				double yPos =
+					canvasPos.mHeight * (1.0f - (point->y - axisMinY) / (axisMaxY - axisMinY)) - pixYSpacing / 2;
 
 				if (xPos < -pixXSpacing || yPos < -pixYSpacing)
 				{
