@@ -217,43 +217,47 @@ namespace OM
 			std::vector<Point> row(cols);
 			for (size_t colIdx = 0; colIdx < cols; colIdx++)
 			{
-				Point val;
-				val.x = meta.GetMin(0) + colIdx * meta.GetSpacing(0);
-				val.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
-				if (!doc.GetCell(colIdx, rowIdx, val.z))
+				Point point;
+				std::string val;
+				point.x = meta.GetMin(0) + colIdx * meta.GetSpacing(0);
+				point.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
+				if (!doc.GetCell(colIdx, rowIdx, val))
 				{
 					error("Failed to get cell %u, %u", colIdx, rowIdx);
-					val.isNull = true;
+					point.isNull = true;
 					parseError = true;
 				}
-				if (val.z == 0)
+				utils::removeCharFromString(val, ' ');
+				if (val == "0")
 				{
-					val.isNull = true;
+					point.isNull = true;
 				}
+				point.z = strtod(val.c_str(), NULL);
 
-				verbose("Cell %u, %u%s: (%.3f, %.3f, %.3f)",
-						colIdx,
-						rowIdx,
-						val.isNull ? "[INVALID]" : "",
-						val.x,
-						val.y,
-						val.z);
-				if (val.z < m_minError)
+				dbg("Cell %u, %u%s: (%.3f, %.3f, %.3f) raw=\"%s\"",
+					colIdx,
+					rowIdx,
+					point.isNull ? "[INVALID]" : "",
+					point.x,
+					point.y,
+					point.z,
+					val.c_str());
+				if (point.z < m_minError)
 				{
-					m_minError = val.z;
+					m_minError = point.z;
 				}
-				if (val.z > m_maxError)
+				if (point.z > m_maxError)
 				{
-					m_maxError = val.z;
+					m_maxError = point.z;
 				}
-				errorSum += val.z;
+				errorSum += point.z;
 				if (colIdx >= row.size())
 				{
 					warn("Heightmap column index out of range: %u >= %u", colIdx, row.size());
 					parseError = true;
 					continue;
 				}
-				row[colIdx] = val;
+				row[colIdx] = point;
 			}
 			m_heightmap.push_back(row);
 		}
