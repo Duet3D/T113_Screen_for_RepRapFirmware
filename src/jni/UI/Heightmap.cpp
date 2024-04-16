@@ -18,6 +18,7 @@
 #include "control/ZKPainter.h"
 #include "control/ZKTextView.h"
 #include "manager/LanguageManager.h"
+#include <cmath>
 
 namespace UI
 {
@@ -100,20 +101,61 @@ namespace UI
 
 		const double percent = utils::bound<double>((height - range.min) / range(), 0.0f, 1.0f);
 
-		uint32_t minColor = theme->colors->heightmap.min;
-		uint32_t midColor = theme->colors->heightmap.mid;
-		uint32_t maxColor = theme->colors->heightmap.max;
+		// Convert the height to a color on a HSV colorbar from blue to red
+		double hue = (1.0 - percent) * 240.0; // Map the percent to the hue range (blue to red)
+		double saturation = 1.0;			  // Set the saturation to maximum
+		double value = 1.0;					  // Set the value to maximum
 
-		uint32_t color;
-		// Calculate the color
-		if (percent >= 0.5f)
+		// Convert HSV to RGB
+		double c = value * saturation;
+		double x = c * (1.0 - std::abs(std::fmod(hue / 60.0, 2.0) - 1.0));
+		double m = value - c;
+
+		double r, g, b;
+		if (hue >= 0 && hue < 60)
 		{
-			color = BlendColors(midColor, maxColor, (percent - 0.5f) * 2.0f);
+			r = c;
+			g = x;
+			b = 0;
+		}
+		else if (hue >= 60 && hue < 120)
+		{
+			r = x;
+			g = c;
+			b = 0;
+		}
+		else if (hue >= 120 && hue < 180)
+		{
+			r = 0;
+			g = c;
+			b = x;
+		}
+		else if (hue >= 180 && hue < 240)
+		{
+			r = 0;
+			g = x;
+			b = c;
+		}
+		else if (hue >= 240 && hue < 300)
+		{
+			r = x;
+			g = 0;
+			b = c;
 		}
 		else
 		{
-			color = BlendColors(minColor, midColor, percent * 2.0f);
+			r = c;
+			g = 0;
+			b = x;
 		}
+
+		// Scale the RGB values to the range 0-255
+		uint8_t red = static_cast<uint8_t>((r + m) * 255);
+		uint8_t green = static_cast<uint8_t>((g + m) * 255);
+		uint8_t blue = static_cast<uint8_t>((b + m) * 255);
+
+		// Combine the RGB values into a single color
+		uint32_t color = (0xFF << 24) | (red << 16) | (green << 8) | blue;
 
 		dbg("Height %.3f, Min %.3f, Max %.3f, Range %.3f, Percent %.3f, Color %08X",
 			height,
