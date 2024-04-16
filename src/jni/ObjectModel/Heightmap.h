@@ -61,6 +61,8 @@ namespace OM
 		size_t GetHeight() const { return m_heightmap.size(); }
 		size_t GetWidth() const { return m_heightmap.empty() ? 0 : m_heightmap[0].size(); }
 		const Point* const GetPoint(size_t x, size_t y) const;
+		size_t GetPointCount() const;
+		double GetArea() const;
 		double GetMinError() const { return m_minError; }
 		double GetMaxError() const { return m_maxError; }
 		double GetMeanError() const { return m_meanError; }

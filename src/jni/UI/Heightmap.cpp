@@ -172,6 +172,13 @@ namespace UI
 			error("Failed to get UI controls");
 			return;
 		}
+
+		statsNumPoints->setTextTrf("hm_num_points", heightmap.GetPointCount());
+		statsArea->setTextTrf("hm_area", heightmap.GetArea());
+		statsMax->setTextTrf("hm_max", heightmap.GetMaxError());
+		statsMin->setTextTrf("hm_min", heightmap.GetMinError());
+		statsMean->setTextTrf("hm_mean", heightmap.GetMeanError());
+		statsRms->setTextTrf("hm_rms", heightmap.GetStdDev());
 	}
 
 	bool RenderHeightmap(const OM::Heightmap& heightmap)
@@ -226,6 +233,7 @@ namespace UI
 		}
 
 		RenderScale(heightmap);
+		RenderStatistics(heightmap);
 
 		return true;
 	}

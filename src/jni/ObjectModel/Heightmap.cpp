@@ -155,6 +155,21 @@ namespace OM
 		return &m_heightmap[y][x];
 	}
 
+	size_t Heightmap::GetPointCount() const
+	{
+		size_t count = 0;
+		for (const std::vector<Point>& row : m_heightmap)
+		{
+			count += row.size();
+		}
+		return count;
+	}
+
+	double Heightmap::GetArea() const
+	{
+		return 0.0f;
+	}
+
 	bool Heightmap::ParseMeta(const std::string& csvContents)
 	{
 		info("Parsing meta data for heightmap %s", m_fileName.c_str());
