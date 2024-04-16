@@ -53,6 +53,10 @@ constexpr unsigned int MAX_HEATERS = 32;
 constexpr unsigned int MAX_SENSORS = 32;
 constexpr unsigned int MAX_ENDSTOPS = 20;
 
+/* Heightmap */
+constexpr double HEIGHTMAP_FIXED_MAX = 0.25;
+constexpr double HEIGHTMAP_FIXED_MIN = -0.25;
+
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;
 constexpr unsigned int MAX_RESPONSE_LINE_LENGTH = 80;

@@ -96,6 +96,9 @@
     <!-- Heightmap -->
     <string name="height_map">Height Map</string>
     <string name="height_maps">Height Maps</string>
+    <string name="hm_scale_header">Scale:</string>
+    <string name="hm_scale_max">%.2f mm or more</string>
+    <string name="hm_scale_min">%.2f mm or less</string>
     <string name="statistics">Statistics</string>
     <string name="hm_num_points">Number of points: %u</string>
     <string name="hm_area">Probe area: %.1f cm^2</string>

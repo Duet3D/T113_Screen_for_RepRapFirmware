@@ -304,7 +304,7 @@ namespace UI::Theme
 			{
 				.bgDefault = Colors::DarkerGray,
 				.max = Colors::Red,
-				.zero = Colors::White,
+				.mid = Colors::White,
 				.min = Colors::Blue,
 			},
 	};

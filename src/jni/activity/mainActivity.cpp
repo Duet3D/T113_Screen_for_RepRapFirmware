@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView45Ptr;
 static ZKTextView* mHMStatisticsMeanPtr;
 static ZKTextView* mHMStatisticsRMSPtr;
 static ZKTextView* mHMStatisticsMaxPtr;
@@ -556,6 +557,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView45Ptr = NULL;
     mHMStatisticsMeanPtr = NULL;
     mHMStatisticsRMSPtr = NULL;
     mHMStatisticsMaxPtr = NULL;
@@ -801,6 +803,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView45Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView45);
     mHMStatisticsMeanPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMean);
     mHMStatisticsRMSPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsRMS);
     mHMStatisticsMaxPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMax);

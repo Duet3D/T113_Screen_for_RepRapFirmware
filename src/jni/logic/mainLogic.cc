@@ -348,7 +348,6 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		break;
 	case (int)UI::SlideWindowIndex::heightmap: {
 		OM::RequestHeightmapFiles();
-		OM::Heightmap("heightmap_delta.csv");
 		UI::WINDOW->OpenWindow(mHeightMapWindowPtr);
 		break;
 	}
@@ -1561,16 +1560,12 @@ static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
 
 static int getListItemCount_HeightMapScaleList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_HeightMapScaleList !\n");
 	return 5;
 }
 
 static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ HeightMapScaleList  !!!\n");
+	pListItem->setTextf("%.2f mm", UI::GetHeightmapScaleAt(index));
 }
 
-static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ HeightMapScaleList  !!!\n");
-}
+static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id) {}

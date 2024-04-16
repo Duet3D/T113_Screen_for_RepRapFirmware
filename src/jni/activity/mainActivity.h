@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_TextView45    50090
 #define ID_MAIN_HMStatisticsMean    50088
 #define ID_MAIN_HMStatisticsRMS    50087
 #define ID_MAIN_HMStatisticsMax    50086

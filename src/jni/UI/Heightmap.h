@@ -12,6 +12,15 @@
 
 namespace UI
 {
+	enum class HeightmapRenderMode
+	{
+		Fixed,
+		Deviation,
+	};
+
+	void SetHeightmapRenderMode(HeightmapRenderMode mode);
+	HeightmapRenderMode GetHeightmapRenderMode();
+	double GetHeightmapScaleAt(int index);
 	bool RenderHeightmap(const OM::Heightmap& heightmap);
 } // namespace UI
 
