@@ -40,6 +40,10 @@ namespace UI
 		info("Setting heightmap render mode to %d", (int)mode);
 		s_heightmapRenderMode = mode;
 		StoragePreferences::putInt(ID_HEIGHTMAP_RENDER_MODE, (int)mode);
+		if (s_currentHeightmap.empty())
+		{
+			return;
+		}
 		RenderHeightmap(s_currentHeightmap);
 	}
 
@@ -112,8 +116,6 @@ namespace UI
 
 	static uint32_t GetColorForHeight(const OM::Heightmap& heightmap, double height)
 	{
-		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
-
 		HeightmapRange range = GetHeightmapRange(heightmap);
 
 		const double percent = utils::bound<double>((height - range.min) / range(), 0.0f, 1.0f);
@@ -205,7 +207,7 @@ namespace UI
 			 range.min,
 			 range.max);
 
-		int pixelSize = scalePos.mHeight / 50;
+		int pixelSize = scalePos.mHeight / HEIGHTMAP_COLORBAR_SAMPLES;
 		for (int pos = 0; pos < scalePos.mHeight; pos += pixelSize)
 		{
 			double value = range.min + (range() * (1.0 - (double)pos / scalePos.mHeight));
@@ -269,17 +271,26 @@ namespace UI
 		canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
 
 		// Get the printer limits
-		const float axisMinX = heightmap.meta.GetAxis(0)->minPosition;
-		const float axisMaxX = heightmap.meta.GetAxis(0)->maxPosition;
-		const float axisMinY = heightmap.meta.GetAxis(1)->minPosition;
-		const float axisMaxY = heightmap.meta.GetAxis(1)->maxPosition;
+		OM::Move::Axis* axisX = heightmap.meta.GetAxis(0);
+		OM::Move::Axis* axisY = heightmap.meta.GetAxis(1);
+
+		if (!axisX || !axisY)
+		{
+			error("Failed to get axes");
+			return false;
+		}
+
+		const float axisMinX = axisX->minPosition;
+		const float axisMaxX = axisX->maxPosition;
+		const float axisMinY = axisY->minPosition;
+		const float axisMaxY = axisY->maxPosition;
 
 		// Render the heightmap
 		for (size_t x = 0; x < heightmap.GetWidth(); x++)
 		{
 			for (size_t y = 0; y < heightmap.GetHeight(); y++)
 			{
-				const OM::Heightmap::Point* const point = heightmap.GetPoint(x, y);
+				const OM::Heightmap::Point* point = heightmap.GetPoint(x, y);
 				if (point == nullptr)
 				{
 					error("Failed to get point %u, %u", x, y);
@@ -287,8 +298,38 @@ namespace UI
 				}
 
 				uint32_t color = GetColorForHeight(heightmap, point->z);
-				canvas->setSourceColor(color);
-				canvas->fillRect(x * 20, y * 20, 20, 20, 0);
+				canvas->setSourceColor(point->isNull ? theme->colors->heightmap.bgDefault : color);
+
+				// Calculate the position of the point on the canvas
+				double pixXSpacing = heightmap.meta.GetSpacing(0) * canvasPos.mWidth / (axisMaxX - axisMinX);
+				double pixYSpacing = heightmap.meta.GetSpacing(1) * canvasPos.mHeight / (axisMaxY - axisMinY);
+				double xPos =
+					std::ceil(canvasPos.mWidth * (point->x - axisMinX) / (axisMaxX - axisMinX) - pixXSpacing / 2);
+				double yPos = std::ceil(canvasPos.mHeight * (1.0f - (point->y - axisMinY) / (axisMaxY - axisMinY)) -
+										pixYSpacing / 2);
+
+				if (xPos < -pixXSpacing || yPos < -pixYSpacing)
+				{
+					warn("Point %u, %u out of bounds pos=(%.2f, %.2f)", x, y, xPos, yPos);
+					continue;
+				}
+
+				xPos = utils::bound<double>(xPos, 0, (double)canvasPos.mWidth - pixXSpacing);
+				yPos = utils::bound<double>(yPos, 0, (double)canvasPos.mHeight - pixYSpacing);
+				dbg("Drawing point %u, %u at pixel (%d, %d) size=(%d, %d), point (%.2f, %.2f)",
+					x,
+					y,
+					static_cast<int>(xPos),
+					static_cast<int>(yPos),
+					static_cast<int>(pixXSpacing),
+					static_cast<int>(pixYSpacing),
+					point->x,
+					point->y);
+				canvas->fillRect(static_cast<int>(xPos),
+								 static_cast<int>(yPos),
+								 static_cast<int>(pixXSpacing) + 1,
+								 static_cast<int>(pixYSpacing) + 1,
+								 0);
 			}
 		}
 

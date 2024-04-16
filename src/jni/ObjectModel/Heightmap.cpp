@@ -145,7 +145,7 @@ namespace OM
 		return true;
 	}
 
-	const Heightmap::Point* const Heightmap::GetPoint(size_t x, size_t y) const
+	const Heightmap::Point* Heightmap::GetPoint(size_t x, size_t y) const
 	{
 		if (x >= GetWidth() || y >= GetHeight())
 		{
@@ -226,6 +226,11 @@ namespace OM
 					val.isNull = true;
 					parseError = true;
 				}
+				if (val.z == 0)
+				{
+					val.isNull = true;
+				}
+
 				verbose("Cell %u, %u%s: (%.3f, %.3f, %.3f)",
 						colIdx,
 						rowIdx,
