@@ -15,6 +15,7 @@
 
 #include "Comm/FileInfo.h"
 #include "Hardware/Duet.h"
+#include "Storage.h"
 #include "UserInterface.h"
 #include "storage/StoragePreferences.h"
 #include "timer.h"
@@ -43,7 +44,7 @@ namespace UI
 		progress_ = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress);
 
 		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
-		SetTimeout(StoragePreferences::getInt("info_timeout", DEFAULT_POPUP_TIMEOUT));
+		SetTimeout(StoragePreferences::getInt(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 	}
 
 	void PopupWindow::Open()
@@ -341,7 +342,7 @@ namespace UI
 	void PopupWindow::SetTimeout(uint32_t timeout)
 	{
 		info("Setting info timeout to %u", timeout);
-		StoragePreferences::putInt("info_timeout", (int)timeout);
+		StoragePreferences::putInt(ID_INFO_TIMEOUT, (int)timeout);
 		timeout_ = timeout;
 	}
 

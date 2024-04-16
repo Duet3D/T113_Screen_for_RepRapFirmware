@@ -4,6 +4,11 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView47Ptr;
+static ZKTextView* mTextView46Ptr;
+static ZKListView* mHeightMapColorSchemeListPtr;
+static ZKCheckBox* mHeightMapInvertZPtr;
+static ZKWindow* mHeightMapDisplaySettingsWindowPtr;
 static ZKTextView* mTextView45Ptr;
 static ZKTextView* mHMStatisticsMeanPtr;
 static ZKTextView* mHMStatisticsRMSPtr;
@@ -360,6 +365,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_HeightMapColorSchemeList, getListItemCount_HeightMapColorSchemeList, obtainListItemData_HeightMapColorSchemeList, onListItemClick_HeightMapColorSchemeList,
     ID_MAIN_HeightMapScaleList, getListItemCount_HeightMapScaleList, obtainListItemData_HeightMapScaleList, onListItemClick_HeightMapScaleList,
     ID_MAIN_HeightMapList, getListItemCount_HeightMapList, obtainListItemData_HeightMapList, onListItemClick_HeightMapList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
@@ -539,6 +545,7 @@ typedef struct {
 }S_CheckboxCallback;
 /*TAG:CheckboxCallbackTab*/
 static S_CheckboxCallback SCheckboxCallbackTab[] = {
+    ID_MAIN_HeightMapInvertZ, onCheckedChanged_HeightMapInvertZ,
     ID_MAIN_Checkbox1, onCheckedChanged_Checkbox1,
     ID_MAIN_ShowSetupOnStartup, onCheckedChanged_ShowSetupOnStartup,
     ID_MAIN_ScreensaverEnable, onCheckedChanged_ScreensaverEnable,
@@ -557,6 +564,11 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView47Ptr = NULL;
+    mTextView46Ptr = NULL;
+    mHeightMapColorSchemeListPtr = NULL;
+    mHeightMapInvertZPtr = NULL;
+    mHeightMapDisplaySettingsWindowPtr = NULL;
     mTextView45Ptr = NULL;
     mHMStatisticsMeanPtr = NULL;
     mHMStatisticsRMSPtr = NULL;
@@ -803,6 +815,11 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);
+    mTextView46Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView46);
+    mHeightMapColorSchemeListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapColorSchemeList);if(mHeightMapColorSchemeListPtr!= NULL){mHeightMapColorSchemeListPtr->setListAdapter(this);mHeightMapColorSchemeListPtr->setItemClickListener(this);}
+    mHeightMapInvertZPtr = (ZKCheckBox*)findControlByID(ID_MAIN_HeightMapInvertZ);if(mHeightMapInvertZPtr!= NULL){mHeightMapInvertZPtr->setCheckedChangeListener(this);}
+    mHeightMapDisplaySettingsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapDisplaySettingsWindow);
     mTextView45Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView45);
     mHMStatisticsMeanPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMean);
     mHMStatisticsRMSPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsRMS);

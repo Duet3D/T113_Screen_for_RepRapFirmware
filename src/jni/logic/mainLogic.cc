@@ -16,6 +16,7 @@
 #include "ObjectModel/Heightmap.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
+#include "Storage.h"
 #include "UI/Gcodes.h"
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
@@ -104,7 +105,7 @@ static void onUI_init()
 	Comm::duet.Init();
 	UI::Init(mRootWindowPtr);
 	UI::TemperatureGraph.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
-	UI::Theme::SetTheme(StoragePreferences::getString("theme", "dark"));
+	UI::Theme::SetTheme(StoragePreferences::getString(ID_THEME, "dark"));
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
@@ -119,13 +120,13 @@ static void onUI_init()
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
 	mShowSetupOnStartupPtr->setSelected(
-		StoragePreferences::getBool("show_setup_on_startup", DEFAULT_SHOW_SETUP_ON_STARTUP));
+		StoragePreferences::getBool(ID_SHOW_SETUP_ON_STARTUP, DEFAULT_SHOW_SETUP_ON_STARTUP));
 
 	// Screensaver
-	bool screensaverEnable = StoragePreferences::getBool("screensaver_enable", true);
+	bool screensaverEnable = StoragePreferences::getBool(ID_SCREENSAVER_ENABLE, true);
 	mScreensaverEnablePtr->setSelected(screensaverEnable);
 	EASYUICONTEXT->setScreensaverEnable(screensaverEnable);
-	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt("screensaver_timeout", 120));
+	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt(ID_SCREENSAVER_TIMEOUT, 120));
 
 	// Duet communication settings
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
@@ -133,6 +134,9 @@ static void onUI_init()
 	mPasswordInputPtr->setText(Comm::duet.GetPassword());
 	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
 	mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
+
+	// Heightmap
+	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0)));
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -1166,7 +1170,7 @@ static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
 static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
 {
 	dbg("isChecked = %d", isChecked);
-	StoragePreferences::putBool("show_setup_on_startup", isChecked);
+	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
 }
 
 static bool onButtonClick_CloseGuideBtn(ZKButton *pButton)
@@ -1367,7 +1371,7 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
 {
 	info("Screensaver %s", isChecked ? "enabled" : "disabled");
-	StoragePreferences::putBool("screensaver_enable", isChecked);
+	StoragePreferences::putBool(ID_SCREENSAVER_ENABLE, isChecked);
 	EASYUICONTEXT->setScreensaverEnable(isChecked);
 }
 
@@ -1384,7 +1388,7 @@ static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
 		mScreensaverTimeoutInputPtr->setText(10);
 		return;
 	}
-	StoragePreferences::putInt("screensaver_timeout", timeout);
+	StoragePreferences::putInt(ID_SCREENSAVER_TIMEOUT, timeout);
 	EASYUICONTEXT->setScreensaverTimeOut(timeout);
 }
 static bool onButtonClick_Button1(ZKButton *pButton) {
@@ -1548,8 +1552,7 @@ static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::
 static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
 {
 	OM::SetCurrentHeightmap(index);
-	const OM::Heightmap heightmap = OM::GetHeightmapData(OM::GetCurrentHeightmap().c_str());
-	UI::RenderHeightmap(heightmap);
+	UI::RenderHeightmap(OM::GetCurrentHeightmap());
 }
 
 static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
@@ -1569,3 +1572,25 @@ static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListV
 }
 
 static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id) {}
+
+static void onCheckedChanged_HeightMapInvertZ(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	LOGD(" Checkbox HeightMapInvertZ checked %d", isChecked);
+}
+
+static int getListItemCount_HeightMapColorSchemeList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_HeightMapColorSchemeList !\n");
+	return 2;
+}
+
+static void obtainListItemData_HeightMapColorSchemeList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::GetHeightmapRenderModeText(UI::HeightmapRenderMode(index)));
+    pListItem->setSelected(index == StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0));
+}
+
+static void onListItemClick_HeightMapColorSchemeList(ZKListView* pListView, int index, int id)
+{
+	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(index));
+}

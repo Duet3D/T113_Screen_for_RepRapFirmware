@@ -2,6 +2,7 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "Storage.h"
 #include "activity/mainActivity.h"
 #include "entry/EasyUIContext.h"
 #include "manager/ConfigManager.h"
@@ -34,14 +35,14 @@ void onEasyUIDeinit(EasyUIContext *pContext) {
 const char* onStartupApp(EasyUIContext* pContext)
 {
 	RestClient::init();
-	if (StoragePreferences::getString("sys_lang_code_key", "") == "")
+	if (StoragePreferences::getString(ID_SYS_LANG_CODE_KEY, "") == "")
 	{
-		StoragePreferences::putString("sys_lang_code_key", DEFAULT_LANGUAGE_CODE);
+		StoragePreferences::putString(ID_SYS_LANG_CODE_KEY, DEFAULT_LANGUAGE_CODE);
 		LANGUAGEMANAGER->setCurrentCode(DEFAULT_LANGUAGE_CODE);
 	}
-	if (StoragePreferences::getInt("sys_brightness_key", -1) == -1)
+	if (StoragePreferences::getInt(ID_SYS_BRIGHTNESS_KEY, -1) == -1)
 	{
-		StoragePreferences::putInt("sys_brightness_key", 0);
+		StoragePreferences::putInt(ID_SYS_BRIGHTNESS_KEY, 0);
 		BRIGHTNESSHELPER->setBrightness(0);
 	}
 	return "mainActivity";

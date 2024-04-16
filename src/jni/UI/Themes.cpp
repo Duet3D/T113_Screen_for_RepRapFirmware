@@ -2,6 +2,7 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "Storage.h"
 #include "Themes.h"
 #include <map>
 #include <storage/StoragePreferences.h>
@@ -293,7 +294,7 @@ namespace UI::Theme
 			return;
 
 		s_currentTheme = theme;
-		StoragePreferences::putString("theme", s_currentTheme->id);
+		StoragePreferences::putString(ID_THEME, s_currentTheme->id);
 		info("Set theme to \"%s\"", s_currentTheme->id.c_str());
 
 		s_themedListItems.clear();

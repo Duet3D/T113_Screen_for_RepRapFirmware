@@ -12,17 +12,19 @@
 #include "Heightmap.h"
 
 #include "ObjectModel/Axis.h"
+#include "Storage.h"
 #include "Themes.h"
 #include "UserInterface.h"
 #include "control/ZKListView.h"
 #include "control/ZKPainter.h"
 #include "control/ZKTextView.h"
 #include "manager/LanguageManager.h"
+#include "storage/StoragePreferences.h"
 #include <cmath>
 
 namespace UI
 {
-	static OM::Heightmap s_currentHeightmap;
+	static std::string s_currentHeightmap;
 	static HeightmapRenderMode s_heightmapRenderMode = HeightmapRenderMode::Fixed;
 
 	struct HeightmapRange
@@ -37,11 +39,26 @@ namespace UI
 	{
 		info("Setting heightmap render mode to %d", (int)mode);
 		s_heightmapRenderMode = mode;
+		StoragePreferences::putInt(ID_HEIGHTMAP_RENDER_MODE, (int)mode);
+		RenderHeightmap(s_currentHeightmap);
 	}
 
 	HeightmapRenderMode GetHeightmapRenderMode()
 	{
 		return s_heightmapRenderMode;
+	}
+
+	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode)
+	{
+		switch (mode)
+		{
+		case HeightmapRenderMode::Fixed:
+			return LANGUAGEMANAGER->getValue("hm_render_mode_fixed");
+		case HeightmapRenderMode::Deviation:
+			return LANGUAGEMANAGER->getValue("hm_render_mode_deviation");
+		default:
+			return "Unknown";
+		}
 	}
 
 	static HeightmapRange GetHeightmapRange(const OM::Heightmap& heightmap)
@@ -71,7 +88,7 @@ namespace UI
 			error("Failed to get UI controls");
 			return 0.0f;
 		}
-		HeightmapRange range = GetHeightmapRange(s_currentHeightmap);
+		HeightmapRange range = GetHeightmapRange(OM::GetHeightmapData(s_currentHeightmap.c_str()));
 
 		return range.min + (range() * (1.0 - (double)index / (scaleText->getRows() - 1)));
 	}
@@ -223,7 +240,7 @@ namespace UI
 		statsRms->setTextTrf("hm_rms", heightmap.GetStdDev());
 	}
 
-	bool RenderHeightmap(const OM::Heightmap& heightmap)
+	bool RenderHeightmap(const std::string& heightmapName)
 	{
 		// Render the heightmap
 		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
@@ -238,7 +255,8 @@ namespace UI
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
 
 		// Save the heightmap for scale text rendering
-		s_currentHeightmap = heightmap;
+		s_currentHeightmap = heightmapName;
+		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
 
 		info("Rendering heightmap %s (%u, %u) using theme %s",
 			 heightmap.GetFileName().c_str(),

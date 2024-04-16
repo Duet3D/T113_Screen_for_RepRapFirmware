@@ -10,6 +10,7 @@
 #include "Debug.h"
 
 #include "GuidedSetup.h"
+#include "Storage.h"
 #include "UI/UserInterface.h"
 #include "activity/mainActivity.h"
 #include "control/ZKButton.h"
@@ -196,7 +197,7 @@ namespace UI::GuidedSetup
 		s_previousBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_PreviousPageBtn);
 		s_closeBtn = (ZKButton*)s_window->findControlByID(ID_MAIN_CloseGuideBtn);
 
-		if (StoragePreferences::getBool("show_setup_on_startup", DEFAULT_SHOW_SETUP_ON_STARTUP))
+		if (StoragePreferences::getBool(ID_SHOW_SETUP_ON_STARTUP, DEFAULT_SHOW_SETUP_ON_STARTUP))
 		{
 			Show("setup");
 		}

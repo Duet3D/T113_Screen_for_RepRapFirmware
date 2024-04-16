@@ -96,6 +96,10 @@
     <!-- Heightmap -->
     <string name="height_map">Height Map</string>
     <string name="height_maps">Height Maps</string>
+    <string name="hm_color_scheme">Color scheme:</string>
+    <string name="hm_render_mode_fixed">Fixed</string>
+    <string name="hm_render_mode_deviation">Deviation</string>
+    <string name="hm_invert_z">Invert Z coordinates:</string>
     <string name="hm_scale_header">Scale:</string>
     <string name="hm_scale_max">%.2f mm or more</string>
     <string name="hm_scale_min">%.2f mm or less</string>

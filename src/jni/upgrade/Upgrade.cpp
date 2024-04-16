@@ -15,6 +15,7 @@
 
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
+#include "Storage.h"
 #include "entry/EasyUIContext.h"
 #include "os/UpgradeMonitor.h"
 #include "storage/StoragePreferences.h"
@@ -56,7 +57,7 @@ bool UpgradeFromUSB(const std::string& filePath)
 		return false;
 	}
 
-	StoragePreferences::putInt("UpgradeFileLastModified", (int)sb.st_mtim.tv_sec);
+	StoragePreferences::putInt(ID_UPGRADE_FILE_LAST_MODIFIED, (int)sb.st_mtim.tv_sec);
 	return true;
 }
 
@@ -105,7 +106,7 @@ void UpgradeMountListener::notify(int what, int status, const char* msg)
 			{
 				continue;
 			}
-			if ((int)file.st_mtim.tv_sec == StoragePreferences::getInt("UpgradeFileLastModified", -1))
+			if ((int)file.st_mtim.tv_sec == StoragePreferences::getInt(ID_UPGRADE_FILE_LAST_MODIFIED, -1))
 			{
 				warn("Already offered autoupdate");
 				return;

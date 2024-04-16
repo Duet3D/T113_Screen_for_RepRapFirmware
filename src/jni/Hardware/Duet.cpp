@@ -16,6 +16,7 @@
 #include "Hardware/SerialIo.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
+#include "Storage.h"
 #include "UI/Graph.h"
 #include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
@@ -39,13 +40,13 @@ namespace Comm
 
 	void Duet::Init()
 	{
-		SetPollInterval((uint32_t)StoragePreferences::getInt("poll_interval", DEFAULT_PRINTER_POLL_INTERVAL));
-		SetBaudRate((unsigned int)StoragePreferences::getInt("baud_rate", CONFIGMANAGER->getUartBaudRate()));
+		SetPollInterval((uint32_t)StoragePreferences::getInt(ID_DUET_POLL_INTERVAL, DEFAULT_PRINTER_POLL_INTERVAL));
+		SetBaudRate((unsigned int)StoragePreferences::getInt(ID_DUET_BAUD_RATE, CONFIGMANAGER->getUartBaudRate()));
 		SetIPAddress("");
-		SetHostname(StoragePreferences::getString("hostname", ""));
-		SetPassword(StoragePreferences::getString("password", ""));
+		SetHostname(StoragePreferences::getString(ID_DUET_HOSTNAME, ""));
+		SetPassword(StoragePreferences::getString(ID_DUET_PASSWORD, ""));
 		SetCommunicationType(
-			(CommunicationType)StoragePreferences::getInt("communication_type", (int)DEFAULT_COMMUNICATION_TYPE));
+			(CommunicationType)StoragePreferences::getInt(ID_DUET_COMMUNICATION_TYPE, (int)DEFAULT_COMMUNICATION_TYPE));
 	}
 
 	void Duet::Reset()
@@ -74,7 +75,7 @@ namespace Comm
 		if (type == m_communicationType)
 			return;
 		info("Setting communication type to %d", (int)type);
-		StoragePreferences::putInt("communication_type", (int)type);
+		StoragePreferences::putInt(ID_DUET_COMMUNICATION_TYPE, (int)type);
 		Disconnect();
 
 		m_communicationType = type;
@@ -89,7 +90,7 @@ namespace Comm
 			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
 		info("Setting poll interval to %d", interval);
-		StoragePreferences::putInt("poll_interval", (int)interval);
+		StoragePreferences::putInt(ID_DUET_POLL_INTERVAL, (int)interval);
 		resetUserTimer(TIMER_UPDATE_DATA, (int)interval);
 		m_pollInterval = interval;
 	}
@@ -772,7 +773,7 @@ namespace Comm
 	void Duet::SetBaudRate(const baudrate_t& baudRate)
 	{
 		info("Setting baud rate to %u (%u)", baudRate.rate, baudRate.internal);
-		StoragePreferences::putInt("baud_rate", baudRate.internal);
+		StoragePreferences::putInt(ID_DUET_BAUD_RATE, baudRate.internal);
 		m_baudRate = baudRate;
 		if (UARTCONTEXT->isOpen())
 		{
@@ -800,7 +801,7 @@ namespace Comm
 	void Duet::SetHostname(const std::string hostname)
 	{
 		dbg("Hostname = %s", hostname.c_str());
-		StoragePreferences::putString("hostname", hostname);
+		StoragePreferences::putString(ID_DUET_HOSTNAME, hostname);
 		m_hostname.clear();
 
 		if (hostname.find("http://") != 0)
@@ -817,7 +818,7 @@ namespace Comm
 
 	void Duet::SetPassword(const std::string& password)
 	{
-		StoragePreferences::putString("password", password);
+		StoragePreferences::putString(ID_DUET_PASSWORD, password);
 		m_password = password;
 	}
 

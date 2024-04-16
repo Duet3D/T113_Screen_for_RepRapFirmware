@@ -14,14 +14,15 @@ namespace UI
 {
 	enum class HeightmapRenderMode
 	{
-		Fixed,
+		Fixed = 0,
 		Deviation,
 	};
 
 	void SetHeightmapRenderMode(HeightmapRenderMode mode);
 	HeightmapRenderMode GetHeightmapRenderMode();
+	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode);
 	double GetHeightmapScaleAt(int index);
-	bool RenderHeightmap(const OM::Heightmap& heightmap);
+	bool RenderHeightmap(const std::string& heightmapName);
 } // namespace UI
 
 #endif /* JNI_UI_HEIGHTMAP_H_ */
