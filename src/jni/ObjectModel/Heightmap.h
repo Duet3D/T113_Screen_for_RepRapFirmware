@@ -55,6 +55,8 @@ namespace OM
 			bool isNull = false;
 		};
 
+		void Reset();
+
 		bool LoadFromDuet(const char* filename);
 
 		const std::string& GetFileName() const { return m_fileName; }
@@ -62,7 +64,7 @@ namespace OM
 		size_t GetWidth() const { return m_heightmap.empty() ? 0 : m_heightmap[0].size(); }
 		const Point* GetPoint(size_t x, size_t y) const;
 		size_t GetPointCount() const;
-		double GetArea() const;
+		double GetArea() const { return m_area; }
 		double GetMinError() const { return m_minError; }
 		double GetMaxError() const { return m_maxError; }
 		double GetMeanError() const { return m_meanError; }
@@ -79,6 +81,7 @@ namespace OM
 		double m_maxError = 0.0f;
 		double m_meanError = 0.0f;
 		double m_stdDev = 0.0f;
+		double m_area = 0.0f;
 		std::vector<std::vector<Point>> m_heightmap;
 	};
 

@@ -295,7 +295,7 @@ namespace UI
 		}
 
 		statsNumPoints->setTextTrf("hm_num_points", heightmap.GetPointCount());
-		statsArea->setTextTrf("hm_area", heightmap.GetArea());
+		statsArea->setTextTrf("hm_area", heightmap.GetArea() / 100);
 		statsMax->setTextTrf("hm_max", heightmap.GetMaxError());
 		statsMin->setTextTrf("hm_min", heightmap.GetMinError());
 		statsMean->setTextTrf("hm_mean", heightmap.GetMeanError());

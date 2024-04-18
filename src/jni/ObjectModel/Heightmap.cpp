@@ -13,6 +13,7 @@
 
 #include "Hardware/Duet.h"
 #include "utils/csv.h"
+#include <cmath>
 #include <map>
 #include <sstream>
 
@@ -103,8 +104,21 @@ namespace OM
 		LoadFromDuet(filename);
 	}
 
+	void Heightmap::Reset()
+	{
+		m_fileName = "";
+		m_heightmap.clear();
+		meta.Reset();
+		m_minError = 0.0f;
+		m_maxError = 0.0f;
+		m_meanError = 0.0f;
+		m_stdDev = 0.0f;
+		m_area = 0.0f;
+	}
+
 	bool Heightmap::LoadFromDuet(const char* filename)
 	{
+		Reset();
 		m_fileName = filename;
 		std::string csvContents;
 		if (!Comm::duet.DownloadFile(utils::format("/sys/%s", filename).c_str(), csvContents))
@@ -166,11 +180,6 @@ namespace OM
 		return count;
 	}
 
-	double Heightmap::GetArea() const
-	{
-		return 0.0f;
-	}
-
 	bool Heightmap::ParseMeta(const std::string& csvContents)
 	{
 		info("Parsing meta data for heightmap %s", m_fileName.c_str());
@@ -212,6 +221,11 @@ namespace OM
 		size_t cols = doc.GetColumnCount();
 
 		double errorSum = 0.0f;
+		double errorSqrSum = 0.0f;
+		double xMin = 9999.9f;	// Used to calculate area
+		double yMin = 9999.9f;	// Used to calculate area
+		double xMax = -9999.9f; // Used to calculate area
+		double yMax = -9999.9f; // Used to calculate area
 
 		for (size_t rowIdx = 0; rowIdx < rows; rowIdx++)
 		{
@@ -222,6 +236,26 @@ namespace OM
 				std::string val;
 				point.x = meta.GetMin(0) + colIdx * meta.GetSpacing(0);
 				point.y = meta.GetMin(1) + rowIdx * meta.GetSpacing(1);
+				if (point.x < xMin)
+				{
+					dbg("New xMin: %.3f", point.x);
+					xMin = point.x;
+				}
+				if (point.x > xMax)
+				{
+					dbg("New xMax: %.3f", point.x);
+					xMax = point.x;
+				}
+				if (point.y < yMin)
+				{
+					dbg("New yMin: %.3f", point.y);
+					yMin = point.y;
+				}
+				if (point.y > yMax)
+				{
+					dbg("New yMax: %.3f", point.y);
+					yMax = point.y;
+				}
 				if (!doc.GetCell(colIdx, rowIdx, val))
 				{
 					error("Failed to get cell %u, %u", colIdx, rowIdx);
@@ -252,6 +286,8 @@ namespace OM
 					m_maxError = point.z;
 				}
 				errorSum += point.z;
+				errorSqrSum += point.z * point.z;
+
 				if (colIdx >= row.size())
 				{
 					warn("Heightmap column index out of range: %u >= %u", colIdx, row.size());
@@ -262,7 +298,12 @@ namespace OM
 			}
 			m_heightmap.push_back(row);
 		}
+
+		dbg("xMin=%.3f, xMax=%.3f, yMin=%.3f, yMax=%.3f", xMin, xMax, yMin, yMax);
+		m_area =
+			meta.GetRadius() > 0 ? meta.GetRadius() * meta.GetRadius() * M_PI : std::abs((xMax - xMin) * (yMax - yMin));
 		m_meanError = errorSum / (rows * cols);
+		m_stdDev = sqrt(errorSqrSum * GetPointCount() - errorSum * errorSum) / GetPointCount();
 
 		if (rows != m_heightmap.size())
 		{
@@ -275,14 +316,17 @@ namespace OM
 			parseError = true;
 		}
 
-		dbg("Heightmap: %u (%u) rows, %u (%u) cols, minError=%.3f, maxError=%.3f, meanError=%.3f",
+		dbg("Heightmap: %u (%u) rows, %u (%u) cols, area=%.3f mm^2, minError=%.3f mm, maxError=%.3f mm, meanError=%.3f "
+			"mm, stdDev=%.3f mm",
 			rows,
 			m_heightmap.size(),
 			cols,
 			m_heightmap.empty() ? 0 : m_heightmap[0].size(),
+			m_area,
 			m_minError,
 			m_maxError,
-			m_meanError);
+			m_meanError,
+			m_stdDev);
 
 		return !parseError;
 	}
