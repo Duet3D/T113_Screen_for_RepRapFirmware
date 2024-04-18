@@ -7,10 +7,8 @@
 static ZKTextView* mHeightMapInfoTextPtr;
 static ZKListView* mHeightMapXAxisPtr;
 static ZKListView* mHeightMapYAxisPtr;
-static ZKTextView* mTextView47Ptr;
 static ZKTextView* mTextView46Ptr;
 static ZKListView* mHeightMapColorSchemeListPtr;
-static ZKCheckBox* mHeightMapInvertZPtr;
 static ZKWindow* mHeightMapDisplaySettingsWindowPtr;
 static ZKTextView* mTextView45Ptr;
 static ZKTextView* mHMStatisticsMeanPtr;
@@ -549,7 +547,6 @@ typedef struct {
 }S_CheckboxCallback;
 /*TAG:CheckboxCallbackTab*/
 static S_CheckboxCallback SCheckboxCallbackTab[] = {
-    ID_MAIN_HeightMapInvertZ, onCheckedChanged_HeightMapInvertZ,
     ID_MAIN_Checkbox1, onCheckedChanged_Checkbox1,
     ID_MAIN_ShowSetupOnStartup, onCheckedChanged_ShowSetupOnStartup,
     ID_MAIN_ScreensaverEnable, onCheckedChanged_ScreensaverEnable,
@@ -571,10 +568,8 @@ mainActivity::~mainActivity() {
     mHeightMapInfoTextPtr = NULL;
     mHeightMapXAxisPtr = NULL;
     mHeightMapYAxisPtr = NULL;
-    mTextView47Ptr = NULL;
     mTextView46Ptr = NULL;
     mHeightMapColorSchemeListPtr = NULL;
-    mHeightMapInvertZPtr = NULL;
     mHeightMapDisplaySettingsWindowPtr = NULL;
     mTextView45Ptr = NULL;
     mHMStatisticsMeanPtr = NULL;
@@ -824,10 +819,8 @@ void mainActivity::onCreate() {
     mHeightMapInfoTextPtr = (ZKTextView*)findControlByID(ID_MAIN_HeightMapInfoText);
     mHeightMapXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapXAxis);if(mHeightMapXAxisPtr!= NULL){mHeightMapXAxisPtr->setListAdapter(this);mHeightMapXAxisPtr->setItemClickListener(this);}
     mHeightMapYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapYAxis);if(mHeightMapYAxisPtr!= NULL){mHeightMapYAxisPtr->setListAdapter(this);mHeightMapYAxisPtr->setItemClickListener(this);}
-    mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);
     mTextView46Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView46);
     mHeightMapColorSchemeListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapColorSchemeList);if(mHeightMapColorSchemeListPtr!= NULL){mHeightMapColorSchemeListPtr->setListAdapter(this);mHeightMapColorSchemeListPtr->setItemClickListener(this);}
-    mHeightMapInvertZPtr = (ZKCheckBox*)findControlByID(ID_MAIN_HeightMapInvertZ);if(mHeightMapInvertZPtr!= NULL){mHeightMapInvertZPtr->setCheckedChangeListener(this);}
     mHeightMapDisplaySettingsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapDisplaySettingsWindow);
     mTextView45Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView45);
     mHMStatisticsMeanPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsMean);

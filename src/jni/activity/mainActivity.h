@@ -32,10 +32,8 @@
 #define ID_MAIN_HeightmapLoad    24037
 #define ID_MAIN_HeightMapXAxis    80030
 #define ID_MAIN_HeightMapYAxis    80029
-#define ID_MAIN_TextView47    50092
 #define ID_MAIN_TextView46    50091
 #define ID_MAIN_HeightMapColorSchemeList    80028
-#define ID_MAIN_HeightMapInvertZ    21004
 #define ID_MAIN_HeightMapDisplaySettingsWindow    110041
 #define ID_MAIN_TextView45    50090
 #define ID_MAIN_HMStatisticsMean    50088

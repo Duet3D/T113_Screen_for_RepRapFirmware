@@ -435,5 +435,6 @@ namespace UI
 
 		canvas->setSourceColor(theme->colors->heightmap.bgDefault);
 		canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
+		s_currentHeightmap.clear();
 	}
 } // namespace UI

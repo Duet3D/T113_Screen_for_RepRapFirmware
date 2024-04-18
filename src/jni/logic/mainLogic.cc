@@ -1592,11 +1592,6 @@ static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListV
 
 static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id) {}
 
-static void onCheckedChanged_HeightMapInvertZ(ZKCheckBox* pCheckBox, bool isChecked)
-{
-	LOGD(" Checkbox HeightMapInvertZ checked %d", isChecked);
-}
-
 static int getListItemCount_HeightMapColorSchemeList(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_HeightMapColorSchemeList !\n");
