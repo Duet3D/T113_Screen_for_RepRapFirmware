@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mHeightMapInfoTextPtr;
 static ZKListView* mHeightMapXAxisPtr;
 static ZKListView* mHeightMapYAxisPtr;
 static ZKTextView* mTextView47Ptr;
@@ -20,7 +21,6 @@ static ZKTextView* mHMStatisticsAreaPtr;
 static ZKTextView* mHMStatisticsNumPointsPtr;
 static ZKTextView* mTextView18Ptr;
 static ZKWindow* mHeightMapStatisticsWindowPtr;
-static ZKTextView* mNoHeightMapLoadedTextPtr;
 static ZKListView* mHeightMapScaleListPtr;
 static ZKPainter* mHeightMapScalePtr;
 static ZKPainter* mHeightMapPainterPtr;
@@ -568,6 +568,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mHeightMapInfoTextPtr = NULL;
     mHeightMapXAxisPtr = NULL;
     mHeightMapYAxisPtr = NULL;
     mTextView47Ptr = NULL;
@@ -584,7 +585,6 @@ mainActivity::~mainActivity() {
     mHMStatisticsNumPointsPtr = NULL;
     mTextView18Ptr = NULL;
     mHeightMapStatisticsWindowPtr = NULL;
-    mNoHeightMapLoadedTextPtr = NULL;
     mHeightMapScaleListPtr = NULL;
     mHeightMapScalePtr = NULL;
     mHeightMapPainterPtr = NULL;
@@ -821,6 +821,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mHeightMapInfoTextPtr = (ZKTextView*)findControlByID(ID_MAIN_HeightMapInfoText);
     mHeightMapXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapXAxis);if(mHeightMapXAxisPtr!= NULL){mHeightMapXAxisPtr->setListAdapter(this);mHeightMapXAxisPtr->setItemClickListener(this);}
     mHeightMapYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapYAxis);if(mHeightMapYAxisPtr!= NULL){mHeightMapYAxisPtr->setListAdapter(this);mHeightMapYAxisPtr->setItemClickListener(this);}
     mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);
@@ -837,7 +838,6 @@ void mainActivity::onCreate() {
     mHMStatisticsNumPointsPtr = (ZKTextView*)findControlByID(ID_MAIN_HMStatisticsNumPoints);
     mTextView18Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView18);
     mHeightMapStatisticsWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_HeightMapStatisticsWindow);
-    mNoHeightMapLoadedTextPtr = (ZKTextView*)findControlByID(ID_MAIN_NoHeightMapLoadedText);
     mHeightMapScaleListPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapScaleList);if(mHeightMapScaleListPtr!= NULL){mHeightMapScaleListPtr->setListAdapter(this);mHeightMapScaleListPtr->setItemClickListener(this);}
     mHeightMapScalePtr = (ZKPainter*)findControlByID(ID_MAIN_HeightMapScale);
     mHeightMapPainterPtr = (ZKPainter*)findControlByID(ID_MAIN_HeightMapPainter);

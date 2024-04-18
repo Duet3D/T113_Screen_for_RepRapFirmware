@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_HeightMapInfoText    50089
 #define ID_MAIN_HeightmapLoad    24037
 #define ID_MAIN_HeightMapXAxis    80030
 #define ID_MAIN_HeightMapYAxis    80029
@@ -45,7 +46,6 @@
 #define ID_MAIN_HMStatisticsNumPoints    50083
 #define ID_MAIN_TextView18    50082
 #define ID_MAIN_HeightMapStatisticsWindow    110040
-#define ID_MAIN_NoHeightMapLoadedText    50089
 #define ID_MAIN_HeightMapScaleList    80027
 #define ID_MAIN_HeightMapScale    52002
 #define ID_MAIN_HeightMapPainter    52001

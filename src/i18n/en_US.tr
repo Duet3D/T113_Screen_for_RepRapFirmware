@@ -112,6 +112,7 @@
     <string name="hm_min">Min deviation: %.3f mm</string>
     <string name="hm_mean">Mean error: %.3f mm</string>
     <string name="hm_rms">RMS error: %.3f mm</string>
+    <string name="hm_not_supported_in_current_mode">Heightmap not supported in current connection mode</string>
 
     <!-- Fans Page -->
 

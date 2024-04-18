@@ -59,7 +59,7 @@ constexpr double HEIGHTMAP_FIXED_MIN = -0.25;
 
 // Increasing this too high will cause a delay when rendering the heightmap.
 // Recommended max of 100
-constexpr size_t HEIGHTMAP_COLORBAR_SAMPLES = 30;
+constexpr size_t HEIGHTMAP_COLORBAR_SAMPLES = 100;
 
 /* Console */
 constexpr unsigned int MAX_COMMAND_LENGTH = 50;

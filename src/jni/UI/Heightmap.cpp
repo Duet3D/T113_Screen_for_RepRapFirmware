@@ -11,6 +11,7 @@
 
 #include "Heightmap.h"
 
+#include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
 #include "Storage.h"
 #include "Themes.h"
@@ -169,12 +170,8 @@ namespace UI
 	}
 #endif
 
-	static uint32_t GetColorForHeight(const OM::Heightmap& heightmap, double height)
+	static uint32_t GetColorForPercent(double percent)
 	{
-		HeightmapRange range = GetHeightmapRange(heightmap);
-
-		const double percent = utils::bound<double>((height - range.min) / range(), 0.0f, 1.0f);
-
 		// Convert the height to a color on a HSV colorbar from blue to red
 		double hue = (1.0 - percent) * 240.0; // Map the percent to the hue range (blue to red)
 		double saturation = 1.0;			  // Set the saturation to maximum
@@ -231,6 +228,15 @@ namespace UI
 		// Combine the RGB values into a single color
 		uint32_t color = (0xFF << 24) | (red << 16) | (green << 8) | blue;
 
+		return color;
+	}
+
+	static uint32_t GetColorForHeight(const OM::Heightmap& heightmap, double height)
+	{
+		HeightmapRange range = GetHeightmapRange(heightmap);
+		const double percent = utils::bound<double>((height - range.min) / range(), 0.0f, 1.0f);
+		uint32_t color = GetColorForPercent(percent);
+
 		verbose("Height %.3f, Min %.3f, Max %.3f, Range %.3f, Percent %.3f, Color %08X",
 				height,
 				range.min,
@@ -241,12 +247,19 @@ namespace UI
 		return color;
 	}
 
-	static void RenderScale(const OM::Heightmap& heightmap)
+	void RenderScale()
 	{
 		static ZKPainter* scale = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapScale);
 		static ZKListView* scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
+		static bool rendered = false;
 
-		dbg("Heightmap \"%s\"", heightmap.GetFileName().c_str());
+		scaleText->refreshListView();
+
+		if (rendered)
+		{
+			return;
+		}
+		rendered = true;
 
 		if (!scale || !scaleText)
 		{
@@ -255,25 +268,15 @@ namespace UI
 		}
 
 		static LayoutPosition scalePos = scale->getPosition();
-		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
-		const HeightmapRange range = GetHeightmapRange(heightmap);
-
-		info("Rendering scale %s using theme %s, range = %.3fmm -> %.3fmm",
-			 heightmap.GetFileName().c_str(),
-			 theme->id.c_str(),
-			 range.min,
-			 range.max);
 
 		int pixelSize = scalePos.mHeight / HEIGHTMAP_COLORBAR_SAMPLES;
 		for (int pos = 0; pos < scalePos.mHeight; pos += pixelSize)
 		{
-			double value = range.min + (range() * (1.0 - (double)pos / scalePos.mHeight));
-			uint32_t color = GetColorForHeight(heightmap, value);
+			double percent = (1.0f - (double)pos / scalePos.mHeight);
+			uint32_t color = GetColorForPercent(percent);
 			scale->setSourceColor(color);
 			scale->fillRect(0, pos, scalePos.mWidth, pixelSize, 0);
 		}
-
-		scaleText->refreshListView();
 	}
 
 	static void RenderStatistics(const OM::Heightmap& heightmap)
@@ -303,12 +306,27 @@ namespace UI
 	{
 		// Render the heightmap
 		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
+		static ZKTextView* infoText = UI::GetUIControl<ZKTextView>(ID_MAIN_HeightMapInfoText);
 
-		if (!canvas)
+		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
+		RenderScale();
+		RenderStatistics(heightmap);
+
+		if (!canvas || !infoText)
 		{
 			error("Failed to get UI controls");
 			return false;
 		}
+
+		if (Comm::duet.GetCommunicationType() != Comm::Duet::CommunicationType::network)
+		{
+			infoText->setTextTr("hm_not_supported_in_current_mode");
+			infoText->setVisible(true);
+			canvas->setVisible(false);
+			return false;
+		}
+		infoText->setVisible(false);
+		canvas->setVisible(true);
 
 		static LayoutPosition canvasPos = canvas->getPosition();
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
@@ -318,7 +336,6 @@ namespace UI
 
 		// Save the heightmap for scale text rendering
 		s_currentHeightmap = heightmapName;
-		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
 		if (heightmap.GetPointCount() <= 0)
 		{
 			error("Heightmap %s has no points", heightmapName.c_str());
@@ -407,10 +424,6 @@ namespace UI
 								 0);
 			}
 		}
-
-		RenderScale(heightmap);
-		RenderStatistics(heightmap);
-
 		return true;
 	}
 
