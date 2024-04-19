@@ -51,13 +51,27 @@ namespace OM::Move
 		return GetOrCreate<AxisList, Axis>(axes, index, false);
 	}
 
-	Axis* GetAxisBySlot(const size_t slot)
+	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden)
 	{
-		if (slot >= MAX_TOTAL_AXES)
+		size_t count = 0;
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{
-			return nullptr;
+			Axis* axis = GetAxis(i);
+			if (axis == nullptr)
+			{
+				continue;
+			}
+			if (!includeHidden && !axis->visible)
+			{
+				continue;
+			}
+			if (count == slot)
+			{
+				return axis;
+			}
+			count++;
 		}
-		return axes[slot];
+		return nullptr;
 	}
 
 	Axis* GetAxisByLetter(const char letter)
@@ -83,9 +97,23 @@ namespace OM::Move
 		return GetOrCreate<AxisList, Axis>(axes, index, true);
 	}
 
-	size_t GetAxisCount()
+	size_t GetAxisCount(const bool includeHidden)
 	{
-		return axes.Size();
+		size_t count = 0;
+		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
+		{
+			Axis* axis = GetAxis(i);
+			if (axis == nullptr)
+			{
+				continue;
+			}
+			if (!includeHidden && !axis->visible)
+			{
+				continue;
+			}
+			count++;
+		}
+		return count;
 	}
 
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt)

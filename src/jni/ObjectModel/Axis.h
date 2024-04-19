@@ -66,10 +66,10 @@ namespace OM::Move
 	};
 
 	Axis* GetAxis(const size_t index);
-	Axis* GetAxisBySlot(const size_t slot);
+	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden = false);
 	Axis* GetAxisByLetter(const char letter);
 	Axis* GetOrCreateAxis(const size_t index);
-	size_t GetAxisCount();
+	size_t GetAxisCount(const bool includeHidden = false);
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveAxis(const size_t index, const bool allFollowing);
 
