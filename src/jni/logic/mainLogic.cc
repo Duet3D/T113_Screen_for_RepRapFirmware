@@ -102,7 +102,13 @@ static void onUI_init()
 	registerUserTimer(TIMER_UPDATE_DATA,
 					  (int)DEFAULT_PRINTER_POLL_INTERVAL); // Register here so it can be reset with stored poll interval
 
+	// Buzzer
+	mBuzzerEnabledPtr->setChecked(StoragePreferences::getBool(ID_BUZZER_ENABLED, true));
+
+	// Comm
 	Comm::duet.Init();
+
+	// UI
 	UI::Init(mRootWindowPtr);
 	UI::TemperatureGraph.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
 	UI::Theme::SetTheme(StoragePreferences::getString(ID_THEME, "dark"));
@@ -979,6 +985,9 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 	case (int)UI::SettingsSlideWindowIndex::screensaver:
 		UI::WINDOW->OpenOverlay(mScreensaverSettingWindowPtr);
 		break;
+	case (int)UI::SettingsSlideWindowIndex::buzzer:
+		UI::WINDOW->OpenOverlay(mBuzzerSettingWindowPtr);
+		break;
 	default:
 		break;
 	}
@@ -1638,4 +1647,9 @@ static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView:
 static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id)
 {
 	// LOGD(" onListItemClick_ HeightMapXAxis  !!!\n");
+}
+static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	CONFIGMANAGER->setBeepEnable(isChecked);
+	StoragePreferences::putBool(ID_BUZZER_ENABLED, isChecked);
 }

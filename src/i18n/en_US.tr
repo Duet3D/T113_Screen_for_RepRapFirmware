@@ -182,6 +182,7 @@
     <string name="timeout">Timeout</string>
     <string name="enabled">Enabled</string>
     <string name="set_brightness">Set Brightness</string>
+    <string name="buzzer">Buzzer</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

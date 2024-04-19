@@ -59,6 +59,7 @@ namespace UI
 		brightness,
 		theme,
 		screensaver,
+		buzzer,
 	};
 
 	extern uint32_t g_extrusionFeedRates[5];

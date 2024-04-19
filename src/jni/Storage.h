@@ -24,6 +24,7 @@ constexpr const char* ID_SCREENSAVER_ENABLE = "screensaver_enable";
 constexpr const char* ID_SCREENSAVER_TIMEOUT = "screensaver_timeout";
 constexpr const char* ID_INFO_TIMEOUT = "info_timeout";
 constexpr const char* ID_UPGRADE_FILE_LAST_MODIFIED = "upgrade_file_last_modified";
+constexpr const char* ID_BUZZER_ENABLED = "buzzer_enabled";
 
 constexpr const char* ID_SYS_LANG_CODE_KEY = "sys_lang_code_key";
 constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys_brightness_key";

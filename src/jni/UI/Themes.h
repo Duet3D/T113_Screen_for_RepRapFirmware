@@ -133,11 +133,6 @@ namespace UI::Theme
 		} slideWindow;
 		struct
 		{
-			ControlState foreground;
-			Images images;
-		} slideWindowItem;
-		struct
-		{
 			uint32_t bgDefault;
 			const char* bgImage;
 			uint32_t colors[MAX_SENSORS];

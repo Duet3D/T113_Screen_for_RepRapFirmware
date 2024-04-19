@@ -28,6 +28,10 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_TextView48    50093
+#define ID_MAIN_BuzzerEnabled    21004
+#define ID_MAIN_TextView47    50092
+#define ID_MAIN_BuzzerSettingWindow    110042
 #define ID_MAIN_HeightMapInfoText    50089
 #define ID_MAIN_HeightmapLoad    24037
 #define ID_MAIN_HeightMapXAxis    80030

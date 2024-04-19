@@ -4,6 +4,7 @@
 
 #include "Storage.h"
 #include "Themes.h"
+#include "control/ZKSlideText.h"
 #include <map>
 #include <storage/StoragePreferences.h>
 #include <string>
@@ -261,6 +262,16 @@ namespace UI::Theme
 				{
 					diagram->setPenColor(i, colors->diagram.colors[i]);
 				}
+				continue;
+			}
+			if (typeid(*control) == typeid(ZKSlideWindow))
+			{
+				ZKSlideWindow* slideWindow = static_cast<ZKSlideWindow*>(control);
+				slideWindow->setBackgroundColor(colors->slideWindow.bgDefault);
+				slideWindow->setBackgroundPic(colors->slideWindow.bgImage);
+				std::vector<ZKBase*> children;
+				slideWindow->getAllControls(children);
+				dbg("slide window children %u", children.size());
 				continue;
 			}
 		}

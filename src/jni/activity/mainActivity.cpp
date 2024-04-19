@@ -4,6 +4,10 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView48Ptr;
+static ZKCheckBox* mBuzzerEnabledPtr;
+static ZKTextView* mTextView47Ptr;
+static ZKWindow* mBuzzerSettingWindowPtr;
 static ZKTextView* mHeightMapInfoTextPtr;
 static ZKListView* mHeightMapXAxisPtr;
 static ZKListView* mHeightMapYAxisPtr;
@@ -547,6 +551,7 @@ typedef struct {
 }S_CheckboxCallback;
 /*TAG:CheckboxCallbackTab*/
 static S_CheckboxCallback SCheckboxCallbackTab[] = {
+    ID_MAIN_BuzzerEnabled, onCheckedChanged_BuzzerEnabled,
     ID_MAIN_Checkbox1, onCheckedChanged_Checkbox1,
     ID_MAIN_ShowSetupOnStartup, onCheckedChanged_ShowSetupOnStartup,
     ID_MAIN_ScreensaverEnable, onCheckedChanged_ScreensaverEnable,
@@ -565,6 +570,10 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView48Ptr = NULL;
+    mBuzzerEnabledPtr = NULL;
+    mTextView47Ptr = NULL;
+    mBuzzerSettingWindowPtr = NULL;
     mHeightMapInfoTextPtr = NULL;
     mHeightMapXAxisPtr = NULL;
     mHeightMapYAxisPtr = NULL;
@@ -816,6 +825,10 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView48Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView48);
+    mBuzzerEnabledPtr = (ZKCheckBox*)findControlByID(ID_MAIN_BuzzerEnabled);if(mBuzzerEnabledPtr!= NULL){mBuzzerEnabledPtr->setCheckedChangeListener(this);}
+    mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);
+    mBuzzerSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_BuzzerSettingWindow);
     mHeightMapInfoTextPtr = (ZKTextView*)findControlByID(ID_MAIN_HeightMapInfoText);
     mHeightMapXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapXAxis);if(mHeightMapXAxisPtr!= NULL){mHeightMapXAxisPtr->setListAdapter(this);mHeightMapXAxisPtr->setItemClickListener(this);}
     mHeightMapYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_HeightMapYAxis);if(mHeightMapYAxisPtr!= NULL){mHeightMapYAxisPtr->setListAdapter(this);mHeightMapYAxisPtr->setItemClickListener(this);}

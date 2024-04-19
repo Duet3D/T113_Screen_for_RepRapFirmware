@@ -241,25 +241,6 @@ namespace UI::Theme
 				.bgDefault = NULL,
 				.bgImage = nullptr,
 			},
-		.slideWindowItem =
-			{
-				.foreground =
-					{
-						.normal = Colors::White,
-						.pressed = Colors::LightGray,
-						.selected = NULL,
-						.pressedAndSelected = NULL,
-						.invalid = Colors::Gray,
-					},
-				.images =
-					{
-						.normal = nullptr,
-						.pressed = nullptr,
-						.selected = nullptr,
-						.pressedAndSelected = nullptr,
-						.invalid = nullptr,
-					},
-			},
 		.diagram =
 			{
 				.bgDefault = NULL,
