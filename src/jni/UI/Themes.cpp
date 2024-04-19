@@ -269,9 +269,6 @@ namespace UI::Theme
 				ZKSlideWindow* slideWindow = static_cast<ZKSlideWindow*>(control);
 				slideWindow->setBackgroundColor(colors->slideWindow.bgDefault);
 				slideWindow->setBackgroundPic(colors->slideWindow.bgImage);
-				std::vector<ZKBase*> children;
-				slideWindow->getAllControls(children);
-				dbg("slide window children %u", children.size());
 				continue;
 			}
 		}

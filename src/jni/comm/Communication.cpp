@@ -124,7 +124,7 @@ namespace Comm
 		 .flags = "v"},
 #endif
 #if FETCH_JOB
-		{.event = rcvOMKeyJob, .seqid = rcvSeqsJob, .lastSeq = 0, .state = SeqStateInit, .key = "job", .flags = "v"},
+		{.event = rcvOMKeyJob, .seqid = rcvSeqsJob, .lastSeq = 0, .state = SeqStateInit, .key = "job", .flags = "vn"},
 #endif
 #if FETCH_SCANNER
 		{.event = rcvOMKeyScanner,

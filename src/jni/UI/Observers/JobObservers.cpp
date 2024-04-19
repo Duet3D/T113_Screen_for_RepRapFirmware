@@ -4,6 +4,8 @@
  *  Created on: 9 Jan 2024
  *      Author: Andy Everitt
  */
+#include "DebugLevels.h"
+#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Configuration.h"
@@ -43,6 +45,59 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 						  ->setTextf("%s: %d", LANGUAGEMANAGER->getValue("estimated").c_str(), val);
 					  UI::GetUIControl<ZKCircleBar>(ID_MAIN_PrintProgressBar)->setProgress(percentage);
 				  }),
+	OBSERVER_CHAR("job:build",
+				  [](OBSERVER_CHAR_ARGS) {
+					  dbg("Job: build is null");
+					  OM::RemoveJobObject(indices[0], true);
+				  }),
+	OBSERVER_INT("job:build:currentObject", [](OBSERVER_INT_ARGS) { OM::SetCurrentJobObject(val); }),
+	OBSERVER_CHAR("job:build:objects^", [](OBSERVER_CHAR_ARGS) { OM::RemoveJobObject(indices[0], false); }),
+	OBSERVER_BOOL("job:build:objects^:cancelled",
+				  [](OBSERVER_BOOL_ARGS) {
+					  OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+					  if (jobObject == nullptr)
+					  {
+						  warn("Job object %u not found", indices[0]);
+					  }
+					  jobObject->cancelled = val;
+				  }),
+	OBSERVER_CHAR("job:build:objects^:name",
+				  [](OBSERVER_CHAR_ARGS) {
+					  OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+					  if (jobObject == nullptr)
+					  {
+						  warn("Job object %u not found", indices[0]);
+					  }
+					  jobObject->name = val;
+				  }),
+	OBSERVER_INT("job:build:objects^:x^",
+				 [](OBSERVER_INT_ARGS) {
+					 OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+					 if (jobObject == nullptr)
+					 {
+						 warn("Job object %u not found", indices[0]);
+					 }
+					 if (indices[1] < 0 || indices[1] >= 2)
+					 {
+						 warn("Job object %u x index %u out of range", indices[0], indices[1]);
+						 return;
+					 }
+					 jobObject->bounds.x[indices[1]] = val;
+				 }),
+	OBSERVER_INT("job:build:objects^:y^",
+				 [](OBSERVER_INT_ARGS) {
+					 OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
+					 if (jobObject == nullptr)
+					 {
+						 warn("Job object %u not found", indices[0]);
+					 }
+					 if (indices[1] < 0 || indices[1] >= 2)
+					 {
+						 warn("Job object %u y index %u out of range", indices[0], indices[1]);
+						 return;
+					 }
+					 jobObject->bounds.y[indices[1]] = val;
+				 }),
 };
 
 /*
@@ -50,5 +105,6 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
  * The function needs to take in an array containing the indices of the OM key
  */
 static UI::Observer<UI::ui_array_end_update_cb> JobObserversArrayEnd[] = {
-	OBSERVER_ARRAY_END("job", [](OBSERVER_ARRAY_END_ARGS) {}),
+	OBSERVER_ARRAY_END("job:build^", [](OBSERVER_ARRAY_END_ARGS) { dbg("Job: build end %u", indices[0]); }),
+	OBSERVER_ARRAY_END("job:build:objects^", [](OBSERVER_ARRAY_END_ARGS) { OM::RemoveJobObject(indices[0], true); }),
 };

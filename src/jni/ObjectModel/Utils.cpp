@@ -143,9 +143,29 @@ namespace OM
 		}
 		UI::CONSOLE->AddResponse("  Job:");
 		UI::CONSOLE->AddResponse(utils::format("    name: %s", GetJobName().c_str()).c_str());
-		UI::CONSOLE->AddResponse(utils::format("    Print time: %u", GetPrintTime).c_str());
-		UI::CONSOLE->AddResponse(utils::format("    Print duration: %u", GetPrintDuration).c_str());
-		UI::CONSOLE->AddResponse(utils::format("    Print remaining: %u", GetPrintRemaining).c_str());
+		UI::CONSOLE->AddResponse(utils::format("    Print time: %u", GetPrintTime()).c_str());
+		UI::CONSOLE->AddResponse(utils::format("    Print duration: %u", GetPrintDuration()).c_str());
+		UI::CONSOLE->AddResponse(utils::format("    Print remaining: %u", GetPrintRemaining()).c_str());
+		UI::CONSOLE->AddResponse(utils::format("    Current object: %d", GetCurrentJobObjectIndex()).c_str());
+		UI::CONSOLE->AddResponse("    Objects:");
+		for (size_t i = 0; i < MAX_TRACKED_OBJECTS; ++i)
+		{
+			JobObject* jobObject = GetJobObject(i);
+			if (jobObject != nullptr)
+			{
+				UI::CONSOLE->AddResponse(utils::format("      [%u]: cancelled(%d), name(%s)",
+													   jobObject->index,
+													   jobObject->cancelled,
+													   jobObject->name.c_str())
+											 .c_str());
+				UI::CONSOLE->AddResponse(utils::format("            bounds(%d, %d, %d, %d)",
+													   jobObject->bounds.x[0],
+													   jobObject->bounds.x[1],
+													   jobObject->bounds.y[0],
+													   jobObject->bounds.y[1])
+											 .c_str());
+			}
+		}
 		UI::CONSOLE->AddResponse("  Sensors:");
 		for (size_t i = 0; i < MAX_SENSORS; ++i)
 		{

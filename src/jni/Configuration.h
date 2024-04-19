@@ -52,6 +52,7 @@ constexpr unsigned int MAX_FANS = 12;
 constexpr unsigned int MAX_HEATERS = 32;
 constexpr unsigned int MAX_SENSORS = 32;
 constexpr unsigned int MAX_ENDSTOPS = 20;
+constexpr size_t MAX_TRACKED_OBJECTS = 40;
 
 /* Heightmap */
 constexpr double HEIGHTMAP_FIXED_MAX = 0.25;
