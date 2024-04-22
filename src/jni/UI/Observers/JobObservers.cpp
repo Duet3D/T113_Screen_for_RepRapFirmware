@@ -50,6 +50,7 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 				  [](OBSERVER_CHAR_ARGS) {
 					  dbg("Job: build is null");
 					  OM::RemoveJobObject(indices[0], true);
+					  UI::ObjectCancel::RenderObjectMap();
 				  }),
 	OBSERVER_INT("job:build:currentObject",
 				 [](OBSERVER_INT_ARGS) {

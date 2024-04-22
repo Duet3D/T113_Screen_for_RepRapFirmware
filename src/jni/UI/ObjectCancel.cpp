@@ -15,6 +15,65 @@
 
 namespace UI::ObjectCancel
 {
+	static std::string GetObjectLabel(OM::JobObject* object)
+	{
+		if (object == nullptr)
+		{
+			return "";
+		}
+
+		return utils::format("[%d]: %s", object->index, object->name.c_str());
+	}
+
+	static int ConvertPointToCanvas(int point, float min, float max, int canvasSize, bool invert)
+	{
+		if (invert)
+		{
+			return canvasSize - canvasSize * (point - min) / (max - min);
+		}
+		return canvasSize * (point - min) / (max - min);
+	}
+
+	static LayoutPosition ConvertBoundsToCanvas(const OM::JobObject& object, const LayoutPosition& canvasPos)
+	{
+		LayoutPosition pos;
+
+		OM::Move::Axis* xAxis = OM::Move::GetAxisByLetter('X');
+		OM::Move::Axis* yAxis = OM::Move::GetAxisByLetter('Y');
+		if (xAxis == nullptr || yAxis == nullptr)
+		{
+			warn("Failed to get axes");
+			return pos;
+		}
+
+		pos.mLeft =
+			ConvertPointToCanvas(object.bounds.x[0], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false);
+		pos.mTop =
+			ConvertPointToCanvas(object.bounds.y[1], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true);
+
+		pos.mWidth =
+			ConvertPointToCanvas(object.bounds.x[1], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false) -
+			pos.mLeft;
+		pos.mHeight =
+			ConvertPointToCanvas(object.bounds.y[0], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true) -
+			pos.mTop;
+		return pos;
+	}
+
+	static bool TouchInObjectBounds(const OM::JobObject& object, const LayoutPosition& canvasPos, const MotionEvent& ev)
+	{
+		LayoutPosition pos = ConvertBoundsToCanvas(object, canvasPos);
+		if (ev.mX < pos.mLeft || ev.mX > pos.mLeft + pos.mWidth)
+		{
+			return false;
+		}
+		if (ev.mY < pos.mTop || ev.mY > pos.mTop + pos.mHeight)
+		{
+			return false;
+		}
+		return true;
+	}
+
 	void TouchListener::onTouchEvent(ZKBase* pBase, const MotionEvent& ev)
 	{
 		if (ev.mActionStatus == MotionEvent::E_ACTION_UP)
@@ -27,12 +86,37 @@ namespace UI::ObjectCancel
 			}
 
 			LayoutPosition canvasPos = canvas->getPosition();
-			info("Canvas position: %d, %d, %d, %d",
-				 canvasPos.mLeft,
-				 canvasPos.mTop,
-				 canvasPos.mWidth,
-				 canvasPos.mHeight);
-			info("Touch position: %d, %d", ev.mX, ev.mY);
+			verbose("Canvas position: %d, %d, %d, %d",
+					canvasPos.mLeft,
+					canvasPos.mTop,
+					canvasPos.mWidth,
+					canvasPos.mHeight);
+			dbg("Touch position: %d, %d", ev.mX, ev.mY);
+
+			OM::JobObject* object = OM::GetJobObject(OM::GetCurrentJobObjectIndex());
+			if (object != nullptr)
+			{
+				if (TouchInObjectBounds(*object, canvasPos, ev))
+				{
+					CancelJobObject(object->index);
+				}
+			}
+
+			// In reverse so that it picks the top object first
+			for (size_t i = OM::GetJobObjectCount() - 1; i >= 0; i--)
+			{
+				object = OM::GetJobObject(i);
+				if (object == nullptr)
+				{
+					warn("Invalid object index %d", i);
+					continue;
+				}
+				if (TouchInObjectBounds(*object, canvasPos, ev))
+				{
+					CancelJobObject(object->index);
+					return;
+				}
+			}
 		}
 	}
 
@@ -80,16 +164,6 @@ namespace UI::ObjectCancel
 		float max = axis->maxPosition;
 
 		return utils::format("%.0f", max - (max - min) * (float)index / (axisList->getRows() - 1));
-	}
-
-	static std::string GetObjectLabel(OM::JobObject* object)
-	{
-		if (object == nullptr)
-		{
-			return "";
-		}
-
-		return utils::format("[%d]: %s", object->index, object->name.c_str());
 	}
 
 	void SetObjectLabel(ZKListView::ZKListItem* pListItem, const int index)
@@ -149,39 +223,36 @@ namespace UI::ObjectCancel
 			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
 	}
 
-	static int ConvertPointToCanvas(int point, float min, float max, int canvasSize, bool invert)
+	static void DrawObject(const OM::JobObject* object,
+						   ZKPainter* canvas,
+						   const UI::Theme::Theme* theme,
+						   const bool current)
 	{
-		if (invert)
+		if (object == nullptr)
 		{
-			return canvasSize - canvasSize * (point - min) / (max - min);
+			return;
 		}
-		return canvasSize * (point - min) / (max - min);
-	}
-
-	static LayoutPosition ConvertBoundsToCanvas(OM::JobObject& object, const LayoutPosition& canvasPos)
-	{
-		LayoutPosition pos;
-
-		OM::Move::Axis* xAxis = OM::Move::GetAxisByLetter('X');
-		OM::Move::Axis* yAxis = OM::Move::GetAxisByLetter('Y');
-		if (xAxis == nullptr || yAxis == nullptr)
+		if (object->cancelled)
 		{
-			warn("Failed to get axes");
-			return pos;
+			canvas->setSourceColor(theme->colors->objectCancel.bgCancelled);
+		}
+		else if (current)
+		{
+			canvas->setSourceColor(theme->colors->objectCancel.bgCurrent);
+		}
+		else
+		{
+			canvas->setSourceColor(theme->colors->objectCancel.bgDefault);
 		}
 
-		pos.mLeft =
-			ConvertPointToCanvas(object.bounds.x[0], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false);
-		pos.mTop =
-			ConvertPointToCanvas(object.bounds.y[1], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true);
+		// Fill
+		LayoutPosition pos = ConvertBoundsToCanvas(*object, canvas->getPosition());
+		canvas->fillRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
 
-		pos.mWidth =
-			ConvertPointToCanvas(object.bounds.x[1], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false) -
-			pos.mLeft;
-		pos.mHeight =
-			ConvertPointToCanvas(object.bounds.y[0], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true) -
-			pos.mTop;
-		return pos;
+		// Border
+		canvas->setSourceColor(theme->colors->objectCancel.bgBorder);
+		canvas->drawRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
+		return;
 	}
 
 	void RenderObjectMap()
@@ -201,33 +272,14 @@ namespace UI::ObjectCancel
 
 		OM::IterateJobObjectsWhile(
 			[&](OM::JobObject*& object, size_t index) {
-				if (object == nullptr)
-				{
-					return true;
-				}
-				if (object->cancelled)
-				{
-					canvas->setSourceColor(theme->colors->objectCancel.bgCancelled);
-				}
-				else if (index == (size_t)OM::GetCurrentJobObjectIndex())
-				{
-					canvas->setSourceColor(theme->colors->objectCancel.bgCurrent);
-				}
-				else
-				{
-					canvas->setSourceColor(theme->colors->objectCancel.bgDefault);
-				}
-
-				// Fill
-				LayoutPosition pos = ConvertBoundsToCanvas(*object, canvasPos);
-				canvas->fillRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
-
-				// Border
-				canvas->setSourceColor(theme->colors->objectCancel.bgBorder);
-				canvas->drawRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
+				DrawObject(object, canvas, theme, index == (size_t)OM::GetCurrentJobObjectIndex());
 				return true;
 			},
 			0);
+
+		// Draw the current object last so it is on top
+		OM::JobObject* object = OM::GetJobObject(OM::GetCurrentJobObjectIndex());
+		DrawObject(object, canvas, theme, true);
 	}
 
 	TouchListener& GetTouchListener()
@@ -236,4 +288,4 @@ namespace UI::ObjectCancel
 		return listener;
 	}
 
-} // namespace UI
+} // namespace UI::ObjectCancel
