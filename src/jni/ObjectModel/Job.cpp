@@ -12,6 +12,7 @@
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
+#include "Hardware/Duet.h"
 #include "Job.h"
 #include "ListHelpers.h"
 
@@ -117,5 +118,27 @@ namespace OM
 		size_t count = GetJobObjectCount();
 		s_jobObjects.Clear();
 		return count - GetJobObjectCount();
+	}
+
+	bool IsJobObjectActive(const size_t index)
+	{
+		JobObject* jobObject = GetJobObject(index);
+		return jobObject != nullptr && !jobObject->cancelled;
+	}
+
+	void SetJobObjectActive(const size_t index, const bool active)
+	{
+		JobObject* jobObject = GetJobObject(index);
+		if (jobObject == nullptr)
+		{
+			warn("Failed to get job object %d\n", index);
+			return;
+		};
+		Comm::duet.SendGcodef("M486 %c%d", active ? 'U' : 'P', index);
+	}
+
+	void CancelCurrentJobObject()
+	{
+		Comm::duet.SendGcode("M486 C");
 	}
 } // namespace OM

@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_CancelCurrentObjectBtn    20054
 #define ID_MAIN_ObjectCancelXAxis    80032
 #define ID_MAIN_ObjectCancelYAxis    80031
 #define ID_MAIN_ObjectCancelPainter    52003

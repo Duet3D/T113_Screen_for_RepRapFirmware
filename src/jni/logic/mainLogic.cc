@@ -1657,12 +1657,18 @@ static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked
 
 static int getListItemCount_ObjectCancelObjectsList(const ZKListView* pListView)
 {
-	return 8;
+	return OM::GetJobObjectCount();
 }
 
-static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {}
+static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::SetObjectLabel(pListItem, index);
+}
 
-static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int index, int id) {}
+static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int index, int id)
+{
+	UI::CancelJobObject(index);
+}
 
 static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
 {
@@ -1687,3 +1693,9 @@ static void obtainListItemData_ObjectCancelXAxis(ZKListView* pListView, ZKListVi
 }
 
 static void onListItemClick_ObjectCancelXAxis(ZKListView* pListView, int index, int id) {}
+
+static bool onButtonClick_CancelCurrentObjectBtn(ZKButton* pButton)
+{
+	UI::CancelCurrentJobObject();
+	return false;
+}

@@ -339,6 +339,15 @@ namespace UI::Theme
 			goto applyTheme;
 		}
 
+		// Some lists are themed elsewhere
+		switch (pListView->getID())
+		{
+		case ID_MAIN_ObjectCancelObjectsList:
+			return;
+		default:
+			break;
+		}
+
 		if (s_themedListItems.find(pListItem) == s_themedListItems.end())
 		{
 			s_themedListItems[pListItem] = s_currentTheme;

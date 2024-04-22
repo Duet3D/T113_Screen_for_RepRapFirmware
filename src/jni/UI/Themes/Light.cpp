@@ -19,6 +19,7 @@ namespace UI::Theme
 		Blue3 = 0xFF00AAF4,
 		Blue4 = 0xFF00CCFF,
 		Yellow = 0xFFECBC35,
+		Green = 0xFF00FF00,
 	};
 
 	static ThemeColors lightTheme = {
@@ -285,6 +286,13 @@ namespace UI::Theme
 			{
 				.bgDefault = Colors::DarkerGray,
 				.gridColor = Colors::LightGray,
+			},
+		.objectCancel =
+			{
+				.bgDefault = Colors::DarkerGray,
+				.bgCancelled = Colors::Red,
+				.bgCurrent = Colors::Green,
+				.bgSelected = Colors::Yellow,
 			},
 	};
 

@@ -142,6 +142,13 @@ namespace UI::Theme
 			uint32_t bgDefault; // Colour of no data
 			uint32_t gridColor;
 		} heightmap;
+		struct
+		{
+			uint32_t bgDefault;
+			uint32_t bgCancelled;
+			uint32_t bgCurrent;
+			uint32_t bgSelected;
+		} objectCancel;
 	};
 
 	class Theme

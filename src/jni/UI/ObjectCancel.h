@@ -16,6 +16,10 @@ namespace UI
 {
 	std::string GetObjectCancelXAxisText(int index);
 	std::string GetObjectCancelYAxisText(int index);
+	void SetObjectLabel(ZKListView::ZKListItem* pListItem, const int index);
+
+	void CancelJobObject(const int index);
+	void CancelCurrentJobObject();
 } // namespace UI
 
 #endif /* JNI_UI_OBJECTCANCEL_H_ */

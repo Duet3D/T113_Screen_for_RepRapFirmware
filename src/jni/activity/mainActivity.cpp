@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKButton* mCancelCurrentObjectBtnPtr;
 static ZKListView* mObjectCancelXAxisPtr;
 static ZKListView* mObjectCancelYAxisPtr;
 static ZKPainter* mObjectCancelPainterPtr;
@@ -296,6 +297,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_CancelCurrentObjectBtn, onButtonClick_CancelCurrentObjectBtn,
     ID_MAIN_HeightMapRefresh, onButtonClick_HeightMapRefresh,
     ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
     ID_MAIN_Button1, onButtonClick_Button1,
@@ -582,6 +584,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mCancelCurrentObjectBtnPtr = NULL;
     mObjectCancelXAxisPtr = NULL;
     mObjectCancelYAxisPtr = NULL;
     mObjectCancelPainterPtr = NULL;
@@ -846,6 +849,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mCancelCurrentObjectBtnPtr = (ZKButton*)findControlByID(ID_MAIN_CancelCurrentObjectBtn);
     mObjectCancelXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelXAxis);if(mObjectCancelXAxisPtr!= NULL){mObjectCancelXAxisPtr->setListAdapter(this);mObjectCancelXAxisPtr->setItemClickListener(this);}
     mObjectCancelYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelYAxis);if(mObjectCancelYAxisPtr!= NULL){mObjectCancelYAxisPtr->setListAdapter(this);mObjectCancelYAxisPtr->setItemClickListener(this);}
     mObjectCancelPainterPtr = (ZKPainter*)findControlByID(ID_MAIN_ObjectCancelPainter);

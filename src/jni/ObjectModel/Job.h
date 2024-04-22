@@ -56,6 +56,10 @@ namespace OM
 	bool IterateJobObjectsWhile(function_ref<bool(JobObject*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveJobObject(const size_t index, const bool allFollowing);
 	size_t ClearJobObjects();
+
+	bool IsJobObjectActive(const size_t index);
+	void SetJobObjectActive(const size_t index, const bool active);
+	void CancelCurrentJobObject();
 }
 
 #endif /* JNI_OBJECTMODEL_JOB_HPP_ */

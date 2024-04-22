@@ -97,6 +97,10 @@
     <!-- Object Cancel -->
     <string name="object_cancel">Object Cancel</string>
     <string name="objects">Objects</string>
+    <string name="resume_object">Resume Object</string>
+    <string name="cancel_object">Cancel Object</string>
+    <string name="cancel_object_text">[%d]: %s</string>
+    <string name="cancel_current_object">Cancel Current Object</string>
 
     <!-- Heightmap -->
     <string name="height_map">Height Map</string>
