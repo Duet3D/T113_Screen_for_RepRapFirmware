@@ -14,7 +14,8 @@
 
 namespace UI
 {
-
+	std::string GetObjectCancelXAxisText(int index);
+	std::string GetObjectCancelYAxisText(int index)
 } // namespace UI
 
 #endif /* JNI_UI_OBJECTCANCEL_H_ */

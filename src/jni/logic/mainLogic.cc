@@ -21,6 +21,7 @@
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
 #include "UI/Heightmap.h"
+#include "UI/ObjectCancel.h"
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
@@ -1638,7 +1639,6 @@ static void onListItemClick_HeightMapYAxis(ZKListView* pListView, int index, int
 
 static int getListItemCount_HeightMapXAxis(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_HeightMapXAxis !\n");
 	return 5;
 }
 
@@ -1647,59 +1647,43 @@ static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView:
 	pListItem->setText(UI::GetHeightmapXAxisText(index));
 }
 
-static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ HeightMapXAxis  !!!\n");
-}
+static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id) {}
+
 static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked)
 {
 	CONFIGMANAGER->setBeepEnable(isChecked);
 	StoragePreferences::putBool(ID_BUZZER_ENABLED, isChecked);
 }
+
 static int getListItemCount_ObjectCancelObjectsList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_ObjectCancelObjectsList !\n");
 	return 8;
 }
 
-static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	// LOGD(" obtainListItemData_ ObjectCancelObjectsList  !!!\n");
-}
+static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {}
 
-static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ ObjectCancelObjectsList  !!!\n");
-}
+static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_ObjectCancelYAxis !\n");
 	return 5;
 }
 
 static void obtainListItemData_ObjectCancelYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ ObjectCancelYAxis  !!!\n");
+	pListItem->setText(UI::GetObjectCancelYAxisText(index));
 }
 
-static void onListItemClick_ObjectCancelYAxis(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ ObjectCancelYAxis  !!!\n");
-}
+static void onListItemClick_ObjectCancelYAxis(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_ObjectCancelXAxis(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_ObjectCancelXAxis !\n");
 	return 5;
 }
 
 static void obtainListItemData_ObjectCancelXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	// LOGD(" obtainListItemData_ ObjectCancelXAxis  !!!\n");
+	pListItem->setText(UI::GetObjectCancelXAxisText(index));
 }
 
-static void onListItemClick_ObjectCancelXAxis(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ ObjectCancelXAxis  !!!\n");
-}
+static void onListItemClick_ObjectCancelXAxis(ZKListView* pListView, int index, int id) {}

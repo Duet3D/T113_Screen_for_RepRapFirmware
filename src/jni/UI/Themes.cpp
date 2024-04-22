@@ -428,6 +428,8 @@ namespace UI::Theme
 		case ID_MAIN_HeightMapXAxis:
 		case ID_MAIN_HeightMapYAxis:
 		case ID_MAIN_HeightMapScaleList:
+		case ID_MAIN_ObjectCancelXAxis:
+		case ID_MAIN_ObjectCancelYAxis:
 			pListView->setBackgroundColor(NULL);
 			pListItem->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
 			pListItem->setBackgroundColor(NULL);
