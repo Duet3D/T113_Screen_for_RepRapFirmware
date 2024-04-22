@@ -103,6 +103,12 @@ namespace UI::ObjectCancel
 			}
 
 			// In reverse so that it picks the top object first
+			if (OM::GetJobObjectCount() <= 0)
+			{
+				info("No objects to cancel");
+				return;
+			}
+
 			for (size_t i = OM::GetJobObjectCount() - 1; i >= 0; i--)
 			{
 				object = OM::GetJobObject(i);
@@ -205,6 +211,7 @@ namespace UI::ObjectCancel
 			LANGUAGEMANAGER->getValue(object->cancelled ? "resume_object" : "cancel_object").c_str());
 		UI::POPUP_WINDOW->SetTextf(
 			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
+		UI::POPUP_WINDOW->CancelTimeout();
 	}
 
 	void CancelCurrentJobObject()
@@ -221,6 +228,7 @@ namespace UI::ObjectCancel
 		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("cancel_object").c_str());
 		UI::POPUP_WINDOW->SetTextf(
 			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
+		UI::POPUP_WINDOW->CancelTimeout();
 	}
 
 	static void DrawObject(const OM::JobObject* object,
