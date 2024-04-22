@@ -95,6 +95,7 @@ It is possible to debug the screen using `adb` from the command line without hav
   * You can add the time with `adb logcat -v time`
   * You can filter by priority with `adb logcat -v time *:E` (error), `adb logcat -v time  *:W` (warning), `adb logcat -v time  *:I` (info), `adb logcat -v time  *:D` (debug), `adb logcat -v time  *:V` (verbose)
   * To you can chain multiple filters together
+  * You can also pipe the output to `grep` to filter the output further.
 
 ### Modifying GUI
 

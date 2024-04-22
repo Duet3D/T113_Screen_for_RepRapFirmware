@@ -4,6 +4,15 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mObjectCancelXAxisPtr;
+static ZKListView* mObjectCancelYAxisPtr;
+static ZKPainter* mObjectCancelPainterPtr;
+static ZKWindow* mWindow3Ptr;
+static ZKTextView* mTextView49Ptr;
+static ZKListView* mObjectCancelObjectsListPtr;
+static ZKTextView* mTextView50Ptr;
+static ZKWindow* mWindow2Ptr;
+static ZKWindow* mObjectCancelWindowPtr;
 static ZKTextView* mTextView48Ptr;
 static ZKCheckBox* mBuzzerEnabledPtr;
 static ZKTextView* mTextView47Ptr;
@@ -369,6 +378,9 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_ObjectCancelXAxis, getListItemCount_ObjectCancelXAxis, obtainListItemData_ObjectCancelXAxis, onListItemClick_ObjectCancelXAxis,
+    ID_MAIN_ObjectCancelYAxis, getListItemCount_ObjectCancelYAxis, obtainListItemData_ObjectCancelYAxis, onListItemClick_ObjectCancelYAxis,
+    ID_MAIN_ObjectCancelObjectsList, getListItemCount_ObjectCancelObjectsList, obtainListItemData_ObjectCancelObjectsList, onListItemClick_ObjectCancelObjectsList,
     ID_MAIN_HeightMapXAxis, getListItemCount_HeightMapXAxis, obtainListItemData_HeightMapXAxis, onListItemClick_HeightMapXAxis,
     ID_MAIN_HeightMapYAxis, getListItemCount_HeightMapYAxis, obtainListItemData_HeightMapYAxis, onListItemClick_HeightMapYAxis,
     ID_MAIN_HeightMapColorSchemeList, getListItemCount_HeightMapColorSchemeList, obtainListItemData_HeightMapColorSchemeList, onListItemClick_HeightMapColorSchemeList,
@@ -570,6 +582,15 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mObjectCancelXAxisPtr = NULL;
+    mObjectCancelYAxisPtr = NULL;
+    mObjectCancelPainterPtr = NULL;
+    mWindow3Ptr = NULL;
+    mTextView49Ptr = NULL;
+    mObjectCancelObjectsListPtr = NULL;
+    mTextView50Ptr = NULL;
+    mWindow2Ptr = NULL;
+    mObjectCancelWindowPtr = NULL;
     mTextView48Ptr = NULL;
     mBuzzerEnabledPtr = NULL;
     mTextView47Ptr = NULL;
@@ -825,6 +846,15 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mObjectCancelXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelXAxis);if(mObjectCancelXAxisPtr!= NULL){mObjectCancelXAxisPtr->setListAdapter(this);mObjectCancelXAxisPtr->setItemClickListener(this);}
+    mObjectCancelYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelYAxis);if(mObjectCancelYAxisPtr!= NULL){mObjectCancelYAxisPtr->setListAdapter(this);mObjectCancelYAxisPtr->setItemClickListener(this);}
+    mObjectCancelPainterPtr = (ZKPainter*)findControlByID(ID_MAIN_ObjectCancelPainter);
+    mWindow3Ptr = (ZKWindow*)findControlByID(ID_MAIN_Window3);
+    mTextView49Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView49);
+    mObjectCancelObjectsListPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelObjectsList);if(mObjectCancelObjectsListPtr!= NULL){mObjectCancelObjectsListPtr->setListAdapter(this);mObjectCancelObjectsListPtr->setItemClickListener(this);}
+    mTextView50Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView50);
+    mWindow2Ptr = (ZKWindow*)findControlByID(ID_MAIN_Window2);
+    mObjectCancelWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_ObjectCancelWindow);
     mTextView48Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView48);
     mBuzzerEnabledPtr = (ZKCheckBox*)findControlByID(ID_MAIN_BuzzerEnabled);if(mBuzzerEnabledPtr!= NULL){mBuzzerEnabledPtr->setCheckedChangeListener(this);}
     mTextView47Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView47);

@@ -43,6 +43,8 @@ namespace UI
 		print,
 		network,
 		settings,
+		debug,
+		object_cancel
 	};
 
 	enum class SettingsSlideWindowIndex
