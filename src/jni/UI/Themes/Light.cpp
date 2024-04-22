@@ -293,6 +293,7 @@ namespace UI::Theme
 				.bgCancelled = Colors::Red,
 				.bgCurrent = Colors::Green,
 				.bgSelected = Colors::Yellow,
+				.bgBorder = Colors::Gray,
 			},
 	};
 

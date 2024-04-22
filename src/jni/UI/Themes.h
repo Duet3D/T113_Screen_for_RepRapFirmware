@@ -148,6 +148,7 @@ namespace UI::Theme
 			uint32_t bgCancelled;
 			uint32_t bgCurrent;
 			uint32_t bgSelected;
+			uint32_t bgBorder;
 		} objectCancel;
 	};
 

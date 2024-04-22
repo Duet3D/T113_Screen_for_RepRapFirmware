@@ -146,6 +146,10 @@ static void onUI_init()
 	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0)));
 	UI::RenderScale();
 
+	// Object Cancel
+	mObjectCancelPainterPtr->setTouchable(true);
+	mObjectCancelPainterPtr->setTouchListener(&UI::ObjectCancel::GetTouchListener());
+
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
 
@@ -1662,12 +1666,12 @@ static int getListItemCount_ObjectCancelObjectsList(const ZKListView* pListView)
 
 static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	UI::SetObjectLabel(pListItem, index);
+	UI::ObjectCancel::SetObjectLabel(pListItem, index);
 }
 
 static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int index, int id)
 {
-	UI::CancelJobObject(index);
+	UI::ObjectCancel::CancelJobObject(index);
 }
 
 static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
@@ -1677,7 +1681,7 @@ static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
 
 static void obtainListItemData_ObjectCancelYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetObjectCancelYAxisText(index));
+	pListItem->setText(UI::ObjectCancel::GetObjectCancelYAxisText(index));
 }
 
 static void onListItemClick_ObjectCancelYAxis(ZKListView* pListView, int index, int id) {}
@@ -1689,13 +1693,13 @@ static int getListItemCount_ObjectCancelXAxis(const ZKListView* pListView)
 
 static void obtainListItemData_ObjectCancelXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetObjectCancelXAxisText(index));
+	pListItem->setText(UI::ObjectCancel::GetObjectCancelXAxisText(index));
 }
 
 static void onListItemClick_ObjectCancelXAxis(ZKListView* pListView, int index, int id) {}
 
 static bool onButtonClick_CancelCurrentObjectBtn(ZKButton* pButton)
 {
-	UI::CancelCurrentJobObject();
+	UI::ObjectCancel::CancelCurrentJobObject();
 	return false;
 }

@@ -11,9 +11,31 @@
 
 #include "ObjectCancel.h"
 #include "Themes.h"
+#include "control/ZKPainter.h"
 
-namespace UI
+namespace UI::ObjectCancel
 {
+	void TouchListener::onTouchEvent(ZKBase* pBase, const MotionEvent& ev)
+	{
+		if (ev.mActionStatus == MotionEvent::E_ACTION_UP)
+		{
+			ZKPainter* canvas = dynamic_cast<ZKPainter*>(pBase);
+			if (canvas == nullptr)
+			{
+				error("Failed to get canvas");
+				return;
+			}
+
+			LayoutPosition canvasPos = canvas->getPosition();
+			info("Canvas position: %d, %d, %d, %d",
+				 canvasPos.mLeft,
+				 canvasPos.mTop,
+				 canvasPos.mWidth,
+				 canvasPos.mHeight);
+			info("Touch position: %d, %d", ev.mX, ev.mY);
+		}
+	}
+
 	std::string GetObjectCancelXAxisText(int index)
 	{
 		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelXAxis);
@@ -80,17 +102,17 @@ namespace UI
 			return;
 		}
 		const UI::Theme::Theme* theme = UI::Theme::GetCurrentTheme();
-		if (index == OM::GetCurrentJobObjectIndex())
+		if (object->cancelled)
+		{
+			pListItem->setBackgroundColor(theme->colors->objectCancel.bgCancelled);
+		}
+		else if (index == OM::GetCurrentJobObjectIndex())
 		{
 			pListItem->setBackgroundColor(theme->colors->objectCancel.bgCurrent);
 		}
 		else
 		{
 			pListItem->setBackgroundColor(theme->colors->objectCancel.bgDefault);
-		}
-		if (object->cancelled)
-		{
-			pListItem->setBackgroundColor(theme->colors->objectCancel.bgCancelled);
 		}
 	}
 
@@ -125,6 +147,93 @@ namespace UI
 		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("cancel_object").c_str());
 		UI::POPUP_WINDOW->SetTextf(
 			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
+	}
+
+	static int ConvertPointToCanvas(int point, float min, float max, int canvasSize, bool invert)
+	{
+		if (invert)
+		{
+			return canvasSize - canvasSize * (point - min) / (max - min);
+		}
+		return canvasSize * (point - min) / (max - min);
+	}
+
+	static LayoutPosition ConvertBoundsToCanvas(OM::JobObject& object, const LayoutPosition& canvasPos)
+	{
+		LayoutPosition pos;
+
+		OM::Move::Axis* xAxis = OM::Move::GetAxisByLetter('X');
+		OM::Move::Axis* yAxis = OM::Move::GetAxisByLetter('Y');
+		if (xAxis == nullptr || yAxis == nullptr)
+		{
+			warn("Failed to get axes");
+			return pos;
+		}
+
+		pos.mLeft =
+			ConvertPointToCanvas(object.bounds.x[0], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false);
+		pos.mTop =
+			ConvertPointToCanvas(object.bounds.y[1], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true);
+
+		pos.mWidth =
+			ConvertPointToCanvas(object.bounds.x[1], xAxis->minPosition, xAxis->maxPosition, canvasPos.mWidth, false) -
+			pos.mLeft;
+		pos.mHeight =
+			ConvertPointToCanvas(object.bounds.y[0], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true) -
+			pos.mTop;
+		return pos;
+	}
+
+	void RenderObjectMap()
+	{
+		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_ObjectCancelPainter);
+		if (canvas == nullptr)
+		{
+			error("Failed to get canvas");
+			return;
+		}
+		static LayoutPosition canvasPos = canvas->getPosition();
+
+		const UI::Theme::Theme* theme = UI::Theme::GetCurrentTheme();
+
+		canvas->erase(0, 0, canvasPos.mWidth, canvasPos.mHeight);
+		canvas->setLineWidth(3);
+
+		OM::IterateJobObjectsWhile(
+			[&](OM::JobObject*& object, size_t index) {
+				if (object == nullptr)
+				{
+					return true;
+				}
+				if (object->cancelled)
+				{
+					canvas->setSourceColor(theme->colors->objectCancel.bgCancelled);
+				}
+				else if (index == (size_t)OM::GetCurrentJobObjectIndex())
+				{
+					canvas->setSourceColor(theme->colors->objectCancel.bgCurrent);
+				}
+				else
+				{
+					canvas->setSourceColor(theme->colors->objectCancel.bgDefault);
+				}
+
+				// Fill
+				LayoutPosition pos = ConvertBoundsToCanvas(*object, canvasPos);
+				canvas->fillRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
+
+				// Border
+				canvas->setSourceColor(theme->colors->objectCancel.bgBorder);
+				canvas->drawRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
+				return true;
+			},
+			0);
+	}
+
+	TouchListener& GetTouchListener()
+	{
+		static TouchListener listener;
+		return listener;
 	}
 
 } // namespace UI

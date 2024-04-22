@@ -9,6 +9,7 @@
 #include "Debug.h"
 
 #include "Configuration.h"
+#include "UI/ObjectCancel.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "manager/LanguageManager.h"
@@ -50,7 +51,12 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 					  dbg("Job: build is null");
 					  OM::RemoveJobObject(indices[0], true);
 				  }),
-	OBSERVER_INT("job:build:currentObject", [](OBSERVER_INT_ARGS) { OM::SetCurrentJobObject(val); }),
+	OBSERVER_INT("job:build:currentObject",
+				 [](OBSERVER_INT_ARGS) {
+					 OM::SetCurrentJobObject(val);
+					 UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelObjectsList)->refreshListView();
+					 UI::ObjectCancel::RenderObjectMap();
+				 }),
 	OBSERVER_CHAR("job:build:objects^", [](OBSERVER_CHAR_ARGS) { OM::RemoveJobObject(indices[0], false); }),
 	OBSERVER_BOOL("job:build:objects^:cancelled",
 				  [](OBSERVER_BOOL_ARGS) {
