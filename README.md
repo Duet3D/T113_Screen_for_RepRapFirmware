@@ -68,6 +68,7 @@ Flythings has some documentation on the SDK, it is split between a more up-to-da
 * ![1709737265559](docs/image/README/1709737265559.png)
   * The green play icon (left) will compile the project.
   * The blue eject icon (right) will compile the project and create an image file that can be used to flash the screen.
+    * To convert the `upgrade.img` file to a `DuetScreen.bin` file, simply rename the file.
   * When developing code, it is possible to temporarily flash the screen by using `Ctrl+Alt+R` to compile the firmware and flash it to the screen.
     * You need to configure the ADB configuration in Flythings for this to work
     * ![1709737436213](docs/image/README/1709737436213.png)
