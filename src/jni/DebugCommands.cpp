@@ -13,21 +13,21 @@ namespace Debug
 {
 	static std::map<const char*, DebugCommand*> commandsMap;
 
-	static DebugCommand verbose_log("dbg_verbose_log", []() {
+	static DebugCommand s_verboseLog("dbg_verbose_log", []() {
 		// Create a log file and send it to the Duet
 		system("logcat -v threadtime -d *:V > /tmp/DuetScreen_log.txt");
 		std::string logs;
 		USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
-		Comm::duet.UploadFile("/sys/DuetScreen_log.txt", logs);
+		Comm::DUET.UploadFile("/sys/DuetScreen_log.txt", logs);
 		system("rm /tmp/DuetScreen_log.txt");
 	});
 
-	static DebugCommand error_log("dbg_error_log", []() {
+	static DebugCommand s_errorLog("dbg_error_log", []() {
 		// Create a log file and send it to the Duet
 		system("logcat -v threadtime -d *:W > /tmp/DuetScreen_log.txt");
 		std::string logs;
 		USB::ReadFileContents("/tmp/DuetScreen_log.txt", logs);
-		Comm::duet.UploadFile("/sys/DuetScreen_error_log.txt", logs);
+		Comm::DUET.UploadFile("/sys/DuetScreen_error_log.txt", logs);
 		system("rm /tmp/DuetScreen_log.txt");
 	});
 

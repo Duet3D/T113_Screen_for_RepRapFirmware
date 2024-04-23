@@ -17,7 +17,7 @@
 #include "Debug.h"
 
 typedef Vector<OM::Fan*, MAX_FANS> FanList;
-static FanList fans;
+static FanList s_fans;
 
 namespace OM
 {
@@ -31,30 +31,30 @@ namespace OM
 
 	Fan *GetFan(const size_t index)
 	{
-		return GetOrCreate<FanList, Fan>(fans, index, false);
+		return GetOrCreate<FanList, Fan>(s_fans, index, false);
 	}
 
 	Fan* GetFanBySlot(const size_t index)
 	{
-		if (index >= fans.Size())
+		if (index >= s_fans.Size())
 			return nullptr;
 
-		return fans[index];
+		return s_fans[index];
 	}
 
 	Fan *GetOrCreateFan(const size_t index)
 	{
-		return GetOrCreate<FanList, Fan>(fans, index, true);
+		return GetOrCreate<FanList, Fan>(s_fans, index, true);
 	}
 
 	const size_t GetFanCount()
 	{
-		return fans.Size();
+		return s_fans.Size();
 	}
 
 	bool IterateFansWhile(function_ref<bool(Fan *&, size_t)> func, const size_t startAt)
 	{
-		return fans.IterateWhile(func, startAt);
+		return s_fans.IterateWhile(func, startAt);
 	}
 
 	bool UpdateFanActualVal(const size_t fanIndex, const float val)
@@ -102,6 +102,6 @@ namespace OM
 	size_t RemoveFan(const size_t index, const bool allFollowing)
 	{
 		info("Removing fan %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
-		return Remove<FanList, Fan>(fans, index, allFollowing);
+		return Remove<FanList, Fan>(s_fans, index, allFollowing);
 	}
 }

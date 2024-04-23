@@ -56,29 +56,26 @@ static const char* getBaudRate(UINT baudRate) {
 	return NULL;
 }
 
-UartContext::UartContext() :
-	mIsOpen(false),
-	mUartID(0),
-	mDataBufPtr(NULL),
-	mDataBufLen(0) {
-
-}
+UartContext::UartContext() : m_isOpen(false), m_uartID(0), m_dataBufPtr(NULL), m_dataBufLen(0) {}
 
 UartContext::~UartContext() {
-	delete[] mDataBufPtr;
+	delete[] m_dataBufPtr;
 	closeUart();
 }
 
 bool UartContext::openUart(const char *pFileName, UINT baudRate) {
 	info("openUart pFileName = %s, baudRate = %s\n", pFileName, getBaudRate(baudRate));
-	mUartID = open(pFileName, O_RDWR|O_NOCTTY);
+	m_uartID = open(pFileName, O_RDWR | O_NOCTTY);
 
-	if (mUartID <= 0) {
-		mIsOpen = false;
-	} else {
+	if (m_uartID <= 0)
+	{
+		m_isOpen = false;
+	}
+	else
+	{
 		struct termios oldtio = { 0 };
 		struct termios newtio = { 0 };
-		tcgetattr(mUartID, &oldtio);
+		tcgetattr(m_uartID, &oldtio);
 
 		newtio.c_cflag = baudRate|CS8|CLOCAL|CREAD;
 		newtio.c_iflag = 0;	// IGNPAR | ICRNL
@@ -86,47 +83,50 @@ bool UartContext::openUart(const char *pFileName, UINT baudRate) {
 		newtio.c_lflag = 0;	// ICANON
 		newtio.c_cc[VTIME] = 0; /* inter-character timer unused */
 		newtio.c_cc[VMIN] = 1; /* blocking read until 1 character arrives */
-		tcflush(mUartID, TCIOFLUSH);
-		tcsetattr(mUartID, TCSANOW, &newtio);
+		tcflush(m_uartID, TCIOFLUSH);
+		tcsetattr(m_uartID, TCSANOW, &newtio);
 
 		// Set to non-blocking
-		fcntl(mUartID, F_SETFL, O_NONBLOCK);
+		fcntl(m_uartID, F_SETFL, O_NONBLOCK);
 
-		mIsOpen = run("uart");
-		if (!mIsOpen) {
+		m_isOpen = run("uart");
+		if (!m_isOpen)
+		{
 			error("Failed to open UART\n");
-			close(mUartID);
-			mUartID = 0;
+			close(m_uartID);
+			m_uartID = 0;
 		}
 
-		info("openUart mIsOpen = %d\n", mIsOpen);
+		info("openUart m_isOpen = %d\n", m_isOpen);
 	}
 
-	return mIsOpen;
+	return m_isOpen;
 }
 
 void UartContext::closeUart() {
-	dbg("closeUart mIsOpen: %d...\n", mIsOpen);
-	if (mIsOpen) {
+	dbg("closeUart m_isOpen: %d...\n", m_isOpen);
+	if (m_isOpen)
+	{
 		info("Closing UART");
 		requestExit();
 
-		close(mUartID);
+		close(m_uartID);
 		Thread::sleep(100);
-		mUartID = 0;
-		mIsOpen = false;
+		m_uartID = 0;
+		m_isOpen = false;
 	}
-	mDataBufLen = 0;
+	m_dataBufLen = 0;
 }
 
 bool UartContext::send(const BYTE *pData, UINT len) {
-	if (!mIsOpen) {
+	if (!m_isOpen)
+	{
 		return false;
 	}
-	int delay = (int)ceilf((float)(1e4 * len) / Comm::duet.GetBaudRate().rate);
+	int delay = (int)ceilf((float)(1e4 * len) / Comm::DUET.GetBaudRate().rate);
 
-	int ret = write(mUartID, pData, len);
-    Thread::sleep(delay);   // Ensure we don't accidentally send data while previous data is still being sent
+	int ret = write(m_uartID, pData, len);
+	Thread::sleep(delay); // Ensure we don't accidentally send data while previous data is still being sent
 	verbose("delay %d", delay);
 	if (ret != (int) len) {	// fail
 		error("send Fail\n");
@@ -141,35 +141,41 @@ UartContext* UartContext::getInstance() {
 }
 
 bool UartContext::readyToRun() {
-	if (mDataBufPtr == NULL) {
-		mDataBufPtr = new BYTE[UART_DATA_BUF_LEN];
+	if (m_dataBufPtr == NULL)
+	{
+		m_dataBufPtr = new BYTE[UART_DATA_BUF_LEN];
 	}
 
-	if (mDataBufPtr == NULL) {
+	if (m_dataBufPtr == NULL)
+	{
 		closeUart();
 	}
 
-	return (mDataBufPtr != NULL);
+	return (m_dataBufPtr != NULL);
 }
 
 bool UartContext::threadLoop() {
-	if (mIsOpen) {
+	if (m_isOpen)
+	{
 		// There may be residual data after the last analysis, which needs to be spliced
-		int readNum = read(mUartID, mDataBufPtr + mDataBufLen, UART_DATA_BUF_LEN - mDataBufLen);
+		int readNum = read(m_uartID, m_dataBufPtr + m_dataBufLen, UART_DATA_BUF_LEN - m_dataBufLen);
 
 		if (readNum > 0) {
-			mDataBufLen += readNum;
+			m_dataBufLen += readNum;
 
 			// Parse protocol
-			int len = parseProtocol(mDataBufPtr, mDataBufLen);
-			if (len == 0) { mDataBufLen = 0; }
+			int len = parseProtocol(m_dataBufPtr, m_dataBufLen);
+			if (len == 0)
+			{
+				m_dataBufLen = 0;
+			}
 			if (len >= UART_DATA_BUF_LEN)
 			{
 				error("UART buffer overflow");
-				warn("Buffer: %s", mDataBufPtr);
+				warn("Buffer: %s", m_dataBufPtr);
 				UI::POPUP_WINDOW->Open();
 				UI::POPUP_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
-				mDataBufLen = 0;
+				m_dataBufLen = 0;
 				Comm::Reconnect();
 			}
 		} else {

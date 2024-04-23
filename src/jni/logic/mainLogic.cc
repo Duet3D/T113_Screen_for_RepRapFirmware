@@ -78,7 +78,7 @@
  * In Eclipse IDE, use the "alt + /" shortcut key to open the smart prompt
  */
 
-static int sFeedRate = 6000;
+static int s_feedRate = 6000;
 
 /**
  * Register timer
@@ -108,11 +108,11 @@ static void onUI_init()
 	mBuzzerEnabledPtr->setChecked(StoragePreferences::getBool(ID_BUZZER_ENABLED, true));
 
 	// Comm
-	Comm::duet.Init();
+	Comm::DUET.Init();
 
 	// UI
 	UI::Init(mRootWindowPtr);
-	UI::TemperatureGraph.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
+	UI::TEMPERATURE_GRAPH.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
 	UI::Theme::SetTheme(StoragePreferences::getString(ID_THEME, "dark"));
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW->AddHome(mMainWindowPtr);
@@ -137,10 +137,10 @@ static void onUI_init()
 	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt(ID_SCREENSAVER_TIMEOUT, 120));
 
 	// Duet communication settings
-	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::duet.GetCommunicationType()]);
-	mHostnameInputPtr->setText(Comm::duet.GetHostname());
-	mPasswordInputPtr->setText(Comm::duet.GetPassword());
-	mPollIntervalInputPtr->setText((int)Comm::duet.GetPollInterval());
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::DUET.GetCommunicationType()]);
+	mHostnameInputPtr->setText(Comm::DUET.GetHostname());
+	mPasswordInputPtr->setText(Comm::DUET.GetPassword());
+	mPollIntervalInputPtr->setText((int)Comm::DUET.GetPollInterval());
 	mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW->GetTimeout());
 
 	// Heightmap
@@ -158,18 +158,18 @@ static void onUI_init()
 	mDigitalClock1Ptr->setVisible(false);
 
 	/* Initialise UI observer updaters that run on each field value that is received from the OM */
-	auto* observer = UI::omFieldObserverHead;
+	auto* observer = UI::g_omFieldObserverHead;
 	while (observer != nullptr)
 	{
-		observer->Init(UI::observerMap);
+		observer->Init(UI::g_observerMap);
 		observer = observer->next;
 	}
 
 	/* Initialise UI observer updaters that run after an array has been received */
-	auto *observerArrayEnd = UI::omArrayEndObserverHead;
+	auto* observerArrayEnd = UI::g_omArrayEndObserverHead;
 	while (observerArrayEnd != nullptr)
 	{
-		observerArrayEnd->Init(UI::observerMapArrayEnd);
+		observerArrayEnd->Init(UI::g_observerMapArrayEnd);
 		observerArrayEnd = observerArrayEnd->next;
 	}
 
@@ -319,11 +319,11 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	UI::POPUP_WINDOW->Close();
-	Comm::duet.SendGcode("M112 ;"
+	Comm::DUET.SendGcode("M112 ;"
 						 "\xF0"
 						 "\x0F");
 	Thread::sleep(1000);
-	Comm::duet.SendGcode("M999");
+	Comm::DUET.SendGcode("M999");
 	return false;
 }
 
@@ -411,12 +411,12 @@ static void obtainListItemData_TemperatureGraphLegend(ZKListView *pListView, ZKL
 		return;
 	}
 	pListItem->setText(sensor->name.c_str());
-	pListItem->setSelected(!UI::TemperatureGraph.IsWaveVisible(index));
+	pListItem->setSelected(!UI::TEMPERATURE_GRAPH.IsWaveVisible(index));
 }
 
 static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int index, int id)
 {
-	UI::TemperatureGraph.SetWaveVisible(index, !UI::TemperatureGraph.IsWaveVisible(index));
+	UI::TEMPERATURE_GRAPH.SetWaveVisible(index, !UI::TEMPERATURE_GRAPH.IsWaveVisible(index));
 }
 
 static bool onButtonClick_NumPad0(ZKButton* pButton)
@@ -495,25 +495,25 @@ static bool onButtonClick_NumPadClearBtn(ZKButton* pButton)
 }
 
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
-	Comm::duet.SendGcode("G28\n");
+	Comm::DUET.SendGcode("G28\n");
 	return false;
 }
 
 static bool onButtonClick_TrueLevelBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("G32\n");
+	Comm::DUET.SendGcode("G32\n");
 	return false;
 }
 
 static bool onButtonClick_MeshLevelBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("G29\n");
+	Comm::DUET.SendGcode("G29\n");
 	return false;
 }
 
 static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("M18\n");
+	Comm::DUET.SendGcode("M18\n");
 	return false;
 }
 
@@ -551,7 +551,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 	switch (id)
 	{
 	case ID_MAIN_AxisControlHomeSubItem:
-		Comm::duet.SendGcodef("G28 %s\n", axis->letter);
+		Comm::DUET.SendGcodef("G28 %s\n", axis->letter);
 		return;
 	case ID_MAIN_AxisControlSubItem1:
 		distance = -50;
@@ -578,7 +578,7 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 		distance = 50;
 		break;
 	}
-	Comm::duet.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, sFeedRate);
+	Comm::DUET.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, s_feedRate);
 }
 
 static void selectFeedRateBtn(ZKButton* pButton)
@@ -593,31 +593,31 @@ static void selectFeedRateBtn(ZKButton* pButton)
 
 static bool onButtonClick_FeedrateBtn1(ZKButton* pButton)
 {
-	sFeedRate = 100 * 60;
+	s_feedRate = 100 * 60;
 	selectFeedRateBtn(pButton);
 	return false;
 }
 
 static bool onButtonClick_FeedrateBtn2(ZKButton *pButton) {
-	sFeedRate = 50 * 60;
+	s_feedRate = 50 * 60;
 	selectFeedRateBtn(pButton);
 	return false;
 }
 
 static bool onButtonClick_FeedrateBtn3(ZKButton *pButton) {
-	sFeedRate = 20 * 60;
+	s_feedRate = 20 * 60;
 	selectFeedRateBtn(pButton);
 	return false;
 }
 
 static bool onButtonClick_FeedrateBtn4(ZKButton *pButton) {
-	sFeedRate = 10 * 60;
+	s_feedRate = 10 * 60;
 	selectFeedRateBtn(pButton);
 	return false;
 }
 
 static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
-	sFeedRate = 1 * 60;
+	s_feedRate = 1 * 60;
 	selectFeedRateBtn(pButton);
 	return false;
 }
@@ -636,11 +636,11 @@ static void onListItemClick_ConsoleListView(ZKListView *pListView, int index, in
 }
 
 static int getListItemCount_GcodeListView(const ZKListView *pListView) {
-	return sizeof(Gcode) / sizeof(gcode);
+	return sizeof(s_gcode) / sizeof(gcode);
 }
 
 static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-	pListItem->setTextTr(Gcode[index].displayText);
+	pListItem->setTextTr(s_gcode[index].displayText);
 }
 
 static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
@@ -649,13 +649,13 @@ static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int 
 static void onEditTextChanged_EditText1(const std::string& text)
 {
 	UI::CONSOLE->AddCommand(text);
-	Comm::duet.SendGcode(text.c_str());
+	Comm::DUET.SendGcode(text.c_str());
 }
 
 static bool onButtonClick_SendBtn(ZKButton* pButton)
 {
 	UI::CONSOLE->AddCommand(mEditText1Ptr->getText());
-	Comm::duet.SendGcode(mEditText1Ptr->getText().c_str());
+	Comm::DUET.SendGcode(mEditText1Ptr->getText().c_str());
 	return true;
 }
 static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
@@ -767,12 +767,12 @@ static void onListItemClick_FileListView(ZKListView *pListView, int index, int i
 	}
 }
 static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
-	Comm::duet.SendGcode("M290 S-0.05");
+	Comm::DUET.SendGcode("M290 S-0.05");
 	return false;
 }
 
 static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
-	Comm::duet.SendGcode("M290 S0.05");
+	Comm::DUET.SendGcode("M290 S0.05");
 	return false;
 }
 
@@ -813,7 +813,7 @@ static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int i
 				return;
 			}
 			int fanSpeed = (percent * 255) / 100;
-			Comm::duet.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
+			Comm::DUET.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
 		},
 		true);
 }
@@ -886,12 +886,12 @@ static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int
 			{
 				return;
 			}
-			Comm::duet.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
+			Comm::DUET.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
 		});
 }
 
 static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
-	Comm::duet.SendGcodef("M220 S%d\n", progress);
+	Comm::DUET.SendGcodef("M220 S%d\n", progress);
 }
 
 static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
@@ -943,9 +943,9 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		EASYUICONTEXT->openActivity("LanguageSettingActivity");
 		break;
 	case (int)UI::SettingsSlideWindowIndex::duet:
-		mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+		mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
 												  Comm::Duet::CommunicationType::uart);
-		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
 													 Comm::Duet::CommunicationType::network);
 		UI::WINDOW->OpenOverlay(mDuetCommSettingWindowPtr);
 		break;
@@ -1021,28 +1021,28 @@ static int getListItemCount_BaudRateList(const ZKListView* pListView)
 
 static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setSelected(Comm::baudRates[index].rate == Comm::duet.GetBaudRate().rate);
+	pListItem->setSelected(Comm::baudRates[index].rate == Comm::DUET.GetBaudRate().rate);
 	pListItem->setText((int)Comm::baudRates[index].rate);
 }
 
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
 {
-	Comm::duet.SetBaudRate(Comm::baudRates[index]);
+	Comm::DUET.SetBaudRate(Comm::baudRates[index]);
 }
 static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
 {
 	// LOGD("getListItemCount_PopupSelectionList !\n");
-	return OM::currentAlert.choices_count;
+	return OM::g_currentAlert.choices_count;
 }
 
 static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(OM::currentAlert.choices[index].c_str());
+	pListItem->setText(OM::g_currentAlert.choices[index].c_str());
 }
 
 static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
 {
-	Comm::duet.SendGcodef("M292 R{%lu} S%lu\n", index, OM::currentAlert.seq);
+	Comm::DUET.SendGcodef("M292 R{%lu} S%lu\n", index, OM::g_currentAlert.seq);
 	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
 }
 
@@ -1100,13 +1100,13 @@ static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListV
 
 static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
 {
-	Comm::duet.SendGcode("M120\n"); // Push
-	Comm::duet.SendGcode("G91\n");	// Relative move
-	Comm::duet.SendGcodef("G1 %s%.3f F%d\n",
-						 UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
-						 UI::POPUP_WINDOW->jogAmounts[index],
-						 300);
-	Comm::duet.SendGcode("M121\n"); // Pop
+	Comm::DUET.SendGcode("M120\n"); // Push
+	Comm::DUET.SendGcode("G91\n");	// Relative move
+	Comm::DUET.SendGcodef("G1 %s%.3f F%d\n",
+						  UI::POPUP_WINDOW->GetJogAxis(UI::POPUP_WINDOW->selectedAxis)->letter,
+						  UI::POPUP_WINDOW->jogAmounts[index],
+						  300);
+	Comm::DUET.SendGcode("M121\n"); // Pop
 }
 
 static int getListItemCount_DuetCommList(const ZKListView* pListView)
@@ -1118,14 +1118,14 @@ static int getListItemCount_DuetCommList(const ZKListView* pListView)
 static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
 	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
-	pListItem->setSelected(index == (int)Comm::duet.GetCommunicationType());
+	pListItem->setSelected(index == (int)Comm::DUET.GetCommunicationType());
 }
 
 static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
 {
-	Comm::duet.SetCommunicationType((Comm::Duet::CommunicationType)index);
-	mDuetUartCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
-	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::duet.GetCommunicationType() ==
+	Comm::DUET.SetCommunicationType((Comm::Duet::CommunicationType)index);
+	mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
+	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
 												 Comm::Duet::CommunicationType::network);
 	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
 }
@@ -1137,18 +1137,18 @@ static void onEditTextChanged_PollIntervalInput(const std::string& text)
 		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
 		return;
 	}
-	Comm::duet.SetPollInterval(atoi(text.c_str()));
+	Comm::DUET.SetPollInterval(atoi(text.c_str()));
 }
 
 static void onEditTextChanged_HostnameInput(const std::string& text)
 {
 	dbg("Hostname input changed to %s", text.c_str());
-	Comm::duet.SetHostname(text);
+	Comm::DUET.SetHostname(text);
 }
 
 static void onEditTextChanged_PasswordInput(const std::string& text)
 {
-	Comm::duet.SetPassword(text);
+	Comm::DUET.SetPassword(text);
 }
 
 static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
@@ -1184,7 +1184,7 @@ static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
 {
-	Comm::duet.SendGcode("M122");
+	Comm::DUET.SendGcode("M122");
 	return false;
 }
 static bool onButtonClick_NextPageBtn(ZKButton* pButton)
@@ -1287,13 +1287,13 @@ static void onListItemClick_ExtruderFeedrate(ZKListView* pListView, int index, i
 
 static bool onButtonClick_RetractBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcodef("G1 E-%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
+	Comm::DUET.SendGcodef("G1 E-%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
 	return false;
 }
 
 static bool onButtonClick_ExtrudeBtn(ZKButton* pButton)
 {
-	Comm::duet.SendGcodef("G1 E%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
+	Comm::DUET.SendGcodef("G1 E%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
 	return false;
 }
 
@@ -1347,7 +1347,7 @@ static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, in
 			UI::WINDOW->CloseOverlay();
 			return;
 		}
-		Comm::duet.RequestFileList("/filaments");
+		Comm::DUET.RequestFileList("/filaments");
 		// TODO: need a way to recognise the response to this request compared to other file list requests
 		mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
 		mFilamentControlHeadingPtr->setTextTrf("tool_filament_control", g_filamentDialogTool->index);
@@ -1381,7 +1381,7 @@ static void onListItemClick_FilamentList(ZKListView* pListView, int index, int i
 	{
 		return;
 	}
-	Comm::duet.SendGcodef("T%d\n"
+	Comm::DUET.SendGcodef("T%d\n"
 						  "M702\n"
 						  "M701 S\"%s\"\n"
 						  "M703",
@@ -1396,8 +1396,8 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 	{
 		return false;
 	}
-	Comm::duet.SendGcodef("T%d", g_filamentDialogTool->index);
-	Comm::duet.SendGcode("M702");
+	Comm::DUET.SendGcodef("T%d", g_filamentDialogTool->index);
+	Comm::DUET.SendGcode("M702");
 	return false;
 }
 
@@ -1526,7 +1526,7 @@ static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
 
 static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	int range = UI::TemperatureGraph.GetTimeRange();
+	int range = UI::TEMPERATURE_GRAPH.GetTimeRange();
 	int time = -range + (index * range / (pListView->getCols() - 1));
 	pListItem->setTextf("%ds", time);
 }
@@ -1544,7 +1544,7 @@ static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
 
 static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	float yMax = UI::TemperatureGraph.GetYMax();
+	float yMax = UI::TEMPERATURE_GRAPH.GetYMax();
 	float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
 	pListItem->setTextf("%.1f", label);
 }

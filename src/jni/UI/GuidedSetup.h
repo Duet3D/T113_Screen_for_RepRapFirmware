@@ -17,7 +17,7 @@
 
 namespace UI::GuidedSetup
 {
-	class Page
+	struct Page
 	{
 	  public:
 		const char* imagePath;			 // loaded when displaying this page

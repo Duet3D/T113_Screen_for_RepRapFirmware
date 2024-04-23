@@ -55,7 +55,12 @@ namespace Comm
 
 		typedef int32_t error_code;
 
-		Duet();
+		static Duet& GetInstance()
+		{
+			static Duet instance;
+			return instance;
+		}
+
 		void Init();
 		void Reset();
 		void Reconnect();
@@ -106,6 +111,7 @@ namespace Comm
 		// USB methods
 
 	  private:
+		Duet();
 		bool AsyncGet(const char* subUrl,
 					  QueryParameters_t& queryParameters,
 					  function<bool(RestClient::Response&)> callback,
@@ -127,10 +133,10 @@ namespace Comm
 		uint32_t m_pollInterval;
 		baudrate_t m_baudRate;
 
-		static constexpr uint32_t noSessionKey = 0;
+		static constexpr uint32_t sm_noSessionKey = 0;
 	};
 
-	extern Duet duet;
+#define DUET Duet::GetInstance()
 } // namespace Comm
 
 #endif /* JNI_HARDWARE_DUET_H_ */

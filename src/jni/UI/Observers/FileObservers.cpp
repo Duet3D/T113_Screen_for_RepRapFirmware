@@ -100,7 +100,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 				  [](OBSERVER_UINT_ARGS) {
 					  if (val == 0)
 						  return;
-					  Comm::duet.RequestFileList(OM::FileSystem::GetCurrentDirPath().c_str(), val);
+					  Comm::DUET.RequestFileList(OM::FileSystem::GetCurrentDirPath().c_str(), val);
 				  }),
 };
 

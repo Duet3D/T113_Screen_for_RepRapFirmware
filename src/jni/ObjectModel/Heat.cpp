@@ -23,8 +23,6 @@ namespace OM
 {
 	namespace Heat
 	{
-		size_t lastHeater = -1;
-
 		void Heater::Reset()
 		{
 			index = 0;

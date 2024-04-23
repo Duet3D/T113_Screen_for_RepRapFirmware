@@ -182,7 +182,7 @@ namespace Comm
 	// A '^' character indicates the position of an _ecv_array index, and a ':' character indicates the start of a
 	// sub-field name
 	// Needs to be sorted alphabetically by key for binary search to work
-	extern FieldTableEntry fieldTable[];
+	extern FieldTableEntry g_fieldTable[];
 
 	void SortFieldTable();
 	const FieldTableEntry* SearchFieldTable(const char* id);

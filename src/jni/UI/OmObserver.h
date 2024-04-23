@@ -30,7 +30,7 @@
 	UI::Observer<UI::ui_array_end_update_cb>                                                                           \
 	{                                                                                                                  \
 		key, [](Comm::JsonDecoder* decoder, const size_t indices[]) { callback(decoder, indices); },                   \
-			UI::omArrayEndObserverHead,                                                                                \
+			UI::g_omArrayEndObserverHead,                                                                              \
 	}
 
 #define OBSERVER_TEMPLATE(key, callback, type, convertor)                                                              \
@@ -44,13 +44,13 @@
 					callback(decoder, val, indices);                                                                   \
 				}                                                                                                      \
 			},                                                                                                         \
-			UI::omFieldObserverHead,                                                                                   \
+			UI::g_omFieldObserverHead,                                                                                 \
 	}
 
 #define OBSERVER_CHAR(key, callback)                                                                                   \
 	UI::Observer<UI::ui_field_update_cb>                                                                               \
 	{                                                                                                                  \
-		key, callback, UI::omFieldObserverHead,                                                                        \
+		key, callback, UI::g_omFieldObserverHead,                                                                      \
 	}
 #define OBSERVER_FLOAT(key, callback) OBSERVER_TEMPLATE(key, callback, float, Comm::GetFloat)
 #define OBSERVER_INT(key, callback) OBSERVER_TEMPLATE(key, callback, int32_t, Comm::GetInteger)
@@ -103,34 +103,34 @@ namespace UI
 	class Observer
 	{
 	  public:
-		Observer(const char* key, cbType cb, Observer*& head) : key(key), cb(cb)
+		Observer(const char* key, cbType cb, Observer*& head) : m_key(key), m_cb(cb)
 		{
 			next = head;
 			head = this;
 		}
-		void Init(ObserverMap<cbType>& observerMap) { observerMap.RegisterObserver(key, *this); }
+		void Init(ObserverMap<cbType>& observerMap) { observerMap.RegisterObserver(m_key, *this); }
 		void Update(Comm::JsonDecoder* decoder, const size_t arrayIndices[])
 		{
-			if (cb != nullptr)
+			if (m_cb != nullptr)
 			{
-				cb(decoder, arrayIndices);
+				m_cb(decoder, arrayIndices);
 			}
 		}
 		void Update(Comm::JsonDecoder* decoder, const char data[], const size_t arrayIndices[])
 		{
-			if (cb != nullptr)
+			if (m_cb != nullptr)
 			{
-				cb(decoder, data, arrayIndices);
+				m_cb(decoder, data, arrayIndices);
 			}
 		}
-		const char* GetKey() { return key; }
+		const char* GetKey() { return m_key; }
 
 		Observer* next;
-		static Observer* head;
+		static Observer* s_head;
 
 	  private:
-		const char* key;
-		cbType cb;
+		const char* m_key;
+		cbType m_cb;
 	};
 
 	template <typename cbType>
@@ -139,7 +139,7 @@ namespace UI
 	  public:
 		void RegisterObserver(const char* key, const Observer<cbType>& observer)
 		{
-			auto& observerList = observersMap[key];
+			auto& observerList = m_observersMap[key];
 			observerList.push_back(observer);
 
 			dbg("%d observers registered against key \"%s\"", observerList.size(), key);
@@ -147,19 +147,19 @@ namespace UI
 		const std::vector<Observer<cbType>>& GetObservers(const char* key) const
 		{
 			static const std::vector<Observer<cbType>> emptyVector; // Return an empty vector if key not found
-			auto it = observersMap.find(key);
-			return (it != observersMap.end()) ? it->second : emptyVector;
+			auto it = m_observersMap.find(key);
+			return (it != m_observersMap.end()) ? it->second : emptyVector;
 		}
 
 	  private:
-		std::map<const char*, std::vector<Observer<cbType>>, ConstCharComparator> observersMap;
+		std::map<const char*, std::vector<Observer<cbType>>, ConstCharComparator> m_observersMap;
 	};
 
-	extern Observer<ui_field_update_cb>* omFieldObserverHead;
-	extern Observer<ui_array_end_update_cb>* omArrayEndObserverHead;
+	extern Observer<ui_field_update_cb>* g_omFieldObserverHead;
+	extern Observer<ui_array_end_update_cb>* g_omArrayEndObserverHead;
 
-	extern ObserverMap<ui_field_update_cb> observerMap;
-	extern ObserverMap<ui_array_end_update_cb> observerMapArrayEnd;
+	extern ObserverMap<ui_field_update_cb> g_observerMap;
+	extern ObserverMap<ui_array_end_update_cb> g_observerMapArrayEnd;
 } // namespace UI
 
 #endif /* JNI_UI_OMOBSERVER_HPP_ */

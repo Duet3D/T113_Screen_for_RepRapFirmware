@@ -93,12 +93,12 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 					 if (val > -1)
 					 {
 						 OM::SetBedHeater(indices[0], val);
-						 for (size_t i = OM::lastBed + 1; i < indices[0]; ++i)
+						 for (size_t i = OM::g_lastBed + 1; i < indices[0]; ++i)
 						 {
 							 OM::RemoveBed(i, false);
 						 }
-						 OM::lastBed = indices[0];
-						 dbg("lastBed=%d", OM::lastBed);
+						 OM::g_lastBed = indices[0];
+						 dbg("g_lastBed=%d", OM::g_lastBed);
 					 }
 				 }),
 	OBSERVER_INT("heat:chamberHeaters^",
@@ -106,12 +106,12 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 					 if (val > -1)
 					 {
 						 OM::SetChamberHeater(indices[0], val);
-						 for (size_t i = OM::lastChamber + 1; i < indices[0]; ++i)
+						 for (size_t i = OM::g_lastChamber + 1; i < indices[0]; ++i)
 						 {
 							 OM::RemoveChamber(i, false);
 						 }
-						 OM::lastChamber = indices[0];
-						 dbg("lastChamber=%d", OM::lastChamber);
+						 OM::g_lastChamber = indices[0];
+						 dbg("g_lastChamber=%d", OM::g_lastChamber);
 					 }
 				 }),
 };
@@ -128,14 +128,14 @@ static UI::Observer<UI::ui_array_end_update_cb> HeatObserversArrayEnd[] = {
 					   }),
 	OBSERVER_ARRAY_END("heat:bedHeaters^",
 					   [](OBSERVER_ARRAY_END_ARGS) {
-						   OM::RemoveBed(OM::lastBed + 1, true);
-						   OM::lastBed = -1;
+						   OM::RemoveBed(OM::g_lastBed + 1, true);
+						   OM::g_lastBed = -1;
 						   UI::ToolsList::RefreshAllToolLists();
 					   }),
 	OBSERVER_ARRAY_END("heat:chamberHeaters^",
 					   [](OBSERVER_ARRAY_END_ARGS) {
-						   OM::RemoveChamber(OM::lastChamber + 1, true);
-						   OM::lastChamber = -1;
+						   OM::RemoveChamber(OM::g_lastChamber + 1, true);
+						   OM::g_lastChamber = -1;
 						   UI::ToolsList::RefreshAllToolLists();
 					   }),
 };

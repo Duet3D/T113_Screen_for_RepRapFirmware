@@ -69,7 +69,7 @@ bool UpgradeFromDuet()
 	system("rm /tmp/update.img"); // Remove any previous upgrade file
 
 	std::string contents;
-	if (!Comm::duet.DownloadFile(filePath.c_str(), contents))
+	if (!Comm::DUET.DownloadFile(filePath.c_str(), contents))
 	{
 		error("Failed to download file \"%s\" from Duet", filePath.c_str());
 		return false;

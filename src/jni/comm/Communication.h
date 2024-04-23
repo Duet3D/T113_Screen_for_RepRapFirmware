@@ -36,8 +36,8 @@ namespace Comm
 		const char* const flags;
 	};
 
-	extern Seq* currentReqSeq;
-	extern Seq* currentRespSeq;
+	extern Seq* g_currentReqSeq;
+	extern Seq* g_currentRespSeq;
 
 	bool GetInteger(const char s[], int32_t& rslt);
 	bool GetUnsignedInteger(const char s[], unsigned int& rslt);

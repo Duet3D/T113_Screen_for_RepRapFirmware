@@ -19,18 +19,18 @@
 
 namespace OM::FileSystem
 {
-	static std::string sCurrentDirPath;
-	static std::vector<FileSystemItem*> sItems;
-	static bool sInMacroFolder = false;
-	static bool sUsbFolder = false;
-	static ZKTextView* sFolderId = nullptr;
-	static ZKListView* sListView = nullptr;
+	static std::string s_currentDirPath;
+	static std::vector<FileSystemItem*> s_items;
+	static bool s_inMacroFolder = false;
+	static bool s_usbFolder = false;
+	static ZKTextView* s_folderId = nullptr;
+	static ZKListView* s_listView = nullptr;
 
 	std::string FileSystemItem::GetPath() const
 	{
-		if (sCurrentDirPath.empty())
-			return name_;
-		return sCurrentDirPath + "/" + name_;
+		if (s_currentDirPath.empty())
+			return m_name;
+		return s_currentDirPath + "/" + m_name;
 	}
 
 	std::string FileSystemItem::GetReadableSize() const
@@ -38,10 +38,10 @@ namespace OM::FileSystem
 		const char* sizes[] = {"B", "KB", "MB", "GB", "TB"};
 		int order = 0;
 
-		if (size_ == 0)
+		if (m_size == 0)
 			return "0 B";
 
-		double len = double(size_);
+		double len = double(m_size);
 		while (len >= 1024 && order < 4)
 		{
 			order++;
@@ -53,18 +53,16 @@ namespace OM::FileSystem
 
 	void FileSystemItem::SetName(const std::string name)
 	{
-		name_ = name.c_str();
-#if DEBUG_LEVEL > 2
-		switch (type_)
+		m_name = name.c_str();
+		switch (m_type)
 		{
 		case FileSystemItemType::file:
-			dbg("Files: set file name to %s", name_.c_str());
+			verbose("Files: set file name to %s", m_name.c_str());
 			break;
 		case FileSystemItemType::folder:
-			dbg("Files: set folder name to %s", name_.c_str());
+			verbose("Files: set folder name to %s", m_name.c_str());
 			break;
 		}
-#endif
 	}
 
 	FileSystemItem::~FileSystemItem()
@@ -74,61 +72,61 @@ namespace OM::FileSystem
 
 	void Init(ZKTextView* folderId, ZKListView* listView)
 	{
-		sFolderId = folderId;
-		sListView = listView;
+		s_folderId = folderId;
+		s_listView = listView;
 	}
 
 	ZKListView* GetListView()
 	{
-		return sListView;
+		return s_listView;
 	}
 
 	File* AddFileAt(const size_t index)
 	{
-		if (index < sItems.size())
+		if (index < s_items.size())
 		{
 			dbg("Deleting item[%d]", index);
-			delete sItems[index];
-			sItems[index] = nullptr;
+			delete s_items[index];
+			s_items[index] = nullptr;
 		}
 		File* file = new File();
-		sItems.insert(sItems.begin() + index, file);
+		s_items.insert(s_items.begin() + index, file);
 		return file;
 	}
 
 	Folder* AddFolderAt(const size_t index)
 	{
-		if (index < sItems.size())
+		if (index < s_items.size())
 		{
 			dbg("Deleting item[%d]", index);
-			delete sItems[index];
-			sItems[index] = nullptr;
+			delete s_items[index];
+			s_items[index] = nullptr;
 		}
 		Folder* folder = new Folder();
-		sItems.insert(sItems.begin() + index, folder);
+		s_items.insert(s_items.begin() + index, folder);
 		return folder;
 	}
 
 	const size_t GetItemCount()
 	{
-		return sItems.size();
+		return s_items.size();
 	}
 
 	const std::vector<FileSystemItem*>& GetItems()
 	{
-		return sItems;
+		return s_items;
 	}
 
 	FileSystemItem* GetItem(const size_t index)
 	{
 		if (index >= GetItemCount())
 			return nullptr;
-		return sItems[index];
+		return s_items[index];
 	}
 
 	File* GetFile(const std::string& name)
 	{
-		for (FileSystemItem* item : sItems)
+		for (FileSystemItem* item : s_items)
 		{
 			if (item == nullptr)
 				continue;
@@ -143,7 +141,7 @@ namespace OM::FileSystem
 
 	Folder* GetSubFolder(const std::string& name)
 	{
-		for (FileSystemItem* item : sItems)
+		for (FileSystemItem* item : s_items)
 		{
 			if (item == nullptr)
 				continue;
@@ -158,8 +156,8 @@ namespace OM::FileSystem
 
 	void SetCurrentDir(const std::string& path)
 	{
-		sCurrentDirPath = path;
-		info("Files: current directory = %s", sCurrentDirPath.c_str());
+		s_currentDirPath = path;
+		info("Files: current directory = %s", s_currentDirPath.c_str());
 	}
 
 	struct
@@ -174,8 +172,8 @@ namespace OM::FileSystem
 
 	void SortFileSystem()
 	{
-		auto first = sItems.begin();
-		auto last = sItems.end();
+		auto first = s_items.begin();
+		auto last = s_items.end();
 		FileSystemItem** temp;
 		--last;
 		while (last - first > 0)
@@ -196,40 +194,40 @@ namespace OM::FileSystem
 	std::string GetParentDirPath()
 	{
 		if (!IsInSubFolder())
-			return sCurrentDirPath;
+			return s_currentDirPath;
 
 		std::string path;
-		size_t i = sCurrentDirPath.find_last_of('/');
+		size_t i = s_currentDirPath.find_last_of('/');
 
 		if (i == std::string::npos)
 			return "";
-		return sCurrentDirPath.substr(0, i);
+		return s_currentDirPath.substr(0, i);
 	}
 
 	std::string GetCurrentDirName()
 	{
 		std::string path;
-		size_t i = sCurrentDirPath.find_last_of('/');
+		size_t i = s_currentDirPath.find_last_of('/');
 
 		if (i == std::string::npos)
-			return sCurrentDirPath;
-		return sCurrentDirPath.substr(i, sCurrentDirPath.size() - i);
+			return s_currentDirPath;
+		return s_currentDirPath.substr(i, s_currentDirPath.size() - i);
 	}
 
 	std::string& GetCurrentDirPath()
 	{
-		return sCurrentDirPath;
+		return s_currentDirPath;
 	}
 
 	bool IsInSubFolder()
 	{
 		if (IsUsbFolder())
 		{
-			return sCurrentDirPath.empty() ? false : true;
+			return s_currentDirPath.empty() ? false : true;
 		}
 
 		size_t count = 0;
-		for (auto c : sCurrentDirPath)
+		for (auto c : s_currentDirPath)
 		{
 			if (c == '/')
 				count++;
@@ -242,16 +240,16 @@ namespace OM::FileSystem
 	void RequestFiles(const std::string& path)
 	{
 		ClearFileSystem();
-		sUsbFolder = false;
-		sInMacroFolder = path.find("macro") != std::string::npos;
-		Comm::duet.RequestFileList(path.c_str());
+		s_usbFolder = false;
+		s_inMacroFolder = path.find("macro") != std::string::npos;
+		Comm::DUET.RequestFileList(path.c_str());
 	}
 
 	void RequestUsbFiles(const std::string& path)
 	{
 		ClearFileSystem();
-		sUsbFolder = true;
-		sCurrentDirPath = path;
+		s_usbFolder = true;
+		s_currentDirPath = path;
 		std::vector<USB::FileInfo> files = USB::ListEntriesInDirectory(std::string("/mnt/usb1/") + path);
 		size_t index = 0;
 		for (auto& fileInfo : files)
@@ -270,23 +268,23 @@ namespace OM::FileSystem
 			}
 			index++;
 		}
-		sFolderId->setText(LANGUAGEMANAGER->getValue("usb") + ": " + OM::FileSystem::GetCurrentDirPath());
-		sListView->refreshListView();
+		s_folderId->setText(LANGUAGEMANAGER->getValue("usb") + ": " + OM::FileSystem::GetCurrentDirPath());
+		s_listView->refreshListView();
 	}
 
 	bool IsMacroFolder()
 	{
-		return sInMacroFolder;
+		return s_inMacroFolder;
 	}
 
 	bool IsUsbFolder()
 	{
-		return sUsbFolder;
+		return s_usbFolder;
 	}
 
 	void RunFile(const File* file)
 	{
-		if (sInMacroFolder)
+		if (s_inMacroFolder)
 			RunMacro(file->GetPath());
 		else
 			StartPrint(file->GetPath());
@@ -294,7 +292,7 @@ namespace OM::FileSystem
 
 	void RunMacro(const std::string& path)
 	{
-		Comm::duet.SendGcodef("M98 P\"%s\"\n", path.c_str());
+		Comm::DUET.SendGcodef("M98 P\"%s\"\n", path.c_str());
 	}
 
 	void UploadFile(const File* file)
@@ -302,41 +300,41 @@ namespace OM::FileSystem
 		std::string contents;
 		if (!USB::ReadUsbFileContents(file->GetPath(), contents))
 			return;
-		Comm::duet.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
+		Comm::DUET.UploadFile(utils::format("/gcodes/%s", file->GetName().c_str()).c_str(), contents);
 	}
 
 	void StartPrint(const std::string& path)
 	{
-		Comm::duet.SendGcodef("M23 \"%s\"\n", path.c_str());
-		Comm::duet.SendGcode("M24\n");
+		Comm::DUET.SendGcodef("M23 \"%s\"\n", path.c_str());
+		Comm::DUET.SendGcode("M24\n");
 	}
 
 	void ResumePrint()
 	{
-		Comm::duet.SendGcode("M24\n");
+		Comm::DUET.SendGcode("M24\n");
 	}
 
 	void PausePrint()
 	{
-		Comm::duet.SendGcode("M25\n");
+		Comm::DUET.SendGcode("M25\n");
 	}
 
 	void StopPrint()
 	{
-		Comm::duet.SendGcode("M0\n");
+		Comm::DUET.SendGcode("M0\n");
 	}
 
 	void ClearFileSystem()
 	{
 		info("Files: clearing items");
-		for (auto item : sItems)
+		for (auto item : s_items)
 		{
 			if (item == nullptr)
 				continue;
 			dbg("Files: deleting item %s", item->GetName().c_str());
 			delete item;
 		}
-		sItems.clear();
+		s_items.clear();
 		UI::SetSelectedFile(nullptr);
 	}
 

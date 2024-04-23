@@ -17,8 +17,6 @@
 
 namespace UI
 {
-	Graph TemperatureGraph;
-
 	Graph::Graph() : m_xRange(DEFAULT_TEMP_GRAPH_TIME_RANGE), m_yMax(DEFAULT_TEMP_GRAPH_MAX) {}
 
 	void Graph::Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend)
@@ -200,26 +198,26 @@ namespace UI
 
 	void UpdateTemperatureGraph()
 	{
-		for (size_t i = 0; i < TemperatureGraph.GetWaveCount(); i++)
+		for (size_t i = 0; i < TEMPERATURE_GRAPH.GetWaveCount(); i++)
 		{
 			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i, true);
 			if (sensor == nullptr || sensor->name.IsEmpty())
 			{
 				verbose("Sensor incomplete or does not exist");
-				TemperatureGraph.Clear(i);
+				TEMPERATURE_GRAPH.Clear(i);
 				continue;
 			}
 
 			float value = sensor->lastReading;
 #if 0
 			long long now = TimeHelper::getCurrentTime();
-			if (now - sensor->lastReadingTime > 3 * Comm::duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
+			if (now - sensor->lastReadingTime > 3 * Comm::DUET.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
 			{
 				dbg("Sensor %d has timed out", i);
 				value = -273;
 			}
 #endif
-			TemperatureGraph.AddData(i, value);
+			TEMPERATURE_GRAPH.AddData(i, value);
 		}
 	}
 } // namespace UI

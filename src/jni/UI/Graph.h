@@ -20,7 +20,11 @@ namespace UI
 	class Graph
 	{
 	  public:
-		Graph();
+		static Graph& GetInstance()
+		{
+			static Graph instance;
+			return instance;
+		}
 		void Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend);
 
 		size_t GetWaveCount() const { return m_waveCount; }
@@ -41,6 +45,7 @@ namespace UI
 			float value;
 		};
 
+		Graph();
 		void UpdateWave(int index);
 		void ScaleYAxis(float max);
 
@@ -58,7 +63,8 @@ namespace UI
 	};
 
 	void UpdateTemperatureGraph();
-	extern Graph TemperatureGraph;
+
+#define TEMPERATURE_GRAPH Graph::GetInstance()
 } // namespace UI
 
 #endif /* JNI_UI_GRAPH_H_ */

@@ -21,7 +21,7 @@ namespace OM
 {
 	static std::string s_currentHeightmapName;
 	static std::map<std::string, Heightmap> s_heightmapCache;
-	static std::string emptyStr = "";
+	static std::string s_emptyStr = "";
 
 	static std::string GetLocalFilePath(const char* filename)
 	{
@@ -121,7 +121,7 @@ namespace OM
 		Reset();
 		m_fileName = filename;
 		std::string csvContents;
-		if (!Comm::duet.DownloadFile(utils::format("/sys/%s", filename).c_str(), csvContents))
+		if (!Comm::DUET.DownloadFile(utils::format("/sys/%s", filename).c_str(), csvContents))
 		{
 			error("Failed to download heightmap file %s", filename);
 			return false;
@@ -337,13 +337,13 @@ namespace OM
 		if (index < 0 || index >= (int)filenames.size())
 		{
 			error("Invalid heightmap index %d", index);
-			return emptyStr;
+			return s_emptyStr;
 		}
 		FileSystem::FileSystemItem* item = filenames[index];
 		if (item == nullptr)
 		{
 			error("Filesystem item at index %d is null", index);
-			return emptyStr;
+			return s_emptyStr;
 		}
 		return item->GetName();
 	}
@@ -371,14 +371,14 @@ namespace OM
 	void LoadHeightmap(const char* filename)
 	{
 		info("Loading heightmap %s", filename);
-		Comm::duet.SendGcodef("G29 S1 P\"%s\"", filename);
+		Comm::DUET.SendGcodef("G29 S1 P\"%s\"", filename);
 	}
 
 	/* Sends command to Duet to unload the heightmap */
 	void UnloadHeightmap()
 	{
 		info("Unloading heightmap");
-		Comm::duet.SendGcode("G29 S2");
+		Comm::DUET.SendGcode("G29 S2");
 	}
 
 	void ToggleHeightmap(const char* filename)

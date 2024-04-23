@@ -81,8 +81,8 @@ namespace OM
 		void Reset();
 	};
 
-	extern Alert currentAlert;
-	extern uint32_t lastAlertSeq;
+	extern Alert g_currentAlert;
+	extern uint32_t g_lastAlertSeq;
 } // namespace OM
 
 #endif /* JNI_UI_ALERT_H_ */

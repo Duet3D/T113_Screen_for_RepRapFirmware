@@ -32,7 +32,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  OM::SetPrinterName(val);
 					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrinterName)->setText(val);
 				  }),
-	OBSERVER_CHAR("network:interfaces^:actualIP", [](OBSERVER_CHAR_ARGS) { Comm::duet.SetIPAddress(val); }),
+	OBSERVER_CHAR("network:interfaces^:actualIP", [](OBSERVER_CHAR_ARGS) { Comm::DUET.SetIPAddress(val); }),
 	OBSERVER_CHAR("state:status",
 				  [](OBSERVER_CHAR_ARGS) {
 					  OM::SetStatus(val);
@@ -73,7 +73,7 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  if (val[0] != 0)
 						  return;
 					  UI::PopupWindow* popup = UI::PopupWindow::GetInstance();
-					  OM::currentAlert.Reset();
+					  OM::g_currentAlert.Reset();
 					  if (!popup->IsOpen() || popup->IsResponse())
 					  {
 						  return;
@@ -82,61 +82,61 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 				  }),
 	OBSERVER_UINT("state:messageBox:axisControls",
 				  [](OBSERVER_UINT_ARGS) {
-					  OM::currentAlert.controls = val;
-					  OM::currentAlert.flags.SetBit(OM::Alert::GotControls);
+					  OM::g_currentAlert.controls = val;
+					  OM::g_currentAlert.flags.SetBit(OM::Alert::GotControls);
 				  }),
 	OBSERVER_CHAR("state:messageBox:message",
 				  [](OBSERVER_CHAR_ARGS) {
-					  OM::currentAlert.text.copy(val);
-					  OM::currentAlert.flags.SetBit(OM::Alert::GotText);
+					  OM::g_currentAlert.text.copy(val);
+					  OM::g_currentAlert.flags.SetBit(OM::Alert::GotText);
 				  }),
 	OBSERVER_INT("state:messageBox:mode",
 				 [](OBSERVER_INT_ARGS) {
 					 dbg("Received alert mode %d", val);
-					 OM::currentAlert.mode = static_cast<OM::Alert::Mode>(val);
-					 OM::currentAlert.flags.SetBit(OM::Alert::GotMode);
+					 OM::g_currentAlert.mode = static_cast<OM::Alert::Mode>(val);
+					 OM::g_currentAlert.flags.SetBit(OM::Alert::GotMode);
 				 }),
 	OBSERVER_UINT("state:messageBox:seq",
 				  [](OBSERVER_UINT_ARGS) {
-					  OM::currentAlert.seq = val;
-					  OM::currentAlert.flags.SetBit(OM::Alert::GotSeq);
+					  OM::g_currentAlert.seq = val;
+					  OM::g_currentAlert.flags.SetBit(OM::Alert::GotSeq);
 				  }),
 	OBSERVER_FLOAT("state:messageBox:timeout",
 				   [](OBSERVER_FLOAT_ARGS) {
-					   OM::currentAlert.timeout = val;
-					   OM::currentAlert.flags.SetBit(OM::Alert::GotTimeout);
+					   OM::g_currentAlert.timeout = val;
+					   OM::g_currentAlert.flags.SetBit(OM::Alert::GotTimeout);
 				   }),
 	OBSERVER_CHAR("state:messageBox:title",
 				  [](OBSERVER_CHAR_ARGS) {
-					  OM::currentAlert.title.copy(val);
-					  OM::currentAlert.flags.SetBit(OM::Alert::GotTitle);
+					  OM::g_currentAlert.title.copy(val);
+					  OM::g_currentAlert.flags.SetBit(OM::Alert::GotTitle);
 				  }),
 	OBSERVER_CHAR("state:messageBox:min",
 				  [](OBSERVER_CHAR_ARGS) {
-					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.min);
-					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.min);
-					  Comm::GetInteger(val, OM::currentAlert.limits.text.min);
+					  Comm::GetInteger(val, OM::g_currentAlert.limits.numberInt.min);
+					  Comm::GetFloat(val, OM::g_currentAlert.limits.numberFloat.min);
+					  Comm::GetInteger(val, OM::g_currentAlert.limits.text.min);
 				  }),
 	OBSERVER_CHAR("state:messageBox:max",
 				  [](OBSERVER_CHAR_ARGS) {
-					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.max);
-					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.max);
-					  Comm::GetInteger(val, OM::currentAlert.limits.text.max);
+					  Comm::GetInteger(val, OM::g_currentAlert.limits.numberInt.max);
+					  Comm::GetFloat(val, OM::g_currentAlert.limits.numberFloat.max);
+					  Comm::GetInteger(val, OM::g_currentAlert.limits.text.max);
 				  }),
 	OBSERVER_CHAR("state:messageBox:default",
 				  [](OBSERVER_CHAR_ARGS) {
-					  Comm::GetInteger(val, OM::currentAlert.limits.numberInt.valueDefault);
-					  Comm::GetFloat(val, OM::currentAlert.limits.numberFloat.valueDefault);
-					  OM::currentAlert.limits.text.valueDefault.copy(val);
+					  Comm::GetInteger(val, OM::g_currentAlert.limits.numberInt.valueDefault);
+					  Comm::GetFloat(val, OM::g_currentAlert.limits.numberFloat.valueDefault);
+					  OM::g_currentAlert.limits.text.valueDefault.copy(val);
 				  }),
 	OBSERVER_CHAR("state:messageBox:cancelButton",
-				  [](OBSERVER_CHAR_ARGS) { Comm::GetBool(val, OM::currentAlert.cancelButton); }),
+				  [](OBSERVER_CHAR_ARGS) { Comm::GetBool(val, OM::g_currentAlert.cancelButton); }),
 	OBSERVER_CHAR("state:messageBox:choices^",
 				  [](OBSERVER_CHAR_ARGS) {
 					  if (indices[0] >= ALERT_MAX_CHOICES)
 						  return;
-					  OM::currentAlert.choices[indices[0]].copy(val);
-					  OM::currentAlert.choices_count = indices[0] + 1;
+					  OM::g_currentAlert.choices[indices[0]].copy(val);
+					  OM::g_currentAlert.choices_count = indices[0] + 1;
 				  }),
 	OBSERVER_CHAR("state:time",
 				  [](OBSERVER_CHAR_ARGS) {

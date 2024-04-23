@@ -65,12 +65,12 @@ namespace UI
 
 	void Window::AddHome(ZKBase* home)
 	{
-		homeWindows_.push_back(home);
+		m_homeWindows.push_back(home);
 	}
 
 	void Window::ClearHome()
 	{
-		homeWindows_.clear();
+		m_homeWindows.clear();
 	}
 
 	void Window::OpenWindow(ZKBase* window)
@@ -79,9 +79,9 @@ namespace UI
 		CloseLastWindow();
 		info("Opening window %d", window->getID());
 		window->setVisible(true);
-		RemoveFromVector<ZKBase*>(closedWindows_, window);
-		if (!InVector<ZKBase*>(homeWindows_, window))
-			AddToVector<ZKBase*>(openedWindows_, window);
+		RemoveFromVector<ZKBase*>(m_closedWindows, window);
+		if (!InVector<ZKBase*>(m_homeWindows, window))
+			AddToVector<ZKBase*>(m_openedWindows, window);
 	}
 
 	void Window::OpenOverlay(ZKBase* overlay, bool closeAlreadyOpened)
@@ -91,18 +91,18 @@ namespace UI
 			warn("Overlay is null");
 			return;
 		}
-		if (!overlayWindows_.empty() && closeAlreadyOpened)
+		if (!m_overlayWindows.empty() && closeAlreadyOpened)
 		{
 			CloseOverlay();
 		}
 		dbg("Opening overlay %d", overlay->getID());
 		overlay->setVisible(true);
-		AddToVector<ZKBase*>(overlayWindows_, overlay);
+		AddToVector<ZKBase*>(m_overlayWindows, overlay);
 	}
 
 	bool Window::IsOverlayOpened()
 	{
-		for (auto& window : overlayWindows_)
+		for (auto& window : m_overlayWindows)
 		{
 			if (window->isVisible())
 			{
@@ -114,10 +114,10 @@ namespace UI
 
 	bool Window::CloseOverlay()
 	{
-		if (overlayWindows_.empty())
+		if (m_overlayWindows.empty())
 			return false;
 
-		verbose("%d overlay windows to close", overlayWindows_.size());
+		verbose("%d overlay windows to close", m_overlayWindows.size());
 		// Ensure that you can't close the popup window if it's blocking.
 		if (POPUP_WINDOW->IsBlocking())
 		{
@@ -130,15 +130,15 @@ namespace UI
 		}
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(false);
 		size_t count = 0;
-		for (auto& window : overlayWindows_)
+		for (auto& window : m_overlayWindows)
 		{
 			if (!window->isVisible())
 				continue;
 			window->setVisible(false);
-			RemoveFromVector<ZKBase*>(overlayWindows_, window);
+			RemoveFromVector<ZKBase*>(m_overlayWindows, window);
 			count++;
 		}
-		verbose("Closed %d overlays, %d remaining", count, overlayWindows_.size());
+		verbose("Closed %d overlays, %d remaining", count, m_overlayWindows.size());
 		return count > 0;
 	}
 
@@ -147,8 +147,9 @@ namespace UI
 		size_t count = 0;
 		for (size_t i = 0; i < numWindows; ++i)
 		{
-			if (closedWindows_.empty()) return count;
-			auto window = closedWindows_.back();
+			if (m_closedWindows.empty())
+				return count;
+			auto window = m_closedWindows.back();
 			OpenWindow(window);
 		}
 		return count;
@@ -156,23 +157,24 @@ namespace UI
 
 	void Window::CloseLastWindow()
 	{
-		for (auto window : homeWindows_)
+		for (auto window : m_homeWindows)
 		{
 			if (!window->isVisible())
 				continue;
 			CloseWindow(window);
 		}
-		if (openedWindows_.empty()) return;
-		CloseWindow(openedWindows_.back());
+		if (m_openedWindows.empty())
+			return;
+		CloseWindow(m_openedWindows.back());
 	}
 
 	void Window::CloseWindow(ZKBase* window, const bool returnable)
 	{
 		info("Closing window %d", window->getID());
 		window->setVisible(false);
-		RemoveFromVector<ZKBase*>(openedWindows_, window);
+		RemoveFromVector<ZKBase*>(m_openedWindows, window);
 		if (returnable)
-			AddToVector<ZKBase*>(closedWindows_, window);
+			AddToVector<ZKBase*>(m_closedWindows, window);
 	}
 
 	void Window::Back()
@@ -196,25 +198,25 @@ namespace UI
 			OM::FileSystem::RequestFiles(OM::FileSystem::GetParentDirPath());
 			return;
 		}
-		if (!openedWindows_.empty())
+		if (!m_openedWindows.empty())
 		{
-			ZKBase* lastOpened = openedWindows_.back();
+			ZKBase* lastOpened = m_openedWindows.back();
 			CloseWindow(lastOpened, false);
 		}
-		if (!closedWindows_.empty())
+		if (!m_closedWindows.empty())
 		{
-			ZKBase* lastClosed = closedWindows_.back();
+			ZKBase* lastClosed = m_closedWindows.back();
 			OpenWindow(lastClosed);
 		}
 	}
 
 	void Window::Home()
 	{
-		for (auto window : openedWindows_)
+		for (auto window : m_openedWindows)
 		{
 			window->setVisible(false);
 		}
-		for (auto window : homeWindows_)
+		for (auto window : m_homeWindows)
 		{
 			window->setVisible(true);
 		}
@@ -224,13 +226,13 @@ namespace UI
 
 	void Window::Clear()
 	{
-		openedWindows_.clear();
-		closedWindows_.clear();
+		m_openedWindows.clear();
+		m_closedWindows.clear();
 	}
 
 	static std::map<const char*, ToolsList*> sToolsListMap;
 
-	ToolsList::ToolsList(const char* id) : id(id), toolCount_(0), bedCount_(0), chamberCount_(0)
+	ToolsList::ToolsList(const char* id) : m_id(id), m_toolCount(0), m_bedCount(0), m_chamberCount(0)
 	{
 		dbg("Registering tool list to id %s", id);
 	}
@@ -249,16 +251,16 @@ namespace UI
 
 	void ToolsList::Init(ZKListView* toolListView)
 	{
-		pToolListView_ = toolListView;
+		m_pToolListView = toolListView;
 	}
 
 	void ToolsList::CalculateTotalHeaterCount()
 	{
 		verbose("Bed count %d", OM::GetBedCount());
-		bedCount_ = OM::GetBedCount();
+		m_bedCount = OM::GetBedCount();
 
 		verbose("Chamber count %d", OM::GetChamberCount());
-		chamberCount_ = OM::GetChamberCount();
+		m_chamberCount = OM::GetChamberCount();
 
 		size_t count = 0;
 		OM::IterateToolsWhile([&count](OM::Tool*& tool, size_t) {
@@ -279,7 +281,7 @@ namespace UI
 		});
 
 		verbose("Tool count %d", count);
-		toolCount_ = count;
+		m_toolCount = count;
 	}
 
 	size_t ToolsList::GetTotalHeaterCount(const bool calculate, const bool addTools, const bool addBeds,
@@ -288,9 +290,18 @@ namespace UI
 		if (calculate) CalculateTotalHeaterCount();
 
 		size_t count = 0;
-		if (addTools) { count += toolCount_; }
-		if (addBeds) { count += bedCount_; }
-		if (addChambers) { count += chamberCount_; }
+		if (addTools)
+		{
+			count += m_toolCount;
+		}
+		if (addBeds)
+		{
+			count += m_bedCount;
+		}
+		if (addChambers)
+		{
+			count += m_chamberCount;
+		}
 		return count;
 	}
 
@@ -348,7 +359,7 @@ namespace UI
 			return;
 		}
 
-		int8_t bedOrChamberIndex = index - toolCount_;
+		int8_t bedOrChamberIndex = index - m_toolCount;
 		OM::BedOrChamber* bedOrChamber = OM::GetBedBySlot(bedOrChamberIndex);
 		OM::Heat::Heater* heater;
 		if (bedOrChamber != nullptr)
@@ -486,7 +497,7 @@ namespace UI
 	void ToolsList::RefreshToolList(const bool lengthChanged)
 	{
 		if (lengthChanged) { CalculateTotalHeaterCount(); }
-		pToolListView_->refreshListView();
+		m_pToolListView->refreshListView();
 	}
 
 	void ToolsList::RefreshAllToolLists(const bool lengthChanged)
@@ -501,8 +512,8 @@ namespace UI
 	{
 		dbg("");
 		std::string header;
-		numPadData_.heaterType = data.heaterType;
-		numPadData_.active = data.active;
+		m_numPadData.heaterType = data.heaterType;
+		m_numPadData.active = data.active;
 		int currentTarget = 0;
 
 		switch (data.heaterType)
@@ -514,7 +525,7 @@ namespace UI
 				return;
 			}
 
-			numPadData_.toolData = data.toolData;
+			m_numPadData.toolData = data.toolData;
 
 			if (data.toolData.toolHeater != nullptr)
 			{
@@ -569,7 +580,7 @@ namespace UI
 								   (data.heaterType == HeaterType::bed) ? "Bed" : "Chamber",
 								   data.bedOrChamberIndex,
 								   data.active ? "Active" : "Standby");
-			numPadData_.bedOrChamberIndex = data.bedOrChamberIndex;
+			m_numPadData.bedOrChamberIndex = data.bedOrChamberIndex;
 			OM::BedOrChamber* bedOrChamber = (data.heaterType == HeaterType::bed)
 												 ? OM::GetBed(data.bedOrChamberIndex)
 												 : OM::GetChamber(data.bedOrChamberIndex);
@@ -596,26 +607,26 @@ namespace UI
 	{
 		OM::Tool* tool = nullptr;
 		OM::BedOrChamber* bedOrChamber = nullptr;
-		dbg("heaterType=%d", (int)numPadData_.heaterType);
-		switch (numPadData_.heaterType)
+		dbg("heaterType=%d", (int)m_numPadData.heaterType);
+		switch (m_numPadData.heaterType)
 		{
 		case HeaterType::tool:
-			tool = numPadData_.toolData.tool;
+			tool = m_numPadData.toolData.tool;
 			if (tool == nullptr) return false;
 
-			tool->SetHeaterTemps(numPadData_.toolData.toolHeaterIndex, target, numPadData_.active);
+			tool->SetHeaterTemps(m_numPadData.toolData.toolHeaterIndex, target, m_numPadData.active);
 			break;
 		case HeaterType::bed:
-			bedOrChamber = OM::GetBed(numPadData_.bedOrChamberIndex);
+			bedOrChamber = OM::GetBed(m_numPadData.bedOrChamberIndex);
 			if (bedOrChamber == nullptr) return false;
 
-			bedOrChamber->SetBedTemp(target, numPadData_.active);
+			bedOrChamber->SetBedTemp(target, m_numPadData.active);
 			break;
 		case HeaterType::chamber:
-			bedOrChamber = OM::GetChamber(numPadData_.bedOrChamberIndex);
+			bedOrChamber = OM::GetChamber(m_numPadData.bedOrChamberIndex);
 			if (bedOrChamber == nullptr) return false;
 
-			bedOrChamber->SetChamberTemp(target, numPadData_.active);
+			bedOrChamber->SetChamberTemp(target, m_numPadData.active);
 			break;
 		}
 
@@ -624,7 +635,7 @@ namespace UI
 
 	bool ToolsList::SendSpindleTarget(int target)
 	{
-		OM::Tool* tool = numPadData_.toolData.tool;
+		OM::Tool* tool = m_numPadData.toolData.tool;
 		if (tool == nullptr)
 			return false;
 
@@ -668,8 +679,8 @@ namespace UI
 
 	void Console::Init(ZKListView* console, ZKEditText* input)
 	{
-		pConsole_ = console;
-		pInput_ = input;
+		m_console = console;
+		m_input = input;
 	}
 
 	void Console::AddCommand(const std::string& command)
@@ -701,8 +712,8 @@ namespace UI
 	{
 		String<MAX_RESPONSE_LINE_LENGTH> line;
 		line.copy(str);
-		buffer_.Push(line);
-		info("Adding line to Console buffer[%d] = %s", buffer_.GetHead(), line.c_str());
+		m_buffer.Push(line);
+		info("Adding line to Console buffer[%d] = %s", m_buffer.GetHead(), line.c_str());
 		Refresh();
 	}
 
@@ -713,8 +724,9 @@ namespace UI
 
 	void Console::Refresh()
 	{
-		pConsole_->refreshListView();
-		if (!buffer_.Full()) pConsole_->setSelection(buffer_.GetHead() - pConsole_->getRows());
+		m_console->refreshListView();
+		if (!m_buffer.Full())
+			m_console->setSelection(m_buffer.GetHead() - m_console->getRows());
 	}
 
 	void Console::Clear()
@@ -723,9 +735,9 @@ namespace UI
 		line.copy("");
 		for (size_t i = 0; i < MAX_RESPONSE_LINES; i++)
 		{
-			buffer_.Push(line);
+			m_buffer.Push(line);
 		}
-		buffer_.Reset();
+		m_buffer.Reset();
 		Refresh();
 	}
 
@@ -786,14 +798,14 @@ namespace UI
 			{
 			case OM::Alert::Mode::InfoConfirm:
 			case OM::Alert::Mode::ConfirmCancel:
-				Comm::duet.SendGcodef("M292 P0 S%lu\n", seq_);
+				Comm::DUET.SendGcodef("M292 P0 S%lu\n", seq_);
 				break;
 			case OM::Alert::Mode::NumberInt:
 			case OM::Alert::Mode::NumberFloat:
-				Comm::duet.SendGcodef("M292 P0 R{%s} S%lu\n", UI::POPUP_WINDOW->GetNumberInput(), seq_);
+				Comm::DUET.SendGcodef("M292 P0 R{%s} S%lu\n", UI::POPUP_WINDOW->GetNumberInput(), seq_);
 				break;
 			case OM::Alert::Mode::Text:
-				Comm::duet.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", UI::POPUP_WINDOW->GetTextInput(), seq_);
+				Comm::DUET.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", UI::POPUP_WINDOW->GetTextInput(), seq_);
 				break;
 			default:
 				break;

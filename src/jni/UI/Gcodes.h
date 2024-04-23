@@ -16,7 +16,7 @@ struct gcode
 };
 
 // Descriptions in i18n files
-static gcode Gcode[] = {
+static gcode s_gcode[] = {
 	{"G0G1_desc"},
 	{"G2G3_desc"},
 	{"G4_desc"},

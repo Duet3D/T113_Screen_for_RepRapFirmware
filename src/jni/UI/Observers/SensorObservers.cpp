@@ -39,7 +39,7 @@ static UI::Observer<UI::ui_field_update_cb> SensorObserversField[] = {
 						  error("Failed to update sensor name; sensor %d = %s", indices[0], val);
 						  return;
 					  }
-					  UI::TemperatureGraph.RefreshLegend();
+					  UI::TEMPERATURE_GRAPH.RefreshLegend();
 				  }),
 	OBSERVER_CHAR("sensors:endstops^", [](OBSERVER_CHAR_ARGS) { OM::RemoveEndstop(indices[0], false); }),
 	OBSERVER_BOOL("sensors:endstops^:triggered",

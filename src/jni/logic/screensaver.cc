@@ -52,8 +52,8 @@ static S_ACTIVITY_TIMEER REGISTER_ACTIVITY_TIMER_TAB[] = {
 	{0, 50},
 };
 
-static int xOffset = 1;
-static int yOffset = 1;
+static int s_xOffset = 1;
+static int s_yOffset = 1;
 
 /**
  * Triggered when the UI is initialized
@@ -64,8 +64,8 @@ static void onUI_init()
 	LayoutPosition position = mScreensaverTextPtr->getPosition();
 	position.mLeft = 10;
 	position.mTop = 10;
-	xOffset = 1;
-	yOffset = 1;
+	s_xOffset = 1;
+	s_yOffset = 1;
 	mScreensaverTextPtr->setPosition(position);
 }
 
@@ -106,21 +106,21 @@ static bool onUI_Timer(int id)
 		LayoutPosition position = textPtr->getPosition();
 		if (position.mLeft < 10)
 		{
-			xOffset = 1;
+			s_xOffset = 1;
 		}
 		else if (position.mLeft + position.mWidth > 1014)
 		{
-			xOffset = -1;
+			s_xOffset = -1;
 		}
 		if (position.mTop < 10)
 		{
-			yOffset = 1;
+			s_yOffset = 1;
 		}
 		else if (position.mTop + position.mHeight > 590)
 		{
-			yOffset = -1;
+			s_yOffset = -1;
 		}
-		position.offsetPosition(xOffset, yOffset);
+		position.offsetPosition(s_xOffset, s_yOffset);
 		textPtr->setPosition(position);
 	}
 	default:

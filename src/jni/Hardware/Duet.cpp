@@ -30,11 +30,9 @@
 
 namespace Comm
 {
-	Duet duet;
-
 	Duet::Duet()
 		: m_communicationType(CommunicationType::none), m_hostname(""), m_password(""), m_sessionTimeout(0),
-		  m_lastRequestTime(0), m_sessionKey(noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
+		  m_lastRequestTime(0), m_sessionKey(sm_noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
 	{
 	}
 
@@ -52,7 +50,7 @@ namespace Comm
 	void Duet::Reset()
 	{
 		verbose("");
-		m_sessionKey = noSessionKey;
+		m_sessionKey = sm_noSessionKey;
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
 		ClearIPAddress();
@@ -60,7 +58,7 @@ namespace Comm
 		OM::RemoveAll();
 		Comm::ResetSeqs();
 		FILEINFO_CACHE->ClearCache();
-		UI::TemperatureGraph.ClearAll();
+		UI::TEMPERATURE_GRAPH.ClearAll();
 	}
 
 	void Duet::Reconnect()
@@ -105,7 +103,7 @@ namespace Comm
 						function<bool(RestClient::Response&)> callback,
 						bool queue)
 	{
-		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -128,7 +126,7 @@ namespace Comm
 	*/
 	bool Duet::Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters)
 	{
-		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -160,7 +158,7 @@ namespace Comm
 					QueryParameters_t& queryParameters,
 					const std::string& data)
 	{
-		if (m_sessionKey == noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -269,11 +267,11 @@ namespace Comm
 		}
 		case CommunicationType::network: {
 			registerDelayedCallback("upload_file_progress", 1000, []() {
-				static int progress = 0;
-				if (progress >= 90)
+				static int s_progress = 0;
+				if (s_progress >= 90)
 					return false;
-				UI::POPUP_WINDOW->SetProgress(progress);
-				progress += 10;
+				UI::POPUP_WINDOW->SetProgress(s_progress);
+				s_progress += 10;
 				return true;
 			});
 			RestClient::Response r;
@@ -725,7 +723,7 @@ namespace Comm
 			break;
 		case CommunicationType::network: {
 			ClearThreadPool();
-			if (m_sessionKey == noSessionKey)
+			if (m_sessionKey == sm_noSessionKey)
 			{
 				Reset();
 				return 0;

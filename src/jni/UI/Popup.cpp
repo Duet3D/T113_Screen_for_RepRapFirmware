@@ -24,26 +24,26 @@
 
 namespace UI
 {
-	PopupWindow::PopupWindow() : okCb_([]() {}), cancelCb_([]() {}), mode_(OM::Alert::Mode::None)
+	PopupWindow::PopupWindow() : m_okCb([]() {}), m_cancelCb([]() {}), m_mode(OM::Alert::Mode::None)
 	{
-		window_ = UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow);
-		noTouchWindow_ = UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow);
-		okBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupOkBtn);
-		cancelBtn_ = UI::GetUIControl<ZKButton>(ID_MAIN_PopupCancelBtn);
-		title_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupTitle);
-		text_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText);
-		warningText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupWarning);
-		minText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMin);
-		maxText_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMax);
-		choicesList_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupSelectionList);
-		textInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupTextInput);
-		numberInput_ = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupNumberInput);
-		axisJogSelection_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisSelection);
-		axisJogAdjustment_ = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisAdjusment);
-		image_ = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
-		progress_ = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress);
+		m_window = UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow);
+		m_noTouchWindow = UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow);
+		m_okBtn = UI::GetUIControl<ZKButton>(ID_MAIN_PopupOkBtn);
+		m_cancelBtn = UI::GetUIControl<ZKButton>(ID_MAIN_PopupCancelBtn);
+		m_title = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupTitle);
+		m_text = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText);
+		m_warningText = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupWarning);
+		m_minText = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMin);
+		m_maxText = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupMax);
+		m_choicesList = UI::GetUIControl<ZKListView>(ID_MAIN_PopupSelectionList);
+		m_textInput = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupTextInput);
+		m_numberInput = UI::GetUIControl<ZKEditText>(ID_MAIN_PopupNumberInput);
+		m_axisJogSelection = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisSelection);
+		m_axisJogAdjustment = UI::GetUIControl<ZKListView>(ID_MAIN_PopupAxisAdjusment);
+		m_image = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
+		m_progress = UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress);
 
-		title_->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
+		m_title->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 		SetTimeout(StoragePreferences::getInt(ID_INFO_TIMEOUT, DEFAULT_POPUP_TIMEOUT));
 	}
 
@@ -76,29 +76,29 @@ namespace UI
 
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
 
-		if (timeout_ > 0)
+		if (m_timeout > 0)
 		{
-			registerDelayedCallback("popup_timeout", timeout_, []() {
+			registerDelayedCallback("popup_timeout", m_timeout, []() {
 				UI::POPUP_WINDOW->Close();
 				return false;
 			});
 		}
 
-		cancelBtn_->setVisible(true);
-		okBtn_->setVisible(true);
+		m_cancelBtn->setVisible(true);
+		m_okBtn->setVisible(true);
 
 		SetOkBtnText(LANGUAGEMANAGER->getValue("ok").c_str());
 		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		SetTextScrollable(false);
-		WINDOW->OpenOverlay(window_);
-		okCb_ = okCb;
-		cancelCb_ = cancelCb;
+		WINDOW->OpenOverlay(m_window);
+		m_okCb = okCb;
+		m_cancelCb = cancelCb;
 	}
 
 	void PopupWindow::Ok()
 	{
-		okCb_();
+		m_okCb();
 		Close();
 	}
 
@@ -106,9 +106,9 @@ namespace UI
 	{
 		if (!IsResponse())
 		{
-			Comm::duet.SendGcode("M292 P1");
+			Comm::DUET.SendGcode("M292 P1");
 		}
-		cancelCb_();
+		m_cancelCb();
 
 		if (close)
 			Close();
@@ -116,7 +116,7 @@ namespace UI
 
 	void PopupWindow::SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal)
 	{
-		LayoutPosition position = window_->getPosition();
+		LayoutPosition position = m_window->getPosition();
 		switch (vertical)
 		{
 		case VerticalPosition::top:
@@ -141,45 +141,45 @@ namespace UI
 			position.mLeft = 415;
 			break;
 		}
-		window_->setPosition(position);
+		m_window->setPosition(position);
 	}
 
 	void PopupWindow::SetTitle(const std::string& title)
 	{
-		title_->setText(title);
+		m_title->setText(title);
 	}
 
 	void PopupWindow::SetText(const std::string& text)
 	{
-		text_->setText(text);
+		m_text->setText(text);
 	}
 
 	void PopupWindow::SetText(const char* text)
 	{
-		text_->setText(text);
+		m_text->setText(text);
 	}
 
 	void PopupWindow::SetTextf(const char* format, ...)
 	{
 		va_list vargs;
 		va_start(vargs, format);
-		text_->setTextf(format, vargs);
+		m_text->setTextf(format, vargs);
 		va_end(vargs);
 	}
 
 	void PopupWindow::SetTextScrollable(bool scrollable)
 	{
-		text_->setLongMode(scrollable ? ZKTextView::E_LONG_MODE_SCROLL : ZKTextView::E_LONG_MODE_NONE);
+		m_text->setLongMode(scrollable ? ZKTextView::E_LONG_MODE_SCROLL : ZKTextView::E_LONG_MODE_NONE);
 	}
 
 	void PopupWindow::SetOkBtnText(const char* text)
 	{
-		okBtn_->setText(text);
+		m_okBtn->setText(text);
 	}
 
 	void PopupWindow::SetCancelBtnText(const char* text)
 	{
-		cancelBtn_->setText(text);
+		m_cancelBtn->setText(text);
 	}
 
 	void PopupWindow::Close()
@@ -191,55 +191,55 @@ namespace UI
 
 	void PopupWindow::OkVisible(bool visible)
 	{
-		okBtn_->setVisible(visible);
+		m_okBtn->setVisible(visible);
 	}
 
 	void PopupWindow::CancelVisible(bool visible)
 	{
-		cancelBtn_->setVisible(visible);
+		m_cancelBtn->setVisible(visible);
 	}
 
 	void PopupWindow::SelectionVisible(bool visible)
 	{
-		choicesList_->setVisible(visible);
+		m_choicesList->setVisible(visible);
 	}
 
 	void PopupWindow::NumberInputVisible(bool visible)
 	{
-		numberInput_->setVisible(visible);
+		m_numberInput->setVisible(visible);
 	}
 
 	void PopupWindow::TextInputVisible(bool visible)
 	{
-		textInput_->setVisible(visible);
+		m_textInput->setVisible(visible);
 	}
 
 	void PopupWindow::WarningTextVisible(bool visible)
 	{
-		warningText_->setVisible(visible);
+		m_warningText->setVisible(visible);
 	}
 
 	void PopupWindow::MinTextVisible(bool visible)
 	{
-		minText_->setVisible(visible);
+		m_minText->setVisible(visible);
 	}
 
 	void PopupWindow::MaxTextVisible(bool visible)
 	{
-		maxText_->setVisible(visible);
+		m_maxText->setVisible(visible);
 	}
 
 	void PopupWindow::AxisJogVisible(bool visible)
 	{
-		axisJogAdjustment_->setVisible(visible);
-		axisJogSelection_->setVisible(visible);
+		m_axisJogAdjustment->setVisible(visible);
+		m_axisJogSelection->setVisible(visible);
 	}
 
 	void PopupWindow::SetMinTextf(const char* format, ...)
 	{
 		va_list vargs;
 		va_start(vargs, format);
-		minText_->setTextf(format, vargs);
+		m_minText->setTextf(format, vargs);
 		va_end(vargs);
 	}
 
@@ -247,7 +247,7 @@ namespace UI
 	{
 		va_list vargs;
 		va_start(vargs, format);
-		maxText_->setTextf(format, vargs);
+		m_maxText->setTextf(format, vargs);
 		va_end(vargs);
 	}
 
@@ -255,60 +255,60 @@ namespace UI
 	{
 		va_list vargs;
 		va_start(vargs, format);
-		warningText_->setTextf(format, vargs);
+		m_warningText->setTextf(format, vargs);
 		va_end(vargs);
 	}
 
 	void PopupWindow::SetNumberInput(int32_t val)
 	{
-		numberInput_->setText(val);
+		m_numberInput->setText(val);
 	}
 
 	void PopupWindow::SetNumberInput(float val)
 	{
-		numberInput_->setText(val);
+		m_numberInput->setText(val);
 	}
 
 	void PopupWindow::SetNumberInput(const char* text)
 	{
-		numberInput_->setText(text);
+		m_numberInput->setText(text);
 	}
 
 	void PopupWindow::SetTextInput(const char* text)
 	{
-		textInput_->setText(text);
+		m_textInput->setText(text);
 	}
 
 	void PopupWindow::SetImage(const char* imagePath)
 	{
-		image_->setBackgroundPic(imagePath);
+		m_image->setBackgroundPic(imagePath);
 		ShowImage(true);
 	}
 
 	void PopupWindow::ShowImage(bool show)
 	{
-		LayoutPosition position = text_->getPosition();
+		LayoutPosition position = m_text->getPosition();
 		if (show)
 		{
-			position.mWidth = image_->getPosition().mLeft - 2 * position.mLeft - 10;
+			position.mWidth = m_image->getPosition().mLeft - 2 * position.mLeft - 10;
 		}
 		else
 		{
-			position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
+			position.mWidth = m_window->getPosition().mWidth - 2 * position.mLeft;
 		}
-		text_->setPosition(position);
-		image_->setVisible(show);
+		m_text->setPosition(position);
+		m_image->setVisible(show);
 	}
 
 	void PopupWindow::SetProgress(int percent)
 	{
-		progress_->setVisible(true);
-		progress_->setProgress(percent);
+		m_progress->setVisible(true);
+		m_progress->setProgress(percent);
 	}
 
 	void PopupWindow::SetMode(OM::Alert::Mode mode)
 	{
-		mode_ = mode;
+		m_mode = mode;
 		if (IsResponse())
 		{
 			return;
@@ -316,15 +316,15 @@ namespace UI
 		CancelTimeout();
 		if (IsBlocking())
 		{
-			noTouchWindow_->setVisible(true);
+			m_noTouchWindow->setVisible(true);
 		}
 	}
 
 	void PopupWindow::PreventClosing(bool prevent)
 	{
-		noTouchWindow_->setVisible(prevent);
-		okBtn_->setVisible(!prevent);
-		cancelBtn_->setVisible(!prevent);
+		m_noTouchWindow->setVisible(prevent);
+		m_okBtn->setVisible(!prevent);
+		m_cancelBtn->setVisible(!prevent);
 	}
 
 	void PopupWindow::CancelTimeout()
@@ -343,12 +343,12 @@ namespace UI
 	{
 		info("Setting info timeout to %u", timeout);
 		StoragePreferences::putInt(ID_INFO_TIMEOUT, (int)timeout);
-		timeout_ = timeout;
+		m_timeout = timeout;
 	}
 
 	bool PopupWindow::IsBlocking() const
 	{
-		switch (mode_)
+		switch (m_mode)
 		{
 		case OM::Alert::Mode::InfoConfirm:
 		case OM::Alert::Mode::ConfirmCancel:
@@ -366,37 +366,37 @@ namespace UI
 
 	bool PopupWindow::IsResponse() const
 	{
-		return mode_ == OM::Alert::Mode::None;
+		return m_mode == OM::Alert::Mode::None;
 	}
 
 	void PopupWindow::Clear()
 	{
-		mode_ = OM::Alert::Mode::None;
-		noTouchWindow_->setVisible(false);
-		title_->setText("");
-		text_->setText("");
-		warningText_->setText("");
-		warningText_->setVisible(false);
-		minText_->setVisible(false);
-		maxText_->setVisible(false);
-		choicesList_->setVisible(false);
-		textInput_->setVisible(false);
-		numberInput_->setVisible(false);
-		cancelBtn_->setVisible(true);
-		okBtn_->setInvalid(false);
-		okBtn_->setVisible(true);
-		axisJogSelection_->setVisible(false);
-		axisJogAdjustment_->setVisible(false);
-		image_->setVisible(false);
-		image_->setText("");
-		image_->setBackgroundPic(nullptr);
-		progress_->setVisible(false);
+		m_mode = OM::Alert::Mode::None;
+		m_noTouchWindow->setVisible(false);
+		m_title->setText("");
+		m_text->setText("");
+		m_warningText->setText("");
+		m_warningText->setVisible(false);
+		m_minText->setVisible(false);
+		m_maxText->setVisible(false);
+		m_choicesList->setVisible(false);
+		m_textInput->setVisible(false);
+		m_numberInput->setVisible(false);
+		m_cancelBtn->setVisible(true);
+		m_okBtn->setInvalid(false);
+		m_okBtn->setVisible(true);
+		m_axisJogSelection->setVisible(false);
+		m_axisJogAdjustment->setVisible(false);
+		m_image->setVisible(false);
+		m_image->setText("");
+		m_image->setBackgroundPic(nullptr);
+		m_progress->setVisible(false);
 
-		LayoutPosition position = text_->getPosition();
-		position.mWidth = window_->getPosition().mWidth - 2 * position.mLeft;
-		text_->setPosition(position);
+		LayoutPosition position = m_text->getPosition();
+		position.mWidth = m_window->getPosition().mWidth - 2 * position.mLeft;
+		m_text->setPosition(position);
 
-		for (auto& axis : axes_)
+		for (auto& axis : m_axes)
 		{
 			axis = nullptr;
 		}
@@ -409,10 +409,10 @@ namespace UI
 	{
 		if (!ValidateIntegerInputInner(text))
 		{
-			okBtn_->setInvalid(true);
+			m_okBtn->setInvalid(true);
 			return false;
 		}
-		okBtn_->setInvalid(false);
+		m_okBtn->setInvalid(false);
 		return true;
 	}
 
@@ -420,10 +420,10 @@ namespace UI
 	{
 		if (!ValidateFloatInputInner(text))
 		{
-			okBtn_->setInvalid(true);
+			m_okBtn->setInvalid(true);
 			return false;
 		}
-		okBtn_->setInvalid(false);
+		m_okBtn->setInvalid(false);
 		return true;
 	}
 
@@ -431,106 +431,106 @@ namespace UI
 	{
 		if (!ValidateTextInputInner(text))
 		{
-			okBtn_->setInvalid(true);
+			m_okBtn->setInvalid(true);
 			return false;
 		}
-		okBtn_->setInvalid(false);
+		m_okBtn->setInvalid(false);
 		return true;
 	}
 
 	bool PopupWindow::ValidateIntegerInputInner(const char* text)
 	{
-		if (mode_ != OM::Alert::Mode::NumberInt)
+		if (m_mode != OM::Alert::Mode::NumberInt)
 		{
 			return false;
 		}
 
 		int32_t value;
-		warningText_->setVisible(true);
+		m_warningText->setVisible(true);
 		if (!Comm::GetInteger(text, value))
 		{
-			warningText_->setTextTr("invalid_int_malformed");
+			m_warningText->setTextTr("invalid_int_malformed");
 			return false;
 		}
 		dbg("input %s, value %d", text, value);
-		if (value < OM::currentAlert.limits.numberInt.min)
+		if (value < OM::g_currentAlert.limits.numberInt.min)
 		{
-			warningText_->setTextTr("invalid_int_min");
+			m_warningText->setTextTr("invalid_int_min");
 			return false;
 		}
-		if (value > OM::currentAlert.limits.numberInt.max)
+		if (value > OM::g_currentAlert.limits.numberInt.max)
 		{
-			warningText_->setTextTr("invalid_int_max");
+			m_warningText->setTextTr("invalid_int_max");
 			return false;
 		}
 
-		warningText_->setVisible(false);
-		warningText_->setText("");
-		numberInput_->setText(value); // This is to convert float to int and revalidate
+		m_warningText->setVisible(false);
+		m_warningText->setText("");
+		m_numberInput->setText(value); // This is to convert float to int and revalidate
 		return true;
 	}
 
 	bool PopupWindow::ValidateFloatInputInner(const char* text)
 	{
-		if (mode_ != OM::Alert::Mode::NumberFloat)
+		if (m_mode != OM::Alert::Mode::NumberFloat)
 			return false;
 
 		float value;
-		warningText_->setVisible(true);
+		m_warningText->setVisible(true);
 		if (!Comm::GetFloat(text, value))
 		{
-			warningText_->setTextTr("invalid_float_malformed");
+			m_warningText->setTextTr("invalid_float_malformed");
 			return false;
 		}
 		dbg("input %s, value %.3f", text, value);
-		if (value < OM::currentAlert.limits.numberFloat.min)
+		if (value < OM::g_currentAlert.limits.numberFloat.min)
 		{
-			warningText_->setTextTr("invalid_float_min");
+			m_warningText->setTextTr("invalid_float_min");
 			return false;
 		}
-		if (value > OM::currentAlert.limits.numberFloat.max)
+		if (value > OM::g_currentAlert.limits.numberFloat.max)
 		{
-			warningText_->setTextTr("invalid_float_max");
+			m_warningText->setTextTr("invalid_float_max");
 			return false;
 		}
 
-		warningText_->setVisible(false);
-		warningText_->setText("");
+		m_warningText->setVisible(false);
+		m_warningText->setText("");
 		return true;
 	}
 
 	bool PopupWindow::ValidateTextInputInner(const char* text)
 	{
-		if (mode_ != OM::Alert::Mode::Text)
+		if (m_mode != OM::Alert::Mode::Text)
 			return false;
 
 		size_t len = Strnlen(text, ALERT_RESPONSE_LENGTH);
-		warningText_->setVisible(true);
-		if (len < (size_t)OM::currentAlert.limits.text.min)
+		m_warningText->setVisible(true);
+		if (len < (size_t)OM::g_currentAlert.limits.text.min)
 		{
-			warningText_->setTextTr("invalid_text_min");
+			m_warningText->setTextTr("invalid_text_min");
 			return false;
 		}
-		if (len > (size_t)OM::currentAlert.limits.text.max)
+		if (len > (size_t)OM::g_currentAlert.limits.text.max)
 		{
-			warningText_->setTextTr("invalid_text_max");
+			m_warningText->setTextTr("invalid_text_max");
 			return false;
 		}
 
-		warningText_->setVisible(false);
-		warningText_->setText("");
+		m_warningText->setVisible(false);
+		m_warningText->setText("");
 		return true;
 	}
 
 	OM::Move::Axis* PopupWindow::GetJogAxis(int listIndex) const
 	{
-		return axes_[listIndex];
+		return m_axes[listIndex];
 	}
 
 	size_t PopupWindow::GetJogAxisCount() const
 	{
 		size_t count = 0;
-		for (auto axis : axes_)
+		for (auto axis : m_axes)
 		{
 			if (axis != nullptr)
 			{
@@ -551,28 +551,28 @@ namespace UI
 			OM::Move::Axis* axis = OM::Move::GetAxis(i);
 			if (axis == nullptr)
 			    continue;
-			axes_[count] = axis;
+			m_axes[count] = axis;
 			dbg("Axis %d, count %d", i, count);
 			count++;
 		}
-		axisJogSelection_->setSelection(0);
+		m_axisJogSelection->setSelection(0);
 	}
 
 	const char* PopupWindow::GetNumberInput() const
 	{
-		return numberInput_->getText().c_str();
+		return m_numberInput->getText().c_str();
 	}
 
 	const char* PopupWindow::GetTextInput() const
 	{
-		return textInput_->getText().c_str();
+		return m_textInput->getText().c_str();
 	}
 
 	void NumPadWindow::Init(ZKWindow* window, ZKTextView* header, ZKTextView* value)
 	{
-		window_ = window;
-		header_ = header;
-		value_ = value;
+		m_window = window;
+		m_header = header;
+		m_value = value;
 	}
 
 	void NumPadWindow::Open(const char* header,
@@ -583,23 +583,23 @@ namespace UI
 							function<void(int)> onConfirm,
 							bool withSlider)
 	{
-		header_->setText(header);
-		min_ = min;
-		max_ = max;
-		value_->setText(value);
-		onValueChanged_ = onValueChanged;
-		onConfirm_ = onConfirm;
+		m_header->setText(header);
+		m_min = min;
+		m_max = max;
+		m_value->setText(value);
+		m_onValueChanged = onValueChanged;
+		m_onConfirm = onConfirm;
 		SetPosition(HorizontalPosition::right);
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
-		WINDOW->OpenOverlay(window_, !withSlider);
+		WINDOW->OpenOverlay(m_window, !withSlider);
 	}
 
 	void NumPadWindow::Clear()
 	{
-		onValueChanged_ = [](int) {};
-		onConfirm_ = [](int) {};
-		header_->setText("");
-		value_->setText("");
+		m_onValueChanged = [](int) {};
+		m_onConfirm = [](int) {};
+		m_header->setText("");
+		m_value->setText("");
 	}
 
 	void NumPadWindow::Close()
@@ -610,26 +610,26 @@ namespace UI
 
 	bool NumPadWindow::ValidateInput(int value)
 	{
-		bool valid = value >= min_ && value <= max_;
+		bool valid = value >= m_min && value <= m_max;
 		UI::GetUIControl<ZKButton>(ID_MAIN_NumPadConfirm)->setInvalid(!valid);
 		return valid;
 	}
 
 	void NumPadWindow::Callback()
 	{
-		onValueChanged_(GetValue());
+		m_onValueChanged(GetValue());
 	}
 
 	void NumPadWindow::Confirm()
 	{
-		onConfirm_(GetValue());
+		m_onConfirm(GetValue());
 		Close();
 		Clear();
 	}
 
 	void NumPadWindow::SetPosition(const HorizontalPosition& horizontal)
 	{
-		LayoutPosition position = window_->getPosition();
+		LayoutPosition position = m_window->getPosition();
 		switch (horizontal)
 		{
 		case HorizontalPosition::left:
@@ -642,13 +642,13 @@ namespace UI
 			position.mLeft = 606;
 			break;
 		}
-		window_->setPosition(position);
+		m_window->setPosition(position);
 	}
 
 	int NumPadWindow::GetValue()
 	{
 		int value;
-		if (!Comm::GetInteger(value_->getText().c_str(), value))
+		if (!Comm::GetInteger(m_value->getText().c_str(), value))
 		{
 			return 0;
 		}
@@ -659,14 +659,14 @@ namespace UI
 	{
 		if (value == GetValue())
 			return;
-		value_->setText(value);
+		m_value->setText(value);
 		if (ValidateInput(value))
 			Callback();
 	}
 
 	void NumPadWindow::SetValue(const char* value)
 	{
-		value_->setText(value);
+		m_value->setText(value);
 		if (ValidateInput(GetValue()))
 			Callback();
 	}
@@ -678,13 +678,13 @@ namespace UI
 
 	void NumPadWindow::AddOneChar(char ch)
 	{
-		std::string value = value_->getText() + ch;
+		std::string value = m_value->getText() + ch;
 		SetValue(value.c_str());
 	}
 
 	void NumPadWindow::DelOneChar()
 	{
-		std::string value = value_->getText();
+		std::string value = m_value->getText();
 		if (value.empty())
 		{
 			return;
@@ -700,12 +700,12 @@ namespace UI
 							ZKTextView* prefix,
 							ZKTextView* suffix)
 	{
-		window_ = window;
-		slider_ = slider;
-		header_ = header;
-		value_ = value;
-		prefix_ = prefix;
-		suffix_ = suffix;
+		m_window = window;
+		m_slider = slider;
+		m_header = header;
+		m_value = value;
+		m_prefix = prefix;
+		m_suffix = suffix;
 	}
 
 	void SliderWindow::Open(const char* header,
@@ -718,9 +718,9 @@ namespace UI
 							function<void(int)> onProgressChanged,
 							bool displayRaw)
 	{
-		onProgressChanged_ = [](int) {}; // reset callback
+		m_onProgressChanged = [](int) {}; // reset callback
 		SetUnit(unit);
-		displayRaw_ = displayRaw;
+		m_displayRaw = displayRaw;
 		SetRange(min, max);
 		SetHeader(header);
 		SetPrefix(prefix);
@@ -729,31 +729,31 @@ namespace UI
 		SetOnProgressChanged(onProgressChanged);
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
-		WINDOW->OpenOverlay(window_);
+		WINDOW->OpenOverlay(m_window);
 	}
 
 	void SliderWindow::Callback() const
 	{
-		value_->setTextf("%d %s", GetValue(), unit_.c_str());
-		if (displayRaw_)
+		m_value->setTextf("%d %s", GetValue(), m_unit.c_str());
+		if (m_displayRaw)
 		{
 			// Display the raw slider value
-			value_->setTextf("%d %s", slider_->getProgress(), unit_.c_str());
+			m_value->setTextf("%d %s", m_slider->getProgress(), m_unit.c_str());
 		}
 		else
 		{
 			// Display the value adjusted by min and max
-			value_->setTextf("%d %s",
+			m_value->setTextf("%d %s",
 							 GetValue(),
-							 unit_.c_str()); // this lets you set the displayed value outside the range
+							 m_unit.c_str()); // this lets you set the displayed value outside the range
 											 // which may be useful maybe? If not, change to GetValue()
 		}
-		onProgressChanged_(GetValue());
+		m_onProgressChanged(GetValue());
 	}
 
 	void SliderWindow::SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal)
 	{
-		LayoutPosition position = window_->getPosition();
+		LayoutPosition position = m_window->getPosition();
 		switch (vertical)
 		{
 		case VerticalPosition::top:
@@ -778,20 +778,20 @@ namespace UI
 			position.mLeft = 530;
 			break;
 		}
-		window_->setPosition(position);
+		m_window->setPosition(position);
 	}
 
 	void SliderWindow::SetRange(const int min, const int max)
 	{
-		min_ = min;
-		max_ = max;
-		slider_->setMax(max - min);
+		m_min = min;
+		m_max = max;
+		m_slider->setMax(max - min);
 	}
 
 	const int SliderWindow::GetValue() const
 	{
-		int progress = slider_->getProgress();
-		int val = progress + min_;
+		int progress = m_slider->getProgress();
+		int val = progress + m_min;
 		warn("Slider progress %d (%d)", progress, val);
 		return val;
 	}
@@ -801,49 +801,49 @@ namespace UI
 		if (val == GetValue())
 			return;
 
-		if (val < min_)
+		if (val < m_min)
 		{
-			warn("Slider value %d below min %d", val, min_);
+			warn("Slider value %d below min %d", val, m_min);
 			return;
 		}
 
-		if (val > max_)
+		if (val > m_max)
 		{
-			warn("Slider value %d exceeds max %d", val, max_);
+			warn("Slider value %d exceeds max %d", val, m_max);
 			return;
 		}
 
-		int progress = val - min_;
+		int progress = val - m_min;
 		warn("Slider progress %d (%d)", progress, val);
-		slider_->setProgress(progress);
+		m_slider->setProgress(progress);
 	}
 
 	void SliderWindow::SetHeader(const char* header)
 	{
-		header_->setText(header);
+		m_header->setText(header);
 	}
 
 	void SliderWindow::SetHeaderf(const char* format, ...)
 	{
 		va_list vargs;
 		va_start(vargs, format);
-		header_->setTextf(format, vargs);
+		m_header->setTextf(format, vargs);
 		va_end(vargs);
 	}
 
 	void SliderWindow::SetPrefix(const char* prefix)
 	{
-		prefix_->setTextf("%s %d", prefix, min_);
+		m_prefix->setTextf("%s %d", prefix, m_min);
 	}
 
 	void SliderWindow::SetSuffix(const char* suffix)
 	{
-		suffix_->setTextf("%d %s %s", max_, unit_.c_str(), suffix);
+		m_suffix->setTextf("%d %s %s", m_max, m_unit.c_str(), suffix);
 	}
 
 	void SliderWindow::SetUnit(const char* unit)
 	{
-		unit_.copy(unit);
+		m_unit.copy(unit);
 	}
 
 	void OpenSliderNumPad(const char* header,

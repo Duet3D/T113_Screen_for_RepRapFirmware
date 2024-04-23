@@ -37,20 +37,21 @@ namespace Comm
 					   QueryParameters_t& queryParameters,
 					   function<bool(RestClient::Response&)> callback,
 					   uint32_t sessionKey)
-			: url(url), subUrl(subUrl), queryParameters(queryParameters), sessionKey(sessionKey), callback(callback)
+			: m_url(url), m_subUrl(subUrl), m_queryParameters(queryParameters), m_sessionKey(sessionKey),
+			  m_callback(callback)
 		{
 			dbg("starting thread for %s%s", url.c_str(), subUrl);
 			run();
 		}
 		virtual bool threadLoop()
 		{
-			verbose("%s%s", url.c_str(), subUrl);
-			if (!Get(url, subUrl, r, queryParameters, sessionKey))
+			verbose("%s%s", m_url.c_str(), m_subUrl);
+			if (!Get(m_url, m_subUrl, m_r, m_queryParameters, m_sessionKey))
 			{
 				return false;
 			}
 
-			callback(r);
+			m_callback(m_r);
 			return false;
 		}
 
@@ -60,24 +61,24 @@ namespace Comm
 								  function<bool(RestClient::Response&)> callback,
 								  uint32_t sessionKey)
 		{
-			this->url = url;
-			this->subUrl = subUrl;
-			this->queryParameters = queryParameters;
-			this->callback = callback;
-			this->sessionKey = sessionKey;
+			m_url = url;
+			m_subUrl = subUrl;
+			m_queryParameters = queryParameters;
+			m_callback = callback;
+			m_sessionKey = sessionKey;
 		}
 
 	  private:
-		std::string url;
-		const char* subUrl;
-		RestClient::Response r;
-		QueryParameters_t queryParameters;
-		int32_t sessionKey;
-		function<bool(RestClient::Response&)> callback;
+		std::string m_url;
+		const char* m_subUrl;
+		RestClient::Response m_r;
+		QueryParameters_t m_queryParameters;
+		uint32_t m_sessionKey;
+		function<bool(RestClient::Response&)> m_callback;
 	};
 
-	static std::vector<AsyncGetThread*> threadPool;
-	static std::vector<AsyncGetData> queuedData;
+	static std::vector<AsyncGetThread*> s_threadPool;
+	static std::vector<AsyncGetData> s_queuedData;
 
 	static void AddQueryParameters(std::string& url, QueryParameters_t& queryParameters)
 	{
@@ -115,7 +116,7 @@ namespace Comm
 				  bool queue)
 	{
 		// Attempts to use a thread from the pool if one is not currently in use
-		for (auto thread : threadPool)
+		for (auto thread : s_threadPool)
 		{
 			if (thread->isRunning())
 				continue;
@@ -129,7 +130,7 @@ namespace Comm
 		{
 			if (strncmp(subUrl, "/rr_connect", 11) == 0)
 			{
-				for (auto& data : queuedData)
+				for (auto& data : s_queuedData)
 				{
 					if (data.url == url && data.subUrl == subUrl)
 					{
@@ -138,12 +139,12 @@ namespace Comm
 					}
 				}
 			}
-			queuedData.push_back({url, subUrl, queryParameters, callback, sessionKey});
-			info("Queued request %s, size=%d", (url + subUrl).c_str(), queuedData.size());
+			s_queuedData.push_back({url, subUrl, queryParameters, callback, sessionKey});
+			info("Queued request %s, size=%d", (url + subUrl).c_str(), s_queuedData.size());
 			return true;
 		}
 
-		if (threadPool.size() >= MAX_THREAD_POOL_SIZE)
+		if (s_threadPool.size() >= MAX_THREAD_POOL_SIZE)
 		{
 			error("Thread pool is full, cannot add more threads");
 			return false;
@@ -151,19 +152,19 @@ namespace Comm
 
 		// Create a new thread and add it to the pool
 		AsyncGetThread* thread = new AsyncGetThread(url, subUrl, queryParameters, callback, sessionKey);
-		threadPool.push_back(thread);
-		info("Added thread to pool, size=%d", threadPool.size());
+		s_threadPool.push_back(thread);
+		info("Added thread to pool, size=%d", s_threadPool.size());
 		return true;
 	}
 
 	void ProcessQueuedAsyncRequests()
 	{
-		if (queuedData.empty())
+		if (s_queuedData.empty())
 			return;
 
-		info("Processing queued requests, size=%d", queuedData.size());
-		auto data = queuedData.begin();
-		while (data != queuedData.end())
+		info("Processing queued requests, size=%d", s_queuedData.size());
+		auto data = s_queuedData.begin();
+		while (data != s_queuedData.end())
 		{
 			info("Processing queued request %s", (data->url + data->subUrl).c_str());
 			if (!AsyncGet(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
@@ -172,16 +173,16 @@ namespace Comm
 				return;
 			}
 			info("Processed queued request %s", (data->url + data->subUrl).c_str());
-			data = queuedData.erase(data);
+			data = s_queuedData.erase(data);
 		}
-		info("Processed all queued requests, size=%d", queuedData.size());
+		info("Processed all queued requests, size=%d", s_queuedData.size());
 	}
 
 	int ClearThreadPool()
 	{
-		int count = threadPool.size();
-		threadPool.clear();
-		return count - threadPool.size();
+		int count = s_threadPool.size();
+		s_threadPool.clear();
+		return count - s_threadPool.size();
 	}
 
 	bool Get(std::string url,

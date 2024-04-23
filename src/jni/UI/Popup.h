@@ -94,9 +94,9 @@ namespace UI
 
 		void CancelTimeout();
 		void SetTimeout(uint32_t timeout);
-		const uint32_t GetTimeout() const { return timeout_; }
+		const uint32_t GetTimeout() const { return m_timeout; }
 
-		bool IsOpen() const { return window_->isVisible(); }
+		bool IsOpen() const { return m_window->isVisible(); }
 		bool IsBlocking() const;
 		bool IsResponse() const;
 		void Clear();
@@ -105,12 +105,12 @@ namespace UI
 		bool ValidateFloatInput(const char* text);
 		bool ValidateTextInput(const char* text);
 
-		const OM::Alert::Mode GetMode() const { return mode_; }
+		const OM::Alert::Mode GetMode() const { return m_mode; }
 
 		OM::Move::Axis* GetJogAxis(int listIndex) const;
 		size_t GetJogAxisCount() const;
 
-		float jogAmounts[6] = {2.0f, 0.2f, 0.02f, -0.02f, -0.2f, -2.0f};
+		const float jogAmounts[6] = {2.0f, 0.2f, 0.02f, -0.02f, -0.2f, -2.0f};
 		int selectedAxis = 0;
 
 	  private:
@@ -119,27 +119,27 @@ namespace UI
 		bool ValidateFloatInputInner(const char* text);
 		bool ValidateTextInputInner(const char* text);
 
-		ZKWindow* window_ = nullptr;
-		ZKWindow* noTouchWindow_ = nullptr;
-		ZKButton* okBtn_ = nullptr;
-		ZKButton* cancelBtn_ = nullptr;
-		ZKTextView* title_ = nullptr;
-		ZKTextView* text_ = nullptr;
-		ZKTextView* warningText_ = nullptr;
-		ZKTextView* minText_ = nullptr;
-		ZKTextView* maxText_ = nullptr;
-		ZKListView* choicesList_ = nullptr;
-		ZKEditText* textInput_ = nullptr;
-		ZKEditText* numberInput_ = nullptr;
-		ZKListView* axisJogSelection_ = nullptr;
-		ZKListView* axisJogAdjustment_ = nullptr;
-		ZKTextView* image_ = nullptr;
-		ZKSeekBar* progress_ = nullptr;
-		function<void(void)> okCb_;
-		function<void(void)> cancelCb_;
-		OM::Alert::Mode mode_;
-		OM::Move::Axis* axes_[MAX_TOTAL_AXES];
-		uint32_t timeout_;
+		ZKWindow* m_window = nullptr;
+		ZKWindow* m_noTouchWindow = nullptr;
+		ZKButton* m_okBtn = nullptr;
+		ZKButton* m_cancelBtn = nullptr;
+		ZKTextView* m_title = nullptr;
+		ZKTextView* m_text = nullptr;
+		ZKTextView* m_warningText = nullptr;
+		ZKTextView* m_minText = nullptr;
+		ZKTextView* m_maxText = nullptr;
+		ZKListView* m_choicesList = nullptr;
+		ZKEditText* m_textInput = nullptr;
+		ZKEditText* m_numberInput = nullptr;
+		ZKListView* m_axisJogSelection = nullptr;
+		ZKListView* m_axisJogAdjustment = nullptr;
+		ZKTextView* m_image = nullptr;
+		ZKSeekBar* m_progress = nullptr;
+		function<void(void)> m_okCb;
+		function<void(void)> m_cancelCb;
+		OM::Alert::Mode m_mode;
+		OM::Move::Axis* m_axes[MAX_TOTAL_AXES];
+		uint32_t m_timeout;
 	};
 
 	class NumPadWindow
@@ -172,18 +172,19 @@ namespace UI
 
 	  private:
 		NumPadWindow()
-			: window_(nullptr), header_(nullptr), value_(nullptr), onValueChanged_([](int) {}), onConfirm_([](int) {})
+			: m_window(nullptr), m_header(nullptr), m_value(nullptr), m_onValueChanged([](int) {}),
+			  m_onConfirm([](int) {})
 		{
 		}
 		bool ValidateInput(int value);
 		void Callback();
 
-		ZKWindow* window_;
-		ZKTextView* header_;
-		int min_, max_;
-		ZKTextView* value_;
-		function<void(int)> onValueChanged_;
-		function<void(int)> onConfirm_;
+		ZKWindow* m_window;
+		ZKTextView* m_header;
+		int m_min, m_max;
+		ZKTextView* m_value;
+		function<void(int)> m_onValueChanged;
+		function<void(int)> m_onConfirm;
 	};
 
 	class SliderWindow
@@ -212,7 +213,7 @@ namespace UI
 		);
 		void Callback() const;
 		void SetPosition(const VerticalPosition& vertical, const HorizontalPosition& horizontal);
-		void SetOnProgressChanged(function<void(int)> onProgressChanged) { onProgressChanged_ = onProgressChanged; }
+		void SetOnProgressChanged(function<void(int)> onProgressChanged) { m_onProgressChanged = onProgressChanged; }
 		void SetRange(const int min, const int max);
 		const int GetValue() const;
 		void SetValue(const int progress);
@@ -220,27 +221,27 @@ namespace UI
 		void SetHeaderf(const char* header, ...);
 		void SetPrefix(const char* prefix);
 		void SetSuffix(const char* suffix);
-		int GetMin() const { return min_; }
-		int GetMax() const { return max_; }
+		int GetMin() const { return m_min; }
+		int GetMax() const { return m_max; }
 		void SetUnit(const char* unit);
 
 	  private:
 		SliderWindow()
-			: window_(nullptr), slider_(nullptr), header_(nullptr), value_(nullptr), prefix_(nullptr), suffix_(nullptr),
-			  min_(0), max_(100), onProgressChanged_([](int) {})
+			: m_window(nullptr), m_slider(nullptr), m_header(nullptr), m_value(nullptr), m_prefix(nullptr),
+			  m_suffix(nullptr), m_min(0), m_max(100), m_onProgressChanged([](int) {})
 		{
 		}
 
-		ZKWindow* window_;
-		ZKSeekBar* slider_;
-		ZKTextView* header_;
-		ZKTextView* value_;
-		ZKTextView* prefix_;
-		ZKTextView* suffix_;
-		int min_, max_;
-		String<5> unit_;
-		function<void(int)> onProgressChanged_;
-		bool displayRaw_ = false;
+		ZKWindow* m_window;
+		ZKSeekBar* m_slider;
+		ZKTextView* m_header;
+		ZKTextView* m_value;
+		ZKTextView* m_prefix;
+		ZKTextView* m_suffix;
+		int m_min, m_max;
+		String<5> m_unit;
+		function<void(int)> m_onProgressChanged;
+		bool m_displayRaw = false;
 	};
 
 	void OpenSliderNumPad(const char* header,

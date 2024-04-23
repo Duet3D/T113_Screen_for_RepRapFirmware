@@ -17,8 +17,8 @@
 typedef Vector<OM::AnalogSensor*, MAX_SENSORS> AnalogSensorList;
 typedef Vector<OM::Endstop*, MAX_ENDSTOPS> EndstopList;
 
-static AnalogSensorList analogSensors;
-static EndstopList endstops;
+static AnalogSensorList s_analogSensors;
+static EndstopList s_endstops;
 
 namespace OM
 {
@@ -38,31 +38,31 @@ namespace OM
 
 	const size_t GetAnalogSensorCount()
 	{
-		return analogSensors.Size();
+		return s_analogSensors.Size();
 	}
 
 	AnalogSensor* GetAnalogSensor(const size_t index, const bool silent)
 	{
-		return GetOrCreate<AnalogSensorList, AnalogSensor>(analogSensors, index, false, silent);
+		return GetOrCreate<AnalogSensorList, AnalogSensor>(s_analogSensors, index, false, silent);
 	}
 
 	AnalogSensor* GetOrCreateAnalogSensor(const size_t index)
 	{
-		return GetOrCreate<AnalogSensorList, AnalogSensor>(analogSensors, index, true);
+		return GetOrCreate<AnalogSensorList, AnalogSensor>(s_analogSensors, index, true);
 	}
 
 	AnalogSensor* GetAnalogSensorBySlot(const size_t index)
 	{
-		if (index >= analogSensors.Size())
+		if (index >= s_analogSensors.Size())
 			return nullptr;
 
-		return analogSensors[index];
+		return s_analogSensors[index];
 	}
 
 	size_t RemoveAnalogSensor(const size_t index, const bool allFollowing)
 	{
 		info("Removing analogSensor %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
-		return Remove<AnalogSensorList, AnalogSensor>(analogSensors, index, allFollowing);
+		return Remove<AnalogSensorList, AnalogSensor>(s_analogSensors, index, allFollowing);
 	}
 
 	bool UpdateAnalogSensorReading(const size_t index, const float reading)
@@ -99,23 +99,23 @@ namespace OM
 
 	const size_t GetEndstopCount()
 	{
-		return endstops.Size();
+		return s_endstops.Size();
 	}
 
 	Endstop* GetEndstop(const size_t index)
 	{
-		return GetOrCreate<EndstopList, Endstop>(endstops, index, false);
+		return GetOrCreate<EndstopList, Endstop>(s_endstops, index, false);
 	}
 
 	Endstop* GetOrCreateEndstop(const size_t index)
 	{
-		return GetOrCreate<EndstopList, Endstop>(endstops, index, true);
+		return GetOrCreate<EndstopList, Endstop>(s_endstops, index, true);
 	}
 
 	size_t RemoveEndstop(const size_t index, const bool allFollowing)
 	{
 		info("Removing endstop %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
-		return Remove<EndstopList, Endstop>(endstops, index, allFollowing);
+		return Remove<EndstopList, Endstop>(s_endstops, index, allFollowing);
 	}
 
 	bool UpdateEndstopTriggered(const size_t index, const bool triggered)

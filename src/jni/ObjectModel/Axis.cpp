@@ -19,9 +19,9 @@
 
 typedef Vector<OM::Move::Axis*, MAX_TOTAL_AXES> AxisList;
 typedef Vector<OM::Move::ExtruderAxis*, MAX_TOTAL_AXES> ExtruderAxisList;
-static AxisList axes;
-static ExtruderAxisList extruderAxes;
-static uint8_t currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
+static AxisList s_axes;
+static ExtruderAxisList s_extruderAxes;
+static uint8_t s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplaces;
 
 namespace OM::Move
 {
@@ -48,7 +48,7 @@ namespace OM::Move
 		{
 			return nullptr;
 		}
-		return GetOrCreate<AxisList, Axis>(axes, index, false);
+		return GetOrCreate<AxisList, Axis>(s_axes, index, false);
 	}
 
 	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden)
@@ -94,7 +94,7 @@ namespace OM::Move
 		{
 			return nullptr;
 		}
-		return GetOrCreate<AxisList, Axis>(axes, index, true);
+		return GetOrCreate<AxisList, Axis>(s_axes, index, true);
 	}
 
 	size_t GetAxisCount(const bool includeHidden)
@@ -118,12 +118,12 @@ namespace OM::Move
 
 	bool IterateAxesWhile(function_ref<bool(Axis*&, size_t)> func, const size_t startAt)
 	{
-		return axes.IterateWhile(func, startAt);
+		return s_axes.IterateWhile(func, startAt);
 	}
 
 	size_t RemoveAxis(const size_t index, const bool allFollowing)
 	{
-		return Remove<AxisList, Axis>(axes, index, allFollowing);
+		return Remove<AxisList, Axis>(s_axes, index, allFollowing);
 	}
 
 #define AXIS_SETTER(funcName, valType, varName)                                                                        \
@@ -172,13 +172,13 @@ namespace OM::Move
 		{
 			return false;
 		}
-		currentWorkplaceNumber = workplaceNumber;
+		s_currentWorkplaceNumber = workplaceNumber;
 		return true;
 	}
 
 	const uint8_t GetCurrentWorkplaceNumber()
 	{
-		return currentWorkplaceNumber;
+		return s_currentWorkplaceNumber;
 	}
 
 	void ExtruderAxis::Reset()
@@ -196,7 +196,7 @@ namespace OM::Move
 		{
 			return nullptr;
 		}
-		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, false);
+		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(s_extruderAxes, index, false);
 	}
 
 	ExtruderAxis* GetExtruderAxisBySlot(const size_t slot)
@@ -205,7 +205,7 @@ namespace OM::Move
 		{
 			return nullptr;
 		}
-		return extruderAxes[slot];
+		return s_extruderAxes[slot];
 	}
 
 	ExtruderAxis* GetOrCreateExtruderAxis(const size_t index)
@@ -216,22 +216,22 @@ namespace OM::Move
 			error("ExtruderAxis index %d greater than MAX_TOTAL_AXES", index);
 			return nullptr;
 		}
-		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, true);
+		return GetOrCreate<ExtruderAxisList, ExtruderAxis>(s_extruderAxes, index, true);
 	}
 
 	size_t GetExtruderAxisCount()
 	{
-		return extruderAxes.Size();
+		return s_extruderAxes.Size();
 	}
 
 	bool IterateExtruderAxesWhile(function_ref<bool(ExtruderAxis*&, size_t)> func, const size_t startAt)
 	{
-		return extruderAxes.IterateWhile(func, startAt);
+		return s_extruderAxes.IterateWhile(func, startAt);
 	}
 
 	size_t RemoveExtruderAxis(const size_t index, const bool allFollowing)
 	{
-		return Remove<ExtruderAxisList, ExtruderAxis>(extruderAxes, index, allFollowing);
+		return Remove<ExtruderAxisList, ExtruderAxis>(s_extruderAxes, index, allFollowing);
 	}
 
 #define EXTRUDER_AXIS_SETTER(funcName, valType, varName)                                                               \

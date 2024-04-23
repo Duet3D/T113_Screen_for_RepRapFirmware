@@ -22,7 +22,7 @@ namespace UI::Theme
 		Green = 0xFF00FF00,
 	};
 
-	static ThemeColors lightTheme = {
+	static ThemeColors s_lightTheme = {
 		// .id = "dark",
 		// Set colors for window
 		.window =
@@ -296,9 +296,9 @@ namespace UI::Theme
 			},
 	};
 
-	static Theme theme(
+	static Theme s_theme(
 		"light",
-		&lightTheme,
+		&s_lightTheme,
 		[]() {
 			/* Overrides */
 			// Windows

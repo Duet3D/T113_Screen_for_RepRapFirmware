@@ -28,8 +28,8 @@ namespace OM
 {
 	void RemoveAll()
 	{
-		currentAlert.Reset();
-		lastAlertSeq = 0;
+		g_currentAlert.Reset();
+		g_lastAlertSeq = 0;
 		Move::RemoveAxis(0, true);
 		Move::RemoveExtruderAxis(0, true);
 		RemoveBed(0, true);
@@ -43,7 +43,7 @@ namespace OM
 		ClearCurrentHeightmap();
 	}
 
-	static Debug::DebugCommand log_OM("dbg_log_OM", []() {
+	static Debug::DebugCommand s_logOM("dbg_log_OM", []() {
 		UI::CONSOLE->AddResponse("ObjectModel:");
 		UI::CONSOLE->AddResponse("  Axes:");
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)

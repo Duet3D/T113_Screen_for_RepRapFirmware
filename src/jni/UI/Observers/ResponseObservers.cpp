@@ -67,12 +67,12 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 	OBSERVER_INT_IF_CHANGED("seqs:reply",
 							[](OBSERVER_INT_ARGS) {
 								dbg("seqs.reply: %d", val);
-								if (Comm::duet.GetCommunicationType() == Comm::Duet::CommunicationType::network)
+								if (Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::network)
 								{
 									info("New reply available");
 									RestClient::Response r;
-									Comm::duet.RequestReply(r);
-									Comm::duet.ProcessReply(r);
+									Comm::DUET.RequestReply(r);
+									Comm::DUET.ProcessReply(r);
 								}
 							}),
 };

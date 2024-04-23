@@ -17,8 +17,8 @@
 
 namespace OM
 {
-	static std::string sPrinterName;
-	static PrinterStatus sStatus = PrinterStatus::connecting;
+	static std::string s_printerName;
+	static PrinterStatus s_status = PrinterStatus::connecting;
 
 	bool IsPrintingStatus(OM::PrinterStatus status)
 	{
@@ -31,27 +31,27 @@ namespace OM
 
 	bool PrintInProgress()
 	{
-		return IsPrintingStatus(sStatus);
+		return IsPrintingStatus(s_status);
 	}
 
 	// Return true if sending a command or file list request to the printer now is a good idea.
 	// We don't want to send these when the printer is busy with a previous command, because they will block normal status requests.
 	bool OkToSend()
 	{
-		return sStatus == OM::PrinterStatus::idle || sStatus == OM::PrinterStatus::printing ||
-			   sStatus == OM::PrinterStatus::paused || sStatus == OM::PrinterStatus::off;
+		return s_status == OM::PrinterStatus::idle || s_status == OM::PrinterStatus::printing ||
+			   s_status == OM::PrinterStatus::paused || s_status == OM::PrinterStatus::off;
 	}
 
 	// Return the printer status
 	PrinterStatus GetStatus()
 	{
-		return sStatus;
+		return s_status;
 	}
 
 	const char* GetStatusText()
 	{
-		if (sStatus > OM::PrinterStatus::unknown && sStatus < OM::PrinterStatus::NumTypes)
-			return printerStatusMap[(int)sStatus].key;
+		if (s_status > OM::PrinterStatus::unknown && s_status < OM::PrinterStatus::NumTypes)
+			return printerStatusMap[(int)s_status].key;
 		return "unknown";
 	}
 
@@ -75,24 +75,24 @@ namespace OM
 	// This is called when the status changes
 	void SetStatus(const PrinterStatus newStatus)
 	{
-		if (newStatus != sStatus)
+		if (newStatus != s_status)
 		{
-			info("printer status %d -> %d\n", (int)sStatus, (int)newStatus);
-			sStatus = newStatus;
-			if (sStatus == OM::PrinterStatus::halted)
+			info("printer status %d -> %d\n", (int)s_status, (int)newStatus);
+			s_status = newStatus;
+			if (s_status == OM::PrinterStatus::halted)
 			{
-				Comm::duet.SendGcode("M999");
+				Comm::DUET.SendGcode("M999");
 			}
 		}
 	}
 
 	const std::string& GetPrinterName()
 	{
-		return sPrinterName;
+		return s_printerName;
 	}
 
 	void SetPrinterName(const char* name)
 	{
-		sPrinterName = name;
+		s_printerName = name;
 	}
 }

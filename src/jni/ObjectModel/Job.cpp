@@ -32,7 +32,7 @@ namespace OM
 	static JobObjectList s_jobObjects;
 	static int8_t s_currentJobObjectIndex = -1;
 
-	static String<MAX_FILENAME_LENGTH> jobName;
+	static String<MAX_FILENAME_LENGTH> s_jobName;
 	static uint32_t s_printTime = 0;
 	static uint32_t s_printDuration = 0;
 	static uint32_t s_printRemaining = 0;
@@ -43,12 +43,12 @@ namespace OM
 
 	void SetJobName(const char* name)
 	{
-		jobName.copy(name);
+		s_jobName.copy(name);
 	}
 
 	const StringRef GetJobName()
 	{
-		return jobName.GetRef();
+		return s_jobName.GetRef();
 	}
 
 	void JobObject::Reset()
@@ -134,11 +134,11 @@ namespace OM
 			warn("Failed to get job object %d\n", index);
 			return;
 		};
-		Comm::duet.SendGcodef("M486 %c%d", active ? 'U' : 'P', index);
+		Comm::DUET.SendGcodef("M486 %c%d", active ? 'U' : 'P', index);
 	}
 
 	void CancelCurrentJobObject()
 	{
-		Comm::duet.SendGcode("M486 C");
+		Comm::DUET.SendGcode("M486 C");
 	}
 } // namespace OM

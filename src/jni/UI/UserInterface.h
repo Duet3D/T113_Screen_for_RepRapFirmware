@@ -88,10 +88,10 @@ namespace UI
 		void Clear();
 
 	  private:
-		std::vector<ZKBase*> openedWindows_;
-		std::vector<ZKBase*> closedWindows_;
-		std::vector<ZKBase*> homeWindows_;
-		std::vector<ZKBase*> overlayWindows_;
+		std::vector<ZKBase*> m_openedWindows;
+		std::vector<ZKBase*> m_closedWindows;
+		std::vector<ZKBase*> m_homeWindows;
+		std::vector<ZKBase*> m_overlayWindows;
 	};
 
 	enum class HeaterType
@@ -128,8 +128,7 @@ namespace UI
 			size_t bedOrChamberIndex;  // bed or chamber control
 		};
 
-		static ToolsList*
-		Create(const char* id);
+		static ToolsList* Create(const char* id);
 		static ToolsList* Get(const char* id);
 		void Init(ZKListView* toolListView);
 		void CalculateTotalHeaterCount();
@@ -150,10 +149,10 @@ namespace UI
 	  private:
 		ToolsList(const char* id);
 
-		const char* id;
-		size_t toolCount_, bedCount_, chamberCount_;
-		NumPadData numPadData_;
-		ZKListView* pToolListView_ = nullptr;
+		const char* m_id;
+		size_t m_toolCount, m_bedCount, m_chamberCount;
+		NumPadData m_numPadData;
+		ZKListView* m_pToolListView = nullptr;
 	};
 
 	class Console
@@ -170,7 +169,7 @@ namespace UI
 		void AddResponse(const char* str);
 		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
-		String<MAX_RESPONSE_LINE_LENGTH> GetItem(size_t index) { return buffer_.GetItem(index); }
+		String<MAX_RESPONSE_LINE_LENGTH> GetItem(size_t index) { return m_buffer.GetItem(index); }
 		void Refresh();
 		void Clear();
 
@@ -178,9 +177,9 @@ namespace UI
 		void AddMessage(const StringRef& ref);
 		void AddMessage(const char* str);
 
-		CircularBuffer<String<MAX_RESPONSE_LINE_LENGTH>, MAX_RESPONSE_LINES> buffer_;
-		ZKListView* pConsole_ = nullptr;
-		ZKEditText* pInput_ = nullptr;
+		CircularBuffer<String<MAX_RESPONSE_LINE_LENGTH>, MAX_RESPONSE_LINES> m_buffer;
+		ZKListView* m_console = nullptr;
+		ZKEditText* m_input = nullptr;
 	};
 
 	void Init(ZKWindow* root);
@@ -195,7 +194,7 @@ namespace UI
 		{
 			return nullptr;
 		}
-		return static_cast<T*>(control);
+		return dynamic_cast<T*>(control);
 	}
 
 	void SetSelectedFile(const OM::FileSystem::File* file);

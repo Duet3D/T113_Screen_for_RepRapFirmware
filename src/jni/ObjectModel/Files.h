@@ -23,25 +23,25 @@ namespace OM::FileSystem
 	class FileSystemItem
 	{
 	public:
-	  FileSystemItem(const FileSystemItemType type) : type_(type), size_(0) {}
-	  FileSystemItem(const FileSystemItemType type, const std::string& name) : name_(name), type_(type), size_(0) {}
+	  FileSystemItem(const FileSystemItemType type) : m_type(type), m_size(0) {}
+	  FileSystemItem(const FileSystemItemType type, const std::string& name) : m_name(name), m_type(type), m_size(0) {}
 
-	  const std::string& GetName() const { return name_; }
+	  const std::string& GetName() const { return m_name; }
 	  void SetName(const std::string name);
 	  std::string GetPath() const;
-	  const std::string& GetDate() const { return date_; }
-	  void SetDate(const std::string& date) { date_ = date; }
-	  size_t GetSize() const { return size_; }
+	  const std::string& GetDate() const { return m_date; }
+	  void SetDate(const std::string& date) { m_date = date; }
+	  size_t GetSize() const { return m_size; }
 	  std::string GetReadableSize() const;
-	  void SetSize(const size_t size) { size_ = size; }
-	  FileSystemItemType GetType() const { return type_; }
+	  void SetSize(const size_t size) { m_size = size; }
+	  FileSystemItemType GetType() const { return m_type; }
 
 	  ~FileSystemItem();
 	private:
-		std::string name_;
-		FileSystemItemType type_;
-		size_t size_;
-		std::string date_;
+	  std::string m_name;
+	  FileSystemItemType m_type;
+	  size_t m_size;
+	  std::string m_date;
 	};
 
 	class File : public FileSystemItem

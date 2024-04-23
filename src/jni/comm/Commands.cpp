@@ -22,7 +22,7 @@ namespace Comm
 	// The following tables will be sorted once on startup so entries can be better grouped for code maintenance
 	// A '^' character indicates the position of an _ecv_array index, and a ':' character indicates the start of a
 	// sub-field name
-	FieldTableEntry fieldTable[] = {
+	FieldTableEntry g_fieldTable[] = {
 		// M409 common fields
 		{rcvKey, "key"},
 
@@ -161,15 +161,15 @@ namespace Comm
 
 	void SortFieldTable()
 	{
-		// Sort the fieldTable prior searching using binary search
-		qsort(fieldTable, ARRAY_SIZE(fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
+		// Sort the g_fieldTable prior searching using binary search
+		qsort(g_fieldTable, ARRAY_SIZE(g_fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
 	}
 
 	const FieldTableEntry* SearchFieldTable(const char* id)
 	{
 		const FieldTableEntry key = {ReceivedDataEvent::rcvUnknown, id};
 		const FieldTableEntry* searchResult = (FieldTableEntry*)bsearch(
-			&key, fieldTable, ARRAY_SIZE(fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
+			&key, g_fieldTable, ARRAY_SIZE(g_fieldTable), sizeof(FieldTableEntry), compareKey<FieldTableEntry>);
 		return searchResult;
 	}
 } // namespace Comm

@@ -66,7 +66,7 @@ namespace Comm
 		JsonDecoder();
 		void CheckInput(const unsigned char* rxBuffer, unsigned int len);
 		void ProcessReceivedValue(StringRef id, const char val[], const size_t indices[]);
-		bool SetPrefix(const char* prefix) { return fieldPrefix.copy(prefix); }
+		bool SetPrefix(const char* prefix) { return m_fieldPrefix.copy(prefix); }
 
 		// These variables are used for the
 		ResponseType responseType = ResponseType::unknown;
@@ -86,18 +86,18 @@ namespace Comm
 		bool CheckValueCompleted(char c, bool doProcess);
 		void receiveError();
 
-		// fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array
+		// m_fieldId is the name of the field being received. A '^' character indicates the position of an _ecv_array
 		// index, and a ':' character indicates a field separator.
-		String<50> fieldPrefix;
-		String<MAX_JSON_ID_LENGTH> fieldId;
-		String<MAX_JSON_VALUE_LENGTH> fieldVal; // rr_thumbnail seems to be biggest response we get
-		JsonState state = jsBegin;
-		JsonState lastState = jsBegin;
-		int serialIoErrors;
-		size_t nextOut;
-		bool inError;
-		size_t arrayIndices[MAX_ARRAY_NESTING];
-		size_t arrayDepth;
+		String<50> m_fieldPrefix;
+		String<MAX_JSON_ID_LENGTH> m_fieldId;
+		String<MAX_JSON_VALUE_LENGTH> m_fieldVal; // rr_thumbnail seems to be biggest response we get
+		JsonState m_state = jsBegin;
+		JsonState m_lastState = jsBegin;
+		int m_serialIoErrors;
+		size_t m_nextOut;
+		bool m_inError;
+		size_t m_arrayIndices[MAX_ARRAY_NESTING];
+		size_t m_arrayDepth;
 	};
 } // namespace Comm
 #endif /* JNI_COMM_JSONDECODER_H_ */

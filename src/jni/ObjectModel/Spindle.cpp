@@ -13,7 +13,7 @@
 #include <Duet3D/General/Vector.h>
 
 typedef Vector<OM::Spindle*, MAX_SLOTS> SpindleList;
-static SpindleList spindles;
+static SpindleList s_spindles;
 
 namespace OM
 {
@@ -42,17 +42,17 @@ namespace OM
 
 	Spindle* GetSpindle(const size_t index)
 	{
-		return GetOrCreate<SpindleList, Spindle>(spindles, index, false);
+		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, false);
 	}
 
 	Spindle* GetOrCreateSpindle(const size_t index)
 	{
-		return GetOrCreate<SpindleList, Spindle>(spindles, index, true);
+		return GetOrCreate<SpindleList, Spindle>(s_spindles, index, true);
 	}
 
 	size_t RemoveSpindle(const size_t index, const bool allFollowing)
 	{
-		return Remove<SpindleList, Spindle>(spindles, index, allFollowing);
+		return Remove<SpindleList, Spindle>(s_spindles, index, allFollowing);
 	}
 
 #define SPINDLE_SETTER(funcName, valType, varName)                                                                     \

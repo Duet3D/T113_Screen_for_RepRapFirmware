@@ -318,7 +318,7 @@ namespace UI
 			return false;
 		}
 
-		if (Comm::duet.GetCommunicationType() != Comm::Duet::CommunicationType::network)
+		if (Comm::DUET.GetCommunicationType() != Comm::Duet::CommunicationType::network)
 		{
 			infoText->setTextTr("hm_not_supported_in_current_mode");
 			infoText->setVisible(true);

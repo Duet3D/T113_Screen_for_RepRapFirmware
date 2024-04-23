@@ -56,9 +56,7 @@
 namespace Comm
 {
 
-	static long long lastResponseTime = 0;
-
-	static bool initialized = false;
+	static long long s_lastResponseTime = 0;
 
 	Seq seqs[] = {
 #if FETCH_NETWORK
@@ -160,8 +158,8 @@ namespace Comm
 #endif
 	};
 
-	Seq* currentReqSeq = nullptr;
-	Seq* currentRespSeq = nullptr;
+	Seq* g_currentReqSeq = nullptr;
+	Seq* g_currentRespSeq = nullptr;
 
 	struct Seq* GetNextSeq(struct Seq* current)
 	{
@@ -301,14 +299,14 @@ namespace Comm
 		KickWatchdog();
 		//		lastOutOfBufferResponse = 0;
 		OM::SetStatus(OM::PrinterStatus::connecting);
-		// duet.SendGcode("M29");
-		duet.Reconnect();
+		// DUET.SendGcode("M29");
+		DUET.Reconnect();
 		ResetSeqs();
 	}
 
 	void KickWatchdog()
 	{
-		lastResponseTime = TimeHelper::getCurrentTime();
+		s_lastResponseTime = TimeHelper::getCurrentTime();
 	}
 
 	//------------------------------------------------------------------------------------------------------------------
@@ -316,28 +314,21 @@ namespace Comm
 	void sendNext()
 	{
 		long long now = TimeHelper::getCurrentTime();
-		if (now > (lastResponseTime + duet.GetPollInterval() + PRINTER_REQUEST_TIMEOUT))
+		if (now > (s_lastResponseTime + DUET.GetPollInterval() + PRINTER_REQUEST_TIMEOUT))
 		{
 			Reconnect();
 		}
 
-		currentReqSeq = GetNextSeq(currentReqSeq);
-		if (currentReqSeq != nullptr)
+		g_currentReqSeq = GetNextSeq(g_currentReqSeq);
+		if (g_currentReqSeq != nullptr)
 		{
-			Comm::duet.RequestModel("state", "vn"); // Check if state is halted, if so we need to send M999
-			info("requesting %s\n", currentReqSeq->key);
-			Comm::duet.RequestModel(currentReqSeq->key, currentReqSeq->flags);
+			Comm::DUET.RequestModel("state", "vn"); // Check if state is halted, if so we need to send M999
+			info("requesting %s\n", g_currentReqSeq->key);
+			Comm::DUET.RequestModel(g_currentReqSeq->key, g_currentReqSeq->flags);
 		}
 		else
 		{
-			// Once we get here the first time we will have work all seqs once
-			if (!initialized)
-			{
-				info("seqs init DONE\n");
-				initialized = true;
-			}
-
-			Comm::duet.RequestModel("d99f");
+			Comm::DUET.RequestModel("d99f");
 		}
 		UI::UpdateTemperatureGraph();
 	}

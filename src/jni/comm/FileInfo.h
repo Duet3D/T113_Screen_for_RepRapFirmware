@@ -40,14 +40,14 @@ namespace Comm
 
 		Thumbnail* GetThumbnail(size_t index);
 		Thumbnail* GetOrCreateThumbnail(size_t index);
-		size_t GetThumbnailCount() const { return thumbnails.size(); }
+		size_t GetThumbnailCount() const { return m_thumbnails.size(); }
 		size_t ClearThumbnails(size_t fromIndex);
 
 		tm GetPrintTime() const;
 		std::string GetReadableFileSize() const;
 
 	  private:
-		std::vector<Thumbnail*> thumbnails;
+		std::vector<Thumbnail*> m_thumbnails;
 	};
 
 	class FileInfoCache
@@ -111,7 +111,7 @@ namespace Comm
 		long long m_lastThumbnailRequestTime = 0;
 	};
 
-	extern ThumbnailBuf thumbnailBuf;
+	extern ThumbnailBuf g_thumbnailBuf;
 
 } // namespace Comm
 #define FILEINFO_CACHE Comm::FileInfoCache::GetInstance()

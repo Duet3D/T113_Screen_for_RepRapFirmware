@@ -29,7 +29,7 @@
 
 #include "Debug.h"
 
-#define jserror(fmt, args...) error("jsError id=%s @ %d: " fmt, fieldId.c_str(), nextOut, ##args)
+#define jserror(fmt, args...) error("jsError id=%s @ %d: " fmt, m_fieldId.c_str(), m_nextOut, ##args)
 
 namespace Comm
 {
@@ -154,11 +154,11 @@ namespace Comm
 	const char* _ecv_array const trCedilla = "C\xC7"
 											 "c\xE7";
 
-	JsonDecoder::JsonDecoder() : serialIoErrors(0), nextOut(0), inError(false), arrayDepth(0)
+	JsonDecoder::JsonDecoder() : m_serialIoErrors(0), m_nextOut(0), m_inError(false), m_arrayDepth(0)
 	{
 		for (size_t i = 0; i < MAX_ARRAY_NESTING; i++)
 		{
-			arrayIndices[i] = 0;
+			m_arrayIndices[i] = 0;
 		}
 	}
 
@@ -168,21 +168,21 @@ namespace Comm
 	{
 		KickWatchdog();
 
-		if (currentRespSeq != nullptr)
+		if (g_currentRespSeq != nullptr)
 		{
-			currentRespSeq->state = SeqStateOk;
-			dbg("seq %s %d DONE", currentRespSeq->key, currentRespSeq->state);
-			currentRespSeq = nullptr;
+			g_currentRespSeq->state = SeqStateOk;
+			dbg("seq %s %d DONE", g_currentRespSeq->key, g_currentRespSeq->state);
+			g_currentRespSeq = nullptr;
 		}
 
 		// FileManager::EndReceivedMessage();
 
 		// Open M291 message box if required
-		if (OM::currentAlert.mode != OM::Alert::Mode::None && OM::currentAlert.seq != OM::lastAlertSeq)
+		if (OM::g_currentAlert.mode != OM::Alert::Mode::None && OM::g_currentAlert.seq != OM::g_lastAlertSeq)
 		{
 			UI::POPUP_WINDOW->Open();
-			UI::SetM291Popup(OM::currentAlert);
-			OM::lastAlertSeq = OM::currentAlert.seq;
+			UI::SetM291Popup(OM::g_currentAlert);
+			OM::g_lastAlertSeq = OM::g_currentAlert.seq;
 		}
 
 		switch (responseType)
@@ -229,13 +229,13 @@ namespace Comm
 			case ThumbnailState::DataWait:
 				break;
 			case ThumbnailState::Data:
-				if (!ThumbnailDataIsValid(thumbnailBuf))
+				if (!ThumbnailDataIsValid(g_thumbnailBuf))
 				{
 					error("thumbnail meta or data invalid.\n");
 					thumbnail->context.state = ThumbnailState::Init;
 					break;
 				}
-				if ((ret = ThumbnailDecodeChunk(*thumbnail, thumbnailBuf)) < 0)
+				if ((ret = ThumbnailDecodeChunk(*thumbnail, g_thumbnailBuf)) < 0)
 				{
 					error("failed to decode thumbnail chunk %d.\n", ret);
 					thumbnail->context.state = ThumbnailState::Init;
@@ -287,9 +287,9 @@ namespace Comm
 			// modifier)
 
 			id.Erase(0, 6);
-			if (currentRespSeq != nullptr)
+			if (g_currentRespSeq != nullptr)
 			{
-				id.Prepend(currentRespSeq->key);
+				id.Prepend(g_currentRespSeq->key);
 			}
 			else
 			{
@@ -298,9 +298,9 @@ namespace Comm
 			}
 		}
 
-		// search for key in observerMap
+		// search for key in g_observerMap
 		verbose("searching for observers for %s\n", id.c_str());
-		auto observers = UI::observerMap.GetObservers(id.c_str());
+		auto observers = UI::g_observerMap.GetObservers(id.c_str());
 		if (observers.size() != 0)
 		{
 			dbg("found %d observers for %s\n", observers.size(), id.c_str());
@@ -325,16 +325,16 @@ namespace Comm
 		// TODO: Uncomment stuff below related to UI/OM
 		case rcvKey: {
 			// try a quick check otherwise search for key
-			if (currentReqSeq && (strcasecmp(data, currentReqSeq->key) == 0))
+			if (g_currentReqSeq && (strcasecmp(data, g_currentReqSeq->key) == 0))
 			{
-				currentRespSeq = currentReqSeq;
+				g_currentRespSeq = g_currentReqSeq;
 			}
 			else
 			{
-				currentRespSeq = FindSeqByKey(data);
+				g_currentRespSeq = FindSeqByKey(data);
 			}
 
-			if (currentRespSeq == nullptr)
+			if (g_currentRespSeq == nullptr)
 			{
 				break;
 			}
@@ -399,8 +399,8 @@ namespace Comm
 	// Public function called when the serial I/O module finishes receiving an array of values
 	void JsonDecoder::ProcessArrayEnd(const char id[], const size_t indices[])
 	{
-		// search for key in observerMap
-		auto observers = UI::observerMapArrayEnd.GetObservers(id);
+		// search for key in g_observerMap
+		auto observers = UI::g_observerMapArrayEnd.GetObservers(id);
 		if (observers.size() != 0)
 		{
 			for (auto& observer : observers)
@@ -419,34 +419,34 @@ namespace Comm
 			UI::CONSOLE->AddResponse(utils::format("Warning: received %d malformed responses.", errors).c_str());
 			error("Warning: received %d malformed responses for id \"%s\"", errors, id);
 		}
-		if (currentRespSeq == nullptr)
+		if (g_currentRespSeq == nullptr)
 		{
 			return;
 		}
 
-		currentRespSeq->state = SeqStateError;
+		g_currentRespSeq->state = SeqStateError;
 	}
 
 	void JsonDecoder::RemoveLastId()
 	{
-		verbose("%s, len: %d", fieldId.c_str(), fieldId.strlen());
-		size_t index = fieldId.strlen();
-		while (index != 0 && fieldId[index - 1] != '^' && fieldId[index - 1] != ':')
+		verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		size_t index = m_fieldId.strlen();
+		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
 		{
 			--index;
 		}
-		fieldId.Truncate(index);
+		m_fieldId.Truncate(index);
 
-		verbose("RemoveLastId: %s, len: %d", fieldId.c_str(), fieldId.strlen());
+		verbose("RemoveLastId: %s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
 	}
 
 	void JsonDecoder::RemoveLastIdChar()
 	{
 		verbose();
 
-		if (fieldId.strlen() != 0)
+		if (m_fieldId.strlen() != 0)
 		{
-			fieldId.Truncate(fieldId.strlen() - 1);
+			m_fieldId.Truncate(m_fieldId.strlen() - 1);
 		}
 	}
 
@@ -454,47 +454,47 @@ namespace Comm
 	{
 		verbose();
 
-		return fieldId.strlen() > 0 && fieldId[fieldId.strlen() - 1] == '^';
+		return m_fieldId.strlen() > 0 && m_fieldId[m_fieldId.strlen() - 1] == '^';
 	}
 
 	void JsonDecoder::ProcessField()
 	{
-		if (state == jsCharsVal)
+		if (m_state == jsCharsVal)
 		{
-			if (fieldVal.Equals("null"))
+			if (m_fieldVal.Equals("null"))
 			{
-				fieldVal.Clear(); // so that we can distinguish null from an empty string
+				m_fieldVal.Clear(); // so that we can distinguish null from an empty string
 			}
 		}
-		dbg("%s: %s", fieldId.c_str(), fieldVal.c_str());
-		ProcessReceivedValue(fieldId.GetRef(), fieldVal.c_str(), arrayIndices);
-		fieldVal.Clear();
+		dbg("%s: %s", m_fieldId.c_str(), m_fieldVal.c_str());
+		ProcessReceivedValue(m_fieldId.GetRef(), m_fieldVal.c_str(), m_arrayIndices);
+		m_fieldVal.Clear();
 	}
 
 	void JsonDecoder::EndArray()
 	{
 		dbg("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
-			fieldId.c_str(),
-			arrayIndices[0],
-			arrayIndices[1],
-			arrayIndices[2],
-			arrayIndices[3],
-			arrayDepth);
+			m_fieldId.c_str(),
+			m_arrayIndices[0],
+			m_arrayIndices[1],
+			m_arrayIndices[2],
+			m_arrayIndices[3],
+			m_arrayDepth);
 
-		ProcessArrayEnd(fieldId.c_str(), arrayIndices);
+		ProcessArrayEnd(m_fieldId.c_str(), m_arrayIndices);
 
-		if (arrayDepth != 0)
+		if (m_arrayDepth != 0)
 		{ // should always be true
 			verbose("id %s (%s), arrayIndices [%d|%d|%d|%d], arrayDepth %d",
-					fieldId.c_str(),
-					fieldVal.c_str(),
-					arrayIndices[0],
-					arrayIndices[1],
-					arrayIndices[2],
-					arrayIndices[3],
-					arrayDepth);
-			arrayIndices[arrayDepth - 1] = 0;
-			--arrayDepth;
+					m_fieldId.c_str(),
+					m_fieldVal.c_str(),
+					m_arrayIndices[0],
+					m_arrayIndices[1],
+					m_arrayIndices[2],
+					m_arrayIndices[3],
+					m_arrayDepth);
+			m_arrayIndices[m_arrayDepth - 1] = 0;
+			--m_arrayDepth;
 			RemoveLastIdChar();
 		}
 	}
@@ -504,9 +504,9 @@ namespace Comm
 	{
 		unsigned int numContinuationBytesLeft = 0;
 		uint32_t charVal;
-		for (size_t i = 0; i < fieldVal.strlen();)
+		for (size_t i = 0; i < m_fieldVal.strlen();)
 		{
-			const unsigned char c = fieldVal[i++];
+			const unsigned char c = m_fieldVal[i++];
 			if (numContinuationBytesLeft == 0)
 			{
 				if (c >= 0x80)
@@ -583,7 +583,7 @@ namespace Comm
 					// The diacritical marks are in the range 03xx so they are encoded as 2 UTF8 bytes.
 					if (trtab != nullptr && i > 2)
 					{
-						const char c2 = fieldVal[i - 3];
+						const char c2 = m_fieldVal[i - 3];
 						while (*trtab != 0 && *trtab != c2)
 						{
 							trtab += 2;
@@ -596,9 +596,9 @@ namespace Comm
 							{
 								c3 |= 0x0100;
 							}
-							fieldVal[i - 3] = (c3 >> 6) | 0xC0;
-							fieldVal[i - 2] = (c3 & 0x3F) | 0x80;
-							fieldVal.Erase(i - 1);
+							m_fieldVal[i - 3] = (c3 >> 6) | 0xC0;
+							m_fieldVal[i - 2] = (c3 & 0x3F) | 0x80;
+							m_fieldVal.Erase(i - 1);
 							--i;
 						}
 					}
@@ -626,14 +626,14 @@ namespace Comm
 			}
 			if (InArray())
 			{
-				++arrayIndices[arrayDepth - 1];
-				fieldVal.Clear();
-				state = jsVal;
+				++m_arrayIndices[m_arrayDepth - 1];
+				m_fieldVal.Clear();
+				m_state = jsVal;
 			}
 			else
 			{
 				RemoveLastId();
-				state = jsExpectId;
+				m_state = jsExpectId;
 			}
 			return true;
 
@@ -644,13 +644,13 @@ namespace Comm
 				{
 					ProcessField();
 				}
-				++arrayIndices[arrayDepth - 1];
+				++m_arrayIndices[m_arrayDepth - 1];
 				EndArray();
-				state = jsEndVal;
+				m_state = jsEndVal;
 			}
 			else
 			{
-				state = jsError;
+				m_state = jsError;
 
 				jserror("CheckValueCompleted: ]");
 			}
@@ -659,7 +659,7 @@ namespace Comm
 		case '}':
 			if (InArray())
 			{
-				state = jsError;
+				m_state = jsError;
 
 				jserror("CheckValueCompleted: }");
 			}
@@ -670,18 +670,18 @@ namespace Comm
 					ProcessField();
 				}
 				RemoveLastId();
-				if (fieldId.strlen() == 0 || fieldId.Equals(fieldPrefix.c_str()))
+				if (m_fieldId.strlen() == 0 || m_fieldId.Equals(m_fieldPrefix.c_str()))
 				{
-					serialIoErrors = 0;
+					m_serialIoErrors = 0;
 
 					EndReceivedMessage();
 
-					state = jsBegin;
+					m_state = jsBegin;
 				}
 				else
 				{
 					RemoveLastIdChar();
-					state = jsEndVal;
+					m_state = jsEndVal;
 				}
 			}
 			return true;
@@ -694,47 +694,47 @@ namespace Comm
 	// This is the JSON parser state machine
 	void JsonDecoder::CheckInput(const unsigned char* rxBuffer, unsigned int len)
 	{
-		nextOut = 0;
+		m_nextOut = 0;
 		dbg("CheckInput[%d]: %s", len, rxBuffer);
-		while (len != nextOut)
+		while (len != m_nextOut)
 		{
-			char c = rxBuffer[nextOut];
-			verbose("char %d: %c", nextOut, c);
-			nextOut = (nextOut + 1) % (len + 1);
+			char c = rxBuffer[m_nextOut];
+			verbose("char %d: %c", m_nextOut, c);
+			m_nextOut = (m_nextOut + 1) % (len + 1);
 			if (c == '\n')
 			{
-				if (state == jsError)
+				if (m_state == jsError)
 				{
-					error("ParserErrorEncountered @ %d", nextOut);
+					error("ParserErrorEncountered @ %d", m_nextOut);
 
-					serialIoErrors++;
+					m_serialIoErrors++;
 
-					ParserErrorEncountered(lastState,
-										   fieldId.c_str(),
-										   serialIoErrors); // Notify the consumer that we ran into an error
+					ParserErrorEncountered(m_lastState,
+										   m_fieldId.c_str(),
+										   m_serialIoErrors); // Notify the consumer that we ran into an error
 					error("rxBuffer: %s", rxBuffer);
-					lastState = jsBegin;
+					m_lastState = jsBegin;
 				}
-				state = jsBegin; // abandon current parse (if any) and start again
+				m_state = jsBegin; // abandon current parse (if any) and start again
 			}
 			else
 			{
-				lastState = state;
+				m_lastState = m_state;
 
-				switch (state)
+				switch (m_state)
 				{
 				case jsBegin: // initial state, expecting '{'
 					if (c == '{')
 					{
 						StartReceivedMessage();
-						state = jsExpectId;
-						fieldVal.Clear();
-						fieldId.Clear();
-						if (!fieldPrefix.IsEmpty())
+						m_state = jsExpectId;
+						m_fieldVal.Clear();
+						m_fieldId.Clear();
+						if (!m_fieldPrefix.IsEmpty())
 						{
-							fieldId.copy(fieldPrefix.c_str());
+							m_fieldId.copy(m_fieldPrefix.c_str());
 						}
-						arrayDepth = 0;
+						m_arrayDepth = 0;
 					}
 					break;
 
@@ -744,24 +744,24 @@ namespace Comm
 					case ' ':
 						break;
 					case '"':
-						state = jsId;
+						m_state = jsId;
 						break;
 					case '}': // empty object, or extra comma at end of field list
 						RemoveLastId();
-						if (fieldId.strlen() == 0 || fieldId.Equals(fieldPrefix.c_str()))
+						if (m_fieldId.strlen() == 0 || m_fieldId.Equals(m_fieldPrefix.c_str()))
 						{
-							serialIoErrors = 0;
+							m_serialIoErrors = 0;
 							EndReceivedMessage();
-							state = jsBegin;
+							m_state = jsBegin;
 						}
 						else
 						{
 							RemoveLastIdChar();
-							state = jsEndVal;
+							m_state = jsEndVal;
 						}
 						break;
 					default:
-						state = jsError;
+						m_state = jsError;
 
 						error("jsError: jsExpectId, expected [\" or }] but got \"%c\"", c);
 						break;
@@ -772,20 +772,20 @@ namespace Comm
 					switch (c)
 					{
 					case '"':
-						state = jsHadId;
+						m_state = jsHadId;
 						break;
 					default:
 						if (c < ' ')
 						{
-							state = jsError;
+							m_state = jsError;
 
 							jserror("jsId 1, expected \" but got \"%c\"", c);
 						}
 						else if (c != ':' && c != '^')
 						{
-							if (fieldId.cat(c))
+							if (m_fieldId.cat(c))
 							{
-								state = jsError;
+								m_state = jsError;
 
 								jserror("jsId 2, id not finished, received \"%c\"", c);
 							}
@@ -798,12 +798,12 @@ namespace Comm
 					switch (c)
 					{
 					case ':':
-						state = jsVal;
+						m_state = jsVal;
 						break;
 					case ' ':
 						break;
 					default:
-						state = jsError;
+						m_state = jsError;
 
 						jserror("jsHadId, expected : but got \"%c\"", c);
 						break;
@@ -816,44 +816,44 @@ namespace Comm
 					case ' ':
 						break;
 					case '"':
-						fieldVal.Clear();
-						state = jsStringVal;
+						m_fieldVal.Clear();
+						m_state = jsStringVal;
 						break;
 					case '[':
-						if (arrayDepth < MAX_ARRAY_NESTING && !fieldId.cat('^'))
+						if (m_arrayDepth < MAX_ARRAY_NESTING && !m_fieldId.cat('^'))
 						{
-							arrayIndices[arrayDepth] = 0; // start an array
-							++arrayDepth;
+							m_arrayIndices[m_arrayDepth] = 0; // start an array
+							++m_arrayDepth;
 						}
 						else
 						{
-							state = jsError;
+							m_state = jsError;
 
-							jserror("[, could not start array, current depth: %d", arrayDepth);
+							jserror("[, could not start array, current depth: %d", m_arrayDepth);
 						}
 						break;
 					case ']':
 						if (InArray())
 						{
 							EndArray(); // empty array
-							state = jsEndVal;
+							m_state = jsEndVal;
 						}
 						else
 						{
-							state = jsError; // ']' received without a matching '[' first
+							m_state = jsError; // ']' received without a matching '[' first
 
 							jserror("], not in array");
 						}
 						break;
 					case '-':
-						fieldVal.Clear();
-						fieldVal.cat(c);
-						state = jsNegIntVal;
+						m_fieldVal.Clear();
+						m_fieldVal.cat(c);
+						m_state = jsNegIntVal;
 						break;
 					case '{': // start of a nested object
-						state = (!fieldId.cat(':')) ? jsExpectId : jsError;
+						m_state = (!m_fieldId.cat(':')) ? jsExpectId : jsError;
 
-						if (state == jsError)
+						if (m_state == jsError)
 						{
 							jserror("{, failed to start nested object");
 						}
@@ -861,19 +861,19 @@ namespace Comm
 					default:
 						if (c >= '0' && c <= '9')
 						{
-							fieldVal.Clear();
-							fieldVal.cat(c); // must succeed because we just cleared fieldVal
-							state = jsIntVal;
+							m_fieldVal.Clear();
+							m_fieldVal.cat(c); // must succeed because we just cleared m_fieldVal
+							m_state = jsIntVal;
 						}
 						else if (c >= 'a' && c <= 'z')
 						{
-							fieldVal.Clear();
-							fieldVal.cat(c); // must succeed because we just cleared fieldVal
-							state = jsCharsVal;
+							m_fieldVal.Clear();
+							m_fieldVal.cat(c); // must succeed because we just cleared m_fieldVal
+							m_state = jsCharsVal;
 						}
 						else
 						{
-							state = jsError;
+							m_state = jsError;
 
 							jserror("jsVal default, expected [a-z0-9] but got \"%c\"", c);
 						}
@@ -886,46 +886,46 @@ namespace Comm
 					case '"':
 						ConvertUnicode();
 						ProcessField();
-						state = jsEndVal;
+						m_state = jsEndVal;
 						break;
 					case '\\':
-						state = jsStringEscape;
+						m_state = jsStringEscape;
 						break;
 					default:
 						if (c < ' ')
 						{
-							state = jsError;
+							m_state = jsError;
 
 							jserror("jsStringVal, got \"%c\"", c);
 						}
 						else
 						{
-							fieldVal.cat(c); // ignore any error so that long string parameters just get truncated
+							m_fieldVal.cat(c); // ignore any error so that long string parameters just get truncated
 						}
 						break;
 					}
 					break;
 
 				case jsStringEscape: // just had backslash in a string
-					if (!fieldVal.IsFull())
+					if (!m_fieldVal.IsFull())
 					{
 						switch (c)
 						{
 						case '"':
 						case '\\':
 						case '/':
-							if (fieldVal.cat(c))
+							if (m_fieldVal.cat(c))
 							{
-								state = jsError;
+								m_state = jsError;
 
 								jserror("jsStringEscape 1, failed to append %c", c);
 							}
 							break;
 						case 'n':
 						case 't':
-							if (fieldVal.cat(' '))
+							if (m_fieldVal.cat(' '))
 							{ // replace newline and tab by space
-								state = jsError;
+								m_state = jsError;
 
 								jserror("jsStringEscape 2, failed to append space");
 							}
@@ -937,13 +937,13 @@ namespace Comm
 							break;
 						}
 					}
-					state = jsStringVal;
+					m_state = jsStringVal;
 					break;
 
 				case jsNegIntVal: // had '-' so expecting a integer value
-					state = (c >= '0' && c <= '9' && !fieldVal.cat(c)) ? jsIntVal : jsError;
+					m_state = (c >= '0' && c <= '9' && !m_fieldVal.cat(c)) ? jsIntVal : jsError;
 
-					if (state == jsError)
+					if (m_state == jsError)
 					{
 						jserror("jsNegIntVal, expected negative int but got %c", c);
 					}
@@ -957,18 +957,18 @@ namespace Comm
 
 					if (c == '.')
 					{
-						state = (!fieldVal.cat(c)) ? jsFracVal : jsError;
+						m_state = (!m_fieldVal.cat(c)) ? jsFracVal : jsError;
 
-						if (state == jsError)
+						if (m_state == jsError)
 						{
 							jserror("jsIntVal, failed to append %c", c);
 						}
 					}
-					else if (!(c >= '0' && c <= '9' && !fieldVal.cat(c)))
+					else if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
 					{
-						state = jsError;
+						m_state = jsError;
 
-						jserror("jsIntVal, expected [0-9] but got \"%c\", or failed to append to fieldVal", c);
+						jserror("jsIntVal, expected [0-9] but got \"%c\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -978,11 +978,11 @@ namespace Comm
 						break;
 					}
 
-					if (!(c >= '0' && c <= '9' && !fieldVal.cat(c)))
+					if (!(c >= '0' && c <= '9' && !m_fieldVal.cat(c)))
 					{
-						state = jsError;
+						m_state = jsError;
 
-						jserror("jsFracVal, expected [0-9] but got \"%c\", or failed to append to fieldVal", c);
+						jserror("jsFracVal, expected [0-9] but got \"%c\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -992,11 +992,11 @@ namespace Comm
 						break;
 					}
 
-					if (!(c >= 'a' && c <= 'z' && !fieldVal.cat(c)))
+					if (!(c >= 'a' && c <= 'z' && !m_fieldVal.cat(c)))
 					{
-						state = jsError;
+						m_state = jsError;
 
-						jserror("jsCharsVal, expected [a-z] but got \"%c\", or failed to append to fieldVal", c);
+						jserror("jsCharsVal, expected [a-z] but got \"%c\", or failed to append to m_fieldVal", c);
 					}
 					break;
 
@@ -1006,7 +1006,7 @@ namespace Comm
 						break;
 					}
 
-					state = jsError;
+					m_state = jsError;
 
 					jserror("jsEndVal, expected comma or ] or }");
 					break;
@@ -1017,8 +1017,8 @@ namespace Comm
 					break;
 				}
 
-				if (lastState != state)
-					verbose("state %d -> %d", lastState, state);
+				if (m_lastState != m_state)
+					verbose("state %d -> %d", m_lastState, m_state);
 #if DEBUG
 #endif
 			}
@@ -1028,6 +1028,6 @@ namespace Comm
 	// Called by the ISR to signify an error. We wait for the next end of line.
 	void JsonDecoder::receiveError()
 	{
-		inError = true;
+		m_inError = true;
 	}
 } // namespace Comm

@@ -8,8 +8,9 @@
 
 #include "Reset.h"
 
-#include <unistd.h>
+#include <storage/StoragePreferences.h>
 #include <sys/reboot.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,6 +24,7 @@ void Reset() noexcept {
 
 void EraseAndReset() noexcept {  // TODO: See if "erase" can be implemented ?
   // Synchronize data and save cached data to prevent data loss
+  StoragePreferences::clear();
   sync();
   reboot(RB_AUTOBOOT);
 }

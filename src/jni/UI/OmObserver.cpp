@@ -16,8 +16,8 @@
 
 namespace UI
 {
-	Observer<ui_field_update_cb> *omFieldObserverHead = nullptr;
-	Observer<ui_array_end_update_cb> *omArrayEndObserverHead = nullptr;
-	ObserverMap<ui_field_update_cb> observerMap;
-	ObserverMap<ui_array_end_update_cb> observerMapArrayEnd;
+	Observer<ui_field_update_cb>* g_omFieldObserverHead = nullptr;
+	Observer<ui_array_end_update_cb>* g_omArrayEndObserverHead = nullptr;
+	ObserverMap<ui_field_update_cb> g_observerMap;
+	ObserverMap<ui_array_end_update_cb> g_observerMapArrayEnd;
 }

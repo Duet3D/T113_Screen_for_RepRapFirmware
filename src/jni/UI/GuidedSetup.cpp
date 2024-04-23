@@ -25,7 +25,7 @@ namespace UI::GuidedSetup
 	static ZKButton* s_previousBtn = nullptr;
 	static ZKButton* s_closeBtn = nullptr;
 	static Guide* s_currentGuide = nullptr;
-	static std::map<const char*, Guide*> guides;
+	static std::map<const char*, Guide*> s_guides;
 
 	Page::Page(const char* guideId,
 			   const char* imagePath,
@@ -34,26 +34,26 @@ namespace UI::GuidedSetup
 			   int windowId)
 		: imagePath(imagePath), nextCb(nextCb), previousCb(previousCb), windowId(windowId)
 	{
-		if (guides.find(guideId) == guides.end())
+		if (s_guides.find(guideId) == s_guides.end())
 		{
 			// TODO we could create the guide here, need to decide if we want to do that
 			error("Guide with id %s does not exist", guideId);
 			return;
 		}
 		info("Adding page to guide %s", guideId);
-		guides[guideId]->AddPage(*this);
+		s_guides[guideId]->AddPage(*this);
 	}
 
 	Guide::Guide(const char* id, bool closable, int windowId)
 		: m_id(id), m_index(0), m_closable(closable), m_currentPage(nullptr), m_windowId(windowId)
 	{
-		if (guides.find(id) != guides.end())
+		if (s_guides.find(id) != s_guides.end())
 		{
 			error("Guide with id %s already exists", id);
 			return;
 		}
 		info("Creating guide %s", id);
-		guides[id] = this;
+		s_guides[id] = this;
 	}
 
 	Guide::~Guide()
@@ -205,23 +205,23 @@ namespace UI::GuidedSetup
 
 	void AddPage(const char* guideId, Page& page)
 	{
-		if (guides.find(guideId) == guides.end())
+		if (s_guides.find(guideId) == s_guides.end())
 		{
 			error("Guide with id %s does not exist", guideId);
 			return;
 		}
-		guides[guideId]->AddPage(page);
+		s_guides[guideId]->AddPage(page);
 	}
 
 	Guide* GetGuide(const char* id)
 	{
-		if (guides.find(id) == guides.end())
+		if (s_guides.find(id) == s_guides.end())
 		{
 			error("Guide with id %s does not exist", id);
 			return nullptr;
 		}
 		dbg("Got guide %s", id);
-		return guides[id];
+		return s_guides[id];
 	}
 
 	Guide* GetCurrentGuide()
@@ -231,7 +231,7 @@ namespace UI::GuidedSetup
 
 	size_t GetGuideCount()
 	{
-		return guides.size();
+		return s_guides.size();
 	}
 
 	Guide* GetGuideByIndex(size_t index)
@@ -241,7 +241,7 @@ namespace UI::GuidedSetup
 			error("invalid guide index %d, only %d guides available", index, GetGuideCount());
 			return nullptr;
 		}
-		auto it = guides.begin();
+		auto it = s_guides.begin();
 		std::advance(it, index);
 		return it->second;
 	}

@@ -6,8 +6,8 @@
 
 namespace OM
 {
-	Alert currentAlert;
-	uint32_t lastAlertSeq = 0;
+	Alert g_currentAlert;
+	uint32_t g_lastAlertSeq = 0;
 
 	void Alert::Reset()
 	{

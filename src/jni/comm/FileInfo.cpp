@@ -29,7 +29,7 @@ namespace Comm
 	FileInfo::~FileInfo()
 	{
 		dbg("Deleted fileinfo %s", filename.c_str());
-		for (auto& thumbnail : thumbnails)
+		for (auto& thumbnail : m_thumbnails)
 		{
 			if (thumbnail == nullptr)
 				continue;
@@ -39,36 +39,36 @@ namespace Comm
 
 	Thumbnail* FileInfo::GetThumbnail(size_t index)
 	{
-		if (index >= thumbnails.size())
+		if (index >= m_thumbnails.size())
 		{
 			return nullptr;
 		}
 
-		return thumbnails[index];
+		return m_thumbnails[index];
 	}
 
 	Thumbnail* FileInfo::GetOrCreateThumbnail(size_t index)
 	{
-		if (index >= thumbnails.size())
+		if (index >= m_thumbnails.size())
 		{
-			thumbnails.resize(index + 1);
-			thumbnails[index] = new Thumbnail(filename.GetRef());
+			m_thumbnails.resize(index + 1);
+			m_thumbnails[index] = new Thumbnail(filename.GetRef());
 		}
 
-		return thumbnails[index];
+		return m_thumbnails[index];
 	}
 
 	size_t FileInfo::ClearThumbnails(size_t fromIndex)
 	{
 		size_t count = 0;
-		for (size_t i = fromIndex; i < thumbnails.size(); ++i)
+		for (size_t i = fromIndex; i < m_thumbnails.size(); ++i)
 		{
-			if (thumbnails[i] == nullptr)
+			if (m_thumbnails[i] == nullptr)
 				continue;
-			delete thumbnails[i];
+			delete m_thumbnails[i];
 			count++;
 		}
-		thumbnails.resize(fromIndex);
+		m_thumbnails.resize(fromIndex);
 		return count;
 	}
 
@@ -173,7 +173,7 @@ namespace Comm
 				return;
 			case ThumbnailState::DataRequest:
 				m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
-				duet.RequestThumbnail(m_currentThumbnail->filename.c_str(), m_currentThumbnail->context.next);
+				DUET.RequestThumbnail(m_currentThumbnail->filename.c_str(), m_currentThumbnail->context.next);
 				m_currentThumbnail->context.state = ThumbnailState::DataWait;
 				return;
 			case ThumbnailState::Cached:
@@ -201,7 +201,7 @@ namespace Comm
 			m_fileInfoRequestInProgress = true;
 			m_currentFileInfoRequest = filepath;
 			m_lastFileInfoRequestTime = TimeHelper::getCurrentTime();
-			duet.RequestFileInfo(filepath.c_str());
+			DUET.RequestFileInfo(filepath.c_str());
 			return;
 		}
 
@@ -457,7 +457,7 @@ namespace Comm
 		m_thumbnailRequestInProgress = true;
 		thumbnail->context.state = ThumbnailState::DataWait;
 		m_lastThumbnailRequestTime = TimeHelper::getCurrentTime();
-		duet.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
+		DUET.RequestThumbnail(thumbnail->filename.c_str(), thumbnail->meta.offset);
 		return true;
 	}
 
@@ -574,6 +574,6 @@ namespace Comm
 		UI::CONSOLE->AddLineBreak();
 	}
 
-	static Debug::DebugCommand dbg_file_info_cache("dbg_file_info_cache",
-												   []() { FileInfoCache::GetInstance()->Debug(); });
+	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",
+												  []() { FileInfoCache::GetInstance()->Debug(); });
 } // namespace Comm

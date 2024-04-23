@@ -87,8 +87,6 @@ namespace OM
 		bool UpdateHeaterStatus(const size_t heaterIndex, const char *status);
 		bool UpdateHeaterSensor(const size_t heaterIndex, const size_t sensorIndex);
 		size_t RemoveHeater(const size_t index, const bool allFollowing);
-
-		extern size_t lastHeater;
 	}
 }
 

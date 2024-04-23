@@ -22,11 +22,11 @@
 #include "Debug.h"
 
 typedef Vector<OM::Tool*, MAX_SLOTS> ToolList;
-static ToolList tools;
+static ToolList s_tools;
 
 namespace OM
 {
-	static int32_t sCurrentTool = 0;
+	static int32_t s_currentTool = 0;
 
 	void ToolHeater::Reset()
 	{
@@ -170,7 +170,7 @@ namespace OM
 		if (command.IsEmpty())
 			return false;
 
-		Comm::duet.SendGcodef("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
+		Comm::DUET.SendGcodef("M568 P%d %s%s", index, active ? "S" : "R", command.c_str());
 
 		return true;
 	}
@@ -288,11 +288,11 @@ namespace OM
 		switch (status)
 		{
 		case ToolStatus::active:
-			Comm::duet.SendGcode("T-1");
+			Comm::DUET.SendGcode("T-1");
 			break;
 		case ToolStatus::standby:
 		case ToolStatus::off:
-			Comm::duet.SendGcodef("T%d", index);
+			Comm::DUET.SendGcodef("T%d", index);
 			break;
 		}
 	}
@@ -307,16 +307,16 @@ namespace OM
 		switch (toolHeater->heater->status)
 		{
 		case Heat::HeaterStatus::active:
-			Comm::duet.SendGcodef("M568 P%d A1", index);
+			Comm::DUET.SendGcodef("M568 P%d A1", index);
 			break;
 		case Heat::HeaterStatus::fault:
-			Comm::duet.SendGcodef("M562 P%d", toolHeater->heater->index);
+			Comm::DUET.SendGcodef("M562 P%d", toolHeater->heater->index);
 			break;
 		case Heat::HeaterStatus::off:
-			Comm::duet.SendGcodef("M568 P%d A2", index);
+			Comm::DUET.SendGcodef("M568 P%d A2", index);
 			break;
 		case Heat::HeaterStatus::standby:
-			Comm::duet.SendGcodef("M568 P%d A0", index);
+			Comm::DUET.SendGcodef("M568 P%d A0", index);
 			break;
 		case Heat::HeaterStatus::offline:
 		case Heat::HeaterStatus::tuning:
@@ -334,10 +334,10 @@ namespace OM
 		{
 		case SpindleState::forward:
 		case SpindleState::reverse:
-			Comm::duet.SendGcodef("M5");
+			Comm::DUET.SendGcodef("M5");
 			break;
 		case SpindleState::stopped:
-			Comm::duet.SendGcodef("M3");
+			Comm::DUET.SendGcodef("M3");
 			break;
 		}
 	}
@@ -348,7 +348,7 @@ namespace OM
 		{
 			return;
 		}
-		Comm::duet.SendGcodef("M568 P%d F%d", index, rpm);
+		Comm::DUET.SendGcodef("M568 P%d F%d", index, rpm);
 	}
 
 	void Tool::Reset()
@@ -382,29 +382,29 @@ namespace OM
 
 	Tool* GetTool(const size_t index)
 	{
-		return GetOrCreate<ToolList, Tool>(tools, index, false);
+		return GetOrCreate<ToolList, Tool>(s_tools, index, false);
 	}
 
 	Tool* GetOrCreateTool(const size_t index)
 	{
 		dbg("%d", index);
-		return GetOrCreate<ToolList, Tool>(tools, index, true);
+		return GetOrCreate<ToolList, Tool>(s_tools, index, true);
 	}
 
 	const size_t GetToolCount()
 	{
-		return tools.Size();
+		return s_tools.Size();
 	}
 
 	bool IterateToolsWhile(function_ref<bool(Tool*&, size_t)> func, const size_t startAt)
 	{
-		return tools.IterateWhile(func, startAt);
+		return s_tools.IterateWhile(func, startAt);
 	}
 
 	size_t RemoveTool(const size_t index, const bool allFollowing)
 	{
 		dbg("Removing tool %d (allFollowing=%s)", index, allFollowing ? "true" : "false");
-		return Remove<ToolList, Tool>(tools, index, allFollowing);
+		return Remove<ToolList, Tool>(s_tools, index, allFollowing);
 	}
 
 	bool UpdateToolHeater(const size_t toolIndex, const size_t toolHeaterIndex, const uint8_t heaterIndex)
@@ -616,16 +616,16 @@ namespace OM
 	void SetCurrentTool(const int32_t toolIndex)
 	{
 		info("Setting current tool to %d", toolIndex);
-		sCurrentTool = toolIndex;
+		s_currentTool = toolIndex;
 	}
 
 	Tool* GetCurrentTool()
 	{
-		if (sCurrentTool < 0)
+		if (s_currentTool < 0)
 		{
 			dbg("No tool selected");
 			return nullptr;
 		}
-		return GetTool(sCurrentTool);
+		return GetTool(s_currentTool);
 	}
 }

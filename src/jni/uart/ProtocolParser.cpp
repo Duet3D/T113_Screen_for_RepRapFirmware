@@ -17,25 +17,26 @@
 
 #include "Debug.h"
 
-static Mutex sLock;
-static std::vector<OnProtocolDataUpdateFun> sProtocolDataUpdateListenerList;
+static Mutex s_lock;
+static std::vector<OnProtocolDataUpdateFun> s_protocolDataUpdateListenerList;
 
 void registerProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
-	Mutex::Autolock _l(sLock);
+	Mutex::Autolock _l(s_lock);
 	dbg();
 	if (pListener != NULL) {
-		sProtocolDataUpdateListenerList.push_back(pListener);
+		s_protocolDataUpdateListenerList.push_back(pListener);
 	}
 }
 
 void unregisterProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
-	Mutex::Autolock _l(sLock);
+	Mutex::Autolock _l(s_lock);
 	dbg();
 	if (pListener != NULL) {
-		std::vector<OnProtocolDataUpdateFun>::iterator iter = sProtocolDataUpdateListenerList.begin();
-		for (; iter != sProtocolDataUpdateListenerList.end(); iter++) {
+		std::vector<OnProtocolDataUpdateFun>::iterator iter = s_protocolDataUpdateListenerList.begin();
+		for (; iter != s_protocolDataUpdateListenerList.end(); iter++)
+		{
 			if ((*iter) == pListener) {
-				sProtocolDataUpdateListenerList.erase(iter);
+				s_protocolDataUpdateListenerList.erase(iter);
 				return;
 			}
 		}
@@ -43,28 +44,29 @@ void unregisterProtocolDataUpdateListener(OnProtocolDataUpdateFun pListener) {
 }
 
 static void notifyProtocolDataUpdate(const SProtocolData &data) {
-	Mutex::Autolock _l(sLock);
-	std::vector<OnProtocolDataUpdateFun>::const_iterator iter = sProtocolDataUpdateListenerList.begin();
-	for (; iter != sProtocolDataUpdateListenerList.end(); iter++) {
+	Mutex::Autolock _l(s_lock);
+	std::vector<OnProtocolDataUpdateFun>::const_iterator iter = s_protocolDataUpdateListenerList.begin();
+	for (; iter != s_protocolDataUpdateListenerList.end(); iter++)
+	{
 		(*iter)(data);
 	}
 }
 
-static SProtocolData sProtocolData;
+static SProtocolData s_protocolData;
 
 SProtocolData& getProtocolData() {
-	return sProtocolData;
+	return s_protocolData;
 }
 
 /**
  * Parse each frame of data
  */
 static void procParse(const unsigned char *pData, unsigned int len) {
-	sProtocolData.data = pData;
-	sProtocolData.len = len;
+	s_protocolData.data = pData;
+	s_protocolData.len = len;
 
 	// Notify protocol data update
-	notifyProtocolDataUpdate(sProtocolData);
+	notifyProtocolDataUpdate(s_protocolData);
 }
 
 /**
@@ -75,7 +77,7 @@ static void procParse(const unsigned char *pData, unsigned int len) {
  * Return value: the length of the actual resolution protocol
  */
 int parseProtocol(const unsigned char *pData, unsigned int len) {
-	if (Comm::duet.GetCommunicationType() != Comm::Duet::CommunicationType::uart)
+	if (Comm::DUET.GetCommunicationType() != Comm::Duet::CommunicationType::uart)
 	{
 		return 0;
 	}
