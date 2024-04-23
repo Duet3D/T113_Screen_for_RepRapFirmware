@@ -41,11 +41,10 @@ namespace UI
 		heightmap,
 		fans,
 		print,
-		network,
-		settings,
-		debug,
 		object_cancel,
 		webcam,
+		network,
+		settings,
 	};
 
 	enum class SettingsSlideWindowIndex
