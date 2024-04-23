@@ -72,13 +72,13 @@ static UI::Observer<UI::ui_field_update_cb> StateObserversField[] = {
 					  info("messageBox: %s", val);
 					  if (val[0] != 0)
 						  return;
-					  UI::PopupWindow* popup = UI::PopupWindow::GetInstance();
+					  UI::PopupWindow& popup = UI::PopupWindow::GetInstance();
 					  OM::g_currentAlert.Reset();
-					  if (!popup->IsOpen() || popup->IsResponse())
+					  if (!popup.IsOpen() || popup.IsResponse())
 					  {
 						  return;
 					  }
-					  popup->Close();
+					  popup.Close();
 				  }),
 	OBSERVER_UINT("state:messageBox:axisControls",
 				  [](OBSERVER_UINT_ARGS) {

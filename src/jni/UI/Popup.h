@@ -44,10 +44,10 @@ namespace UI
 	class PopupWindow
 	{
 	  public:
-		static PopupWindow* GetInstance()
+		static PopupWindow& GetInstance()
 		{
-			static PopupWindow cWindow;
-			return &cWindow;
+			static PopupWindow instance;
+			return instance;
 		}
 
 		void Open();
@@ -145,10 +145,10 @@ namespace UI
 	class NumPadWindow
 	{
 	  public:
-		static NumPadWindow* GetInstance()
+		static NumPadWindow& GetInstance()
 		{
 			static NumPadWindow numPadWindow;
-			return &numPadWindow;
+			return numPadWindow;
 		}
 
 		void Init(ZKWindow* window, ZKTextView* header, ZKTextView* value);
@@ -190,10 +190,10 @@ namespace UI
 	class SliderWindow
 	{
 	  public:
-		static SliderWindow* GetInstance()
+		static SliderWindow& GetInstance()
 		{
 			static SliderWindow sliderWindow;
-			return &sliderWindow;
+			return sliderWindow;
 		}
 		void Init(ZKWindow* window,
 				  ZKSeekBar* slider,

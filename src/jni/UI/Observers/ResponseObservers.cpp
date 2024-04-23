@@ -44,23 +44,23 @@ static UI::Observer<UI::ui_field_update_cb> PushObserversField[] = {
 						  substrlen = std::min(str.length() - i, MAX_RESPONSE_LINE_LENGTH);
 						  dbg("resp: str.length()=%d, i=%d, substrlen=%d", str.length(), i, substrlen);
 						  line.copy(str.substr(i, substrlen).c_str());
-						  UI::CONSOLE->AddResponse(line.GetRef());
+						  UI::CONSOLE.AddResponse(line.GetRef());
 					  }
 
 					  // Only show if console is not visible and a M291 message box is not showing
 					  if (!UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow)->isVisible() &&
-						  UI::POPUP_WINDOW->IsResponse())
+						  UI::POPUP_WINDOW.IsResponse())
 					  {
-						  UI::POPUP_WINDOW->Open([]() {
-							  UI::WINDOW->CloseLastWindow();
-							  UI::WINDOW->OpenWindow(UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow));
+						  UI::POPUP_WINDOW.Open([]() {
+							  UI::WINDOW.CloseLastWindow();
+							  UI::WINDOW.OpenWindow(UI::GetUIControl<ZKWindow>(ID_MAIN_ConsoleWindow));
 						  });
 
-						  UI::POPUP_WINDOW->SetTitle("Gcode Response");
-						  UI::POPUP_WINDOW->SetText(val);
-						  UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
+						  UI::POPUP_WINDOW.SetTitle("Gcode Response");
+						  UI::POPUP_WINDOW.SetText(val);
+						  UI::POPUP_WINDOW.SetOkBtnText(LANGUAGEMANAGER->getValue("open_console").c_str());
 					  }
-					  UI::CONSOLE->Refresh();
+					  UI::CONSOLE.Refresh();
 				  }),
 	OBSERVER_CHAR("message", [](OBSERVER_CHAR_ARGS) { info("message: %s", val); }),
 	OBSERVER_CHAR("seq", [](OBSERVER_CHAR_ARGS) { info("seq: %s", val); }),

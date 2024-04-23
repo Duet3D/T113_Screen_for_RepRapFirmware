@@ -59,10 +59,10 @@ namespace UI
 	uint32_t g_defaultExtrusionFeedRate = 5;
 	uint32_t g_defaultExtrusionFeedDistance = 10;
 
-	Window* Window::GetInstance()
+	Window& Window::GetInstance()
 	{
 		static Window window;
-		return &window;
+		return window;
 	}
 
 	void Window::AddHome(ZKBase* home)
@@ -121,14 +121,14 @@ namespace UI
 
 		verbose("%d overlay windows to close", m_overlayWindows.size());
 		// Ensure that you can't close the popup window if it's blocking.
-		if (POPUP_WINDOW->IsBlocking())
+		if (POPUP_WINDOW.IsBlocking())
 		{
 			verbose("Popup window is blocking");
 			return false;
 		}
-		if (POPUP_WINDOW->IsOpen())
+		if (POPUP_WINDOW.IsOpen())
 		{
-			POPUP_WINDOW->Clear();
+			POPUP_WINDOW.Clear();
 		}
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(false);
 		size_t count = 0;
@@ -181,9 +181,9 @@ namespace UI
 
 	void Window::Back()
 	{
-		if (POPUP_WINDOW->IsOpen())
+		if (POPUP_WINDOW.IsOpen())
 		{
-			POPUP_WINDOW->Cancel(false);
+			POPUP_WINDOW.Cancel(false);
 		}
 		if (CloseOverlay())
 		{
@@ -550,7 +550,7 @@ namespace UI
 				}
 
 				currentTarget = data.active ? toolHeater->activeTemp : toolHeater->standbyTemp;
-				UI::NUMPAD_WINDOW->Open(
+				UI::NUMPAD_WINDOW.Open(
 					header.c_str(),
 					toolHeater->heater->min,
 					toolHeater->heater->max,
@@ -565,7 +565,7 @@ namespace UI
 				OM::Spindle* spindle = data.toolData.spindle;
 				header = utils::format("Tool %d Spindle", data.toolData.tool->index);
 				currentTarget = spindle->active;
-				UI::NUMPAD_WINDOW->Open(
+				UI::NUMPAD_WINDOW.Open(
 					header.c_str(),
 					spindle->min,
 					spindle->max,
@@ -592,7 +592,7 @@ namespace UI
 				return;
 			}
 			currentTarget = data.active ? bedOrChamber->GetActiveTemp() : bedOrChamber->GetStandbyTemp();
-			UI::NUMPAD_WINDOW->Open(
+			UI::NUMPAD_WINDOW.Open(
 				header.c_str(),
 				bedOrChamber->GetMin(),
 				bedOrChamber->GetMax(),
@@ -795,7 +795,7 @@ namespace UI
 		OM::Alert::Mode mode_ = alert.mode;
 		uint32_t seq_ = alert.seq;
 
-		UI::POPUP_WINDOW->Open([mode_, seq_]() {
+		UI::POPUP_WINDOW.Open([mode_, seq_]() {
 			switch (mode_)
 			{
 			case OM::Alert::Mode::InfoConfirm:
@@ -804,74 +804,74 @@ namespace UI
 				break;
 			case OM::Alert::Mode::NumberInt:
 			case OM::Alert::Mode::NumberFloat:
-				Comm::DUET.SendGcodef("M292 P0 R{%s} S%lu\n", UI::POPUP_WINDOW->GetNumberInput(), seq_);
+				Comm::DUET.SendGcodef("M292 P0 R{%s} S%lu\n", UI::POPUP_WINDOW.GetNumberInput(), seq_);
 				break;
 			case OM::Alert::Mode::Text:
-				Comm::DUET.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", UI::POPUP_WINDOW->GetTextInput(), seq_);
+				Comm::DUET.SendGcodef("M292 P0 R{\"%s\"} S%lu\n", UI::POPUP_WINDOW.GetTextInput(), seq_);
 				break;
 			default:
 				break;
 			}
 		});
 
-		UI::POPUP_WINDOW->SetMode(mode_);
+		UI::POPUP_WINDOW.SetMode(mode_);
 
-		UI::POPUP_WINDOW->SetTitle(alert.title.c_str());
-		UI::POPUP_WINDOW->SetText(alert.text.c_str());
+		UI::POPUP_WINDOW.SetTitle(alert.title.c_str());
+		UI::POPUP_WINDOW.SetText(alert.text.c_str());
 
 		switch (mode_)
 		{
 		case OM::Alert::Mode::Info:
-			UI::POPUP_WINDOW->CancelVisible(false);
-			UI::POPUP_WINDOW->OkVisible(false);
+			UI::POPUP_WINDOW.CancelVisible(false);
+			UI::POPUP_WINDOW.OkVisible(false);
 			break;
 		case OM::Alert::Mode::InfoClose:
-			UI::POPUP_WINDOW->CancelVisible(true);
-			UI::POPUP_WINDOW->OkVisible(false);
+			UI::POPUP_WINDOW.CancelVisible(true);
+			UI::POPUP_WINDOW.OkVisible(false);
 			break;
 		case OM::Alert::Mode::InfoConfirm:
 		case OM::Alert::Mode::ConfirmCancel:
-			UI::POPUP_WINDOW->CancelVisible(mode_ == OM::Alert::Mode::ConfirmCancel);
-			UI::POPUP_WINDOW->OkVisible(true);
+			UI::POPUP_WINDOW.CancelVisible(mode_ == OM::Alert::Mode::ConfirmCancel);
+			UI::POPUP_WINDOW.OkVisible(true);
 
 			// Axis jog controls
-			UI::POPUP_WINDOW->SetAxisJogSelection(alert.controls);
-			UI::POPUP_WINDOW->AxisJogVisible(alert.controls > 0);
+			UI::POPUP_WINDOW.SetAxisJogSelection(alert.controls);
+			UI::POPUP_WINDOW.AxisJogVisible(alert.controls > 0);
 			break;
 		case OM::Alert::Mode::Choices:
-			UI::POPUP_WINDOW->CancelVisible(alert.cancelButton == true);
-			UI::POPUP_WINDOW->OkVisible(false);
-			UI::POPUP_WINDOW->SelectionVisible(true);
+			UI::POPUP_WINDOW.CancelVisible(alert.cancelButton == true);
+			UI::POPUP_WINDOW.OkVisible(false);
+			UI::POPUP_WINDOW.SelectionVisible(true);
 			break;
 		case OM::Alert::Mode::NumberInt:
-			UI::POPUP_WINDOW->CancelVisible(alert.cancelButton == true);
-			UI::POPUP_WINDOW->OkVisible(true);
-			UI::POPUP_WINDOW->SetMinTextf("Min: %d", alert.limits.numberInt.min);
-			UI::POPUP_WINDOW->SetMaxTextf("Max: %d", alert.limits.numberInt.max);
-			UI::POPUP_WINDOW->SetNumberInput(alert.limits.numberInt.valueDefault);
-			UI::POPUP_WINDOW->MinTextVisible(true);
-			UI::POPUP_WINDOW->MaxTextVisible(true);
-			UI::POPUP_WINDOW->NumberInputVisible(true);
+			UI::POPUP_WINDOW.CancelVisible(alert.cancelButton == true);
+			UI::POPUP_WINDOW.OkVisible(true);
+			UI::POPUP_WINDOW.SetMinTextf("Min: %d", alert.limits.numberInt.min);
+			UI::POPUP_WINDOW.SetMaxTextf("Max: %d", alert.limits.numberInt.max);
+			UI::POPUP_WINDOW.SetNumberInput(alert.limits.numberInt.valueDefault);
+			UI::POPUP_WINDOW.MinTextVisible(true);
+			UI::POPUP_WINDOW.MaxTextVisible(true);
+			UI::POPUP_WINDOW.NumberInputVisible(true);
 			break;
 		case OM::Alert::Mode::NumberFloat:
-			UI::POPUP_WINDOW->CancelVisible(alert.cancelButton == true);
-			UI::POPUP_WINDOW->OkVisible(true);
-			UI::POPUP_WINDOW->SetMinTextf("Min: %.2f", alert.limits.numberFloat.min);
-			UI::POPUP_WINDOW->SetMaxTextf("Max: %.2f", alert.limits.numberFloat.max);
-			UI::POPUP_WINDOW->SetNumberInput(alert.limits.numberFloat.valueDefault);
-			UI::POPUP_WINDOW->MinTextVisible(true);
-			UI::POPUP_WINDOW->MaxTextVisible(true);
-			UI::POPUP_WINDOW->NumberInputVisible(true);
+			UI::POPUP_WINDOW.CancelVisible(alert.cancelButton == true);
+			UI::POPUP_WINDOW.OkVisible(true);
+			UI::POPUP_WINDOW.SetMinTextf("Min: %.2f", alert.limits.numberFloat.min);
+			UI::POPUP_WINDOW.SetMaxTextf("Max: %.2f", alert.limits.numberFloat.max);
+			UI::POPUP_WINDOW.SetNumberInput(alert.limits.numberFloat.valueDefault);
+			UI::POPUP_WINDOW.MinTextVisible(true);
+			UI::POPUP_WINDOW.MaxTextVisible(true);
+			UI::POPUP_WINDOW.NumberInputVisible(true);
 			break;
 		case OM::Alert::Mode::Text:
-			UI::POPUP_WINDOW->CancelVisible(alert.cancelButton == true);
-			UI::POPUP_WINDOW->OkVisible(true);
-			UI::POPUP_WINDOW->SetMinTextf("Min Length: %d", alert.limits.text.min);
-			UI::POPUP_WINDOW->SetMaxTextf("Max Length: %d", alert.limits.text.max);
-			UI::POPUP_WINDOW->SetTextInput(alert.limits.text.valueDefault.c_str());
-			UI::POPUP_WINDOW->MinTextVisible(true);
-			UI::POPUP_WINDOW->MaxTextVisible(true);
-			UI::POPUP_WINDOW->TextInputVisible(true);
+			UI::POPUP_WINDOW.CancelVisible(alert.cancelButton == true);
+			UI::POPUP_WINDOW.OkVisible(true);
+			UI::POPUP_WINDOW.SetMinTextf("Min Length: %d", alert.limits.text.min);
+			UI::POPUP_WINDOW.SetMaxTextf("Max Length: %d", alert.limits.text.max);
+			UI::POPUP_WINDOW.SetTextInput(alert.limits.text.valueDefault.c_str());
+			UI::POPUP_WINDOW.MinTextVisible(true);
+			UI::POPUP_WINDOW.MaxTextVisible(true);
+			UI::POPUP_WINDOW.TextInputVisible(true);
 			break;
 		default:
 			break;
@@ -899,25 +899,25 @@ namespace UI
 			printTime = fileInfo->GetPrintTime();
 			generatedBy = fileInfo->generatedBy.c_str();
 		}
-		UI::POPUP_WINDOW->SetTitle(item->GetName());
-		UI::POPUP_WINDOW->SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
-								   height,
-								   layerHeight,
-								   printTime.tm_hour,
-								   printTime.tm_min,
-								   printTime.tm_sec,
-								   generatedBy.c_str());
-		UI::POPUP_WINDOW->SetTextScrollable(false);
+		UI::POPUP_WINDOW.SetTitle(item->GetName());
+		UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
+								  height,
+								  layerHeight,
+								  printTime.tm_hour,
+								  printTime.tm_min,
+								  printTime.tm_sec,
+								  generatedBy.c_str());
+		UI::POPUP_WINDOW.SetTextScrollable(false);
 		if (IsThumbnailCached(item->GetPath().c_str()) || IsThumbnailCached(Comm::largeThumbnailFilename))
 		{
-			UI::POPUP_WINDOW->SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
+			UI::POPUP_WINDOW.SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
 		}
 		else
 		{
-			UI::POPUP_WINDOW->ShowImage(false);
+			UI::POPUP_WINDOW.ShowImage(false);
 		}
-		UI::POPUP_WINDOW->SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
-		UI::POPUP_WINDOW->CancelTimeout();
+		UI::POPUP_WINDOW.SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
+		UI::POPUP_WINDOW.CancelTimeout();
 	}
 
 	ZKTextView* GetThumbnail()

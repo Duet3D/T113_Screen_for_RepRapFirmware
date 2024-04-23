@@ -79,7 +79,7 @@ namespace UI
 		if (m_timeout > 0)
 		{
 			registerDelayedCallback("popup_timeout", m_timeout, []() {
-				UI::POPUP_WINDOW->Close();
+				UI::POPUP_WINDOW.Close();
 				return false;
 			});
 		}
@@ -91,7 +91,7 @@ namespace UI
 		SetCancelBtnText(LANGUAGEMANAGER->getValue("cancel").c_str());
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		SetTextScrollable(false);
-		WINDOW->OpenOverlay(m_window);
+		WINDOW.OpenOverlay(m_window);
 		m_okCb = okCb;
 		m_cancelCb = cancelCb;
 	}
@@ -186,7 +186,7 @@ namespace UI
 	{
 		info("Closing popup window");
 		Clear();
-		WINDOW->CloseOverlay();
+		WINDOW.CloseOverlay();
 	}
 
 	void PopupWindow::OkVisible(bool visible)
@@ -591,7 +591,7 @@ namespace UI
 		m_onConfirm = onConfirm;
 		SetPosition(HorizontalPosition::right);
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
-		WINDOW->OpenOverlay(m_window, !withSlider);
+		WINDOW.OpenOverlay(m_window, !withSlider);
 	}
 
 	void NumPadWindow::Clear()
@@ -605,7 +605,7 @@ namespace UI
 	void NumPadWindow::Close()
 	{
 		Clear();
-		WINDOW->CloseOverlay();
+		WINDOW.CloseOverlay();
 	}
 
 	bool NumPadWindow::ValidateInput(int value)
@@ -729,7 +729,7 @@ namespace UI
 		SetOnProgressChanged(onProgressChanged);
 		SetPosition(VerticalPosition::center, HorizontalPosition::center);
 		UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setVisible(true);
-		WINDOW->OpenOverlay(m_window);
+		WINDOW.OpenOverlay(m_window);
 	}
 
 	void SliderWindow::Callback() const
@@ -857,7 +857,7 @@ namespace UI
 						  bool displayRaw)
 	{
 		warn("defaultValue %d", defaultValue);
-		SLIDER_WINDOW->Open(
+		SLIDER_WINDOW.Open(
 			header,
 			prefix,
 			suffix,
@@ -867,21 +867,21 @@ namespace UI
 			defaultValue,
 			[onProgressChanged](int value) {
 				warn("Slider value %d", value);
-				NUMPAD_WINDOW->SetValue(value);
+				NUMPAD_WINDOW.SetValue(value);
 				onProgressChanged(value);
 			},
 			displayRaw);
-		SLIDER_WINDOW->SetPosition(VerticalPosition::center, HorizontalPosition::left);
-		NUMPAD_WINDOW->Open(
+		SLIDER_WINDOW.SetPosition(VerticalPosition::center, HorizontalPosition::left);
+		NUMPAD_WINDOW.Open(
 			"",
 			min,
 			max,
 			defaultValue,
 			[](int value) {
 				warn("Numpad value %d", value);
-				SLIDER_WINDOW->SetValue(value);
+				SLIDER_WINDOW.SetValue(value);
 			},
-			[](int) { WINDOW->CloseOverlay(); },
+			[](int) { WINDOW.CloseOverlay(); },
 			true);
 	}
 } // namespace UI

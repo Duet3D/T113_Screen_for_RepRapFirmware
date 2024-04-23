@@ -87,7 +87,7 @@ namespace USB
 
 		if (!file.is_open())
 		{
-			UI::CONSOLE->AddResponse(utils::format("Unable to open file %s", filePath.c_str()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("Unable to open file %s", filePath.c_str()).c_str());
 			error("Unable to open file %s", filePath.c_str());
 			return false;
 		}
@@ -98,7 +98,7 @@ namespace USB
 		dbg("Reading %ld bytes", size);
 		if (!file.read(contents.begin(), size))
 		{
-			UI::CONSOLE->AddResponse(utils::format("Failed to read file %s", filePath.c_str()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("Failed to read file %s", filePath.c_str()).c_str());
 			error("Failed to read file %s", filePath.c_str());
 			return false;
 		}

@@ -101,7 +101,7 @@ namespace Comm
 
 		if (m_currentThumbnail != nullptr && m_currentThumbnail->AboveCacheLimit())
 		{
-			UI::POPUP_WINDOW->SetProgress(m_currentThumbnail->GetProgress());
+			UI::POPUP_WINDOW.SetProgress(m_currentThumbnail->GetProgress());
 		}
 
 		long long now = TimeHelper::getCurrentTime();
@@ -504,37 +504,36 @@ namespace Comm
 	void FileInfoCache::Debug()
 	{
 		dbg("File info cache debug");
-		UI::CONSOLE->AddResponse("File info cache:");
+		UI::CONSOLE.AddResponse("File info cache:");
 		for (auto& it : GetInstance()->m_cache)
 		{
 			FileInfo* fileInfo = it.second;
 			if (fileInfo == nullptr)
 				continue;
-			UI::CONSOLE->AddResponse(utils::format("  File %s:", fileInfo->filename.c_str()).c_str());
-			UI::CONSOLE->AddResponse(utils::format("    size: %u", fileInfo->size).c_str());
-			UI::CONSOLE->AddResponse(utils::format("    lastModified: %s", fileInfo->lastModified.c_str()).c_str());
-			UI::CONSOLE->AddResponse(utils::format("    height: %.3f", fileInfo->height).c_str());
-			UI::CONSOLE->AddResponse(utils::format("    layerHeight: %.3f", fileInfo->layerHeight).c_str());
-			UI::CONSOLE->AddResponse(utils::format("    thumbnails: %u", fileInfo->GetThumbnailCount()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("  File %s:", fileInfo->filename.c_str()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    size: %u", fileInfo->size).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    lastModified: %s", fileInfo->lastModified.c_str()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    height: %.3f", fileInfo->height).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    layerHeight: %.3f", fileInfo->layerHeight).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    thumbnails: %u", fileInfo->GetThumbnailCount()).c_str());
 
 			for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 			{
 				Thumbnail* thumbnail = fileInfo->GetThumbnail(i);
 				if (thumbnail == nullptr)
 					continue;
-				UI::CONSOLE->AddResponse(utils::format("    Thumbnail %u:", i).c_str());
-				UI::CONSOLE->AddResponse("      meta:");
-				UI::CONSOLE->AddResponse(utils::format("        filename: %s", thumbnail->filename.c_str()).c_str());
-				UI::CONSOLE->AddResponse(
-					utils::format("        width(%u), height(%u), format(%d), offset(%u), size(%u)",
-								  thumbnail->meta.width,
-								  thumbnail->meta.height,
-								  thumbnail->meta.imageFormat,
-								  thumbnail->meta.offset,
-								  thumbnail->meta.size)
-						.c_str());
-				UI::CONSOLE->AddResponse("      context:");
-				UI::CONSOLE->AddResponse(
+				UI::CONSOLE.AddResponse(utils::format("    Thumbnail %u:", i).c_str());
+				UI::CONSOLE.AddResponse("      meta:");
+				UI::CONSOLE.AddResponse(utils::format("        filename: %s", thumbnail->filename.c_str()).c_str());
+				UI::CONSOLE.AddResponse(utils::format("        width(%u), height(%u), format(%d), offset(%u), size(%u)",
+													  thumbnail->meta.width,
+													  thumbnail->meta.height,
+													  thumbnail->meta.imageFormat,
+													  thumbnail->meta.offset,
+													  thumbnail->meta.size)
+											.c_str());
+				UI::CONSOLE.AddResponse("      context:");
+				UI::CONSOLE.AddResponse(
 					utils::format("        err(%d), parseErr(%d), size(%u), offset(%u), next(%u), state(%d)",
 								  thumbnail->context.err,
 								  thumbnail->context.parseErr,
@@ -546,16 +545,16 @@ namespace Comm
 			}
 		}
 
-		UI::CONSOLE->AddResponse("  File info request queue:");
+		UI::CONSOLE.AddResponse("  File info request queue:");
 		for (auto& filename : m_fileInfoRequestQueue)
 		{
-			UI::CONSOLE->AddResponse(utils::format("    %s", filename.c_str()).c_str());
+			UI::CONSOLE.AddResponse(utils::format("    %s", filename.c_str()).c_str());
 		}
 
-		UI::CONSOLE->AddResponse("  Thumbnail request queue:");
+		UI::CONSOLE.AddResponse("  Thumbnail request queue:");
 		for (auto& thumbnail : m_thumbnailRequestQueue)
 		{
-			UI::CONSOLE->AddResponse(
+			UI::CONSOLE.AddResponse(
 				utils::format(
 					"    %dx%d %s", thumbnail->meta.width, thumbnail->meta.height, thumbnail->filename.c_str())
 					.c_str());
@@ -563,15 +562,15 @@ namespace Comm
 
 		FileInfo* fileInfo = GetInstance()->GetCurrentFileInfo();
 		Thumbnail* thumbnail = GetInstance()->GetCurrentThumbnail();
-		UI::CONSOLE->AddResponse(
+		UI::CONSOLE.AddResponse(
 			utils::format("  Current FileInfo: %s",
 						  fileInfo == nullptr ? "null" : GetInstance()->m_currentFileInfo->filename.c_str())
 				.c_str());
-		UI::CONSOLE->AddResponse(
+		UI::CONSOLE.AddResponse(
 			utils::format("  Current Thumbnail: %s",
 						  thumbnail == nullptr ? "null" : GetInstance()->m_currentThumbnail->filename.c_str())
 				.c_str());
-		UI::CONSOLE->AddLineBreak();
+		UI::CONSOLE.AddLineBreak();
 	}
 
 	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",

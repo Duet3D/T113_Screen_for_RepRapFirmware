@@ -173,8 +173,8 @@ bool UartContext::threadLoop() {
 			{
 				error("UART buffer overflow");
 				warn("Buffer: %s", m_dataBufPtr);
-				UI::POPUP_WINDOW->Open();
-				UI::POPUP_WINDOW->SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
+				UI::POPUP_WINDOW.Open();
+				UI::POPUP_WINDOW.SetText(LANGUAGEMANAGER->getValue("uart_buffer_overflow").c_str());
 				m_dataBufLen = 0;
 				Comm::Reconnect();
 			}

@@ -197,7 +197,7 @@ namespace Comm
 				[this, gcode](RestClient::Response& r) {
 					if (r.code != 200)
 					{
-						UI::CONSOLE->AddResponse(
+						UI::CONSOLE.AddResponse(
 							utils::format("HTTP error %d: Failed to send gcode: %s", r.code, gcode).c_str());
 						return false;
 					}
@@ -228,12 +228,12 @@ namespace Comm
 	{
 		info("Uploading file %s: %d bytes", filename, contents.size());
 		// TODO work out why the UI doesn't actually get updated in this function
-		UI::POPUP_WINDOW->Open();
-		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("uploading_file").c_str());
-		UI::POPUP_WINDOW->SetText(filename);
-		UI::POPUP_WINDOW->SetTextScrollable(false);
-		UI::POPUP_WINDOW->CancelTimeout();
-		UI::POPUP_WINDOW->PreventClosing(true);
+		UI::POPUP_WINDOW.Open();
+		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("uploading_file").c_str());
+		UI::POPUP_WINDOW.SetText(filename);
+		UI::POPUP_WINDOW.SetTextScrollable(false);
+		UI::POPUP_WINDOW.CancelTimeout();
+		UI::POPUP_WINDOW.PreventClosing(true);
 		Thread::sleep(50);
 
 		switch (m_communicationType)
@@ -243,10 +243,10 @@ namespace Comm
 			if (contents.size() > MAX_UART_UPLOAD_SIZE)
 			{
 				warn("File too large (%u) to upload via UART, limit is %u", contents.size(), MAX_UART_UPLOAD_SIZE);
-				UI::CONSOLE->AddResponse(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
-				UI::POPUP_WINDOW->Open();
-				UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
-				UI::POPUP_WINDOW->SetText(filename);
+				UI::CONSOLE.AddResponse(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
+				UI::POPUP_WINDOW.Open();
+				UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("file_too_large_uart").c_str());
+				UI::POPUP_WINDOW.SetText(filename);
 				return false;
 			}
 
@@ -260,7 +260,7 @@ namespace Comm
 				prevPosition = position + 1;
 				position = contents.find("\n", position + 1); // Find the next occurrence, if any
 				SendGcode(line.c_str());
-				UI::POPUP_WINDOW->SetProgress((int)((100 * prevPosition / contents.size())));
+				UI::POPUP_WINDOW.SetProgress((int)((100 * prevPosition / contents.size())));
 			}
 			SendGcode("M29");
 			break;
@@ -270,7 +270,7 @@ namespace Comm
 				static int s_progress = 0;
 				if (s_progress >= 90)
 					return false;
-				UI::POPUP_WINDOW->SetProgress(s_progress);
+				UI::POPUP_WINDOW.SetProgress(s_progress);
 				s_progress += 10;
 				return true;
 			});
@@ -279,12 +279,12 @@ namespace Comm
 			query["name"] = filename;
 			if (!Post("/rr_upload", r, query, contents))
 			{
-				UI::CONSOLE->AddResponse(
+				UI::CONSOLE.AddResponse(
 					utils::format("HTTP error %d %s: Failed to upload file: %s", r.code, r.body, filename).c_str());
 				unregisterDelayedCallback("upload_file_progress");
-				UI::POPUP_WINDOW->Open();
-				UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("upload_failed").c_str());
-				UI::POPUP_WINDOW->SetText(r.body.c_str());
+				UI::POPUP_WINDOW.Open();
+				UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upload_failed").c_str());
+				UI::POPUP_WINDOW.SetText(r.body.c_str());
 				return false;
 			}
 			break;
@@ -292,10 +292,10 @@ namespace Comm
 		default:
 			break;
 		}
-		UI::POPUP_WINDOW->Open();
-		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("finished_uploading").c_str());
-		UI::POPUP_WINDOW->SetText(filename);
-		UI::POPUP_WINDOW->SetProgress(100);
+		UI::POPUP_WINDOW.Open();
+		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("finished_uploading").c_str());
+		UI::POPUP_WINDOW.SetText(filename);
+		UI::POPUP_WINDOW.SetProgress(100);
 		return true;
 	}
 
@@ -310,7 +310,7 @@ namespace Comm
 			query["name"] = filename;
 			if (!Get("/rr_download", r, query))
 			{
-				UI::CONSOLE->AddResponse(
+				UI::CONSOLE.AddResponse(
 					utils::format("HTTP error %d: Failed to download file: %s", r.code, filename).c_str());
 				return false;
 			}
@@ -339,7 +339,7 @@ namespace Comm
 				JsonDecoder decoder;
 				if (r.code != 200)
 				{
-					UI::CONSOLE->AddResponse(
+					UI::CONSOLE.AddResponse(
 						utils::format("HTTP error %d: Failed to get model update for flags: %s", r.code, flags)
 							.c_str());
 					return false;
@@ -370,7 +370,7 @@ namespace Comm
 				JsonDecoder decoder;
 				if (r.code != 200)
 				{
-					UI::CONSOLE->AddResponse(
+					UI::CONSOLE.AddResponse(
 						utils::format(
 							"HTTP error %d: Failed to get model update for key: %s, flags: %s", r.code, key, flags)
 							.c_str());
@@ -455,7 +455,7 @@ namespace Comm
 					dbg("Name = %s", filename);
 					if (r.code != 200)
 					{
-						UI::CONSOLE->AddResponse(
+						UI::CONSOLE.AddResponse(
 							utils::format("HTTP error %d: Failed to get file info for file: %s", r.code, r.body)
 								.c_str());
 						return false;
@@ -463,7 +463,7 @@ namespace Comm
 					reader.parse(r.body, body);
 					if (body.isMember("err") && body["err"].asInt() != 0)
 					{
-						UI::CONSOLE->AddResponse(
+						UI::CONSOLE.AddResponse(
 							utils::format(
 								"Failed to get file info for file: %s, returned error %d", r.body, body["err"].asInt())
 								.c_str());

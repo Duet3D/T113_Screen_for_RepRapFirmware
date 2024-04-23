@@ -199,7 +199,7 @@ namespace UI::ObjectCancel
 	void CancelJobObject(const int index)
 	{
 		OM::JobObject* object = OM::GetJobObject(index);
-		UI::POPUP_WINDOW->Open([index, object]() {
+		UI::POPUP_WINDOW.Open([index, object]() {
 			if (object == nullptr)
 			{
 				warn("Invalid object index %d", index);
@@ -207,11 +207,10 @@ namespace UI::ObjectCancel
 			}
 			OM::SetJobObjectActive(object->index, object->cancelled);
 		});
-		UI::POPUP_WINDOW->SetTitle(
+		UI::POPUP_WINDOW.SetTitle(
 			LANGUAGEMANAGER->getValue(object->cancelled ? "resume_object" : "cancel_object").c_str());
-		UI::POPUP_WINDOW->SetTextf(
-			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
-		UI::POPUP_WINDOW->CancelTimeout();
+		UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
+		UI::POPUP_WINDOW.CancelTimeout();
 	}
 
 	void CancelCurrentJobObject()
@@ -224,11 +223,10 @@ namespace UI::ObjectCancel
 			return;
 		}
 
-		UI::POPUP_WINDOW->Open([index]() { OM::SetJobObjectActive(index, false); });
-		UI::POPUP_WINDOW->SetTitle(LANGUAGEMANAGER->getValue("cancel_object").c_str());
-		UI::POPUP_WINDOW->SetTextf(
-			LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
-		UI::POPUP_WINDOW->CancelTimeout();
+		UI::POPUP_WINDOW.Open([index]() { OM::SetJobObjectActive(index, false); });
+		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("cancel_object").c_str());
+		UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("cancel_object_text").c_str(), index, object->name.c_str());
+		UI::POPUP_WINDOW.CancelTimeout();
 	}
 
 	static void DrawObject(const OM::JobObject* object,

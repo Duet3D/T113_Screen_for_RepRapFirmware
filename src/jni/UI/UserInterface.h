@@ -75,7 +75,7 @@ namespace UI
 	class Window
 	{
 	  public:
-		static Window* GetInstance();
+		static Window& GetInstance();
 		void AddHome(ZKBase* home);
 		void ClearHome();
 		void OpenWindow(ZKBase* window);
@@ -161,10 +161,10 @@ namespace UI
 	{
 	  public:
 		Console() {}
-		static Console* GetInstance()
+		static Console& GetInstance()
 		{
 			static Console console;
-			return &console;
+			return console;
 		}
 		void Init(ZKListView* console, ZKEditText* input);
 		void AddCommand(const std::string& command);

@@ -180,7 +180,7 @@ namespace Comm
 		// Open M291 message box if required
 		if (OM::g_currentAlert.mode != OM::Alert::Mode::None && OM::g_currentAlert.seq != OM::g_lastAlertSeq)
 		{
-			UI::POPUP_WINDOW->Open();
+			UI::POPUP_WINDOW.Open();
 			UI::SetM291Popup(OM::g_currentAlert);
 			OM::g_lastAlertSeq = OM::g_currentAlert.seq;
 		}
@@ -249,7 +249,7 @@ namespace Comm
 					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
 					if (thumbnail->AboveCacheLimit())
 					{
-						UI::POPUP_WINDOW->SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
+						UI::POPUP_WINDOW.SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
 					}
 					thumbnail->context.state = ThumbnailState::Cached;
 				}
@@ -416,7 +416,7 @@ namespace Comm
 
 		if (errors > parserMinErrors)
 		{
-			UI::CONSOLE->AddResponse(utils::format("Warning: received %d malformed responses.", errors).c_str());
+			UI::CONSOLE.AddResponse(utils::format("Warning: received %d malformed responses.", errors).c_str());
 			error("Warning: received %d malformed responses for id \"%s\"", errors, id);
 		}
 		if (g_currentRespSeq == nullptr)

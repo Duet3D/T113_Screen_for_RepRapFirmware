@@ -126,7 +126,7 @@ There are some parts of the UI for this screen that are more complex than a sing
     ```cpp
     #include "UI/UserInterface.h"
 
-    UI::NUMPAD_WINDOW->Open(const char* header,
+    UI::NUMPAD_WINDOW.Open(const char* header,
                             const int value,
                             function<void(int)> onValueChanged,
                             function<void(int)> onConfirm);
@@ -140,7 +140,7 @@ There are some parts of the UI for this screen that are more complex than a sing
     ```cpp
     #include "UI/UserInterface.h"
 
-    UI::SLIDER_WINDOW->Open(const char* header, // The header text
+    UI::SLIDER_WINDOW.Open(const char* header, // The header text
 				  const char* prefix, // The prefix text, displayed on left of slider
 				  const char* suffix, // The suffix text, displayed on right of slider
 				  const char* unit,	  // The unit text, displayed after the value
@@ -182,7 +182,7 @@ There are some parts of the UI for this screen that are more complex than a sing
     ```cpp
     #include "UI/UserInterface.h"
 
-    UI::POPUP_WINDOW->Open(function<void(void)> okCb,
+    UI::POPUP_WINDOW.Open(function<void(void)> okCb,
                            function<void(void)> cancelCb);
     ```
   * Can set the position after opening with `SetPosition(UI::VerticalPosition, UI::HorizontalPosition)` method
@@ -281,13 +281,13 @@ There are some parts of the UI for this screen that are more complex than a sing
   * Only 1 window can be open at a time. Opening a new window will close the current window.
     ```cpp
     #include "UI/UserInterface.h"
-    UI::WINDOW->Open(mWindowPtr);
+    UI::WINDOW.Open(mWindowPtr);
     ```
 * Overlay:
   * Multiple overlays can be open at the same time. Opening a new overlay will close the current overlay by default unless specifically requested not to.
     ```cpp
     #include "UI/UserInterface.h"
-    UI::WINDOW->OpenOverlay(mOverlayWindowPtr, closeAlreadyOpen);
+    UI::WINDOW.OpenOverlay(mOverlayWindowPtr, closeAlreadyOpen);
     ```
 
 #### Accessing GUI Elements
