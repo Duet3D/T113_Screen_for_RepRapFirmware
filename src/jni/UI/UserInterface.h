@@ -65,8 +65,10 @@ namespace UI
 		webcam,
 	};
 
+	extern uint32_t g_moveFeedRates[6];
 	extern uint32_t g_extrusionFeedRates[5];
 	extern uint32_t g_extrusionFeedDistances[7];
+	extern uint32_t g_defaultMoveFeedRate;
 	extern uint32_t g_defaultExtrusionFeedRate;
 	extern uint32_t g_defaultExtrusionFeedDistance;
 

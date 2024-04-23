@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mMoveFeedratePtr;
 static ZKTextView* mTextView53Ptr;
 static ZKEditText* mWebcamUpdateIntervalInputPtr;
 static ZKTextView* mTextView52Ptr;
@@ -239,15 +240,10 @@ static ZKWindow* mExtrudeWindowPtr;
 static ZKButton* mDisableMotorsBtnPtr;
 static ZKTextView* mTextView17Ptr;
 static ZKTextView* mTextView16Ptr;
-static ZKButton* mFeedrateBtn5Ptr;
-static ZKButton* mFeedrateBtn4Ptr;
-static ZKButton* mFeedrateBtn3Ptr;
-static ZKButton* mFeedrateBtn2Ptr;
 static ZKTextView* mTextView2Ptr;
 static ZKButton* mHeightmapBtnPtr;
 static ZKButton* mMeshLevelBtnPtr;
 static ZKButton* mTrueLevelBtnPtr;
-static ZKButton* mFeedrateBtn1Ptr;
 static ZKListView* mAxisControlListViewPtr;
 static ZKButton* mHomeAllBtnPtr;
 static ZKWindow* mMoveWindowPtr;
@@ -350,14 +346,9 @@ static S_ButtonCallback sButtonCallbackTab[] = {
     ID_MAIN_ExtrudeBtn, onButtonClick_ExtrudeBtn,
     ID_MAIN_RetractBtn, onButtonClick_RetractBtn,
     ID_MAIN_DisableMotorsBtn, onButtonClick_DisableMotorsBtn,
-    ID_MAIN_FeedrateBtn5, onButtonClick_FeedrateBtn5,
-    ID_MAIN_FeedrateBtn4, onButtonClick_FeedrateBtn4,
-    ID_MAIN_FeedrateBtn3, onButtonClick_FeedrateBtn3,
-    ID_MAIN_FeedrateBtn2, onButtonClick_FeedrateBtn2,
     ID_MAIN_HeightmapBtn, onButtonClick_HeightmapBtn,
     ID_MAIN_MeshLevelBtn, onButtonClick_MeshLevelBtn,
     ID_MAIN_TrueLevelBtn, onButtonClick_TrueLevelBtn,
-    ID_MAIN_FeedrateBtn1, onButtonClick_FeedrateBtn1,
     ID_MAIN_HomeAllBtn, onButtonClick_HomeAllBtn,
     ID_MAIN_ConsoleBtn, onButtonClick_ConsoleBtn,
     ID_MAIN_MacroBtn, onButtonClick_MacroBtn,
@@ -447,22 +438,12 @@ static S_ButtonCallback sButtonCallbackTab[] = {
 	onButtonClick_RetractBtn,
 	ID_MAIN_DisableMotorsBtn,
 	onButtonClick_DisableMotorsBtn,
-	ID_MAIN_FeedrateBtn5,
-	onButtonClick_FeedrateBtn5,
-	ID_MAIN_FeedrateBtn4,
-	onButtonClick_FeedrateBtn4,
-	ID_MAIN_FeedrateBtn3,
-	onButtonClick_FeedrateBtn3,
-	ID_MAIN_FeedrateBtn2,
-	onButtonClick_FeedrateBtn2,
 	ID_MAIN_HeightmapBtn,
 	onButtonClick_HeightmapBtn,
 	ID_MAIN_MeshLevelBtn,
 	onButtonClick_MeshLevelBtn,
 	ID_MAIN_TrueLevelBtn,
 	onButtonClick_TrueLevelBtn,
-	ID_MAIN_FeedrateBtn1,
-	onButtonClick_FeedrateBtn1,
 	ID_MAIN_HomeAllBtn,
 	onButtonClick_HomeAllBtn,
 	ID_MAIN_ConsoleBtn,
@@ -502,6 +483,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_MoveFeedrate, getListItemCount_MoveFeedrate, obtainListItemData_MoveFeedrate, onListItemClick_MoveFeedrate,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
@@ -869,6 +851,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mMoveFeedratePtr = NULL;
 	mTextView53Ptr = NULL;
 	mWebcamUpdateIntervalInputPtr = NULL;
 	mTextView52Ptr = NULL;
@@ -1104,15 +1087,10 @@ mainActivity::~mainActivity() {
     mDisableMotorsBtnPtr = NULL;
     mTextView17Ptr = NULL;
     mTextView16Ptr = NULL;
-    mFeedrateBtn5Ptr = NULL;
-    mFeedrateBtn4Ptr = NULL;
-    mFeedrateBtn3Ptr = NULL;
-    mFeedrateBtn2Ptr = NULL;
     mTextView2Ptr = NULL;
     mHeightmapBtnPtr = NULL;
     mMeshLevelBtnPtr = NULL;
     mTrueLevelBtnPtr = NULL;
-    mFeedrateBtn1Ptr = NULL;
     mAxisControlListViewPtr = NULL;
     mHomeAllBtnPtr = NULL;
     mMoveWindowPtr = NULL;
@@ -1145,6 +1123,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mMoveFeedratePtr = (ZKListView*)findControlByID(ID_MAIN_MoveFeedrate);if(mMoveFeedratePtr!= NULL){mMoveFeedratePtr->setListAdapter(this);mMoveFeedratePtr->setItemClickListener(this);}
     mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);if(mWebcamUpdateIntervalInputPtr!= NULL){mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);}
     mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);if(mWebcamUrlListPtr!= NULL){mWebcamUrlListPtr->setListAdapter(this);mWebcamUrlListPtr->setItemClickListener(this);}
     mWebcamSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamSelectList);if(mWebcamSelectListPtr!= NULL){mWebcamSelectListPtr->setListAdapter(this);mWebcamSelectListPtr->setItemClickListener(this);}
@@ -1410,15 +1389,10 @@ void mainActivity::onCreate() {
     mDisableMotorsBtnPtr = (ZKButton*)findControlByID(ID_MAIN_DisableMotorsBtn);
     mTextView17Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView17);
     mTextView16Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView16);
-    mFeedrateBtn5Ptr = (ZKButton*)findControlByID(ID_MAIN_FeedrateBtn5);
-    mFeedrateBtn4Ptr = (ZKButton*)findControlByID(ID_MAIN_FeedrateBtn4);
-    mFeedrateBtn3Ptr = (ZKButton*)findControlByID(ID_MAIN_FeedrateBtn3);
-    mFeedrateBtn2Ptr = (ZKButton*)findControlByID(ID_MAIN_FeedrateBtn2);
     mTextView2Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView2);
     mHeightmapBtnPtr = (ZKButton*)findControlByID(ID_MAIN_HeightmapBtn);
     mMeshLevelBtnPtr = (ZKButton*)findControlByID(ID_MAIN_MeshLevelBtn);
     mTrueLevelBtnPtr = (ZKButton*)findControlByID(ID_MAIN_TrueLevelBtn);
-    mFeedrateBtn1Ptr = (ZKButton*)findControlByID(ID_MAIN_FeedrateBtn1);
     mAxisControlListViewPtr = (ZKListView*)findControlByID(ID_MAIN_AxisControlListView);if(mAxisControlListViewPtr!= NULL){mAxisControlListViewPtr->setListAdapter(this);mAxisControlListViewPtr->setItemClickListener(this);}
     mHomeAllBtnPtr = (ZKButton*)findControlByID(ID_MAIN_HomeAllBtn);
     mMoveWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MoveWindow);

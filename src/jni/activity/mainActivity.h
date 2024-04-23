@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_MoveFeedrate    80036
 #define ID_MAIN_TextView53    50099
 #define ID_MAIN_WebcamUpdateIntervalInput    51004
 #define ID_MAIN_TextView52    50098
@@ -285,15 +286,10 @@
 #define ID_MAIN_DisableMotorsBtn    20038
 #define ID_MAIN_TextView17    50038
 #define ID_MAIN_TextView16    50037
-#define ID_MAIN_FeedrateBtn5    20025
-#define ID_MAIN_FeedrateBtn4    20024
-#define ID_MAIN_FeedrateBtn3    20023
-#define ID_MAIN_FeedrateBtn2    20022
 #define ID_MAIN_TextView2    50008
 #define ID_MAIN_HeightmapBtn    20021
 #define ID_MAIN_MeshLevelBtn    20020
 #define ID_MAIN_TrueLevelBtn    20019
-#define ID_MAIN_FeedrateBtn1    20018
 #define ID_MAIN_AxisControlMachinePositionSubItem    24028
 #define ID_MAIN_AxisControlUserPositionSubItem    24027
 #define ID_MAIN_AxisControlSubItem8    24014

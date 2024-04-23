@@ -52,8 +52,10 @@ const OM::FileSystem::File* sSelectedFile;
 
 namespace UI
 {
+	uint32_t g_moveFeedRates[] = {300, 100, 50, 20, 10, 5};
 	uint32_t g_extrusionFeedRates[] = {50, 10, 5, 2, 1};
 	uint32_t g_extrusionFeedDistances[] = {100, 50, 20, 10, 5, 2, 1};
+	uint32_t g_defaultMoveFeedRate = 50;
 	uint32_t g_defaultExtrusionFeedRate = 5;
 	uint32_t g_defaultExtrusionFeedDistance = 10;
 

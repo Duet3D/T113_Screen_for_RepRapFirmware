@@ -78,8 +78,6 @@
  * In Eclipse IDE, use the "alt + /" shortcut key to open the smart prompt
  */
 
-static int s_feedRate = 6000;
-
 /**
  * Register timer
  * Fill the array to register the timer
@@ -172,8 +170,6 @@ static void onUI_init()
 		observerArrayEnd->Init(UI::g_observerMapArrayEnd);
 		observerArrayEnd = observerArrayEnd->next;
 	}
-
-	mFeedrateBtn1Ptr->setSelected(true);
 
 	info("UI initialized");
 }
@@ -578,49 +574,34 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 		distance = 50;
 		break;
 	}
-	Comm::DUET.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, s_feedRate);
+	Comm::DUET.SendGcodef("G91\nG1 %s%d F%d\nG90\n", axis->letter, distance, UI::g_defaultMoveFeedRate * 60);
 }
 
-static void selectFeedRateBtn(ZKButton* pButton)
+static int getListItemCount_MoveFeedrate(const ZKListView* pListView)
 {
-	mFeedrateBtn1Ptr->setSelected(false);
-	mFeedrateBtn2Ptr->setSelected(false);
-	mFeedrateBtn3Ptr->setSelected(false);
-	mFeedrateBtn4Ptr->setSelected(false);
-	mFeedrateBtn5Ptr->setSelected(false);
-	pButton->setSelected(true);
+	// LOGD("getListItemCount_MoveFeedrate !\n");
+	return ARRAY_SIZE(UI::g_moveFeedRates);
 }
 
-static bool onButtonClick_FeedrateBtn1(ZKButton* pButton)
+static void obtainListItemData_MoveFeedrate(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	s_feedRate = 100 * 60;
-	selectFeedRateBtn(pButton);
-	return false;
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_moveFeedRates))
+	{
+		return;
+	}
+	pListItem->setTextf("%d", UI::g_moveFeedRates[index]);
+	pListItem->setSelected(UI::g_defaultMoveFeedRate == UI::g_moveFeedRates[index]);
 }
 
-static bool onButtonClick_FeedrateBtn2(ZKButton *pButton) {
-	s_feedRate = 50 * 60;
-	selectFeedRateBtn(pButton);
-	return false;
+static void onListItemClick_MoveFeedrate(ZKListView* pListView, int index, int id)
+{
+	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_moveFeedRates))
+	{
+		return;
+	}
+	UI::g_defaultMoveFeedRate = UI::g_moveFeedRates[index];
 }
 
-static bool onButtonClick_FeedrateBtn3(ZKButton *pButton) {
-	s_feedRate = 20 * 60;
-	selectFeedRateBtn(pButton);
-	return false;
-}
-
-static bool onButtonClick_FeedrateBtn4(ZKButton *pButton) {
-	s_feedRate = 10 * 60;
-	selectFeedRateBtn(pButton);
-	return false;
-}
-
-static bool onButtonClick_FeedrateBtn5(ZKButton *pButton) {
-	s_feedRate = 1 * 60;
-	selectFeedRateBtn(pButton);
-	return false;
-}
 static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_ConsoleListView !\n");
 	return MAX_RESPONSE_LINES;
