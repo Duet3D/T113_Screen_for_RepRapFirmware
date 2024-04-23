@@ -67,6 +67,11 @@ constexpr unsigned int MAX_COMMAND_LENGTH = 50;
 constexpr unsigned int MAX_RESPONSE_LINE_LENGTH = 80;
 constexpr unsigned int MAX_RESPONSE_LINES = 500;
 
+/* Webcam */
+constexpr size_t MAX_WEBCAMS = 20;
+constexpr int32_t DEFAULT_WEBCAM_UPDATE_INTERVAL = 500;
+constexpr int32_t MINIMUM_WEBCAM_UPDATE_INTERVAL = 100;
+
 /* Misc UI */
 constexpr bool DEFAULT_SHOW_SETUP_ON_STARTUP = true;
 constexpr const char* DEFAULT_LANGUAGE_CODE = "en_US";

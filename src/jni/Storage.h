@@ -29,4 +29,8 @@ constexpr const char* ID_BUZZER_ENABLED = "buzzer_enabled";
 constexpr const char* ID_SYS_LANG_CODE_KEY = "sys_lang_code_key";
 constexpr const char* ID_SYS_BRIGHTNESS_KEY = "sys_brightness_key";
 
+constexpr const char* ID_WEBCAM_URL = "webcam_url_%d";
+constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam_active_index";
+constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam_update_interval";
+
 #endif /* JNI_STORAGE_H_ */

@@ -44,7 +44,8 @@ namespace UI
 		network,
 		settings,
 		debug,
-		object_cancel
+		object_cancel,
+		webcam,
 	};
 
 	enum class SettingsSlideWindowIndex
@@ -62,6 +63,7 @@ namespace UI
 		theme,
 		screensaver,
 		buzzer,
+		webcam,
 	};
 
 	extern uint32_t g_extrusionFeedRates[5];

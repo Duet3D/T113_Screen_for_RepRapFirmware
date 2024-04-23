@@ -14,6 +14,7 @@
 #include "curl/curl.h"
 #include "restclient-cpp/connection.h"
 #include "utils/utils.h"
+#include <manager/ConfigManager.h>
 #include <system/Thread.h>
 #include <vector>
 
@@ -210,7 +211,7 @@ namespace Comm
 		conn->AppendHeader("Content-Type", "application/json");
 
 		// if using a non-standard Certificate Authority (CA) trust file
-		// conn->SetCAInfoFilePath(ConfigManager::getInstance()->getResFilePath("cacert.pem"));
+		conn->SetCAInfoFilePath(CONFIGMANAGER->getResFilePath("cacert.pem"));
 
 		dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
 		r = conn->get("");

@@ -4,6 +4,17 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView53Ptr;
+static ZKEditText* mWebcamUpdateIntervalInputPtr;
+static ZKTextView* mTextView52Ptr;
+static ZKButton* mAddWebcamBtnPtr;
+static ZKListView* mWebcamUrlListPtr;
+static ZKWindow* mWebcamSettingWindowPtr;
+static ZKTextView* mWebcamFeedPtr;
+static ZKListView* mWebcamSelectListPtr;
+static ZKTextView* mTextView51Ptr;
+static ZKWindow* mWebcamSelectWindowPtr;
+static ZKWindow* mWebcamWindowPtr;
 static ZKButton* mCancelCurrentObjectBtnPtr;
 static ZKListView* mObjectCancelXAxisPtr;
 static ZKListView* mObjectCancelYAxisPtr;
@@ -297,9 +308,6 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
-    ID_MAIN_CancelCurrentObjectBtn, onButtonClick_CancelCurrentObjectBtn,
-    ID_MAIN_HeightMapRefresh, onButtonClick_HeightMapRefresh,
-    ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
     ID_MAIN_Button1, onButtonClick_Button1,
     ID_MAIN_EStopBtn, onButtonClick_EStopBtn,
     ID_MAIN_CloseGuideBtn, onButtonClick_CloseGuideBtn,
@@ -322,6 +330,9 @@ static S_ButtonCallback sButtonCallbackTab[] = {
     ID_MAIN_NumPad2, onButtonClick_NumPad2,
     ID_MAIN_NumPad1, onButtonClick_NumPad1,
     ID_MAIN_SliderCloseBtn, onButtonClick_SliderCloseBtn,
+    ID_MAIN_OverlayModalZone, onButtonClick_OverlayModalZone,
+    ID_MAIN_AddWebcamBtn, onButtonClick_AddWebcamBtn,
+    ID_MAIN_CancelCurrentObjectBtn, onButtonClick_CancelCurrentObjectBtn,
     ID_MAIN_PrintResumeBtn, onButtonClick_PrintResumeBtn,
     ID_MAIN_PrintCancelBtn, onButtonClick_PrintCancelBtn,
     ID_MAIN_PrintPauseBtn, onButtonClick_PrintPauseBtn,
@@ -329,6 +340,7 @@ static S_ButtonCallback sButtonCallbackTab[] = {
     ID_MAIN_PrintBabystepDecBtn, onButtonClick_PrintBabystepDecBtn,
     ID_MAIN_UsbFiles, onButtonClick_UsbFiles,
     ID_MAIN_FileRefreshBtn, onButtonClick_FileRefreshBtn,
+    ID_MAIN_HeightMapRefresh, onButtonClick_HeightMapRefresh,
     ID_MAIN_ConsoleMacroBtn3, onButtonClick_ConsoleMacroBtn3,
     ID_MAIN_ConsoleMacroBtn2, onButtonClick_ConsoleMacroBtn2,
     ID_MAIN_ConsoleMacroBtn1, onButtonClick_ConsoleMacroBtn1,
@@ -351,6 +363,116 @@ static S_ButtonCallback sButtonCallbackTab[] = {
     ID_MAIN_MacroBtn, onButtonClick_MacroBtn,
     ID_MAIN_BackBtn, onButtonClick_BackBtn,
     ID_MAIN_HomeBtn, onButtonClick_HomeBtn,
+	ID_MAIN_AddWebcamBtn,
+	onButtonClick_AddWebcamBtn,
+	ID_MAIN_CancelCurrentObjectBtn,
+	onButtonClick_CancelCurrentObjectBtn,
+	ID_MAIN_HeightMapRefresh,
+	onButtonClick_HeightMapRefresh,
+	ID_MAIN_OverlayModalZone,
+	onButtonClick_OverlayModalZone,
+	ID_MAIN_Button1,
+	onButtonClick_Button1,
+	ID_MAIN_EStopBtn,
+	onButtonClick_EStopBtn,
+	ID_MAIN_CloseGuideBtn,
+	onButtonClick_CloseGuideBtn,
+	ID_MAIN_PreviousPageBtn,
+	onButtonClick_PreviousPageBtn,
+	ID_MAIN_NextPageBtn,
+	onButtonClick_NextPageBtn,
+	ID_MAIN_PopupOkBtn,
+	onButtonClick_PopupOkBtn,
+	ID_MAIN_PopupCancelBtn,
+	onButtonClick_PopupCancelBtn,
+	ID_MAIN_NumPadClearBtn,
+	onButtonClick_NumPadClearBtn,
+	ID_MAIN_NumPadCloseBtn,
+	onButtonClick_NumPadCloseBtn,
+	ID_MAIN_NumPadConfirm,
+	onButtonClick_NumPadConfirm,
+	ID_MAIN_NumPad0,
+	onButtonClick_NumPad0,
+	ID_MAIN_NumPadDel,
+	onButtonClick_NumPadDel,
+	ID_MAIN_NumPad9,
+	onButtonClick_NumPad9,
+	ID_MAIN_NumPad8,
+	onButtonClick_NumPad8,
+	ID_MAIN_NumPad7,
+	onButtonClick_NumPad7,
+	ID_MAIN_NumPad6,
+	onButtonClick_NumPad6,
+	ID_MAIN_NumPad5,
+	onButtonClick_NumPad5,
+	ID_MAIN_NumPad4,
+	onButtonClick_NumPad4,
+	ID_MAIN_NumPad3,
+	onButtonClick_NumPad3,
+	ID_MAIN_NumPad2,
+	onButtonClick_NumPad2,
+	ID_MAIN_NumPad1,
+	onButtonClick_NumPad1,
+	ID_MAIN_SliderCloseBtn,
+	onButtonClick_SliderCloseBtn,
+	ID_MAIN_PrintResumeBtn,
+	onButtonClick_PrintResumeBtn,
+	ID_MAIN_PrintCancelBtn,
+	onButtonClick_PrintCancelBtn,
+	ID_MAIN_PrintPauseBtn,
+	onButtonClick_PrintPauseBtn,
+	ID_MAIN_PrintBabystepIncBtn,
+	onButtonClick_PrintBabystepIncBtn,
+	ID_MAIN_PrintBabystepDecBtn,
+	onButtonClick_PrintBabystepDecBtn,
+	ID_MAIN_UsbFiles,
+	onButtonClick_UsbFiles,
+	ID_MAIN_FileRefreshBtn,
+	onButtonClick_FileRefreshBtn,
+	ID_MAIN_ConsoleMacroBtn3,
+	onButtonClick_ConsoleMacroBtn3,
+	ID_MAIN_ConsoleMacroBtn2,
+	onButtonClick_ConsoleMacroBtn2,
+	ID_MAIN_ConsoleMacroBtn1,
+	onButtonClick_ConsoleMacroBtn1,
+	ID_MAIN_ConsoleClearBtn,
+	onButtonClick_ConsoleClearBtn,
+	ID_MAIN_SendBtn,
+	onButtonClick_SendBtn,
+	ID_MAIN_UnloadFilamentBtn,
+	onButtonClick_UnloadFilamentBtn,
+	ID_MAIN_ExtrudeBtn,
+	onButtonClick_ExtrudeBtn,
+	ID_MAIN_RetractBtn,
+	onButtonClick_RetractBtn,
+	ID_MAIN_DisableMotorsBtn,
+	onButtonClick_DisableMotorsBtn,
+	ID_MAIN_FeedrateBtn5,
+	onButtonClick_FeedrateBtn5,
+	ID_MAIN_FeedrateBtn4,
+	onButtonClick_FeedrateBtn4,
+	ID_MAIN_FeedrateBtn3,
+	onButtonClick_FeedrateBtn3,
+	ID_MAIN_FeedrateBtn2,
+	onButtonClick_FeedrateBtn2,
+	ID_MAIN_HeightmapBtn,
+	onButtonClick_HeightmapBtn,
+	ID_MAIN_MeshLevelBtn,
+	onButtonClick_MeshLevelBtn,
+	ID_MAIN_TrueLevelBtn,
+	onButtonClick_TrueLevelBtn,
+	ID_MAIN_FeedrateBtn1,
+	onButtonClick_FeedrateBtn1,
+	ID_MAIN_HomeAllBtn,
+	onButtonClick_HomeAllBtn,
+	ID_MAIN_ConsoleBtn,
+	onButtonClick_ConsoleBtn,
+	ID_MAIN_MacroBtn,
+	onButtonClick_MacroBtn,
+	ID_MAIN_BackBtn,
+	onButtonClick_BackBtn,
+	ID_MAIN_HomeBtn,
+	onButtonClick_HomeBtn,
 };
 /***************/
 
@@ -380,27 +502,29 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
-    ID_MAIN_ObjectCancelXAxis, getListItemCount_ObjectCancelXAxis, obtainListItemData_ObjectCancelXAxis, onListItemClick_ObjectCancelXAxis,
-    ID_MAIN_ObjectCancelYAxis, getListItemCount_ObjectCancelYAxis, obtainListItemData_ObjectCancelYAxis, onListItemClick_ObjectCancelYAxis,
-    ID_MAIN_ObjectCancelObjectsList, getListItemCount_ObjectCancelObjectsList, obtainListItemData_ObjectCancelObjectsList, onListItemClick_ObjectCancelObjectsList,
-    ID_MAIN_HeightMapXAxis, getListItemCount_HeightMapXAxis, obtainListItemData_HeightMapXAxis, onListItemClick_HeightMapXAxis,
-    ID_MAIN_HeightMapYAxis, getListItemCount_HeightMapYAxis, obtainListItemData_HeightMapYAxis, onListItemClick_HeightMapYAxis,
-    ID_MAIN_HeightMapColorSchemeList, getListItemCount_HeightMapColorSchemeList, obtainListItemData_HeightMapColorSchemeList, onListItemClick_HeightMapColorSchemeList,
-    ID_MAIN_HeightMapScaleList, getListItemCount_HeightMapScaleList, obtainListItemData_HeightMapScaleList, onListItemClick_HeightMapScaleList,
-    ID_MAIN_HeightMapList, getListItemCount_HeightMapList, obtainListItemData_HeightMapList, onListItemClick_HeightMapList,
     ID_MAIN_ListView1, getListItemCount_ListView1, obtainListItemData_ListView1, onListItemClick_ListView1,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
     ID_MAIN_PopupSelectionList, getListItemCount_PopupSelectionList, obtainListItemData_PopupSelectionList, onListItemClick_PopupSelectionList,
+    ID_MAIN_WebcamUrlList, getListItemCount_WebcamUrlList, obtainListItemData_WebcamUrlList, onListItemClick_WebcamUrlList,
     ID_MAIN_ThemesList, getListItemCount_ThemesList, obtainListItemData_ThemesList, onListItemClick_ThemesList,
     ID_MAIN_GuidesList, getListItemCount_GuidesList, obtainListItemData_GuidesList, onListItemClick_GuidesList,
     ID_MAIN_BaudRateList, getListItemCount_BaudRateList, obtainListItemData_BaudRateList, onListItemClick_BaudRateList,
     ID_MAIN_DuetCommList, getListItemCount_DuetCommList, obtainListItemData_DuetCommList, onListItemClick_DuetCommList,
+    ID_MAIN_ObjectCancelXAxis, getListItemCount_ObjectCancelXAxis, obtainListItemData_ObjectCancelXAxis, onListItemClick_ObjectCancelXAxis,
+    ID_MAIN_ObjectCancelYAxis, getListItemCount_ObjectCancelYAxis, obtainListItemData_ObjectCancelYAxis, onListItemClick_ObjectCancelYAxis,
+    ID_MAIN_ObjectCancelObjectsList, getListItemCount_ObjectCancelObjectsList, obtainListItemData_ObjectCancelObjectsList, onListItemClick_ObjectCancelObjectsList,
     ID_MAIN_PrintTemperatureList, getListItemCount_PrintTemperatureList, obtainListItemData_PrintTemperatureList, onListItemClick_PrintTemperatureList,
     ID_MAIN_PrintExtruderPositionList, getListItemCount_PrintExtruderPositionList, obtainListItemData_PrintExtruderPositionList, onListItemClick_PrintExtruderPositionList,
     ID_MAIN_PrintPositionList, getListItemCount_PrintPositionList, obtainListItemData_PrintPositionList, onListItemClick_PrintPositionList,
     ID_MAIN_PrintFanList, getListItemCount_PrintFanList, obtainListItemData_PrintFanList, onListItemClick_PrintFanList,
+    ID_MAIN_WebcamSelectList, getListItemCount_WebcamSelectList, obtainListItemData_WebcamSelectList, onListItemClick_WebcamSelectList,
     ID_MAIN_FileListView, getListItemCount_FileListView, obtainListItemData_FileListView, onListItemClick_FileListView,
+    ID_MAIN_HeightMapColorSchemeList, getListItemCount_HeightMapColorSchemeList, obtainListItemData_HeightMapColorSchemeList, onListItemClick_HeightMapColorSchemeList,
+    ID_MAIN_HeightMapXAxis, getListItemCount_HeightMapXAxis, obtainListItemData_HeightMapXAxis, onListItemClick_HeightMapXAxis,
+    ID_MAIN_HeightMapYAxis, getListItemCount_HeightMapYAxis, obtainListItemData_HeightMapYAxis, onListItemClick_HeightMapYAxis,
+    ID_MAIN_HeightMapScaleList, getListItemCount_HeightMapScaleList, obtainListItemData_HeightMapScaleList, onListItemClick_HeightMapScaleList,
+    ID_MAIN_HeightMapList, getListItemCount_HeightMapList, obtainListItemData_HeightMapList, onListItemClick_HeightMapList,
     ID_MAIN_DebugCommandList, getListItemCount_DebugCommandList, obtainListItemData_DebugCommandList, onListItemClick_DebugCommandList,
     ID_MAIN_GcodeListView, getListItemCount_GcodeListView, obtainListItemData_GcodeListView, onListItemClick_GcodeListView,
     ID_MAIN_ConsoleListView, getListItemCount_ConsoleListView, obtainListItemData_ConsoleListView, onListItemClick_ConsoleListView,
@@ -409,10 +533,150 @@ static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
     ID_MAIN_ExtruderFeedrate, getListItemCount_ExtruderFeedrate, obtainListItemData_ExtruderFeedrate, onListItemClick_ExtruderFeedrate,
     ID_MAIN_ExtruderFeedDist, getListItemCount_ExtruderFeedDist, obtainListItemData_ExtruderFeedDist, onListItemClick_ExtruderFeedDist,
     ID_MAIN_AxisControlListView, getListItemCount_AxisControlListView, obtainListItemData_AxisControlListView, onListItemClick_AxisControlListView,
-    ID_MAIN_TempGraphYLabels, getListItemCount_TempGraphYLabels, obtainListItemData_TempGraphYLabels, onListItemClick_TempGraphYLabels,
     ID_MAIN_TempGraphXLabels, getListItemCount_TempGraphXLabels, obtainListItemData_TempGraphXLabels, onListItemClick_TempGraphXLabels,
+    ID_MAIN_TempGraphYLabels, getListItemCount_TempGraphYLabels, obtainListItemData_TempGraphYLabels, onListItemClick_TempGraphYLabels,
     ID_MAIN_TemperatureGraphLegend, getListItemCount_TemperatureGraphLegend, obtainListItemData_TemperatureGraphLegend, onListItemClick_TemperatureGraphLegend,
     ID_MAIN_ToolListView, getListItemCount_ToolListView, obtainListItemData_ToolListView, onListItemClick_ToolListView,
+	ID_MAIN_WebcamUrlList,
+	getListItemCount_WebcamUrlList,
+	obtainListItemData_WebcamUrlList,
+	onListItemClick_WebcamUrlList,
+	ID_MAIN_WebcamSelectList,
+	getListItemCount_WebcamSelectList,
+	obtainListItemData_WebcamSelectList,
+	onListItemClick_WebcamSelectList,
+	ID_MAIN_ObjectCancelXAxis,
+	getListItemCount_ObjectCancelXAxis,
+	obtainListItemData_ObjectCancelXAxis,
+	onListItemClick_ObjectCancelXAxis,
+	ID_MAIN_ObjectCancelYAxis,
+	getListItemCount_ObjectCancelYAxis,
+	obtainListItemData_ObjectCancelYAxis,
+	onListItemClick_ObjectCancelYAxis,
+	ID_MAIN_ObjectCancelObjectsList,
+	getListItemCount_ObjectCancelObjectsList,
+	obtainListItemData_ObjectCancelObjectsList,
+	onListItemClick_ObjectCancelObjectsList,
+	ID_MAIN_HeightMapXAxis,
+	getListItemCount_HeightMapXAxis,
+	obtainListItemData_HeightMapXAxis,
+	onListItemClick_HeightMapXAxis,
+	ID_MAIN_HeightMapYAxis,
+	getListItemCount_HeightMapYAxis,
+	obtainListItemData_HeightMapYAxis,
+	onListItemClick_HeightMapYAxis,
+	ID_MAIN_HeightMapColorSchemeList,
+	getListItemCount_HeightMapColorSchemeList,
+	obtainListItemData_HeightMapColorSchemeList,
+	onListItemClick_HeightMapColorSchemeList,
+	ID_MAIN_HeightMapScaleList,
+	getListItemCount_HeightMapScaleList,
+	obtainListItemData_HeightMapScaleList,
+	onListItemClick_HeightMapScaleList,
+	ID_MAIN_HeightMapList,
+	getListItemCount_HeightMapList,
+	obtainListItemData_HeightMapList,
+	onListItemClick_HeightMapList,
+	ID_MAIN_ListView1,
+	getListItemCount_ListView1,
+	obtainListItemData_ListView1,
+	onListItemClick_ListView1,
+	ID_MAIN_PopupAxisAdjusment,
+	getListItemCount_PopupAxisAdjusment,
+	obtainListItemData_PopupAxisAdjusment,
+	onListItemClick_PopupAxisAdjusment,
+	ID_MAIN_PopupAxisSelection,
+	getListItemCount_PopupAxisSelection,
+	obtainListItemData_PopupAxisSelection,
+	onListItemClick_PopupAxisSelection,
+	ID_MAIN_PopupSelectionList,
+	getListItemCount_PopupSelectionList,
+	obtainListItemData_PopupSelectionList,
+	onListItemClick_PopupSelectionList,
+	ID_MAIN_ThemesList,
+	getListItemCount_ThemesList,
+	obtainListItemData_ThemesList,
+	onListItemClick_ThemesList,
+	ID_MAIN_GuidesList,
+	getListItemCount_GuidesList,
+	obtainListItemData_GuidesList,
+	onListItemClick_GuidesList,
+	ID_MAIN_BaudRateList,
+	getListItemCount_BaudRateList,
+	obtainListItemData_BaudRateList,
+	onListItemClick_BaudRateList,
+	ID_MAIN_DuetCommList,
+	getListItemCount_DuetCommList,
+	obtainListItemData_DuetCommList,
+	onListItemClick_DuetCommList,
+	ID_MAIN_PrintTemperatureList,
+	getListItemCount_PrintTemperatureList,
+	obtainListItemData_PrintTemperatureList,
+	onListItemClick_PrintTemperatureList,
+	ID_MAIN_PrintExtruderPositionList,
+	getListItemCount_PrintExtruderPositionList,
+	obtainListItemData_PrintExtruderPositionList,
+	onListItemClick_PrintExtruderPositionList,
+	ID_MAIN_PrintPositionList,
+	getListItemCount_PrintPositionList,
+	obtainListItemData_PrintPositionList,
+	onListItemClick_PrintPositionList,
+	ID_MAIN_PrintFanList,
+	getListItemCount_PrintFanList,
+	obtainListItemData_PrintFanList,
+	onListItemClick_PrintFanList,
+	ID_MAIN_FileListView,
+	getListItemCount_FileListView,
+	obtainListItemData_FileListView,
+	onListItemClick_FileListView,
+	ID_MAIN_DebugCommandList,
+	getListItemCount_DebugCommandList,
+	obtainListItemData_DebugCommandList,
+	onListItemClick_DebugCommandList,
+	ID_MAIN_GcodeListView,
+	getListItemCount_GcodeListView,
+	obtainListItemData_GcodeListView,
+	onListItemClick_GcodeListView,
+	ID_MAIN_ConsoleListView,
+	getListItemCount_ConsoleListView,
+	obtainListItemData_ConsoleListView,
+	onListItemClick_ConsoleListView,
+	ID_MAIN_FilamentList,
+	getListItemCount_FilamentList,
+	obtainListItemData_FilamentList,
+	onListItemClick_FilamentList,
+	ID_MAIN_ExtrudeToolList,
+	getListItemCount_ExtrudeToolList,
+	obtainListItemData_ExtrudeToolList,
+	onListItemClick_ExtrudeToolList,
+	ID_MAIN_ExtruderFeedrate,
+	getListItemCount_ExtruderFeedrate,
+	obtainListItemData_ExtruderFeedrate,
+	onListItemClick_ExtruderFeedrate,
+	ID_MAIN_ExtruderFeedDist,
+	getListItemCount_ExtruderFeedDist,
+	obtainListItemData_ExtruderFeedDist,
+	onListItemClick_ExtruderFeedDist,
+	ID_MAIN_AxisControlListView,
+	getListItemCount_AxisControlListView,
+	obtainListItemData_AxisControlListView,
+	onListItemClick_AxisControlListView,
+	ID_MAIN_TempGraphYLabels,
+	getListItemCount_TempGraphYLabels,
+	obtainListItemData_TempGraphYLabels,
+	onListItemClick_TempGraphYLabels,
+	ID_MAIN_TempGraphXLabels,
+	getListItemCount_TempGraphXLabels,
+	obtainListItemData_TempGraphXLabels,
+	onListItemClick_TempGraphXLabels,
+	ID_MAIN_TemperatureGraphLegend,
+	getListItemCount_TemperatureGraphLegend,
+	obtainListItemData_TemperatureGraphLegend,
+	onListItemClick_TemperatureGraphLegend,
+	ID_MAIN_ToolListView,
+	getListItemCount_ToolListView,
+	obtainListItemData_ToolListView,
+	onListItemClick_ToolListView,
 	ID_MAIN_TempGraphYLabels,
 	getListItemCount_TempGraphYLabels,
 	obtainListItemData_TempGraphYLabels,
@@ -538,12 +802,33 @@ static S_EditTextInputCallback SEditTextInputCallbackTab[] = {
     ID_MAIN_EditText2, onEditTextChanged_EditText2,
     ID_MAIN_PopupNumberInput, onEditTextChanged_PopupNumberInput,
     ID_MAIN_PopupTextInput, onEditTextChanged_PopupTextInput,
+    ID_MAIN_WebcamUpdateIntervalInput, onEditTextChanged_WebcamUpdateIntervalInput,
     ID_MAIN_ScreensaverTimeoutInput, onEditTextChanged_ScreensaverTimeoutInput,
     ID_MAIN_InfoTimeoutInput, onEditTextChanged_InfoTimeoutInput,
     ID_MAIN_PollIntervalInput, onEditTextChanged_PollIntervalInput,
     ID_MAIN_PasswordInput, onEditTextChanged_PasswordInput,
     ID_MAIN_HostnameInput, onEditTextChanged_HostnameInput,
     ID_MAIN_EditText1, onEditTextChanged_EditText1,
+	ID_MAIN_WebcamUpdateIntervalInput,
+	onEditTextChanged_WebcamUpdateIntervalInput,
+	ID_MAIN_EditText2,
+	onEditTextChanged_EditText2,
+	ID_MAIN_PopupNumberInput,
+	onEditTextChanged_PopupNumberInput,
+	ID_MAIN_PopupTextInput,
+	onEditTextChanged_PopupTextInput,
+	ID_MAIN_ScreensaverTimeoutInput,
+	onEditTextChanged_ScreensaverTimeoutInput,
+	ID_MAIN_InfoTimeoutInput,
+	onEditTextChanged_InfoTimeoutInput,
+	ID_MAIN_PollIntervalInput,
+	onEditTextChanged_PollIntervalInput,
+	ID_MAIN_PasswordInput,
+	onEditTextChanged_PasswordInput,
+	ID_MAIN_HostnameInput,
+	onEditTextChanged_HostnameInput,
+	ID_MAIN_EditText1,
+	onEditTextChanged_EditText1,
 };
 
 typedef void (*VideoViewCallback)(ZKVideoView *pVideoView, int msg);
@@ -584,7 +869,18 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
-    mCancelCurrentObjectBtnPtr = NULL;
+	mTextView53Ptr = NULL;
+	mWebcamUpdateIntervalInputPtr = NULL;
+	mTextView52Ptr = NULL;
+	mAddWebcamBtnPtr = NULL;
+	mWebcamUrlListPtr = NULL;
+	mWebcamSettingWindowPtr = NULL;
+	mWebcamFeedPtr = NULL;
+	mWebcamSelectListPtr = NULL;
+	mTextView51Ptr = NULL;
+	mWebcamSelectWindowPtr = NULL;
+	mWebcamWindowPtr = NULL;
+	mCancelCurrentObjectBtnPtr = NULL;
     mObjectCancelXAxisPtr = NULL;
     mObjectCancelYAxisPtr = NULL;
     mObjectCancelPainterPtr = NULL;
@@ -849,7 +1145,35 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
-    mCancelCurrentObjectBtnPtr = (ZKButton*)findControlByID(ID_MAIN_CancelCurrentObjectBtn);
+    mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);if(mWebcamUpdateIntervalInputPtr!= NULL){mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);}
+    mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);if(mWebcamUrlListPtr!= NULL){mWebcamUrlListPtr->setListAdapter(this);mWebcamUrlListPtr->setItemClickListener(this);}
+    mWebcamSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamSelectList);if(mWebcamSelectListPtr!= NULL){mWebcamSelectListPtr->setListAdapter(this);mWebcamSelectListPtr->setItemClickListener(this);}
+	mTextView53Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView53);
+	mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);
+	if (mWebcamUpdateIntervalInputPtr != NULL)
+	{
+		mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);
+	}
+	mTextView52Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView52);
+	mAddWebcamBtnPtr = (ZKButton*)findControlByID(ID_MAIN_AddWebcamBtn);
+	mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);
+	if (mWebcamUrlListPtr != NULL)
+	{
+		mWebcamUrlListPtr->setListAdapter(this);
+		mWebcamUrlListPtr->setItemClickListener(this);
+	}
+	mWebcamSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSettingWindow);
+	mWebcamFeedPtr = (ZKTextView*)findControlByID(ID_MAIN_WebcamFeed);
+	mWebcamSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamSelectList);
+	if (mWebcamSelectListPtr != NULL)
+	{
+		mWebcamSelectListPtr->setListAdapter(this);
+		mWebcamSelectListPtr->setItemClickListener(this);
+	}
+	mTextView51Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView51);
+	mWebcamSelectWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSelectWindow);
+	mWebcamWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamWindow);
+	mCancelCurrentObjectBtnPtr = (ZKButton*)findControlByID(ID_MAIN_CancelCurrentObjectBtn);
     mObjectCancelXAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelXAxis);if(mObjectCancelXAxisPtr!= NULL){mObjectCancelXAxisPtr->setListAdapter(this);mObjectCancelXAxisPtr->setItemClickListener(this);}
     mObjectCancelYAxisPtr = (ZKListView*)findControlByID(ID_MAIN_ObjectCancelYAxis);if(mObjectCancelYAxisPtr!= NULL){mObjectCancelYAxisPtr->setListAdapter(this);mObjectCancelYAxisPtr->setItemClickListener(this);}
     mObjectCancelPainterPtr = (ZKPainter*)findControlByID(ID_MAIN_ObjectCancelPainter);

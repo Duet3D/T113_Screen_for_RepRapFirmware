@@ -59,6 +59,7 @@
     <string name="network">Network</string>
     <string name="settings">Settings</string>
     <string name="debug">Debug</string>
+    <string name="webcam">Webcam</string>
 
     <!-- Move Page -->
     <string name="axis_control_home">Home %s</string>
@@ -139,6 +140,9 @@
 
     <!-- Network Page -->
 
+    <!-- Webcam -->
+    <string name="select_webcam">Select Webcam</string>
+
     <!-- Popup messages -->
     <string name="uart_buffer_overflow">UART buffer overflow</string>
     <string name="run_macro">Run Macro: %s</string>
@@ -192,6 +196,11 @@
     <string name="enabled">Enabled</string>
     <string name="set_brightness">Set Brightness</string>
     <string name="buzzer">Buzzer</string>
+    <string name="webcam_settings_header">Webcam Settings</string>
+    <string name="delete_webcam">Delete</string>
+    <string name="add_new_webcam">Add New Webcam</string>
+    <string name="webcam_update_interval_ms">Update Interval (ms):</string>
+    <string name="webcam_update_interval_ms_hint">Update Interval (ms)</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

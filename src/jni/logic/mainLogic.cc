@@ -25,6 +25,7 @@
 #include "UI/OmObserver.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
+#include "UI/Webcam.h"
 #include "Upgrade/Upgrade.h"
 #include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
@@ -149,6 +150,9 @@ static void onUI_init()
 	// Object Cancel
 	mObjectCancelPainterPtr->setTouchable(true);
 	mObjectCancelPainterPtr->setTouchListener(&UI::ObjectCancel::GetTouchListener());
+
+	// Webcams
+	UI::Webcam::RestoreWebcamSettings();
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -384,6 +388,12 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 		break;
 	case (int)UI::SlideWindowIndex::object_cancel:
 		UI::WINDOW->OpenWindow(mObjectCancelWindowPtr);
+		break;
+	case (int)UI::SlideWindowIndex::webcam:
+		UI::Webcam::RegisterUpdateLoop();
+		UI::WINDOW->OpenWindow(mWebcamWindowPtr);
+		break;
+	default:
 		break;
 	}
 }
@@ -995,6 +1005,9 @@ static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, in
 		break;
 	case (int)UI::SettingsSlideWindowIndex::buzzer:
 		UI::WINDOW->OpenOverlay(mBuzzerSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::webcam:
+		UI::WINDOW->OpenOverlay(mWebcamSettingWindowPtr);
 		break;
 	default:
 		break;
@@ -1702,4 +1715,56 @@ static bool onButtonClick_CancelCurrentObjectBtn(ZKButton* pButton)
 {
 	UI::ObjectCancel::CancelCurrentJobObject();
 	return false;
+}
+
+static int getListItemCount_WebcamSelectList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_WebcamSelectList !\n");
+	return UI::Webcam::GetWebcamCount();
+}
+
+static void obtainListItemData_WebcamSelectList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(index);
+	pListItem->setSelected(index == (int)UI::Webcam::GetActiveWebcamIndex());
+}
+
+static void onListItemClick_WebcamSelectList(ZKListView* pListView, int index, int id)
+{
+	UI::Webcam::SetActiveWebcamIndex(index);
+}
+
+static int getListItemCount_WebcamUrlList(const ZKListView* pListView)
+{
+	// LOGD("getListItemCount_WebcamUrlList !\n");
+	return UI::Webcam::GetWebcamCount();
+}
+
+static void obtainListItemData_WebcamUrlList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setTextf("[%d] %s", index, UI::Webcam::GetWebcamUrl(index).c_str());
+}
+
+static void onListItemClick_WebcamUrlList(ZKListView* pListView, int index, int id)
+{
+	switch (id)
+	{
+	case ID_MAIN_DeleteWebcamSubItem:
+		UI::Webcam::DeleteWebcam(index);
+		break;
+	default:
+		UI::Webcam::OpenWebcamUrlInput(index);
+		break;
+	}
+}
+
+static bool onButtonClick_AddWebcamBtn(ZKButton* pButton)
+{
+	UI::Webcam::AddNewWebcam();
+	return false;
+}
+
+static void onEditTextChanged_WebcamUpdateIntervalInput(const std::string& text)
+{
+	UI::Webcam::SetWebcamUpdateInterval(atoi(text.c_str()));
 }

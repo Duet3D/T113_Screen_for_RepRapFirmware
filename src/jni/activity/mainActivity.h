@@ -28,6 +28,18 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_TextView53    50099
+#define ID_MAIN_WebcamUpdateIntervalInput    51004
+#define ID_MAIN_TextView52    50098
+#define ID_MAIN_AddWebcamBtn    20055
+#define ID_MAIN_DeleteWebcamSubItem    24038
+#define ID_MAIN_WebcamUrlList    80035
+#define ID_MAIN_WebcamSettingWindow    110048
+#define ID_MAIN_WebcamFeed    50097
+#define ID_MAIN_WebcamSelectList    80034
+#define ID_MAIN_TextView51    50096
+#define ID_MAIN_WebcamSelectWindow    110047
+#define ID_MAIN_WebcamWindow    110046
 #define ID_MAIN_CancelCurrentObjectBtn    20054
 #define ID_MAIN_ObjectCancelXAxis    80032
 #define ID_MAIN_ObjectCancelYAxis    80031
