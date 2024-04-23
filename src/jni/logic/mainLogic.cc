@@ -17,6 +17,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
+#include "UI/FileList.h"
 #include "UI/Gcodes.h"
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
@@ -188,26 +189,17 @@ static void onUI_intent(const Intent *intentPtr)
 /*
  * Triggered when the interface is displayed
  */
-static void onUI_show()
-{
-
-}
+static void onUI_show() {}
 
 /*
  * Triggered when the interface is hidden
  */
-static void onUI_hide()
-{
-
-}
+static void onUI_hide() {}
 
 /*
  * Triggered when the interface completely exits
  */
-static void onUI_quit()
-{
-
-}
+static void onUI_quit() {}
 
 /**
  * Serial data callback interface
@@ -656,97 +648,16 @@ static int getListItemCount_FileListView(const ZKListView *pListView) {
     return OM::FileSystem::GetItemCount();
 }
 
-static void obtainListItemData_FileListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-	// LOGD(" obtainListItemData_ FileListView  !!!\n");
-	ZKListView::ZKListSubItem* pFileName = pListItem->findSubItemByID(ID_MAIN_FileNameSubItem);
-	ZKListView::ZKListSubItem *pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
-	ZKListView::ZKListSubItem *pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);
-	ZKListView::ZKListSubItem *pFileDate = pListItem->findSubItemByID(ID_MAIN_FileDateSubItem);
-	ZKListView::ZKListSubItem* pFileThumbnail = pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem);
-
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
-	if (item == nullptr)
-		return;
-//	dbg("Files: settings list item %d name to %s", index, item->GetName().c_str());
-	pFileName->setText(item->GetName());
-	switch (item->GetType())
-	{
-	case OM::FileSystem::FileSystemItemType::file: {
-		pListItem->setSelected(false);
-		pFileType->setTextTr("file");
-		pFileSize->setTextTrf("file_size", item->GetReadableSize().c_str());
-		if (IsThumbnailCached(item->GetPath().c_str()))
-		{
-			SetThumbnail(pFileThumbnail, item->GetPath().c_str());
-		}
-		else
-		{
-			pFileThumbnail->setBackgroundPic("");
-		}
-		break;
-	}
-	case OM::FileSystem::FileSystemItemType::folder:
-		pListItem->setSelected(true);
-		pFileType->setTextTr("folder");
-		pFileSize->setText("");
-		pFileThumbnail->setBackgroundPic("");
-		break;
-	}
-	pFileDate->setTextTrf("file_date", item->GetDate().c_str());
+static void obtainListItemData_FileListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::FileList::RenderFileListItem(pListItem, index);
 }
 
-static void onListItemClick_FileListView(ZKListView *pListView, int index, int id) {
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
-	if (UI::POPUP_WINDOW.IsBlocking())
-		return;
-	UI::POPUP_WINDOW.Cancel();
-	switch (item->GetType())
-	{
-	case OM::FileSystem::FileSystemItemType::file: {
-		OM::FileSystem::File* file = (OM::FileSystem::File*)item;
-		UI::SetSelectedFile(file);
-		if (OM::FileSystem::IsMacroFolder())
-		{
-			UI::POPUP_WINDOW.Open([]() { UI::RunSelectedFile(); });
-			UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("run_macro").c_str(), item->GetName().c_str());
-		}
-		else if (OM::FileSystem::IsUsbFolder())
-		{
-			std::string ext = OM::FileSystem::GetFileExtension(file->GetName());
-			if (ext == "img")
-			{
-				UI::POPUP_WINDOW.Open([]() { UpgradeFromUSB(UI::GetSelectedFile()->GetPath()); });
-				UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("upgrade_from").c_str(), item->GetName().c_str());
-			}
-			else
-			{
-				UI::POPUP_WINDOW.Open([]() { OM::FileSystem::UploadFile(UI::GetSelectedFile()); });
-				UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upload_file").c_str());
-				UI::POPUP_WINDOW.SetText(item->GetName().c_str());
-				UI::POPUP_WINDOW.SetTextScrollable(false);
-			}
-		}
-		else
-		{
-			FILEINFO_CACHE->QueueLargeThumbnailRequest(item->GetPath());
-			UI::POPUP_WINDOW.Open([]() {
-				UI::RunSelectedFile();
-				UI::WINDOW.OpenWindow(mPrintWindowPtr);
-			});
-			UI::SetPopupFileInfo();
-		}
-		break;
-	}
-	case OM::FileSystem::FileSystemItemType::folder:
-		if (OM::FileSystem::IsUsbFolder())
-		{
-			OM::FileSystem::RequestUsbFiles(item->GetPath());
-			break;
-		}
-		OM::FileSystem::RequestFiles(item->GetPath());
-		break;
-	}
+static void onListItemClick_FileListView(ZKListView* pListView, int index, int id)
+{
+	UI::FileList::OnFileListItemClick(index);
 }
+
 static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
 	Comm::DUET.SendGcode("M290 S-0.05");
 	return false;
