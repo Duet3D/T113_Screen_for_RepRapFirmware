@@ -36,6 +36,12 @@ If the firmware becomes corrupted or it is not prompting you to upgrade, rename 
 
 ### Changing Language
 
+### Adding a webcam
+* Go to `Settings` -> `Webcam`
+* Enter the URL of the webcam stream.
+  * The URL must return a `.png` image.
+  * The URL will be polled every 0.5 seconds by default.
+
 ## Developer Documentation
 
 The screen is developed in C++ using the Flythings SDK to provide a GUI framework. All the logic is contained in `src/jni/` with the GUI defined in `src/ui/main.ftu`.
@@ -105,7 +111,7 @@ To make fundamental changes to the GUI, you will need to use the Flythings IDE. 
 > To interact with the UI elements in the code, you need to use the `ID` of the element. Ensure that any element you create has a unique and descriptive `ID` field.
 
 After you have modified and saved the `main.ftu` file with your changes to the GUI, any element that has been added will not be added into the code until you compile the project.
-- Flythings will automatically generate the relevant code to interact with the UI elements, this code is placed in the `activity` folder. **DO NOT MODIFY THE CONTENTS OF THE ACTIVITY FOLDER MANUALLY!**.
+- Flythings will automatically generate the relevant code to interact with the UI elements, this code is placed in the `activity` folder. **TAKE EXTREME CARE IF MODIFYING THE CONTENTS OF THE ACTIVITY FOLDER MANUALLY!**.
 - Flythings will also add any control functions relevant to the UI element into `src/jni/logic/mainLogic.cc`. Details on these are described in the Flythings documentation.
 - Flythings will **NOT** delete any code in `mainLogic.cc` for elements that have been removed from the GUI, you will need to manually remove these.
 
