@@ -10,7 +10,7 @@
 #include "Debug.h"
 
 #include "ObjectCancel.h"
-#include "Themes.h"
+#include "UI/Themes.h"
 #include "control/ZKPainter.h"
 
 namespace UI::ObjectCancel

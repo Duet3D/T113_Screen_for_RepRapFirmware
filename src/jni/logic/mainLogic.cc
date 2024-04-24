@@ -18,18 +18,18 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
-#include "UI/ExtrusionControl.h"
-#include "UI/FileList.h"
 #include "UI/Gcodes.h"
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
-#include "UI/Heightmap.h"
-#include "UI/ObjectCancel.h"
+#include "UI/Logic/ExtrusionControl.h"
+#include "UI/Logic/FileList.h"
+#include "UI/Logic/Heightmap.h"
+#include "UI/Logic/ObjectCancel.h"
+#include "UI/Logic/Settings.h"
+#include "UI/Logic/Webcam.h"
 #include "UI/OmObserver.h"
-#include "UI/Settings.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
-#include "UI/Webcam.h"
 #include "Upgrade/Upgrade.h"
 #include "manager/LanguageManager.h"
 #include "os/MountMonitor.h"
@@ -670,7 +670,7 @@ static bool onButtonClick_ConsoleClearBtn(ZKButton* pButton)
 
 static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 {
-	UI::WINDOW.OpenOverlay(mDebugWindowPtr);
+	UI::WINDOW.OpenOverlay(ID_MAIN_DebugWindow);
 	return false;
 }
 

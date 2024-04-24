@@ -10,17 +10,17 @@
 #include "Debug.h"
 
 #include "FileList.h"
+#include <ObjectModel/Files.h>
+#include <UI/Popup.h>
 #include <activity/mainActivity.h>
 #include <comm/FileInfo.h>
 #include <comm/Thumbnail.h>
 #include <control/ZKListView.h>
 #include <control/ZKTextView.h>
 #include <manager/LanguageManager.h>
-#include <ObjectModel/Files.h>
-#include <upgrade/Upgrade.h>
-#include <UI/Popup.h>
-#include <window/ZKWindow.h>
 #include <string>
+#include <upgrade/Upgrade.h>
+#include <window/ZKWindow.h>
 
 namespace UI::FileList
 {

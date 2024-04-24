@@ -8,7 +8,7 @@
 #ifndef JNI_UI_FILELIST_H_
 #define JNI_UI_FILELIST_H_
 
-#include "UserInterface.h"
+#include "UI/UserInterface.h"
 
 namespace UI::FileList
 {

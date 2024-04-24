@@ -8,7 +8,7 @@
 #ifndef JNI_UI_OBJECTCANCEL_H_
 #define JNI_UI_OBJECTCANCEL_H_
 
-#include "UserInterface.h"
+#include "UI/UserInterface.h"
 
 #include "ObjectModel/Job.h"
 
@@ -29,6 +29,6 @@ namespace UI::ObjectCancel
 
 	void RenderObjectMap();
 	TouchListener& GetTouchListener();
-} // namespace UI
+} // namespace UI::ObjectCancel
 
 #endif /* JNI_UI_OBJECTCANCEL_H_ */

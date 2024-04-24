@@ -9,7 +9,7 @@
 #include "Debug.h"
 
 #include "Configuration.h"
-#include "UI/ObjectCancel.h"
+#include "UI/Logic/ObjectCancel.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "manager/LanguageManager.h"

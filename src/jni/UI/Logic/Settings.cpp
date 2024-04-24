@@ -14,9 +14,9 @@
 #include "Hardware/Duet.h"
 #include "Settings.h"
 #include "Storage.h"
-#include "UI/Heightmap.h"
+#include "UI/Logic/Heightmap.h"
+#include "UI/Logic/Webcam.h"
 #include "UI/Themes.h"
-#include "UI/Webcam.h"
 #include <storage/StoragePreferences.h>
 
 namespace UI::Settings

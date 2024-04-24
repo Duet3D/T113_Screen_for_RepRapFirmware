@@ -84,6 +84,11 @@ namespace UI
 
 	void Window::OpenWindow(ZKBase* window)
 	{
+		if (window == nullptr)
+		{
+			warn("Window is null");
+			return;
+		}
 		CloseOverlay();
 		CloseLastWindow();
 		info("Opening window %d", window->getID());
@@ -91,6 +96,17 @@ namespace UI
 		RemoveFromVector<ZKBase*>(m_closedWindows, window);
 		if (!InVector<ZKBase*>(m_homeWindows, window))
 			AddToVector<ZKBase*>(m_openedWindows, window);
+	}
+
+	void Window::OpenOverlay(const int overlayId, bool closeAlreadyOpened)
+	{
+		ZKBase* overlay = UI::GetUIControl<ZKBase>(overlayId);
+		if (overlay == nullptr)
+		{
+			warn("Overlay %d is null", overlayId);
+			return;
+		}
+		OpenOverlay(overlay, closeAlreadyOpened);
 	}
 
 	void Window::OpenOverlay(ZKBase* overlay, bool closeAlreadyOpened)

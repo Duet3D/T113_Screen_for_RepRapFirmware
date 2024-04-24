@@ -80,6 +80,7 @@ namespace UI
 		void ClearHome();
 		void OpenWindow(const int windowId);
 		void OpenWindow(ZKBase* window);
+		void OpenOverlay(const int windowId, bool closeAlreadyOpened = true);
 		void OpenOverlay(ZKBase* window, bool closeAlreadyOpened = true);
 		bool IsOverlayOpened();
 		bool CloseOverlay();
