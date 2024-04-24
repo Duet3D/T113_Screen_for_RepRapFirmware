@@ -596,6 +596,7 @@ namespace UI
 
 	void NumPadWindow::Clear()
 	{
+		dbg("Clearing numpad window");
 		m_onValueChanged = [](int) {};
 		m_onConfirm = [](int) {};
 		m_header->setText("");
@@ -604,6 +605,7 @@ namespace UI
 
 	void NumPadWindow::Close()
 	{
+		info("Closing numpad window");
 		Clear();
 		WINDOW.CloseOverlay();
 	}

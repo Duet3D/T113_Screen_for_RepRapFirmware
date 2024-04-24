@@ -12,6 +12,7 @@
 #include "Graph.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Sensor.h"
+#include "UI/Themes.h"
 #include "uart/CommDef.h"
 #include "utils/TimeHelper.h"
 
@@ -21,6 +22,7 @@ namespace UI
 
 	void Graph::Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend)
 	{
+		const Theme::Theme* theme = Theme::GetCurrentTheme();
 		m_diagram = diagram;
 		m_xLabels = xLabels;
 		m_yLabels = yLabels;
@@ -30,7 +32,8 @@ namespace UI
 		{
 			// TODO each line takes ~245KB of memory, can this be made more efficient?
 			// There does not appear to be a way to delete lines once they have been created
-			m_diagram->addDiagramInfo(2, 0xFFFFFFFF, ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
+			m_diagram->addDiagramInfo(
+				2, theme->colors->diagram.colors[i], ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
 			m_waveVisible[i] = true;
 			m_waveCount++;
 		}

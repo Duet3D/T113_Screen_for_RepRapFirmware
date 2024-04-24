@@ -307,7 +307,6 @@ namespace UI::Theme
 			/* Overrides */
 			// Windows
 			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_Window1)->setBackgroundColor(Colors::Blue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::DarkerGray);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Blue4);

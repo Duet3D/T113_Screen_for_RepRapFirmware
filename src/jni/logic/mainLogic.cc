@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "DebugCommands.h"
 #include "Hardware/Duet.h"
+#include "Hardware/Reset.h"
 #include "Hardware/Usb.h"
 #include "Library/bmp.h"
 #include "ObjectModel/Alert.h"
@@ -25,6 +26,7 @@
 #include "UI/Heightmap.h"
 #include "UI/ObjectCancel.h"
 #include "UI/OmObserver.h"
+#include "UI/Settings.h"
 #include "UI/Themes.h"
 #include "UI/UserInterface.h"
 #include "UI/Webcam.h"
@@ -104,16 +106,14 @@ static void onUI_init()
 	registerUserTimer(TIMER_UPDATE_DATA,
 					  (int)DEFAULT_PRINTER_POLL_INTERVAL); // Register here so it can be reset with stored poll interval
 
-	// Buzzer
-	mBuzzerEnabledPtr->setChecked(StoragePreferences::getBool(ID_BUZZER_ENABLED, true));
-
 	// Comm
 	Comm::DUET.Init();
 
 	// UI
 	UI::Init(mRootWindowPtr);
+	UI::Settings::Init(); // Sets various UI elements states
 	UI::TEMPERATURE_GRAPH.Init(mTempGraphPtr, mTempGraphXLabelsPtr, mTempGraphYLabelsPtr, mTemperatureGraphLegendPtr);
-	UI::Theme::SetTheme(StoragePreferences::getString(ID_THEME, "dark"));
+
 	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW.AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
@@ -127,32 +127,13 @@ static void onUI_init()
 
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
-	mShowSetupOnStartupPtr->setSelected(
-		StoragePreferences::getBool(ID_SHOW_SETUP_ON_STARTUP, DEFAULT_SHOW_SETUP_ON_STARTUP));
-
-	// Screensaver
-	bool screensaverEnable = StoragePreferences::getBool(ID_SCREENSAVER_ENABLE, true);
-	mScreensaverEnablePtr->setSelected(screensaverEnable);
-	EASYUICONTEXT->setScreensaverEnable(screensaverEnable);
-	mScreensaverTimeoutInputPtr->setText(StoragePreferences::getInt(ID_SCREENSAVER_TIMEOUT, 120));
-
-	// Duet communication settings
-	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[(int)Comm::DUET.GetCommunicationType()]);
-	mHostnameInputPtr->setText(Comm::DUET.GetHostname());
-	mPasswordInputPtr->setText(Comm::DUET.GetPassword());
-	mPollIntervalInputPtr->setText((int)Comm::DUET.GetPollInterval());
-	mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW.GetTimeout());
 
 	// Heightmap
-	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0)));
 	UI::RenderScale();
 
 	// Object Cancel
 	mObjectCancelPainterPtr->setTouchable(true);
 	mObjectCancelPainterPtr->setTouchListener(&UI::ObjectCancel::GetTouchListener());
-
-	// Webcams
-	UI::Webcam::RestoreWebcamSettings();
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);
@@ -417,9 +398,43 @@ static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int in
 	UI::TEMPERATURE_GRAPH.SetWaveVisible(index, !UI::TEMPERATURE_GRAPH.IsWaveVisible(index));
 }
 
+static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
+{
+	return pListView->getCols();
+}
+
+static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	int range = UI::TEMPERATURE_GRAPH.GetTimeRange();
+	int time = -range + (index * range / (pListView->getCols() - 1));
+	pListItem->setTextf("%ds", time);
+}
+
+static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, int id) {}
+
+static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
+{
+	return pListView->getRows();
+}
+
+static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	float yMax = UI::TEMPERATURE_GRAPH.GetYMax();
+	float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
+	pListItem->setTextf("%.1f", label);
+}
+
+static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id) {}
+
 // =====================================================================================================================
 // Popups
 // =====================================================================================================================
+
+static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
+{
+	UI::WINDOW.CloseOverlay();
+	return false;
+}
 
 static bool onButtonClick_NumPad0(ZKButton* pButton)
 {
@@ -427,73 +442,275 @@ static bool onButtonClick_NumPad0(ZKButton* pButton)
 	return false;
 }
 
-static bool onButtonClick_NumPad1(ZKButton *pButton) {
+static bool onButtonClick_NumPad1(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('1');
 	return false;
 }
 
-static bool onButtonClick_NumPad2(ZKButton *pButton) {
+static bool onButtonClick_NumPad2(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('2');
 	return false;
 }
 
-static bool onButtonClick_NumPad3(ZKButton *pButton) {
+static bool onButtonClick_NumPad3(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('3');
 	return false;
 }
 
-static bool onButtonClick_NumPad4(ZKButton *pButton) {
+static bool onButtonClick_NumPad4(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('4');
 	return false;
 }
 
-static bool onButtonClick_NumPad5(ZKButton *pButton) {
+static bool onButtonClick_NumPad5(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('5');
 	return false;
 }
 
-static bool onButtonClick_NumPad6(ZKButton *pButton) {
+static bool onButtonClick_NumPad6(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('6');
 	return false;
 }
 
-static bool onButtonClick_NumPad7(ZKButton *pButton) {
+static bool onButtonClick_NumPad7(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('7');
 	return false;
 }
 
-static bool onButtonClick_NumPad8(ZKButton *pButton) {
+static bool onButtonClick_NumPad8(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('8');
 	return false;
 }
 
-static bool onButtonClick_NumPad9(ZKButton *pButton) {
+static bool onButtonClick_NumPad9(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.AddOneChar('9');
 	return false;
 }
 
-static bool onButtonClick_NumPadDel(ZKButton *pButton) {
+static bool onButtonClick_NumPadDel(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.DelOneChar();
 	return false;
 }
 
-static bool onButtonClick_NumPadConfirm(ZKButton *pButton) {
+static bool onButtonClick_NumPadConfirm(ZKButton* pButton)
+{
 	UI::NUMPAD_WINDOW.Confirm();
 	return false;
 }
 
 static bool onButtonClick_NumPadCloseBtn(ZKButton* pButton)
 {
-	LOGD(" ButtonClick NumPadCloseBtn !!!\n");
 	UI::NUMPAD_WINDOW.Close();
 	return false;
 }
 
 static bool onButtonClick_NumPadClearBtn(ZKButton* pButton)
 {
-	LOGD(" ButtonClick NumPadClearBtn !!!\n");
 	UI::NUMPAD_WINDOW.ClearValue();
 	return false;
+}
+
+static void onProgressChanged_Slider(ZKSeekBar* pSeekBar, int progress)
+{
+	UI::SLIDER_WINDOW.Callback();
+}
+
+static bool onButtonClick_SliderCloseBtn(ZKButton* pButton)
+{
+	UI::WINDOW.CloseOverlay();
+	return false;
+}
+static bool onButtonClick_PopupCancelBtn(ZKButton* pButton)
+{
+	UI::POPUP_WINDOW.Cancel();
+	return false;
+}
+
+static bool onButtonClick_PopupOkBtn(ZKButton* pButton)
+{
+	UI::POPUP_WINDOW.Ok();
+	return false;
+}
+
+static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
+{
+	return OM::g_currentAlert.choices_count;
+}
+
+static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(OM::g_currentAlert.choices[index].c_str());
+}
+
+static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
+{
+	Comm::DUET.SendGcodef("M292 R{%lu} S%lu\n", index, OM::g_currentAlert.seq);
+}
+
+static void onEditTextChanged_PopupTextInput(const std::string& text)
+{
+	if (UI::POPUP_WINDOW.GetMode() != OM::Alert::Mode::Text)
+		return;
+	UI::POPUP_WINDOW.ValidateTextInput(text.c_str());
+}
+
+static void onEditTextChanged_PopupNumberInput(const std::string& text)
+{
+	switch (UI::POPUP_WINDOW.GetMode())
+	{
+	case OM::Alert::Mode::NumberInt: {
+		UI::POPUP_WINDOW.ValidateIntegerInput(text.c_str());
+		break;
+	}
+	case OM::Alert::Mode::NumberFloat: {
+		UI::POPUP_WINDOW.ValidateFloatInput(text.c_str());
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+static int getListItemCount_PopupAxisSelection(const ZKListView* pListView)
+{
+	return UI::POPUP_WINDOW.GetJogAxisCount();
+}
+
+static void obtainListItemData_PopupAxisSelection(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setSelected(index == UI::POPUP_WINDOW.selectedAxis);
+	pListItem->setText(UI::POPUP_WINDOW.GetJogAxis(index)->letter);
+}
+
+static void onListItemClick_PopupAxisSelection(ZKListView* pListView, int index, int id)
+{
+	dbg("Popup axis selection %d", index);
+	UI::POPUP_WINDOW.selectedAxis = index;
+}
+
+static int getListItemCount_PopupAxisAdjusment(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(UI::POPUP_WINDOW.jogAmounts);
+}
+
+static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::POPUP_WINDOW.jogAmounts[index]);
+}
+
+static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
+{
+	Comm::DUET.SendGcode("M120\n"); // Push
+	Comm::DUET.SendGcode("G91\n");	// Relative move
+	Comm::DUET.SendGcodef("G1 %s%.3f F%d\n",
+						  UI::POPUP_WINDOW.GetJogAxis(UI::POPUP_WINDOW.selectedAxis)->letter,
+						  UI::POPUP_WINDOW.jogAmounts[index],
+						  300);
+	Comm::DUET.SendGcode("M121\n"); // Pop
+}
+
+static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress) {}
+
+// =====================================================================================================================
+// Console Window
+// =====================================================================================================================
+
+static int getListItemCount_ConsoleListView(const ZKListView* pListView)
+{
+	return MAX_RESPONSE_LINES;
+}
+
+static void obtainListItemData_ConsoleListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(UI::CONSOLE.GetItem(index).c_str());
+}
+
+static void onListItemClick_ConsoleListView(ZKListView* pListView, int index, int id) {}
+
+static int getListItemCount_GcodeListView(const ZKListView* pListView)
+{
+	return sizeof(s_gcode) / sizeof(gcode);
+}
+
+static void obtainListItemData_GcodeListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setTextTr(s_gcode[index].displayText);
+}
+
+static void onListItemClick_GcodeListView(ZKListView* pListView, int index, int id) {}
+
+static void onEditTextChanged_ConsoleInput(const std::string& text)
+{
+	UI::CONSOLE.AddCommand(text);
+	Comm::DUET.SendGcode(text.c_str());
+}
+
+static bool onButtonClick_SendBtn(ZKButton* pButton)
+{
+	UI::CONSOLE.AddCommand(mConsoleInputPtr->getText());
+	Comm::DUET.SendGcode(mConsoleInputPtr->getText().c_str());
+	return true;
+}
+
+static bool onButtonClick_ConsoleClearBtn(ZKButton* pButton)
+{
+	UI::CONSOLE.Clear();
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
+{
+	UI::WINDOW.OpenOverlay(mDebugWindowPtr);
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
+{
+	UI::SLIDER_WINDOW.Open("Slider", "0", "100", "%", 0, 100, 50, [](int value) { dbg("Slider value: %d", value); });
+	UI::SLIDER_WINDOW.SetPosition(UI::VerticalPosition::center, UI::HorizontalPosition::center);
+	return false;
+}
+
+static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
+{
+	Comm::DUET.SendGcode("M122");
+	return false;
+}
+
+static int getListItemCount_DebugCommandList(const ZKListView* pListView)
+{
+	return Debug::GetCommandCount();
+}
+
+static void obtainListItemData_DebugCommandList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(command->id);
+}
+
+static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, int id)
+{
+	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
+	if (command == nullptr)
+	{
+		return;
+	}
+	command->callback();
 }
 
 // =====================================================================================================================
@@ -589,7 +806,6 @@ static void onListItemClick_AxisControlListView(ZKListView* pListView, int index
 
 static int getListItemCount_MoveFeedrate(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_MoveFeedrate !\n");
 	return ARRAY_SIZE(UI::g_moveFeedRates);
 }
 
@@ -613,544 +829,8 @@ static void onListItemClick_MoveFeedrate(ZKListView* pListView, int index, int i
 }
 
 // =====================================================================================================================
-// Console Window
+// Extrude Window
 // =====================================================================================================================
-
-static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
-    //LOGD("getListItemCount_ConsoleListView !\n");
-	return MAX_RESPONSE_LINES;
-}
-
-static void obtainListItemData_ConsoleListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    //LOGD(" obtainListItemData_ ConsoleListView  !!!\n");
-	pListItem->setText(UI::CONSOLE.GetItem(index).c_str());
-}
-
-static void onListItemClick_ConsoleListView(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ ConsoleListView  !!!\n");
-}
-
-static int getListItemCount_GcodeListView(const ZKListView *pListView) {
-	return sizeof(s_gcode) / sizeof(gcode);
-}
-
-static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-	pListItem->setTextTr(s_gcode[index].displayText);
-}
-
-static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
-}
-
-static void onEditTextChanged_ConsoleInput(const std::string& text)
-{
-	UI::CONSOLE.AddCommand(text);
-	Comm::DUET.SendGcode(text.c_str());
-}
-
-static bool onButtonClick_SendBtn(ZKButton* pButton)
-{
-	UI::CONSOLE.AddCommand(mConsoleInputPtr->getText());
-	Comm::DUET.SendGcode(mConsoleInputPtr->getText().c_str());
-	return true;
-}
-static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
-    UI::CONSOLE.Clear();
-    return false;
-}
-
-static bool onButtonClick_FileRefreshBtn(ZKButton *pButton) {
-	UI::POPUP_WINDOW.Close();
-	FILEINFO_CACHE->ClearCache();
-	OM::FileSystem::ClearFileSystem();
-	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
-    return false;
-}
-static int getListItemCount_FileListView(const ZKListView *pListView) {
-    //LOGD("getListItemCount_FileListView !\n");
-    return OM::FileSystem::GetItemCount();
-}
-
-static void obtainListItemData_FileListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	UI::FileList::RenderFileListItem(pListItem, index);
-}
-
-static void onListItemClick_FileListView(ZKListView* pListView, int index, int id)
-{
-	UI::FileList::OnFileListItemClick(index);
-}
-
-static bool onButtonClick_PrintBabystepDecBtn(ZKButton *pButton) {
-	Comm::DUET.SendGcode("M290 S-0.05");
-	return false;
-}
-
-static bool onButtonClick_PrintBabystepIncBtn(ZKButton *pButton) {
-	Comm::DUET.SendGcode("M290 S0.05");
-	return false;
-}
-
-static int getListItemCount_PrintFanList(const ZKListView *pListView) {
-    //LOGD("getListItemCount_PrintFanList !\n");
-    return OM::GetFanCount();
-}
-
-static void obtainListItemData_PrintFanList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    OM::Fan* fan = OM::GetFanBySlot(index);
-    if (fan == nullptr)
-    {
-    	return;
-    }
-	pListItem->setTextTrf("fan_status", fan->index, (int)(100 * fan->requestedValue));
-}
-
-static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
-{
-	OM::Fan* fan = OM::GetFanBySlot(index);
-	if (fan == nullptr)
-	{
-		return;
-	}
-	size_t fanIndex = fan->index;
-	UI::OpenSliderNumPad(
-		utils::format(LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index).c_str(),
-		"",
-		"",
-		"%",
-		0,
-		100,
-		(int)(fan->requestedValue * 100),
-		[fanIndex](int percent) {
-			OM::Fan* fan = OM::GetFan(fanIndex);
-			if (fan == nullptr)
-			{
-				return;
-			}
-			int fanSpeed = (percent * 255) / 100;
-			Comm::DUET.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
-		},
-		true);
-}
-
-static bool onButtonClick_PrintPauseBtn(ZKButton *pButton) {
-    OM::FileSystem::PausePrint();
-    return false;
-}
-
-static bool onButtonClick_PrintCancelBtn(ZKButton *pButton) {
-    OM::FileSystem::StopPrint();
-    UI::WINDOW.Home();
-    return false;
-}
-
-static bool onButtonClick_PrintResumeBtn(ZKButton *pButton) {
-	OM::FileSystem::ResumePrint();
-    return false;
-}
-
-static int getListItemCount_PrintPositionList(const ZKListView *pListView) {
-    return OM::Move::GetAxisCount();
-}
-
-static void obtainListItemData_PrintPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    ZKListView::ZKListSubItem* pMachinePosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListMachinePositionSubItem);
-    ZKListView::ZKListSubItem* pUserPosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListUserPositionSubItem);
-	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
-	if (axis == nullptr) return;
-
-	pListItem->setText(axis->letter);
-	pUserPosition->setText(axis->userPosition);
-	pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
-}
-
-static void onListItemClick_PrintPositionList(ZKListView* pListView, int index, int id) {}
-
-static int getListItemCount_PrintExtruderPositionList(const ZKListView *pListView) {
-    //LOGD("getListItemCount_PrintExtruderPositionList !\n");
-    return OM::Move::GetExtruderAxisCount();
-}
-
-static void obtainListItemData_PrintExtruderPositionList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-    ZKListView::ZKListSubItem* pSubItem = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
-	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
-	if (extruder == nullptr) return;
-
-	pListItem->setText(extruder->index);
-	pSubItem->setText(extruder->position);
-}
-
-static void onListItemClick_PrintExtruderPositionList(ZKListView *pListView, int index, int id) {
-	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
-	if (extruder == nullptr)
-	{
-		return;
-	}
-	size_t extruderIndex = extruder->index;
-	UI::OpenSliderNumPad(
-		utils::format(LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex).c_str(),
-		"",
-		"",
-		"%",
-		1,
-		200,
-		(int)(extruder->factor * 100),
-		[extruderIndex](int percent) {
-			OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
-			if (extruder == nullptr)
-			{
-				return;
-			}
-			Comm::DUET.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
-		});
-}
-
-static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar *pSeekBar, int progress) {
-	Comm::DUET.SendGcodef("M220 S%d\n", progress);
-}
-
-static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
-	return UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
-}
-
-static void obtainListItemData_PrintTemperatureList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	UI::ToolsList::Get("print")->ObtainListItemData(pListItem,
-													index,
-													ID_MAIN_PrintTemperatureListNameSubItem,
-													ID_MAIN_PrintTemperatureListStatusSubItem,
-													ID_MAIN_PrintTemperatureListCurrentSubItem,
-													ID_MAIN_PrintTemperatureListActiveSubItem,
-													ID_MAIN_PrintTemperatureListStandbySubItem);
-}
-
-static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int index, int id) {
-	UI::ToolsList::Get("print")->OnListItemClick(
-			index, id,
-			NULL, NULL,
-			ID_MAIN_PrintTemperatureListActiveSubItem, ID_MAIN_PrintTemperatureListStandbySubItem);
-}
-
-static void onProgressChanged_Slider(ZKSeekBar *pSeekBar, int progress) {
-	UI::SLIDER_WINDOW.Callback();
-}
-
-static bool onButtonClick_SliderCloseBtn(ZKButton *pButton) {
-	UI::WINDOW.CloseOverlay();
-	return false;
-}
-static bool onButtonClick_PopupCancelBtn(ZKButton* pButton)
-{
-	UI::POPUP_WINDOW.Cancel();
-	return false;
-}
-
-static bool onButtonClick_PopupOkBtn(ZKButton* pButton)
-{
-	UI::POPUP_WINDOW.Ok();
-	return false;
-}
-
-static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
-{
-	switch (index)
-	{
-	case (int)UI::SettingsSlideWindowIndex::language:
-		EASYUICONTEXT->openActivity("LanguageSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::duet:
-		mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-												  Comm::Duet::CommunicationType::uart);
-		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-													 Comm::Duet::CommunicationType::network);
-		UI::WINDOW.OpenOverlay(mDuetCommSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::update:
-		// EASYUICONTEXT->openActivity("UpgradeActivity");
-		UI::POPUP_WINDOW.Open([]() {
-			if (!UpgradeFromDuet())
-			{
-				registerDelayedCallback("upgrade_failed", 100, []() {
-					UI::POPUP_WINDOW.Open();
-					UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
-					return false;
-				});
-			}
-		});
-		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
-		break;
-	case (int)UI::SettingsSlideWindowIndex::restart:
-		// Synchronise data and save cached data to prevent data loss
-		sync();
-		reboot(RB_AUTOBOOT);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::dev:
-		EASYUICONTEXT->openActivity("DeveloperSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::power_off:
-		EASYUICONTEXT->openActivity("PowerOffActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::zk_setting:
-		EASYUICONTEXT->openActivity("ZKSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
-		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::guides:
-		UI::WINDOW.OpenOverlay(mGuideSelectionWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::brightness:
-		//! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
-		//! completely white and need a power cycle.
-		UI::SLIDER_WINDOW.Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
-								"",
-								"",
-								"%",
-								0,
-								100,
-								100 - BRIGHTNESSHELPER->getBrightness(),
-								[](int percent) {
-									BRIGHTNESSHELPER->setBrightness(100 - percent); // Flythings brightness is inverted
-								});
-		break;
-	case (int)UI::SettingsSlideWindowIndex::theme:
-		UI::WINDOW.OpenOverlay(mThemeSelectionWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::screensaver:
-		UI::WINDOW.OpenOverlay(mScreensaverSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::buzzer:
-		UI::WINDOW.OpenOverlay(mBuzzerSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::webcam:
-		UI::WINDOW.OpenOverlay(mWebcamSettingWindowPtr);
-		break;
-	default:
-		break;
-	}
-}
-
-static int getListItemCount_BaudRateList(const ZKListView* pListView)
-{
-	return ARRAY_SIZE(Comm::baudRates);
-}
-
-static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setSelected(Comm::baudRates[index].rate == Comm::DUET.GetBaudRate().rate);
-	pListItem->setText((int)Comm::baudRates[index].rate);
-}
-
-static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
-{
-	Comm::DUET.SetBaudRate(Comm::baudRates[index]);
-}
-static int getListItemCount_PopupSelectionList(const ZKListView* pListView)
-{
-	// LOGD("getListItemCount_PopupSelectionList !\n");
-	return OM::g_currentAlert.choices_count;
-}
-
-static void obtainListItemData_PopupSelectionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setText(OM::g_currentAlert.choices[index].c_str());
-}
-
-static void onListItemClick_PopupSelectionList(ZKListView* pListView, int index, int id)
-{
-	Comm::DUET.SendGcodef("M292 R{%lu} S%lu\n", index, OM::g_currentAlert.seq);
-	// LOGD(" onListItemClick_ PopupSelectionList  !!!\n");
-}
-
-static void onEditTextChanged_PopupTextInput(const std::string& text)
-{
-	if (UI::POPUP_WINDOW.GetMode() != OM::Alert::Mode::Text)
-		return;
-	UI::POPUP_WINDOW.ValidateTextInput(text.c_str());
-}
-
-static void onEditTextChanged_PopupNumberInput(const std::string& text)
-{
-	switch (UI::POPUP_WINDOW.GetMode())
-	{
-	case OM::Alert::Mode::NumberInt: {
-		UI::POPUP_WINDOW.ValidateIntegerInput(text.c_str());
-		break;
-	}
-	case OM::Alert::Mode::NumberFloat: {
-		UI::POPUP_WINDOW.ValidateFloatInput(text.c_str());
-		break;
-	}
-	default:
-		break;
-	}
-}
-
-static int getListItemCount_PopupAxisSelection(const ZKListView* pListView)
-{
-	return UI::POPUP_WINDOW.GetJogAxisCount();
-}
-
-static void obtainListItemData_PopupAxisSelection(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setSelected(index == UI::POPUP_WINDOW.selectedAxis);
-	pListItem->setText(UI::POPUP_WINDOW.GetJogAxis(index)->letter);
-}
-
-static void onListItemClick_PopupAxisSelection(ZKListView* pListView, int index, int id)
-{
-	dbg("Popup axis selection %d", index);
-	UI::POPUP_WINDOW.selectedAxis = index;
-}
-
-static int getListItemCount_PopupAxisAdjusment(const ZKListView* pListView)
-{
-	// LOGD("getListItemCount_PopupAxisAdjusment !\n");
-	return ARRAY_SIZE(UI::POPUP_WINDOW.jogAmounts);
-}
-
-static void obtainListItemData_PopupAxisAdjusment(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setText(UI::POPUP_WINDOW.jogAmounts[index]);
-}
-
-static void onListItemClick_PopupAxisAdjusment(ZKListView* pListView, int index, int id)
-{
-	Comm::DUET.SendGcode("M120\n"); // Push
-	Comm::DUET.SendGcode("G91\n");	// Relative move
-	Comm::DUET.SendGcodef("G1 %s%.3f F%d\n",
-						  UI::POPUP_WINDOW.GetJogAxis(UI::POPUP_WINDOW.selectedAxis)->letter,
-						  UI::POPUP_WINDOW.jogAmounts[index],
-						  300);
-	Comm::DUET.SendGcode("M121\n"); // Pop
-}
-
-static int getListItemCount_DuetCommList(const ZKListView* pListView)
-{
-	// LOGD("getListItemCount_DuetCommList !\n");
-	return (int)Comm::Duet::CommunicationType::COUNT;
-}
-
-static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
-	pListItem->setSelected(index == (int)Comm::DUET.GetCommunicationType());
-}
-
-static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
-{
-	Comm::DUET.SetCommunicationType((Comm::Duet::CommunicationType)index);
-	mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
-	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-												 Comm::Duet::CommunicationType::network);
-	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
-}
-
-static void onEditTextChanged_PollIntervalInput(const std::string& text)
-{
-	if (text.empty() || atoi(text.c_str()) < (int)MIN_PRINTER_POLL_INTERVAL)
-	{
-		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
-		return;
-	}
-	Comm::DUET.SetPollInterval(atoi(text.c_str()));
-}
-
-static void onEditTextChanged_HostnameInput(const std::string& text)
-{
-	dbg("Hostname input changed to %s", text.c_str());
-	Comm::DUET.SetHostname(text);
-}
-
-static void onEditTextChanged_PasswordInput(const std::string& text)
-{
-	Comm::DUET.SetPassword(text);
-}
-
-static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
-{
-	int32_t timeout = -1;
-	if (text.empty() || !Comm::GetInteger(text.c_str(), timeout) || timeout < 0)
-	{
-		mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW.GetTimeout());
-		return;
-	}
-	UI::POPUP_WINDOW.SetTimeout((uint32_t)timeout);
-}
-
-static bool onButtonClick_UsbFiles(ZKButton* pButton)
-{
-	dbg(" ButtonClick UsbFiles !!!\n");
-	OM::FileSystem::RequestUsbFiles("");
-	return false;
-}
-
-static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
-{
-	UI::WINDOW.OpenOverlay(mDebugWindowPtr);
-	return false;
-}
-
-static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
-{
-	UI::SLIDER_WINDOW.Open("Slider", "0", "100", "%", 0, 100, 50, [](int value) { dbg("Slider value: %d", value); });
-	UI::SLIDER_WINDOW.SetPosition(UI::VerticalPosition::center, UI::HorizontalPosition::center);
-	return false;
-}
-
-static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
-{
-	Comm::DUET.SendGcode("M122");
-	return false;
-}
-static bool onButtonClick_NextPageBtn(ZKButton* pButton)
-{
-	UI::GuidedSetup::GetCurrentGuide()->NextPage();
-	return false;
-}
-
-static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
-{
-	UI::GuidedSetup::GetCurrentGuide()->PreviousPage();
-	return false;
-}
-
-static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
-{
-	dbg("isChecked = %d", isChecked);
-	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
-}
-
-static bool onButtonClick_CloseGuideBtn(ZKButton *pButton)
-{
-	UI::GuidedSetup::Close();
-    return false;
-}
-
-static int getListItemCount_GuidesList(const ZKListView* pListView)
-{
-	return UI::GuidedSetup::GetGuideCount();
-}
-
-static void obtainListItemData_GuidesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
-	if (guide == nullptr)
-	{
-		pListItem->setText("");
-		return;
-	}
-	pListItem->setTextTr(guide->GetId());
-}
-
-static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
-{
-	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
-	if (guide == nullptr)
-	{
-		return;
-	}
-	UI::GuidedSetup::Show(guide->GetId());
-}
 
 static int getListItemCount_ExtruderFeedDist(const ZKListView* pListView)
 {
@@ -1230,6 +910,383 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 	return false;
 }
 
+// =====================================================================================================================
+// Files Window
+// =====================================================================================================================
+
+static bool onButtonClick_FileRefreshBtn(ZKButton* pButton)
+{
+	UI::POPUP_WINDOW.Close();
+	FILEINFO_CACHE->ClearCache();
+	OM::FileSystem::ClearFileSystem();
+	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
+    return false;
+}
+static int getListItemCount_FileListView(const ZKListView* pListView)
+{
+	return OM::FileSystem::GetItemCount();
+}
+
+static void obtainListItemData_FileListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::FileList::RenderFileListItem(pListItem, index);
+}
+
+static void onListItemClick_FileListView(ZKListView* pListView, int index, int id)
+{
+	UI::FileList::OnFileListItemClick(index);
+}
+
+static bool onButtonClick_UsbFiles(ZKButton* pButton)
+{
+	dbg(" ButtonClick UsbFiles !!!\n");
+	OM::FileSystem::RequestUsbFiles("");
+	return false;
+}
+
+// =====================================================================================================================
+// Print Status Window
+// =====================================================================================================================
+
+static bool onButtonClick_PrintBabystepDecBtn(ZKButton* pButton)
+{
+	Comm::DUET.SendGcode("M290 S-0.05");
+	return false;
+}
+
+static bool onButtonClick_PrintBabystepIncBtn(ZKButton* pButton)
+{
+	Comm::DUET.SendGcode("M290 S0.05");
+	return false;
+}
+
+static int getListItemCount_PrintFanList(const ZKListView* pListView)
+{
+	return OM::GetFanCount();
+}
+
+static void obtainListItemData_PrintFanList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	OM::Fan* fan = OM::GetFanBySlot(index);
+	if (fan == nullptr)
+	{
+		return;
+	}
+	pListItem->setTextTrf("fan_status", fan->index, (int)(100 * fan->requestedValue));
+}
+
+static void onListItemClick_PrintFanList(ZKListView* pListView, int index, int id)
+{
+	OM::Fan* fan = OM::GetFanBySlot(index);
+	if (fan == nullptr)
+	{
+		return;
+	}
+	size_t fanIndex = fan->index;
+	UI::OpenSliderNumPad(
+		utils::format(LANGUAGEMANAGER->getValue("fan_header").c_str(), fan->index).c_str(),
+		"",
+		"",
+		"%",
+		0,
+		100,
+		(int)(fan->requestedValue * 100),
+		[fanIndex](int percent) {
+			OM::Fan* fan = OM::GetFan(fanIndex);
+			if (fan == nullptr)
+			{
+				return;
+			}
+			int fanSpeed = (percent * 255) / 100;
+			Comm::DUET.SendGcodef("M106 P%d S%d\n", fan->index, fanSpeed);
+		},
+		true);
+}
+
+static bool onButtonClick_PrintPauseBtn(ZKButton* pButton)
+{
+	OM::FileSystem::PausePrint();
+	return false;
+}
+
+static bool onButtonClick_PrintCancelBtn(ZKButton* pButton)
+{
+	OM::FileSystem::StopPrint();
+	UI::WINDOW.Home();
+	return false;
+}
+
+static bool onButtonClick_PrintResumeBtn(ZKButton* pButton)
+{
+	OM::FileSystem::ResumePrint();
+    return false;
+}
+
+static int getListItemCount_PrintPositionList(const ZKListView* pListView)
+{
+	return OM::Move::GetAxisCount();
+}
+
+static void obtainListItemData_PrintPositionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	ZKListView::ZKListSubItem* pMachinePosition =
+		pListItem->findSubItemByID(ID_MAIN_PrintPositionListMachinePositionSubItem);
+	ZKListView::ZKListSubItem* pUserPosition = pListItem->findSubItemByID(ID_MAIN_PrintPositionListUserPositionSubItem);
+	OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
+	if (axis == nullptr) return;
+
+	pListItem->setText(axis->letter);
+	pUserPosition->setText(axis->userPosition);
+	pMachinePosition->setTextf("(%.2f)", axis->machinePosition);
+}
+
+static void onListItemClick_PrintPositionList(ZKListView* pListView, int index, int id) {}
+
+static int getListItemCount_PrintExtruderPositionList(const ZKListView* pListView)
+{
+	return OM::Move::GetExtruderAxisCount();
+}
+
+static void obtainListItemData_PrintExtruderPositionList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	ZKListView::ZKListSubItem* pSubItem = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
+	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
+	if (extruder == nullptr) return;
+
+	pListItem->setText(extruder->index);
+	pSubItem->setText(extruder->position);
+}
+
+static void onListItemClick_PrintExtruderPositionList(ZKListView* pListView, int index, int id)
+{
+	OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
+	if (extruder == nullptr)
+	{
+		return;
+	}
+	size_t extruderIndex = extruder->index;
+	UI::OpenSliderNumPad(
+		utils::format(LANGUAGEMANAGER->getValue("extrusion_factor_header").c_str(), extruderIndex).c_str(),
+		"",
+		"",
+		"%",
+		1,
+		200,
+		(int)(extruder->factor * 100),
+		[extruderIndex](int percent) {
+			OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxis(extruderIndex);
+			if (extruder == nullptr)
+			{
+				return;
+			}
+			Comm::DUET.SendGcodef("M221 D%d S%d\n", extruder->index, percent);
+		});
+}
+
+static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar* pSeekBar, int progress)
+{
+	Comm::DUET.SendGcodef("M220 S%d\n", progress);
+}
+
+static int getListItemCount_PrintTemperatureList(const ZKListView* pListView)
+{
+	return UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
+}
+
+static void obtainListItemData_PrintTemperatureList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::ToolsList::Get("print")->ObtainListItemData(pListItem,
+													index,
+													ID_MAIN_PrintTemperatureListNameSubItem,
+													ID_MAIN_PrintTemperatureListStatusSubItem,
+													ID_MAIN_PrintTemperatureListCurrentSubItem,
+													ID_MAIN_PrintTemperatureListActiveSubItem,
+													ID_MAIN_PrintTemperatureListStandbySubItem);
+}
+
+static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int index, int id) {
+	UI::ToolsList::Get("print")->OnListItemClick(
+			index, id,
+			NULL, NULL,
+			ID_MAIN_PrintTemperatureListActiveSubItem, ID_MAIN_PrintTemperatureListStandbySubItem);
+}
+
+// =====================================================================================================================
+// Settings Window
+// =====================================================================================================================
+
+static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
+{
+	switch (index)
+	{
+	case (int)UI::SettingsSlideWindowIndex::language:
+		EASYUICONTEXT->openActivity("LanguageSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::duet:
+		mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
+												  Comm::Duet::CommunicationType::uart);
+		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
+													 Comm::Duet::CommunicationType::network);
+		UI::WINDOW.OpenOverlay(mDuetCommSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::update:
+		UI::POPUP_WINDOW.Open([]() {
+			if (!UpgradeFromDuet())
+			{
+				registerDelayedCallback("upgrade_failed", 100, []() {
+					UI::POPUP_WINDOW.Open();
+					UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
+					return false;
+				});
+			}
+		});
+		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
+		break;
+	case (int)UI::SettingsSlideWindowIndex::restart:
+		// Synchronise data and save cached data to prevent data loss
+		Reset();
+		break;
+	case (int)UI::SettingsSlideWindowIndex::dev:
+		EASYUICONTEXT->openActivity("DeveloperSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::power_off:
+		EASYUICONTEXT->openActivity("PowerOffActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::zk_setting:
+		EASYUICONTEXT->openActivity("ZKSettingActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
+		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
+		break;
+	case (int)UI::SettingsSlideWindowIndex::guides:
+		UI::WINDOW.OpenOverlay(mGuideSelectionWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::brightness:
+		//! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
+		//! completely white and need a power cycle.
+		//? This might be a bug with the screen hardware itself. TODO: test with next rev hardware
+		UI::SLIDER_WINDOW.Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
+								"",
+								"",
+								"%",
+								0,
+								100,
+								100 - BRIGHTNESSHELPER->getBrightness(),
+								[](int percent) {
+									BRIGHTNESSHELPER->setBrightness(100 - percent); // Flythings brightness is inverted
+								});
+		break;
+	case (int)UI::SettingsSlideWindowIndex::theme:
+		UI::WINDOW.OpenOverlay(mThemeSelectionWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::screensaver:
+		UI::WINDOW.OpenOverlay(mScreensaverSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::buzzer:
+		UI::WINDOW.OpenOverlay(mBuzzerSettingWindowPtr);
+		break;
+	case (int)UI::SettingsSlideWindowIndex::webcam:
+		UI::WINDOW.OpenOverlay(mWebcamSettingWindowPtr);
+		break;
+	default:
+		break;
+	}
+}
+
+static int getListItemCount_BaudRateList(const ZKListView* pListView)
+{
+	return ARRAY_SIZE(Comm::baudRates);
+}
+
+static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setSelected(Comm::baudRates[index].rate == Comm::DUET.GetBaudRate().rate);
+	pListItem->setText((int)Comm::baudRates[index].rate);
+}
+
+static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
+{
+	Comm::DUET.SetBaudRate(Comm::baudRates[index]);
+}
+
+static int getListItemCount_DuetCommList(const ZKListView* pListView)
+{
+	return (int)Comm::Duet::CommunicationType::COUNT;
+}
+
+static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
+	pListItem->setSelected(index == (int)Comm::DUET.GetCommunicationType());
+}
+
+static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
+{
+	Comm::DUET.SetCommunicationType((Comm::Duet::CommunicationType)index);
+	mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
+	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
+												 Comm::Duet::CommunicationType::network);
+	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
+}
+
+static void onEditTextChanged_PollIntervalInput(const std::string& text)
+{
+	if (text.empty() || atoi(text.c_str()) < (int)MIN_PRINTER_POLL_INTERVAL)
+	{
+		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
+		return;
+	}
+	Comm::DUET.SetPollInterval(atoi(text.c_str()));
+}
+
+static void onEditTextChanged_HostnameInput(const std::string& text)
+{
+	dbg("Hostname input changed to %s", text.c_str());
+	Comm::DUET.SetHostname(text);
+}
+
+static void onEditTextChanged_PasswordInput(const std::string& text)
+{
+	Comm::DUET.SetPassword(text);
+}
+
+static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
+{
+	int32_t timeout = -1;
+	if (text.empty() || !Comm::GetInteger(text.c_str(), timeout) || timeout < 0)
+	{
+		mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW.GetTimeout());
+		return;
+	}
+	UI::POPUP_WINDOW.SetTimeout((uint32_t)timeout);
+}
+
+static int getListItemCount_GuidesList(const ZKListView* pListView)
+{
+	return UI::GuidedSetup::GetGuideCount();
+}
+
+static void obtainListItemData_GuidesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		pListItem->setText("");
+		return;
+	}
+	pListItem->setTextTr(guide->GetId());
+}
+
+static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
+{
+	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
+	if (guide == nullptr)
+	{
+		return;
+	}
+	UI::GuidedSetup::Show(guide->GetId());
+}
+
 static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
 {
 	info("Screensaver %s", isChecked ? "enabled" : "disabled");
@@ -1252,40 +1309,6 @@ static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
 	}
 	StoragePreferences::putInt(ID_SCREENSAVER_TIMEOUT, timeout);
 	EASYUICONTEXT->setScreensaverTimeOut(timeout);
-}
-static bool onButtonClick_Button1(ZKButton *pButton) {
-    LOGD(" ButtonClick Button1 !!!\n");
-    return false;
-}
-
-static void onEditTextChanged_EditText2(const std::string &text) {
-    //LOGD(" onEditTextChanged_ EditText2 %s !!!\n", text.c_str());
-}
-
-static void onProgressChanged_SeekBar1(ZKSeekBar *pSeekBar, int progress) {
-    //LOGD(" ProgressChanged SeekBar1 %d !!!\n", progress);
-}
-
-static void onCheckedChanged_Checkbox1(ZKCheckBox* pCheckBox, bool isChecked) {
-    LOGD(" Checkbox Checkbox1 checked %d", isChecked);
-}
-
-static int getListItemCount_ListView1(const ZKListView *pListView) {
-    //LOGD("getListItemCount_ListView1 !\n");
-    return 5;
-}
-
-static void obtainListItemData_ListView1(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setSelected(index == 0);
-}
-
-static void onListItemClick_ListView1(ZKListView *pListView, int index, int id) {
-    //LOGD(" onListItemClick_ ListView1  !!!\n");
-}
-
-static void onSlideItemClick_SlideWindow2(ZKSlideWindow *pSlideWindow, int index) {
-    //LOGD(" onSlideItemClick_ SlideWindow2 %d !!!\n", index);
 }
 
 static int getListItemCount_ThemesList(const ZKListView* pListView)
@@ -1314,83 +1337,81 @@ static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
 	}
 	UI::Theme::SetTheme(theme);
 }
-static int getListItemCount_DebugCommandList(const ZKListView* pListView)
+
+static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked)
 {
-	// LOGD("getListItemCount_DebugCommandList !\n");
-	return Debug::GetCommandCount();
+	CONFIGMANAGER->setBeepEnable(isChecked);
+	StoragePreferences::putBool(ID_BUZZER_ENABLED, isChecked);
 }
 
-static void obtainListItemData_DebugCommandList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+static int getListItemCount_WebcamUrlList(const ZKListView* pListView)
 {
-	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
-	if (command == nullptr)
+	return UI::Webcam::GetWebcamCount();
+}
+
+static void obtainListItemData_WebcamUrlList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	pListItem->setTextf("[%d] %s", index, UI::Webcam::GetWebcamUrl(index).c_str());
+}
+
+static void onListItemClick_WebcamUrlList(ZKListView* pListView, int index, int id)
+{
+	switch (id)
 	{
-		pListItem->setText("");
-		return;
+	case ID_MAIN_DeleteWebcamSubItem:
+		UI::Webcam::DeleteWebcam(index);
+		break;
+	default:
+		UI::Webcam::OpenWebcamUrlInput(index);
+		break;
 	}
-	pListItem->setTextTr(command->id);
 }
 
-static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, int id)
+static bool onButtonClick_AddWebcamBtn(ZKButton* pButton)
 {
-	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
-	if (command == nullptr)
-	{
-		return;
-	}
-	command->callback();
-}
-
-static bool onButtonClick_OverlayModalZone(ZKButton* pButton)
-{
-	UI::WINDOW.CloseOverlay();
+	UI::Webcam::AddNewWebcam();
 	return false;
 }
 
-static int getListItemCount_TempGraphXLabels(const ZKListView* pListView)
+static void onEditTextChanged_WebcamUpdateIntervalInput(const std::string& text)
 {
-	// LOGD("getListItemCount_TempGraphXLabels !\n");
-	return pListView->getCols();
+	UI::Webcam::SetWebcamUpdateInterval(atoi(text.c_str()));
 }
 
-static void obtainListItemData_TempGraphXLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+// =====================================================================================================================
+// Guide Window
+// =====================================================================================================================
+
+static bool onButtonClick_NextPageBtn(ZKButton* pButton)
 {
-	int range = UI::TEMPERATURE_GRAPH.GetTimeRange();
-	int time = -range + (index * range / (pListView->getCols() - 1));
-	pListItem->setTextf("%ds", time);
+	UI::GuidedSetup::GetCurrentGuide()->NextPage();
+	return false;
 }
 
-static void onListItemClick_TempGraphXLabels(ZKListView* pListView, int index, int id)
+static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
 {
-	// LOGD(" onListItemClick_ TempGraphXLabels  !!!\n");
+	UI::GuidedSetup::GetCurrentGuide()->PreviousPage();
+	return false;
 }
 
-static int getListItemCount_TempGraphYLabels(const ZKListView* pListView)
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
 {
-	// LOGD("getListItemCount_TempGraphYLabels !\n");
-	return pListView->getRows();
+	dbg("isChecked = %d", isChecked);
+	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
 }
 
-static void obtainListItemData_TempGraphYLabels(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+static bool onButtonClick_CloseGuideBtn(ZKButton* pButton)
 {
-	float yMax = UI::TEMPERATURE_GRAPH.GetYMax();
-	float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
-	pListItem->setTextf("%.1f", label);
+	UI::GuidedSetup::Close();
+	return false;
 }
 
-static void onListItemClick_TempGraphYLabels(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ TempGraphYLabels  !!!\n");
-}
-
-static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress)
-{
-	// LOGD(" ProgressChanged PopupProgress %d !!!\n", progress);
-}
+// =====================================================================================================================
+// Heightmap Window
+// =====================================================================================================================
 
 static int getListItemCount_HeightMapList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_HeightMapList !\n");
 	return OM::GetHeightmapFiles().size();
 }
 
@@ -1453,7 +1474,6 @@ static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index,
 
 static int getListItemCount_HeightMapColorSchemeList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_HeightMapColorSchemeList !\n");
 	return 2;
 }
 
@@ -1469,8 +1489,7 @@ static void onListItemClick_HeightMapColorSchemeList(ZKListView* pListView, int 
 }
 static int getListItemCount_HeightMapYAxis(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_HeightMapYAxis !\n");
-	return 5;
+	return pListView->getRows();
 }
 
 static void obtainListItemData_HeightMapYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
@@ -1478,14 +1497,11 @@ static void obtainListItemData_HeightMapYAxis(ZKListView* pListView, ZKListView:
 	pListItem->setText(UI::GetHeightmapYAxisText(index));
 }
 
-static void onListItemClick_HeightMapYAxis(ZKListView* pListView, int index, int id)
-{
-	// LOGD(" onListItemClick_ HeightMapYAxis  !!!\n");
-}
+static void onListItemClick_HeightMapYAxis(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_HeightMapXAxis(const ZKListView* pListView)
 {
-	return 5;
+	return pListView->getCols();
 }
 
 static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
@@ -1495,11 +1511,9 @@ static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView:
 
 static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id) {}
 
-static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked)
-{
-	CONFIGMANAGER->setBeepEnable(isChecked);
-	StoragePreferences::putBool(ID_BUZZER_ENABLED, isChecked);
-}
+// =====================================================================================================================
+// Object Cancel Window
+// =====================================================================================================================
 
 static int getListItemCount_ObjectCancelObjectsList(const ZKListView* pListView)
 {
@@ -1518,7 +1532,7 @@ static void onListItemClick_ObjectCancelObjectsList(ZKListView* pListView, int i
 
 static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
 {
-	return 5;
+	return pListView->getRows();
 }
 
 static void obtainListItemData_ObjectCancelYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
@@ -1530,7 +1544,7 @@ static void onListItemClick_ObjectCancelYAxis(ZKListView* pListView, int index, 
 
 static int getListItemCount_ObjectCancelXAxis(const ZKListView* pListView)
 {
-	return 5;
+	return pListView->getCols();
 }
 
 static void obtainListItemData_ObjectCancelXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
@@ -1545,6 +1559,10 @@ static bool onButtonClick_CancelCurrentObjectBtn(ZKButton* pButton)
 	UI::ObjectCancel::CancelCurrentJobObject();
 	return false;
 }
+
+// =====================================================================================================================
+// Webcam Window
+// =====================================================================================================================
 
 static int getListItemCount_WebcamSelectList(const ZKListView* pListView)
 {
@@ -1561,39 +1579,4 @@ static void obtainListItemData_WebcamSelectList(ZKListView* pListView, ZKListVie
 static void onListItemClick_WebcamSelectList(ZKListView* pListView, int index, int id)
 {
 	UI::Webcam::SetActiveWebcamIndex(index);
-}
-
-static int getListItemCount_WebcamUrlList(const ZKListView* pListView)
-{
-	// LOGD("getListItemCount_WebcamUrlList !\n");
-	return UI::Webcam::GetWebcamCount();
-}
-
-static void obtainListItemData_WebcamUrlList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
-{
-	pListItem->setTextf("[%d] %s", index, UI::Webcam::GetWebcamUrl(index).c_str());
-}
-
-static void onListItemClick_WebcamUrlList(ZKListView* pListView, int index, int id)
-{
-	switch (id)
-	{
-	case ID_MAIN_DeleteWebcamSubItem:
-		UI::Webcam::DeleteWebcam(index);
-		break;
-	default:
-		UI::Webcam::OpenWebcamUrlInput(index);
-		break;
-	}
-}
-
-static bool onButtonClick_AddWebcamBtn(ZKButton* pButton)
-{
-	UI::Webcam::AddNewWebcam();
-	return false;
-}
-
-static void onEditTextChanged_WebcamUpdateIntervalInput(const std::string& text)
-{
-	UI::Webcam::SetWebcamUpdateInterval(atoi(text.c_str()));
 }
