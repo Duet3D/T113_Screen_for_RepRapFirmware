@@ -33,5 +33,59 @@
 			"$0"
 		],
 	},
-
+	"header": {
+		"scope": "cpp",
+		"prefix": "header",
+		"body": [
+			" /*",
+			" * ${TM_FILENAME}",
+			" *",
+			" *  Created on: ${CURRENT_DATE} ${CURRENT_MONTH_NAME} ${CURRENT_YEAR}",
+			" *      Author: ${1}",
+			" */",
+			"",
+			"#ifndef JNI_${2}_H_",
+			"#define JNI_${2}_H_",
+			"",
+			"namespace ${3}",
+			"{",
+			"	${0}",
+			"} // namespace ${3}",
+			"",
+			"#endif /* JNI_${2}_H_ */",
+		]
+	},
+	"source": {
+		"scope": "cpp",
+		"prefix": "source",
+		"body": [
+			" /*",
+			" * ${TM_FILENAME}",
+			" *",
+			" *  Created on: ${CURRENT_DATE} ${CURRENT_MONTH_NAME} ${CURRENT_YEAR}",
+			" *      Author: ${1}",
+			" */",
+			"",
+			"#include \"DebugLevels.h\"",
+			"#define DEBUG_LEVEL DEBUG_LEVEL_${2:DBG}",
+			"#include \"Debug.h\"",
+			"",
+			"#include \"${TM_FILENAME_BASE}.h\"",
+			"",
+			"namespace ${3}",
+			"{",
+			"	${0}",
+			"} // namespace ${3}",
+			"",
+		]
+	},
+	"separator": {
+		"scope": "cpp",
+		"prefix": "separator",
+		"body": [
+			"// =====================================================================================================================",
+			"// $1",
+			"// =====================================================================================================================$0",
+		]
+	},
 }

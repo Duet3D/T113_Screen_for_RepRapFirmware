@@ -213,7 +213,7 @@ static ZKButton* mConsoleClearBtnPtr;
 static ZKButton* mSendBtnPtr;
 static ZKTextView* mTextView4Ptr;
 static ZKTextView* mTextView3Ptr;
-static ZKEditText* mEditText1Ptr;
+static ZKEditText* mConsoleInputPtr;
 static ZKListView* mGcodeListViewPtr;
 static ZKListView* mConsoleListViewPtr;
 static ZKWindow* mConsoleWindowPtr;
@@ -790,7 +790,27 @@ static S_EditTextInputCallback SEditTextInputCallbackTab[] = {
     ID_MAIN_PollIntervalInput, onEditTextChanged_PollIntervalInput,
     ID_MAIN_PasswordInput, onEditTextChanged_PasswordInput,
     ID_MAIN_HostnameInput, onEditTextChanged_HostnameInput,
-    ID_MAIN_EditText1, onEditTextChanged_EditText1,
+    ID_MAIN_ConsoleInput, onEditTextChanged_ConsoleInput,
+	ID_MAIN_EditText2,
+	onEditTextChanged_EditText2,
+	ID_MAIN_PopupNumberInput,
+	onEditTextChanged_PopupNumberInput,
+	ID_MAIN_PopupTextInput,
+	onEditTextChanged_PopupTextInput,
+	ID_MAIN_WebcamUpdateIntervalInput,
+	onEditTextChanged_WebcamUpdateIntervalInput,
+	ID_MAIN_ScreensaverTimeoutInput,
+	onEditTextChanged_ScreensaverTimeoutInput,
+	ID_MAIN_InfoTimeoutInput,
+	onEditTextChanged_InfoTimeoutInput,
+	ID_MAIN_PollIntervalInput,
+	onEditTextChanged_PollIntervalInput,
+	ID_MAIN_PasswordInput,
+	onEditTextChanged_PasswordInput,
+	ID_MAIN_HostnameInput,
+	onEditTextChanged_HostnameInput,
+	ID_MAIN_ConsoleInput,
+	onEditTextChanged_ConsoleInput,
 	ID_MAIN_WebcamUpdateIntervalInput,
 	onEditTextChanged_WebcamUpdateIntervalInput,
 	ID_MAIN_EditText2,
@@ -809,8 +829,8 @@ static S_EditTextInputCallback SEditTextInputCallbackTab[] = {
 	onEditTextChanged_PasswordInput,
 	ID_MAIN_HostnameInput,
 	onEditTextChanged_HostnameInput,
-	ID_MAIN_EditText1,
-	onEditTextChanged_EditText1,
+	ID_MAIN_ConsoleInput,
+	onEditTextChanged_ConsoleInput,
 };
 
 typedef void (*VideoViewCallback)(ZKVideoView *pVideoView, int msg);
@@ -1060,8 +1080,8 @@ mainActivity::~mainActivity() {
     mSendBtnPtr = NULL;
     mTextView4Ptr = NULL;
     mTextView3Ptr = NULL;
-    mEditText1Ptr = NULL;
-    mGcodeListViewPtr = NULL;
+	mConsoleInputPtr = NULL;
+	mGcodeListViewPtr = NULL;
     mConsoleListViewPtr = NULL;
     mConsoleWindowPtr = NULL;
     mFilamentControlHeadingPtr = NULL;
@@ -1123,6 +1143,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);if(mConsoleInputPtr!= NULL){mConsoleInputPtr->setTextChangeListener(this);}
     mMoveFeedratePtr = (ZKListView*)findControlByID(ID_MAIN_MoveFeedrate);if(mMoveFeedratePtr!= NULL){mMoveFeedratePtr->setListAdapter(this);mMoveFeedratePtr->setItemClickListener(this);}
     mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);if(mWebcamUpdateIntervalInputPtr!= NULL){mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);}
     mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);if(mWebcamUrlListPtr!= NULL){mWebcamUrlListPtr->setListAdapter(this);mWebcamUrlListPtr->setItemClickListener(this);}
@@ -1362,8 +1383,12 @@ void mainActivity::onCreate() {
     mSendBtnPtr = (ZKButton*)findControlByID(ID_MAIN_SendBtn);
     mTextView4Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView4);
     mTextView3Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView3);
-    mEditText1Ptr = (ZKEditText*)findControlByID(ID_MAIN_EditText1);if(mEditText1Ptr!= NULL){mEditText1Ptr->setTextChangeListener(this);}
-    mGcodeListViewPtr = (ZKListView*)findControlByID(ID_MAIN_GcodeListView);if(mGcodeListViewPtr!= NULL){mGcodeListViewPtr->setListAdapter(this);mGcodeListViewPtr->setItemClickListener(this);}
+	mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);
+	if (mConsoleInputPtr != NULL)
+	{
+		mConsoleInputPtr->setTextChangeListener(this);
+	}
+	mGcodeListViewPtr = (ZKListView*)findControlByID(ID_MAIN_GcodeListView);if(mGcodeListViewPtr!= NULL){mGcodeListViewPtr->setListAdapter(this);mGcodeListViewPtr->setItemClickListener(this);}
     mConsoleListViewPtr = (ZKListView*)findControlByID(ID_MAIN_ConsoleListView);if(mConsoleListViewPtr!= NULL){mConsoleListViewPtr->setListAdapter(this);mConsoleListViewPtr->setItemClickListener(this);}
     mConsoleWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_ConsoleWindow);
     mFilamentControlHeadingPtr = (ZKTextView*)findControlByID(ID_MAIN_FilamentControlHeading);

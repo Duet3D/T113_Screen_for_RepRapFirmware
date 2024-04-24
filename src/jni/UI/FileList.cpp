@@ -105,6 +105,7 @@ namespace UI::FileList
 				});
 				UI::SetPopupFileInfo();
 			}
+			UI::POPUP_WINDOW.CancelTimeout();
 			break;
 		}
 		case OM::FileSystem::FileSystemItemType::folder:

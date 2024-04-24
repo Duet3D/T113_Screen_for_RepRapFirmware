@@ -53,11 +53,7 @@ const OM::FileSystem::File* sSelectedFile;
 namespace UI
 {
 	uint32_t g_moveFeedRates[] = {300, 100, 50, 20, 10, 5};
-	uint32_t g_extrusionFeedRates[] = {50, 10, 5, 2, 1};
-	uint32_t g_extrusionFeedDistances[] = {100, 50, 20, 10, 5, 2, 1};
 	uint32_t g_defaultMoveFeedRate = 50;
-	uint32_t g_defaultExtrusionFeedRate = 5;
-	uint32_t g_defaultExtrusionFeedDistance = 10;
 
 	Window& Window::GetInstance()
 	{
@@ -73,6 +69,17 @@ namespace UI
 	void Window::ClearHome()
 	{
 		m_homeWindows.clear();
+	}
+
+	void Window::OpenWindow(const int windowId)
+	{
+		ZKBase* window = UI::GetUIControl<ZKBase>(windowId);
+		if (window == nullptr)
+		{
+			warn("Window %d is null", windowId);
+			return;
+		}
+		OpenWindow(window);
 	}
 
 	void Window::OpenWindow(ZKBase* window)
@@ -307,13 +314,26 @@ namespace UI
 		return count;
 	}
 
-	void ToolsList::ObtainListItemData(ZKListView::ZKListItem* pListItem, int index,
-									   ZKListView::ZKListSubItem* pToolName,
-									   ZKListView::ZKListSubItem* pCurrentTemperature,
-									   ZKListView::ZKListSubItem* pActiveTemperature,
-									   ZKListView::ZKListSubItem* pStandbyTemperature,
-									   ZKListView::ZKListSubItem* pStatus)
+	void ToolsList::ObtainListItemData(ZKListView::ZKListItem* pListItem,
+									   int index,
+									   const int nameId,
+									   const int statusId,
+									   const int currentId,
+									   const int activeId,
+									   const int standbyId)
 	{
+		ZKListView::ZKListSubItem* pToolName = pListItem->findSubItemByID(nameId);
+		ZKListView::ZKListSubItem* pStatus = pListItem->findSubItemByID(statusId);
+		ZKListView::ZKListSubItem* pCurrentTemperature = pListItem->findSubItemByID(currentId);
+		ZKListView::ZKListSubItem* pActiveTemperature = pListItem->findSubItemByID(activeId);
+		ZKListView::ZKListSubItem* pStandbyTemperature = pListItem->findSubItemByID(standbyId);
+
+		if (!pToolName || !pStatus || !pCurrentTemperature || !pActiveTemperature || !pStandbyTemperature)
+		{
+			warn("One or more subitems are null");
+			return;
+		}
+
 		// Check Tools to see if list index is within tool heaters
 		ToolListItemData data = GetToolListItemDataBySlot(index);
 		if (data.tool != nullptr)

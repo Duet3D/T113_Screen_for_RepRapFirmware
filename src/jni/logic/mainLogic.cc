@@ -17,6 +17,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
+#include "UI/ExtrusionControl.h"
 #include "UI/FileList.h"
 #include "UI/Gcodes.h"
 #include "UI/Graph.h"
@@ -117,8 +118,8 @@ static void onUI_init()
 	UI::WINDOW.AddHome(mMainWindowPtr);
 	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
 	UI::ToolsList::Create("print")->Init(mPrintTemperatureListPtr);
-	UI::ToolsList::Create("extrude")->Init(mExtrudeToolListPtr);
-	UI::CONSOLE.Init(mConsoleListViewPtr, mEditText1Ptr);
+	UI::ExtrusionControl::Init();
+	UI::CONSOLE.Init(mConsoleListViewPtr, mConsoleInputPtr);
 	UI::NUMPAD_WINDOW.Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
 	UI::SLIDER_WINDOW.Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
@@ -278,6 +279,11 @@ static bool onmainActivityTouchEvent(const MotionEvent &ev)
 	}
 	return false;
 }
+
+// =====================================================================================================================
+// Side Bar
+// =====================================================================================================================
+
 static bool onButtonClick_HomeBtn(ZKButton *pButton)
 {
 	dbg(" ButtonClick HomeBtn !!!\n");
@@ -315,6 +321,10 @@ static bool onButtonClick_EStopBtn(ZKButton *pButton)
 	return false;
 }
 
+// =====================================================================================================================
+// Main Window
+// =====================================================================================================================
+
 static int getListItemCount_ToolListView(const ZKListView *pListView)
 {
 	size_t count = UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
@@ -323,13 +333,13 @@ static int getListItemCount_ToolListView(const ZKListView *pListView)
 
 static void obtainListItemData_ToolListView(ZKListView *pListView, ZKListView::ZKListItem *pListItem, int index)
 {
-	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_ToolNameSubItem);
-	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_ToolCurrentTemperatureSubItem);
-	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_ToolActiveTemperatureSubItem);
-	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_ToolStandbyTemperatureSubItem);
-	ZKListView::ZKListSubItem *pstatus = pListItem->findSubItemByID(ID_MAIN_ToolStatusSubItem);
-
-	UI::ToolsList::Get("home")->ObtainListItemData(pListItem, index, ptoolName, pcurrentTemperature, pactiveTemperature, pstandbyTemperature, pstatus);
+	UI::ToolsList::Get("home")->ObtainListItemData(pListItem,
+												   index,
+												   ID_MAIN_ToolNameSubItem,
+												   ID_MAIN_ToolStatusSubItem,
+												   ID_MAIN_ToolCurrentTemperatureSubItem,
+												   ID_MAIN_ToolActiveTemperatureSubItem,
+												   ID_MAIN_ToolStandbyTemperatureSubItem);
 }
 
 static void onListItemClick_ToolListView(ZKListView *pListView, int index, int id)
@@ -346,40 +356,40 @@ static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index
 	switch (index)
 	{
 	case (int)UI::SlideWindowIndex::move:
-		UI::WINDOW.OpenWindow(mMoveWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow);
 		break;
 	case (int)UI::SlideWindowIndex::extrude:
-		UI::WINDOW.OpenWindow(mExtrudeWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow);
 		break;
 	case (int)UI::SlideWindowIndex::status:
-		UI::WINDOW.OpenWindow(mPrintWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow);
 		break;
 	case (int)UI::SlideWindowIndex::heightmap: {
 		OM::RequestHeightmapFiles();
-		UI::WINDOW.OpenWindow(mHeightMapWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
 		UI::RenderHeightmap(OM::GetCurrentHeightmap());
 		break;
 	}
 	case (int)UI::SlideWindowIndex::fans:
-		UI::WINDOW.OpenWindow(mFanWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_FanWindow);
 		break;
 	case (int)UI::SlideWindowIndex::print:
 		OM::FileSystem::RequestFiles("0:/gcodes");
-		UI::WINDOW.OpenWindow(mFilesWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_FilesWindow);
 		break;
 	case (int)UI::SlideWindowIndex::network:
 		// UI::WINDOW.OpenWindow(mNetworkWindowPtr);
 		EASYUICONTEXT->openActivity("WifiSettingActivity");
 		break;
 	case (int)UI::SlideWindowIndex::settings:
-		UI::WINDOW.OpenWindow(mSettingsWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_SettingsWindow);
 		break;
 	case (int)UI::SlideWindowIndex::object_cancel:
-		UI::WINDOW.OpenWindow(mObjectCancelWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_ObjectCancelWindow);
 		break;
 	case (int)UI::SlideWindowIndex::webcam:
 		UI::Webcam::RegisterUpdateLoop();
-		UI::WINDOW.OpenWindow(mWebcamWindowPtr);
+		UI::WINDOW.OpenWindow(ID_MAIN_WebcamWindow);
 		break;
 	default:
 		break;
@@ -406,6 +416,10 @@ static void onListItemClick_TemperatureGraphLegend(ZKListView *pListView, int in
 {
 	UI::TEMPERATURE_GRAPH.SetWaveVisible(index, !UI::TEMPERATURE_GRAPH.IsWaveVisible(index));
 }
+
+// =====================================================================================================================
+// Popups
+// =====================================================================================================================
 
 static bool onButtonClick_NumPad0(ZKButton* pButton)
 {
@@ -482,6 +496,10 @@ static bool onButtonClick_NumPadClearBtn(ZKButton* pButton)
 	return false;
 }
 
+// =====================================================================================================================
+// Move Window
+// =====================================================================================================================
+
 static bool onButtonClick_HomeAllBtn(ZKButton *pButton) {
 	Comm::DUET.SendGcode("G28\n");
 	return false;
@@ -507,7 +525,7 @@ static bool onButtonClick_DisableMotorsBtn(ZKButton* pButton)
 
 static bool onButtonClick_HeightmapBtn(ZKButton* pButton)
 {
-	UI::WINDOW.OpenWindow(mHeightMapWindowPtr);
+	UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
 	return false;
 }
 
@@ -594,6 +612,10 @@ static void onListItemClick_MoveFeedrate(ZKListView* pListView, int index, int i
 	UI::g_defaultMoveFeedRate = UI::g_moveFeedRates[index];
 }
 
+// =====================================================================================================================
+// Console Window
+// =====================================================================================================================
+
 static int getListItemCount_ConsoleListView(const ZKListView *pListView) {
     //LOGD("getListItemCount_ConsoleListView !\n");
 	return MAX_RESPONSE_LINES;
@@ -619,7 +641,7 @@ static void obtainListItemData_GcodeListView(ZKListView *pListView,ZKListView::Z
 static void onListItemClick_GcodeListView(ZKListView *pListView, int index, int id) {
 }
 
-static void onEditTextChanged_EditText1(const std::string& text)
+static void onEditTextChanged_ConsoleInput(const std::string& text)
 {
 	UI::CONSOLE.AddCommand(text);
 	Comm::DUET.SendGcode(text.c_str());
@@ -627,8 +649,8 @@ static void onEditTextChanged_EditText1(const std::string& text)
 
 static bool onButtonClick_SendBtn(ZKButton* pButton)
 {
-	UI::CONSOLE.AddCommand(mEditText1Ptr->getText());
-	Comm::DUET.SendGcode(mEditText1Ptr->getText().c_str());
+	UI::CONSOLE.AddCommand(mConsoleInputPtr->getText());
+	Comm::DUET.SendGcode(mConsoleInputPtr->getText().c_str());
 	return true;
 }
 static bool onButtonClick_ConsoleClearBtn(ZKButton *pButton) {
@@ -790,14 +812,15 @@ static int getListItemCount_PrintTemperatureList(const ZKListView *pListView) {
 	return UI::ToolsList::Get("home")->GetTotalHeaterCount(false);
 }
 
-static void obtainListItemData_PrintTemperatureList(ZKListView *pListView,ZKListView::ZKListItem *pListItem, int index) {
-	ZKListView::ZKListSubItem *ptoolName = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListNameSubItem);
-	ZKListView::ZKListSubItem *pcurrentTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListCurrentSubItem);
-	ZKListView::ZKListSubItem *pactiveTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListActiveSubItem);
-	ZKListView::ZKListSubItem *pstandbyTemperature = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListStandbySubItem);
-	ZKListView::ZKListSubItem *pstatus = pListItem->findSubItemByID(ID_MAIN_PrintTemperatureListStatusSubItem);
-
-	UI::ToolsList::Get("print")->ObtainListItemData(pListItem, index, ptoolName, pcurrentTemperature, pactiveTemperature, pstandbyTemperature, pstatus);
+static void obtainListItemData_PrintTemperatureList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::ToolsList::Get("print")->ObtainListItemData(pListItem,
+													index,
+													ID_MAIN_PrintTemperatureListNameSubItem,
+													ID_MAIN_PrintTemperatureListStatusSubItem,
+													ID_MAIN_PrintTemperatureListCurrentSubItem,
+													ID_MAIN_PrintTemperatureListActiveSubItem,
+													ID_MAIN_PrintTemperatureListStandbySubItem);
 }
 
 static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int index, int id) {
@@ -1131,165 +1154,79 @@ static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
 
 static int getListItemCount_ExtruderFeedDist(const ZKListView* pListView)
 {
-	return ARRAY_SIZE(UI::g_extrusionFeedDistances);
+	return UI::ExtrusionControl::GetExtrusionDistanceCount();
 }
 
 static void obtainListItemData_ExtruderFeedDist(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
-	{
-		return;
-	}
-	pListItem->setTextf("%d", UI::g_extrusionFeedDistances[index]);
-	pListItem->setSelected(UI::g_defaultExtrusionFeedDistance == UI::g_extrusionFeedDistances[index]);
+	UI::ExtrusionControl::SetExtrusionDistanceListItem(pListItem, index);
 }
 
 static void onListItemClick_ExtruderFeedDist(ZKListView* pListView, int index, int id)
 {
-	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedDistances))
-	{
-		return;
-	}
-	UI::g_defaultExtrusionFeedDistance = UI::g_extrusionFeedDistances[index];
+	UI::ExtrusionControl::ExtrusionDistanceListItemCallback(index);
 }
 
 static int getListItemCount_ExtruderFeedrate(const ZKListView* pListView)
 {
-	return ARRAY_SIZE(UI::g_extrusionFeedRates);
+	return UI::ExtrusionControl::GetExtrusionSpeedCount();
 }
 
 static void obtainListItemData_ExtruderFeedrate(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
-	{
-		return;
-	}
-	pListItem->setTextf("%d", UI::g_extrusionFeedRates[index]);
-	pListItem->setSelected(UI::g_defaultExtrusionFeedRate == UI::g_extrusionFeedRates[index]);
+	UI::ExtrusionControl::SetExtrusionSpeedListItem(pListItem, index);
 }
 
 static void onListItemClick_ExtruderFeedrate(ZKListView* pListView, int index, int id)
 {
-	if (index < 0 || index >= (int)ARRAY_SIZE(UI::g_extrusionFeedRates))
-	{
-		return;
-	}
-	UI::g_defaultExtrusionFeedRate = UI::g_extrusionFeedRates[index];
+	UI::ExtrusionControl::ExtrusionSpeedListItemCallback(index);
 }
 
 static bool onButtonClick_RetractBtn(ZKButton* pButton)
 {
-	Comm::DUET.SendGcodef("G1 E-%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
+	UI::ExtrusionControl::RetractFilament();
 	return false;
 }
 
 static bool onButtonClick_ExtrudeBtn(ZKButton* pButton)
 {
-	Comm::DUET.SendGcodef("G1 E%u F%u\n", UI::g_defaultExtrusionFeedDistance, UI::g_defaultExtrusionFeedRate * 60);
+	UI::ExtrusionControl::ExtrudeFilament();
 	return false;
 }
 
 static int getListItemCount_ExtrudeToolList(const ZKListView* pListView)
 {
-	size_t count = UI::ToolsList::Get("extrude")->GetTotalHeaterCount(true, true, false, false);
-	return count;
+	return UI::ExtrusionControl::GetListCount();
 }
 
 static void obtainListItemData_ExtrudeToolList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	ZKListView::ZKListSubItem* ptoolName = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolNameSubItem);
-	ZKListView::ZKListSubItem* pcurrentTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolCurrentTemperatureSubItem);
-	ZKListView::ZKListSubItem* pactiveTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolActiveTemperatureSubItem);
-	ZKListView::ZKListSubItem* pstandbyTemp = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
-	ZKListView::ZKListSubItem* pstatus = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolStatusSubItem);
-	ZKListView::ZKListSubItem* pfilament = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolFilamentSubItem);
-
-	UI::ToolsList::Get("extrude")->ObtainListItemData(
-		pListItem, index, ptoolName, pcurrentTemp, pactiveTemp, pstandbyTemp, pstatus);
-
-	UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
-	if (data.tool == nullptr)
-	{
-		return;
-	}
-
-	StringRef filament = data.tool->GetFilament();
-	pfilament->setText((data.tool->filamentExtruder >= 0 && filament.IsEmpty())
-						   ? LANGUAGEMANAGER->getValue("load_filament")
-						   : data.tool->GetFilament().c_str());
+	UI::ExtrusionControl::SetExtrudeListItem(pListItem, index);
 }
-
-static OM::Tool* g_filamentDialogTool = nullptr;
 
 static void onListItemClick_ExtrudeToolList(ZKListView* pListView, int index, int id)
 {
-	UI::ToolsList::Get("extrude")->OnListItemClick(index,
-												   id,
-												   ID_MAIN_ExtrudeToolNameSubItem,
-												   ID_MAIN_ExtrudeToolStatusSubItem,
-												   ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
-												   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
-	if (id == ID_MAIN_ExtrudeToolFilamentSubItem)
-	{
-		UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
-		g_filamentDialogTool = data.tool;
-		if (g_filamentDialogTool == nullptr || g_filamentDialogTool->filamentExtruder < 0)
-		{
-			g_filamentDialogTool = nullptr;
-			UI::WINDOW.CloseOverlay();
-			return;
-		}
-		Comm::DUET.RequestFileList("/filaments");
-		// TODO: need a way to recognise the response to this request compared to other file list requests
-		mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
-		mFilamentControlHeadingPtr->setTextTrf("tool_filament_control", g_filamentDialogTool->index);
-		UI::WINDOW.OpenOverlay(mFilamentLoadUnloadWindowPtr);
-	}
+	UI::ExtrusionControl::ExtrudeListItemCallback(index, id);
 }
 
 static int getListItemCount_FilamentList(const ZKListView* pListView)
 {
-	return OM::FileSystem::GetItemCount();
+	return UI::ExtrusionControl::GetFilamentListCount();
 }
 
 static void obtainListItemData_FilamentList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
-	if (item == nullptr || g_filamentDialogTool == nullptr)
-	{
-		pListItem->setText("");
-		return;
-	}
-	pListItem->setText(item->GetName());
-	pListItem->setSelected(item->GetName() == g_filamentDialogTool->GetFilament().c_str());
-	mUnloadFilamentBtnPtr->setInvalid(g_filamentDialogTool->GetFilament().IsEmpty());
+	UI::ExtrusionControl::SetFilamentListItem(pListItem, index);
 }
 
 static void onListItemClick_FilamentList(ZKListView* pListView, int index, int id)
 {
-
-	OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
-	if (item == nullptr || g_filamentDialogTool == nullptr)
-	{
-		return;
-	}
-	Comm::DUET.SendGcodef("T%d\n"
-						  "M702\n"
-						  "M701 S\"%s\"\n"
-						  "M703",
-						  g_filamentDialogTool->index,
-						  item->GetName().c_str());
-	UI::WINDOW.CloseOverlay();
+	UI::ExtrusionControl::FilamentListItemCallback(index, id);
 }
 
 static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 {
-	if (g_filamentDialogTool == nullptr)
-	{
-		return false;
-	}
-	Comm::DUET.SendGcodef("T%d", g_filamentDialogTool->index);
-	Comm::DUET.SendGcode("M702");
+	UI::ExtrusionControl::UnloadFilament();
 	return false;
 }
 

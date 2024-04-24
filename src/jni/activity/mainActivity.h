@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_ConsoleInput    51001
 #define ID_MAIN_MoveFeedrate    80036
 #define ID_MAIN_TextView53    50099
 #define ID_MAIN_WebcamUpdateIntervalInput    51004
@@ -253,7 +254,6 @@
 #define ID_MAIN_SendBtn    20026
 #define ID_MAIN_TextView4    50010
 #define ID_MAIN_TextView3    50009
-#define ID_MAIN_EditText1    51001
 #define ID_MAIN_GcodeListView    80005
 #define ID_MAIN_ConsoleListView    80004
 #define ID_MAIN_ConsoleWindow    110008

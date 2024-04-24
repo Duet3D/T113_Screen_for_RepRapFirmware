@@ -78,6 +78,7 @@ namespace UI
 		static Window& GetInstance();
 		void AddHome(ZKBase* home);
 		void ClearHome();
+		void OpenWindow(const int windowId);
 		void OpenWindow(ZKBase* window);
 		void OpenOverlay(ZKBase* window, bool closeAlreadyOpened = true);
 		bool IsOverlayOpened();
@@ -136,10 +137,13 @@ namespace UI
 		void CalculateTotalHeaterCount();
 		size_t GetTotalHeaterCount(const bool calculate, const bool addTools = true, const bool addBeds = true,
 								   const bool addChambers = true);
-		void ObtainListItemData(ZKListView::ZKListItem* pListItem, int index, ZKListView::ZKListSubItem* pToolName,
-								ZKListView::ZKListSubItem* pCurrentTemperature,
-								ZKListView::ZKListSubItem* pActiveTemperature,
-								ZKListView::ZKListSubItem* pStandbyTemperature, ZKListView::ZKListSubItem* pStatus);
+		void ObtainListItemData(ZKListView::ZKListItem* pListItem,
+								int index,
+								const int nameId,
+								const int statusId,
+								const int currentId,
+								const int activeId,
+								const int standbyId);
 		void OnListItemClick(int index, int id, const int nameId, int statusId, int activeId, int standbyId);
 		void RefreshToolList(const bool lengthChanged = true);
 		static void RefreshAllToolLists(const bool lengthChanged = true);
