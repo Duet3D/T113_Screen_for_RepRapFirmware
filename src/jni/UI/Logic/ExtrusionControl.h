@@ -5,8 +5,8 @@
  *      Author: Andy Everitt
  */
 
-#ifndef JNI_UI_EXTRUSIONCONTROL_H_
-#define JNI_UI_EXTRUSIONCONTROL_H_
+#ifndef JNI_UI_LOGIC_EXTRUSIONCONTROL_H_
+#define JNI_UI_LOGIC_EXTRUSIONCONTROL_H_
 
 #include "UI/UserInterface.h"
 
@@ -35,4 +35,4 @@ namespace UI::ExtrusionControl
 	bool UnloadFilament();
 } // namespace UI::ExtrusionControl
 
-#endif /* JNI_UI_EXTRUSIONCONTROL_H_ */
+#endif /* JNI_UI_LOGIC_EXTRUSIONCONTROL_H_ */

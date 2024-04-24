@@ -11,7 +11,7 @@
 #include "UI/UserInterface.h"
 
 #include "ObjectModel/Sensor.h"
-#include "UI/Graph.h"
+#include "UI/Logic/HomeScreen.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -39,7 +39,7 @@ static UI::Observer<UI::ui_field_update_cb> SensorObserversField[] = {
 						  error("Failed to update sensor name; sensor %d = %s", indices[0], val);
 						  return;
 					  }
-					  UI::TEMPERATURE_GRAPH.RefreshLegend();
+					  UI::HomeScreen::RefreshTemperatureGraph();
 				  }),
 	OBSERVER_CHAR("sensors:endstops^", [](OBSERVER_CHAR_ARGS) { OM::RemoveEndstop(indices[0], false); }),
 	OBSERVER_BOOL("sensors:endstops^:triggered",

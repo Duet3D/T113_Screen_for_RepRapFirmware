@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_UI_HEIGHTMAP_H_
-#define JNI_UI_HEIGHTMAP_H_
+#ifndef JNI_UI_LOGIC_HEIGHTMAP_H_
+#define JNI_UI_LOGIC_HEIGHTMAP_H_
 
 #include "ObjectModel/Heightmap.h"
 
@@ -30,4 +30,4 @@ namespace UI
 	void ClearHeightmap();
 } // namespace UI
 
-#endif /* JNI_UI_HEIGHTMAP_H_ */
+#endif /* JNI_UI_LOGIC_HEIGHTMAP_H_ */

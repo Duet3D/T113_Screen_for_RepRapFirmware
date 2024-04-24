@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_UI_WEBCAM_H_
-#define JNI_UI_WEBCAM_H_
+#ifndef JNI_UI_LOGIC_WEBCAM_H_
+#define JNI_UI_LOGIC_WEBCAM_H_
 
 #include "UI/UserInterface.h"
 
@@ -32,4 +32,4 @@ namespace UI::Webcam
 	void RegisterUpdateLoop();
 } // namespace UI::Webcam
 
-#endif /* JNI_UI_WEBCAM_H_ */
+#endif /* JNI_UI_LOGIC_WEBCAM_H_ */

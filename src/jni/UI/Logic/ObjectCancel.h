@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_UI_OBJECTCANCEL_H_
-#define JNI_UI_OBJECTCANCEL_H_
+#ifndef JNI_UI_LOGIC_OBJECTCANCEL_H_
+#define JNI_UI_LOGIC_OBJECTCANCEL_H_
 
 #include "UI/UserInterface.h"
 
@@ -31,4 +31,4 @@ namespace UI::ObjectCancel
 	TouchListener& GetTouchListener();
 } // namespace UI::ObjectCancel
 
-#endif /* JNI_UI_OBJECTCANCEL_H_ */
+#endif /* JNI_UI_LOGIC_OBJECTCANCEL_H_ */

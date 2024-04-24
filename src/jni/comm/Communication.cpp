@@ -30,7 +30,7 @@
 #include "ObjectModel/Spindle.h"
 #include "ObjectModel/Tool.h"
 #include "ObjectModel/Utils.h"
-#include "UI/Graph.h"
+#include "UI/Logic/HomeScreen.h"
 #include "UI/OmObserver.h"
 #include "uart/CommDef.h"
 #include "utils/TimeHelper.h"
@@ -330,7 +330,7 @@ namespace Comm
 		{
 			Comm::DUET.RequestModel("d99f");
 		}
-		UI::UpdateTemperatureGraph();
+		UI::HomeScreen::UpdateTemperatureGraph();
 	}
 
 	void init()

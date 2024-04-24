@@ -198,29 +198,4 @@ namespace UI
 
 		m_yLabels->refreshListView();
 	}
-
-	void UpdateTemperatureGraph()
-	{
-		for (size_t i = 0; i < TEMPERATURE_GRAPH.GetWaveCount(); i++)
-		{
-			OM::AnalogSensor* sensor = OM::GetAnalogSensor(i, true);
-			if (sensor == nullptr || sensor->name.IsEmpty())
-			{
-				verbose("Sensor incomplete or does not exist");
-				TEMPERATURE_GRAPH.Clear(i);
-				continue;
-			}
-
-			float value = sensor->lastReading;
-#if 0
-			long long now = TimeHelper::getCurrentTime();
-			if (now - sensor->lastReadingTime > 3 * Comm::DUET.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
-			{
-				dbg("Sensor %d has timed out", i);
-				value = -273;
-			}
-#endif
-			TEMPERATURE_GRAPH.AddData(i, value);
-		}
-	}
 } // namespace UI

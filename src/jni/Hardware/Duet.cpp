@@ -17,7 +17,7 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
-#include "UI/Graph.h"
+#include "UI/Logic/HomeScreen.h"
 #include "UI/UserInterface.h"
 #include "manager/ConfigManager.h"
 #include "storage/StoragePreferences.h"
@@ -58,7 +58,7 @@ namespace Comm
 		OM::RemoveAll();
 		Comm::ResetSeqs();
 		FILEINFO_CACHE->ClearCache();
-		UI::TEMPERATURE_GRAPH.ClearAll();
+		UI::HomeScreen::ClearTemperatureGraph();
 	}
 
 	void Duet::Reconnect()

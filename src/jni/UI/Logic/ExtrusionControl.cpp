@@ -22,6 +22,7 @@ namespace UI::ExtrusionControl
 	static uint32_t s_defaultExtrusionFeedDistance = 10;
 
 	static OM::Tool* s_filamentDialogTool = nullptr;
+	static ToolsList s_toolsList;
 
 	void Init()
 	{
@@ -34,27 +35,27 @@ namespace UI::ExtrusionControl
 			return;
 		}
 
-		UI::ToolsList::Create("extrude")->Init(toolList);
+		s_toolsList.Init(toolList);
 	}
 
 	size_t GetListCount()
 	{
-		return UI::ToolsList::Get("extrude")->GetTotalHeaterCount(true, true, false, false);
+		return s_toolsList.GetTotalHeaterCount(true, true, false, false);
 	}
 
 	void SetExtrudeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
 		ZKListView::ZKListSubItem* pfilament = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolFilamentSubItem);
 
-		UI::ToolsList::Get("extrude")->ObtainListItemData(pListItem,
-														  index,
-														  ID_MAIN_ExtrudeToolNameSubItem,
-														  ID_MAIN_ExtrudeToolStatusSubItem,
-														  ID_MAIN_ExtrudeToolCurrentTemperatureSubItem,
-														  ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
-														  ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+		s_toolsList.ObtainListItemData(pListItem,
+									   index,
+									   ID_MAIN_ExtrudeToolNameSubItem,
+									   ID_MAIN_ExtrudeToolStatusSubItem,
+									   ID_MAIN_ExtrudeToolCurrentTemperatureSubItem,
+									   ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
+									   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
 
-		UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
+		UI::ToolsList::ToolListItemData data = s_toolsList.GetToolListItemDataBySlot(index);
 		if (data.tool == nullptr)
 		{
 			return;
@@ -68,15 +69,15 @@ namespace UI::ExtrusionControl
 
 	void ExtrudeListItemCallback(const int index, const int id)
 	{
-		UI::ToolsList::Get("extrude")->OnListItemClick(index,
-													   id,
-													   ID_MAIN_ExtrudeToolNameSubItem,
-													   ID_MAIN_ExtrudeToolStatusSubItem,
-													   ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
-													   ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
+		s_toolsList.OnListItemClick(index,
+									id,
+									ID_MAIN_ExtrudeToolNameSubItem,
+									ID_MAIN_ExtrudeToolStatusSubItem,
+									ID_MAIN_ExtrudeToolActiveTemperatureSubItem,
+									ID_MAIN_ExtrudeToolStandbyTemperatureSubItem);
 		if (id == ID_MAIN_ExtrudeToolFilamentSubItem)
 		{
-			UI::ToolsList::ToolListItemData data = UI::ToolsList::Get("extrude")->GetToolListItemDataBySlot(index);
+			UI::ToolsList::ToolListItemData data = s_toolsList.GetToolListItemDataBySlot(index);
 			s_filamentDialogTool = data.tool;
 			if (s_filamentDialogTool == nullptr || s_filamentDialogTool->filamentExtruder < 0)
 			{

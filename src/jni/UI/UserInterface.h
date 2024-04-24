@@ -65,13 +65,6 @@ namespace UI
 		webcam,
 	};
 
-	extern uint32_t g_moveFeedRates[6];
-	extern uint32_t g_extrusionFeedRates[5];
-	extern uint32_t g_extrusionFeedDistances[7];
-	extern uint32_t g_defaultMoveFeedRate;
-	extern uint32_t g_defaultExtrusionFeedRate;
-	extern uint32_t g_defaultExtrusionFeedDistance;
-
 	class Window
 	{
 	  public:
@@ -132,8 +125,7 @@ namespace UI
 			size_t bedOrChamberIndex;  // bed or chamber control
 		};
 
-		static ToolsList* Create(const char* id);
-		static ToolsList* Get(const char* id);
+		ToolsList();
 		void Init(ZKListView* toolListView);
 		void CalculateTotalHeaterCount();
 		size_t GetTotalHeaterCount(const bool calculate, const bool addTools = true, const bool addBeds = true,
@@ -154,9 +146,6 @@ namespace UI
 		ToolListItemData GetToolListItemDataBySlot(const size_t listIndex);
 
 	  private:
-		ToolsList(const char* id);
-
-		const char* m_id;
 		size_t m_toolCount, m_bedCount, m_chamberCount;
 		NumPadData m_numPadData;
 		ZKListView* m_pToolListView = nullptr;

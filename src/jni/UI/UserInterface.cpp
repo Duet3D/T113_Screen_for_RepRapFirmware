@@ -52,9 +52,6 @@ const OM::FileSystem::File* sSelectedFile;
 
 namespace UI
 {
-	uint32_t g_moveFeedRates[] = {300, 100, 50, 20, 10, 5};
-	uint32_t g_defaultMoveFeedRate = 50;
-
 	Window& Window::GetInstance()
 	{
 		static Window window;
@@ -204,6 +201,7 @@ namespace UI
 
 	void Window::Back()
 	{
+		info("Back button pressed");
 		if (POPUP_WINDOW.IsOpen())
 		{
 			POPUP_WINDOW.Cancel(false);
@@ -237,12 +235,15 @@ namespace UI
 
 	void Window::Home()
 	{
+		info("Returning to home");
 		for (auto window : m_openedWindows)
 		{
+			verbose("Hiding window %d", window->getID());
 			window->setVisible(false);
 		}
 		for (auto window : m_homeWindows)
 		{
+			verbose("Showing window %d", window->getID());
 			window->setVisible(true);
 		}
 		CloseOverlay();
@@ -255,23 +256,11 @@ namespace UI
 		m_closedWindows.clear();
 	}
 
-	static std::map<const char*, ToolsList*> sToolsListMap;
+	static std::vector<ToolsList*> s_toolsLists;
 
-	ToolsList::ToolsList(const char* id) : m_id(id), m_toolCount(0), m_bedCount(0), m_chamberCount(0)
+	ToolsList::ToolsList() : m_toolCount(0), m_bedCount(0), m_chamberCount(0)
 	{
-		dbg("Registering tool list to id %s", id);
-	}
-
-	ToolsList* ToolsList::Create(const char* id)
-	{
-		sToolsListMap[id] = new ToolsList(id);
-		return sToolsListMap[id];
-	}
-
-	ToolsList* ToolsList::Get(const char* id)
-	{
-		auto it = sToolsListMap.find(id);
-		return (it != sToolsListMap.end()) ? it->second : nullptr;
+		s_toolsLists.push_back(this);
 	}
 
 	void ToolsList::Init(ZKListView* toolListView)
@@ -534,15 +523,23 @@ namespace UI
 
 	void ToolsList::RefreshToolList(const bool lengthChanged)
 	{
-		if (lengthChanged) { CalculateTotalHeaterCount(); }
+		if (lengthChanged)
+		{
+			CalculateTotalHeaterCount();
+		}
+
+		if (m_pToolListView == nullptr)
+		{
+			warn("Tool list view is null");
+		}
 		m_pToolListView->refreshListView();
 	}
 
 	void ToolsList::RefreshAllToolLists(const bool lengthChanged)
 	{
-		for (auto list : sToolsListMap)
+		for (auto list : s_toolsLists)
 		{
-			list.second->RefreshToolList(lengthChanged);
+			list->RefreshToolList(lengthChanged);
 		}
 	}
 

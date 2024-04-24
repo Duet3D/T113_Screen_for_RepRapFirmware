@@ -92,7 +92,7 @@ namespace UI::Webcam
 			warn("Maximum number of webcams reached");
 			return;
 		}
-		s_webcamUrls.push_back("https://");
+		s_webcamUrls.push_back("");
 		UI::GetUIControl<ZKListView>(ID_MAIN_WebcamUrlList)->refreshListView();
 	}
 

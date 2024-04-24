@@ -5,8 +5,8 @@
  *      Author: andy
  */
 
-#ifndef JNI_UI_FILELIST_H_
-#define JNI_UI_FILELIST_H_
+#ifndef JNI_UI_LOGIC_FILELIST_H_
+#define JNI_UI_LOGIC_FILELIST_H_
 
 #include "UI/UserInterface.h"
 
@@ -16,4 +16,4 @@ namespace UI::FileList
 	void OnFileListItemClick(int index);
 } // namespace UI::FileList
 
-#endif /* JNI_UI_FILELIST_H_ */
+#endif /* JNI_UI_LOGIC_FILELIST_H_ */
