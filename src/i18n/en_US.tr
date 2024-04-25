@@ -229,6 +229,7 @@
     <!-- Theme names -->
     <string name="dark">Dark</string>
     <string name="light">Light</string>
+    <string name="dark2">Dark2</string>
 
     <!-- Guide names -->
     <string name="setup">Setup</string>
