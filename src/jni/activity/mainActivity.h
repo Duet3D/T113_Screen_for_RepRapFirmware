@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_WindowSelectList    80021
 #define ID_MAIN_ConsoleInput    51001
 #define ID_MAIN_MoveFeedrate    80036
 #define ID_MAIN_TextView53    50099
@@ -292,7 +293,6 @@
 #define ID_MAIN_HomeAllBtn    20017
 #define ID_MAIN_MoveWindow    110007
 #define ID_MAIN_SlideWindow1    30001
-#define ID_MAIN_WindowSelectWindow    110005
 #define ID_MAIN_TemperatureGraphLegend    80002
 #define ID_MAIN_TempGraph    120001
 #define ID_MAIN_TemperatureGraphWindow    110001

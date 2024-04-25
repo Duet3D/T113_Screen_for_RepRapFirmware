@@ -14,6 +14,12 @@ namespace UI::HomeScreen
 {
 	void Init();
 
+	/* Slide Window */
+	size_t GetWindowSelectCount();
+	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index);
+	void WindowSelectListItemCallback(const int index);
+	void SlideWindowCallback(const int index);
+
 	/* Tools List */
 	size_t GetToolsListCount();
 	void SetToolsListItem(ZKListView::ZKListItem* pListItem, const int index);
@@ -29,8 +35,6 @@ namespace UI::HomeScreen
 	void UpdateTemperatureGraph();
 	void ClearTemperatureGraph();
 
-	/* Slide Window */
-	void SlideWindowCallback(const int index);
 } // namespace UI::HomeScreen
 
 #endif /* JNI_UI_LOGIC_HOMESCREEN_H_ */

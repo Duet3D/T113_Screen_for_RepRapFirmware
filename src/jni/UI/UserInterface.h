@@ -33,20 +33,6 @@
 
 namespace UI
 {
-	enum class SlideWindowIndex
-	{
-		move = 0,
-		extrude,
-		status,
-		heightmap,
-		fans,
-		print,
-		object_cancel,
-		webcam,
-		network,
-		settings,
-	};
-
 	class Window
 	{
 	  public:

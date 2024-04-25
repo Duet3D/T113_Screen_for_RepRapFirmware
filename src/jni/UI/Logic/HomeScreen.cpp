@@ -17,11 +17,44 @@
 #include "UI/Logic/Heightmap.h"
 #include "UI/Logic/Webcam.h"
 #include <entry/EasyUIContext.h>
+#include <std_fixed/functional.h>
 
 namespace UI::HomeScreen
 {
 	static Graph s_temperatureGraph;
 	static ToolsList s_toolsList;
+
+	struct WindowSelectItem
+	{
+		const char* id;
+		function<void()> callback;
+	};
+
+	static WindowSelectItem s_windows[] = {
+		{"move", []() { UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow); }},
+		{"extrude", []() { UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow); }},
+		{"status", []() { UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow); }},
+		{"heightmap",
+		 []() {
+			 OM::RequestHeightmapFiles();
+			 UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
+			 UI::Heightmap::RenderHeightmap(OM::GetCurrentHeightmap());
+		 }},
+		{"fans", []() { UI::WINDOW.OpenWindow(ID_MAIN_FanWindow); }},
+		{"files",
+		 []() {
+			 OM::FileSystem::RequestFiles("0:/gcodes");
+			 UI::WINDOW.OpenWindow(ID_MAIN_FilesWindow);
+		 }},
+		{"object_cancel", []() { UI::WINDOW.OpenWindow(ID_MAIN_ObjectCancelWindow); }},
+		{"webcam",
+		 []() {
+			 UI::Webcam::RegisterUpdateLoop();
+			 UI::WINDOW.OpenWindow(ID_MAIN_WebcamWindow);
+		 }},
+		{"network", []() { EASYUICONTEXT->openActivity("WifiSettingActivity"); }},
+		{"settings", []() { UI::WINDOW.OpenWindow(ID_MAIN_SettingsWindow); }},
+	};
 
 	void Init()
 	{
@@ -30,6 +63,34 @@ namespace UI::HomeScreen
 								UI::GetUIControl<ZKListView>(ID_MAIN_TempGraphXLabels),
 								UI::GetUIControl<ZKListView>(ID_MAIN_TempGraphYLabels),
 								UI::GetUIControl<ZKListView>(ID_MAIN_TemperatureGraphLegend));
+	}
+
+	size_t GetWindowSelectCount()
+	{
+		return ARRAY_SIZE(s_windows);
+	}
+
+	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index)
+	{
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
+		{
+			warn("Invalid window index %d", index);
+			return;
+		}
+
+		pListItem->setTextTr(s_windows[index].id);
+	}
+
+	void WindowSelectListItemCallback(const int index)
+	{
+		dbg("index %d", index);
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
+		{
+			warn("Invalid window index %d", index);
+			return;
+		}
+
+		s_windows[index].callback();
 	}
 
 	size_t GetToolsListCount()
@@ -130,51 +191,4 @@ namespace UI::HomeScreen
 	{
 		s_temperatureGraph.ClearAll();
 	}
-
-	void SlideWindowCallback(const int index)
-	{
-		dbg(" onSlideItemClick_ SlideWindow1 %d !!!\n", index);
-		switch (index)
-		{
-		case (int)UI::SlideWindowIndex::move:
-			UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow);
-			break;
-		case (int)UI::SlideWindowIndex::extrude:
-			UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow);
-			break;
-		case (int)UI::SlideWindowIndex::status:
-			UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow);
-			break;
-		case (int)UI::SlideWindowIndex::heightmap: {
-			OM::RequestHeightmapFiles();
-			UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
-			UI::Heightmap::RenderHeightmap(OM::GetCurrentHeightmap());
-			break;
-		}
-		case (int)UI::SlideWindowIndex::fans:
-			UI::WINDOW.OpenWindow(ID_MAIN_FanWindow);
-			break;
-		case (int)UI::SlideWindowIndex::print:
-			OM::FileSystem::RequestFiles("0:/gcodes");
-			UI::WINDOW.OpenWindow(ID_MAIN_FilesWindow);
-			break;
-		case (int)UI::SlideWindowIndex::network:
-			// UI::WINDOW.OpenWindow(mNetworkWindowPtr);
-			EASYUICONTEXT->openActivity("WifiSettingActivity");
-			break;
-		case (int)UI::SlideWindowIndex::settings:
-			UI::WINDOW.OpenWindow(ID_MAIN_SettingsWindow);
-			break;
-		case (int)UI::SlideWindowIndex::object_cancel:
-			UI::WINDOW.OpenWindow(ID_MAIN_ObjectCancelWindow);
-			break;
-		case (int)UI::SlideWindowIndex::webcam:
-			UI::Webcam::RegisterUpdateLoop();
-			UI::WINDOW.OpenWindow(ID_MAIN_WebcamWindow);
-			break;
-		default:
-			break;
-		}
-	}
-
 } // namespace UI::HomeScreen

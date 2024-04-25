@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mWindowSelectListPtr;
 static ZKListView* mMoveFeedratePtr;
 static ZKTextView* mTextView53Ptr;
 static ZKEditText* mWebcamUpdateIntervalInputPtr;
@@ -236,7 +237,6 @@ static ZKListView* mAxisControlListViewPtr;
 static ZKButton* mHomeAllBtnPtr;
 static ZKWindow* mMoveWindowPtr;
 static ZKSlideWindow* mSlideWindow1Ptr;
-static ZKWindow* mWindowSelectWindowPtr;
 static ZKListView* mTemperatureGraphLegendPtr;
 static ZKDiagram* mTempGraphPtr;
 static ZKWindow* mTemperatureGraphWindowPtr;
@@ -418,6 +418,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_WindowSelectList, getListItemCount_WindowSelectList, obtainListItemData_WindowSelectList, onListItemClick_WindowSelectList,
     ID_MAIN_MoveFeedrate, getListItemCount_MoveFeedrate, obtainListItemData_MoveFeedrate, onListItemClick_MoveFeedrate,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
     ID_MAIN_PopupAxisSelection, getListItemCount_PopupAxisSelection, obtainListItemData_PopupAxisSelection, onListItemClick_PopupAxisSelection,
@@ -598,6 +599,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mWindowSelectListPtr = NULL;
     mMoveFeedratePtr = NULL;
 	mTextView53Ptr = NULL;
 	mWebcamUpdateIntervalInputPtr = NULL;
@@ -830,7 +832,6 @@ mainActivity::~mainActivity() {
     mHomeAllBtnPtr = NULL;
     mMoveWindowPtr = NULL;
     mSlideWindow1Ptr = NULL;
-    mWindowSelectWindowPtr = NULL;
 	mTemperatureGraphLegendPtr = NULL;
 	mTempGraphPtr = NULL;
     mTemperatureGraphWindowPtr = NULL;
@@ -858,6 +859,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WindowSelectList);if(mWindowSelectListPtr!= NULL){mWindowSelectListPtr->setListAdapter(this);mWindowSelectListPtr->setItemClickListener(this);}
     mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);if(mConsoleInputPtr!= NULL){mConsoleInputPtr->setTextChangeListener(this);}
     mMoveFeedratePtr = (ZKListView*)findControlByID(ID_MAIN_MoveFeedrate);if(mMoveFeedratePtr!= NULL){mMoveFeedratePtr->setListAdapter(this);mMoveFeedratePtr->setItemClickListener(this);}
     mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);if(mWebcamUpdateIntervalInputPtr!= NULL){mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);}
@@ -1125,7 +1127,6 @@ void mainActivity::onCreate() {
     mHomeAllBtnPtr = (ZKButton*)findControlByID(ID_MAIN_HomeAllBtn);
     mMoveWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MoveWindow);
     mSlideWindow1Ptr = (ZKSlideWindow*)findControlByID(ID_MAIN_SlideWindow1);if(mSlideWindow1Ptr!= NULL){mSlideWindow1Ptr->setSlideItemClickListener(this);}
-    mWindowSelectWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WindowSelectWindow);
 	mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);
 	if (mTemperatureGraphLegendPtr != NULL)
 	{

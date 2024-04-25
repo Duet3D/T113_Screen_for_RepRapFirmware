@@ -50,7 +50,7 @@ namespace UI::Webcam
 
 	void SetWebcamListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
-		if (index >= GetWebcamCount())
+		if (index >= (int)GetWebcamCount())
 		{
 			warn("Invalid webcam index %d", index);
 			return;

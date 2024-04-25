@@ -313,9 +313,24 @@ static void onListItemClick_ToolListView(ZKListView *pListView, int index, int i
 	UI::HomeScreen::ToolsListItemCallback(index, id);
 }
 
+static int getListItemCount_WindowSelectList(const ZKListView* pListView)
+{
+	return UI::HomeScreen::GetWindowSelectCount();
+}
+
+static void obtainListItemData_WindowSelectList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::HomeScreen::SetWindowSelectListItem(pListItem, index);
+}
+
+static void onListItemClick_WindowSelectList(ZKListView* pListView, int index, int id)
+{
+	UI::HomeScreen::WindowSelectListItemCallback(index);
+}
+
 static void onSlideItemClick_SlideWindow1(ZKSlideWindow *pSlideWindow, int index)
 {
-	UI::HomeScreen::SlideWindowCallback(index);
+	UI::HomeScreen::WindowSelectListItemCallback(index);
 }
 
 static int getListItemCount_TemperatureGraphLegend(const ZKListView *pListView)
@@ -1186,7 +1201,6 @@ static bool onButtonClick_CancelCurrentObjectBtn(ZKButton* pButton)
 
 static int getListItemCount_WebcamSelectList(const ZKListView* pListView)
 {
-	// LOGD("getListItemCount_WebcamSelectList !\n");
 	return UI::Webcam::GetWebcamCount();
 }
 
@@ -1199,3 +1213,7 @@ static void onListItemClick_WebcamSelectList(ZKListView* pListView, int index, i
 {
 	UI::Webcam::SetActiveWebcamIndex(index);
 }
+
+// =====================================================================================================================
+// Unsorted (shame https://media3.giphy.com/media/vX9WcCiWwUF7G/giphy.gif)
+// =====================================================================================================================
