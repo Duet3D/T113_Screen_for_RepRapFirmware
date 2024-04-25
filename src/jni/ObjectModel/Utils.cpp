@@ -41,6 +41,7 @@ namespace OM
 		RemoveSpindle(0, true);
 		RemoveTool(0, true);
 		ClearCurrentHeightmap();
+		UI::ToolsList::RefreshAllToolLists(true);
 	}
 
 	static Debug::DebugCommand s_logOM("dbg_log_OM", []() {

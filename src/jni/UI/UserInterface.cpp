@@ -529,6 +529,7 @@ namespace UI
 		if (m_pToolListView == nullptr)
 		{
 			warn("Tool list view is null");
+			return;
 		}
 		m_pToolListView->refreshListView();
 	}
