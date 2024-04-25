@@ -47,24 +47,6 @@ namespace UI
 		settings,
 	};
 
-	enum class SettingsSlideWindowIndex
-	{
-		language = 0,
-		duet,
-		update,
-		restart,
-		dev,
-		power_off,
-		zk_setting,
-		touch_calibration,
-		guides,
-		brightness,
-		theme,
-		screensaver,
-		buzzer,
-		webcam,
-	};
-
 	class Window
 	{
 	  public:

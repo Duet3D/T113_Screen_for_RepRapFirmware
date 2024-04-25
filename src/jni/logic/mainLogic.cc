@@ -905,148 +905,57 @@ static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int inde
 
 static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
 {
-	switch (index)
-	{
-	case (int)UI::SettingsSlideWindowIndex::language:
-		EASYUICONTEXT->openActivity("LanguageSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::duet:
-		mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-												  Comm::Duet::CommunicationType::uart);
-		mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-													 Comm::Duet::CommunicationType::network);
-		UI::WINDOW.OpenOverlay(mDuetCommSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::update:
-		UI::POPUP_WINDOW.Open([]() {
-			if (!UpgradeFromDuet())
-			{
-				registerDelayedCallback("upgrade_failed", 100, []() {
-					UI::POPUP_WINDOW.Open();
-					UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
-					return false;
-				});
-			}
-		});
-		UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
-		break;
-	case (int)UI::SettingsSlideWindowIndex::restart:
-		// Synchronise data and save cached data to prevent data loss
-		Reset();
-		break;
-	case (int)UI::SettingsSlideWindowIndex::dev:
-		EASYUICONTEXT->openActivity("DeveloperSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::power_off:
-		EASYUICONTEXT->openActivity("PowerOffActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::zk_setting:
-		EASYUICONTEXT->openActivity("ZKSettingActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::touch_calibration:
-		EASYUICONTEXT->openActivity("TouchCalibrationActivity");
-		break;
-	case (int)UI::SettingsSlideWindowIndex::guides:
-		UI::WINDOW.OpenOverlay(mGuideSelectionWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::brightness:
-		//! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
-		//! completely white and need a power cycle.
-		//? This might be a bug with the screen hardware itself. TODO: test with next rev hardware
-		UI::SLIDER_WINDOW.Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
-								"",
-								"",
-								"%",
-								0,
-								100,
-								100 - BRIGHTNESSHELPER->getBrightness(),
-								[](int percent) {
-									BRIGHTNESSHELPER->setBrightness(100 - percent); // Flythings brightness is inverted
-								});
-		break;
-	case (int)UI::SettingsSlideWindowIndex::theme:
-		UI::WINDOW.OpenOverlay(mThemeSelectionWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::screensaver:
-		UI::WINDOW.OpenOverlay(mScreensaverSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::buzzer:
-		UI::WINDOW.OpenOverlay(mBuzzerSettingWindowPtr);
-		break;
-	case (int)UI::SettingsSlideWindowIndex::webcam:
-		UI::WINDOW.OpenOverlay(mWebcamSettingWindowPtr);
-		break;
-	default:
-		break;
-	}
+	UI::Settings::SlideWindowCallback(index);
 }
 
 static int getListItemCount_BaudRateList(const ZKListView* pListView)
 {
-	return ARRAY_SIZE(Comm::baudRates);
+	return UI::Settings::GetBaudRateCount();
 }
 
 static void obtainListItemData_BaudRateList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setSelected(Comm::baudRates[index].rate == Comm::DUET.GetBaudRate().rate);
-	pListItem->setText((int)Comm::baudRates[index].rate);
+	UI::Settings::SetBaudRateListItem(pListItem, index);
 }
 
 static void onListItemClick_BaudRateList(ZKListView* pListView, int index, int id)
 {
-	Comm::DUET.SetBaudRate(Comm::baudRates[index]);
+	UI::Settings::BaudRateListItemCallback(index);
 }
 
 static int getListItemCount_DuetCommList(const ZKListView* pListView)
 {
-	return (int)Comm::Duet::CommunicationType::COUNT;
+	return UI::Settings::GetDuetCommMethodCount();
 }
 
 static void obtainListItemData_DuetCommList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(Comm::duetCommunicationTypeNames[index]);
-	pListItem->setSelected(index == (int)Comm::DUET.GetCommunicationType());
+	UI::Settings::SetDuetCommMethodListItem(pListItem, index);
 }
 
 static void onListItemClick_DuetCommList(ZKListView* pListView, int index, int id)
 {
-	Comm::DUET.SetCommunicationType((Comm::Duet::CommunicationType)index);
-	mDuetUartCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
-	mDuetNetworkCommSettingWindowPtr->setVisible(Comm::DUET.GetCommunicationType() ==
-												 Comm::Duet::CommunicationType::network);
-	mCommunicationTypePtr->setText(Comm::duetCommunicationTypeNames[index]);
+	UI::Settings::DuetCommMethodListItemCallback(index);
 }
 
 static void onEditTextChanged_PollIntervalInput(const std::string& text)
 {
-	if (text.empty() || atoi(text.c_str()) < (int)MIN_PRINTER_POLL_INTERVAL)
-	{
-		mPollIntervalInputPtr->setText((int)MIN_PRINTER_POLL_INTERVAL);
-		return;
-	}
-	Comm::DUET.SetPollInterval(atoi(text.c_str()));
+	UI::Settings::DuetPollIntervalInputCallback(text);
 }
 
 static void onEditTextChanged_HostnameInput(const std::string& text)
 {
-	dbg("Hostname input changed to %s", text.c_str());
-	Comm::DUET.SetHostname(text);
+	UI::Settings::DuetHostnameInputCallback(text);
 }
 
 static void onEditTextChanged_PasswordInput(const std::string& text)
 {
-	Comm::DUET.SetPassword(text);
+	UI::Settings::DuetPasswordInputCallback(text);
 }
 
 static void onEditTextChanged_InfoTimeoutInput(const std::string& text)
 {
-	int32_t timeout = -1;
-	if (text.empty() || !Comm::GetInteger(text.c_str(), timeout) || timeout < 0)
-	{
-		mInfoTimeoutInputPtr->setText((int)UI::POPUP_WINDOW.GetTimeout());
-		return;
-	}
-	UI::POPUP_WINDOW.SetTimeout((uint32_t)timeout);
+	UI::Settings::InfoTimeoutInputCallback(text);
 }
 
 static int getListItemCount_GuidesList(const ZKListView* pListView)
@@ -1056,53 +965,27 @@ static int getListItemCount_GuidesList(const ZKListView* pListView)
 
 static void obtainListItemData_GuidesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
-	if (guide == nullptr)
-	{
-		pListItem->setText("");
-		return;
-	}
-	pListItem->setTextTr(guide->GetId());
+	UI::Settings::SetGuideListItem(pListItem, index);
 }
 
 static void onListItemClick_GuidesList(ZKListView* pListView, int index, int id)
 {
-	UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
-	if (guide == nullptr)
-	{
-		return;
-	}
-	UI::GuidedSetup::Show(guide->GetId());
-}
-
-static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
-{
-	info("Screensaver %s", isChecked ? "enabled" : "disabled");
-	StoragePreferences::putBool(ID_SCREENSAVER_ENABLE, isChecked);
-	EASYUICONTEXT->setScreensaverEnable(isChecked);
-}
-
-static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
-{
-	int timeout = -1;
-	if (!Comm::GetInteger(text.c_str(), timeout))
-	{
-		// Invalid input
-		return;
-	}
-	if (timeout < 0)
-	{
-		mScreensaverTimeoutInputPtr->setText(10);
-		return;
-	}
-	StoragePreferences::putInt(ID_SCREENSAVER_TIMEOUT, timeout);
-	EASYUICONTEXT->setScreensaverTimeOut(timeout);
+	UI::Settings::GuideListItemCallback(index);
 }
 
 static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
 {
-	dbg("isChecked = %d", isChecked);
-	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
+	UI::Settings::SetShowGuideOnStartup(isChecked);
+}
+
+static void onCheckedChanged_ScreensaverEnable(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	UI::Settings::SetScreensaverEnabled(isChecked);
+}
+
+static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
+{
+	UI::Settings::SetScreensaverTimeout(text);
 }
 
 static int getListItemCount_ThemesList(const ZKListView* pListView)
@@ -1112,30 +995,17 @@ static int getListItemCount_ThemesList(const ZKListView* pListView)
 
 static void obtainListItemData_ThemesList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	UI::Theme::Theme* theme = UI::Theme::GetThemeByIndex(index);
-	if (theme == nullptr)
-	{
-		pListItem->setText("");
-		return;
-	}
-	pListItem->setTextTr(theme->id.c_str());
-	pListItem->setSelected(theme->id == UI::Theme::GetCurrentTheme()->id);
+	UI::Settings::SetThemeListItem(pListItem, index);
 }
 
 static void onListItemClick_ThemesList(ZKListView* pListView, int index, int id)
 {
-	UI::Theme::Theme* theme = UI::Theme::GetThemeByIndex(index);
-	if (theme == nullptr)
-	{
-		return;
-	}
-	UI::Theme::SetTheme(theme);
+	UI::Settings::ThemeListItemCallback(index);
 }
 
 static void onCheckedChanged_BuzzerEnabled(ZKCheckBox* pCheckBox, bool isChecked)
 {
-	CONFIGMANAGER->setBeepEnable(isChecked);
-	StoragePreferences::putBool(ID_BUZZER_ENABLED, isChecked);
+	UI::Settings::SetBuzzerEnabled(isChecked);
 }
 
 static int getListItemCount_WebcamUrlList(const ZKListView* pListView)
@@ -1145,20 +1015,12 @@ static int getListItemCount_WebcamUrlList(const ZKListView* pListView)
 
 static void obtainListItemData_WebcamUrlList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setTextf("[%d] %s", index, UI::Webcam::GetWebcamUrl(index).c_str());
+	UI::Settings::SetWebcamUrlListItem(pListItem, index);
 }
 
 static void onListItemClick_WebcamUrlList(ZKListView* pListView, int index, int id)
 {
-	switch (id)
-	{
-	case ID_MAIN_DeleteWebcamSubItem:
-		UI::Webcam::DeleteWebcam(index);
-		break;
-	default:
-		UI::Webcam::OpenWebcamUrlInput(index);
-		break;
-	}
+	UI::Settings::WebcamUrlListItemCallback(index, id);
 }
 
 static bool onButtonClick_AddWebcamBtn(ZKButton* pButton)
