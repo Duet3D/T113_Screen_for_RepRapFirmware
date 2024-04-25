@@ -10,6 +10,7 @@ This firmware provides a graphical user interface to control a Duet3D control bo
 > This only works if the screen is connected to the Duet via network.
 
 * Upload the `DuetScreen.bin` file to the `/firmware` directory on the Duet.
+  * Currently there is no support in RRF to update the screen automatically from the Duet. When DWC asks if you would like to upgrade, select `No`.
 * From the screen, navigate to `Settings` -> `Update`
 
 ### USB
@@ -30,27 +31,59 @@ If the firmware becomes corrupted or it is not prompting you to upgrade, rename 
 
 ### Changing Communication Mode
 
+* Go to `Settings` -> `Duet`
+
+Currently the screen supports the following communication modes:
+* `UART`: The screen will connect to the Duet via the UART1 port.
+  * Configure the baud rate on the Duet to match the screen.
+  * `M575 P1 S0 B115200`
+* `Network`: The screen will connect to the Duet via the network, this is the same as DWC.
+  * The screen must be connected to the same network as the Duet. [Connecting to a Network](#connecting-to-a-network)
+  * The Duet has a built in limit for how many connections can be made handled at once in standalone mode.
+    If you are seeing connection issues, it may be because the Duet is ignoring some of the requests.
+
+### Connecting to a Network
+
+* Go to `Network`
+* Select the network you would like to connect to.
+* Enter the password for the network.
+
 ### Touch Calibration
+
+* Go to `Settings` -> `Touch Calibration`
 
 ### Starting a Guide
 
+There are various guides that can be shown to the user to help them understand how to use the printer or the screen.
+
+* To start a guide, go to `Settings` -> `Guides` and select the guide you would like to start.
+
+### Changing Theme
+
+* Go to `Settings` -> `Theme` and select the theme you would like to apply.
+
+To create a new theme, see the [Developer Documentation](#themes).
+
 ### Changing Language
 
+* Go to `Settings` -> `Language`
+
 ### Adding a webcam
+
 * Go to `Settings` -> `Webcam`
 * Enter the URL of the webcam stream.
-  * The URL must return a `.png` image.
+  * The URL must return a `.png`, or `.jpeg` image.
   * The URL will be polled every 0.5 seconds by default.
 
 ## Developer Documentation
 
 The screen is developed in C++ using the Flythings SDK to provide a GUI framework. All the logic is contained in `src/jni/` with the GUI defined in `src/ui/main.ftu`.
 
-Flythings provides a *What You See Is What You Get* (WYSIWYG) way of creating and modifying the GUI. This requires the use of the Flythings IDE.
+Flythings provides a *What You See Is What You Get* (WYSIWYG) way of creating and modifying the GUI. This requires the use of the [Flythings IDE](https://developer.flythings.cn/zh-hans/download.html).
 
 Flythings has some documentation on the SDK, it is split between a more up-to-date Chinese version and an older English version. The English version is still useful for understanding the basics of the SDK, but the Chinese version is more up-to-date and has more information.
-- https://developer.flythings.cn/zh-hans/system_introdoction.html
-- https://developer.flythings.cn/en/system_introdoction.html
+* https://developer.flythings.cn/zh-hans/system_introdoction.html
+* https://developer.flythings.cn/en/system_introdoction.html
 
 ### Setup
 
@@ -88,7 +121,7 @@ This needs to be done at compile time.
 
 ### Debugging
 
-If you have flythings installed then you can use the IDE to debug the screen.
+If you have Flythings installed then you can use the IDE to debug the screen.
 * https://developer.flythings.cn/en/adb_debug.html
 
 It is possible to debug the screen using `adb` from the command line without having to install the full Flythings IDE.
@@ -103,21 +136,158 @@ It is possible to debug the screen using `adb` from the command line without hav
   * To you can chain multiple filters together
   * You can also pipe the output to `grep` to filter the output further.
 
+To check the memory usage of the screen, you can use the `adb shell` command to connect to the screen and run the `top` command.
+
 ### Modifying GUI
 
-To make fundamental changes to the GUI, you will need to use the Flythings IDE. This lets you move, add, deleted UI elements and set their properties. An overview of what UI elements are available can be found in the [Flythings documentation](https://developer.flythings.cn/en/ctrl_common.html).
+To make fundamental changes to the GUI, you will need to use the Flythings IDE. This lets you move, add, delete UI elements, and set their properties. An overview of what UI elements are available can be found in the [Flythings documentation](https://developer.flythings.cn/en/ctrl_common.html).
 
 > [!IMPORTANT]
 > To interact with the UI elements in the code, you need to use the `ID` of the element. Ensure that any element you create has a unique and descriptive `ID` field.
 
 After you have modified and saved the `main.ftu` file with your changes to the GUI, any element that has been added will not be added into the code until you compile the project.
-- Flythings will automatically generate the relevant code to interact with the UI elements, this code is placed in the `activity` folder. **TAKE EXTREME CARE IF MODIFYING THE CONTENTS OF THE ACTIVITY FOLDER MANUALLY!**.
-- Flythings will also add any control functions relevant to the UI element into `src/jni/logic/mainLogic.cc`. Details on these are described in the Flythings documentation.
-- Flythings will **NOT** delete any code in `mainLogic.cc` for elements that have been removed from the GUI, you will need to manually remove these.
+* Flythings will automatically generate the relevant code to interact with the UI elements, this code is placed in the `activity` folder. **TAKE EXTREME CARE IF MODIFYING THE CONTENTS OF THE ACTIVITY FOLDER MANUALLY!**.
+* Flythings will also add any control functions relevant to the UI element into `src/jni/logic/mainLogic.cc`. Details on these are described in the Flythings documentation.
+  * To keep the `mainLogic.cc` file clean, the logic for the UI elements should be split into separate files located in the [src/jni/UI/Logic/](src/jni/UI/Logic/) folder.
+* Flythings will **NOT** delete any code in `mainLogic.cc` for elements that have been removed from the GUI, you will need to manually remove these.
 
 There are some parts of the UI for this screen that are more complex than a single UI element. Where possible these have be created in a way that allows them to be reused across the GUI. Some examples are the tools list, number pad, slider, popup, and guides.
 
 #### Themes
+
+A theme can be created by adding a new `.cpp` in the [src/jni/UI/Themes](src/jni/UI/Themes/) folder. Each file contains a complete description of the theme.
+* A theme works by setting the visual properties of all similar UI elements to a specific value. For example:
+  * Setting the background color of all buttons to blue.
+  * Setting the text color of all text views to white.
+  * Setting the background image of all windows to a specific image.
+* After the default properties have been set, the theme override method is run. This allows for specific elements to be changed to have different visual properties. For example:
+  * The Emergency Stop button should be red.
+  * Window overlays having a different background color.
+* Because of the way `ZKListView` is rendered, any overrides have to be applied in a specific list override method
+* Colors are in `0xARGB` format, where `A` is the alpha channel, `R` is the red channel, `G` is the green channel, and `B` is the blue channel.
+* `NULL` can be used to remove the color from an element, for example, to make a window transparent.
+* `nullptr` can be used to remove an image from an element, for example, to make a button have no image.
+* Some custom UI elements have their own required theme properties, for example the color sequence of waveforms on the temperature graph. 
+
+An example of a theme would be:
+> [!NOTE]
+> `...` indicates removed code for brevity
+
+```cpp
+enum Colors : uint32_t
+{
+  Clear = 0x00FFFFFF,
+  Black = 0xFF000000,
+  White = 0xFFFFFFFF,
+  Gray = 0xFFA0A0A0,
+  ...
+};
+
+static ThemeColors s_darkTheme = {
+  // Set colors for window
+  .window =
+    {
+      .bgDefault = NULL,                            // No background color (transparent)
+      .bgImage = nullptr,                           // No background image
+    },
+  ...
+  .button =
+    {
+      ...
+      .background =
+        {
+          .normal = Colors::Blue2,                  // Default background color
+          .pressed = Colors::Blue3,                 // Background color when pressed
+          .selected = Colors::Blue4,                // Background color when selected
+          .pressedAndSelected = Colors::Blue3,      // Background color when pressed and selected
+          .invalid = Colors::Gray,                  // Background color when invalid
+        },
+      ...
+    },
+  .checkbox =
+    {
+      ...
+      .images =
+        {
+          .normal = "toggleOffLarge.png",           // Default image path relative to src/resources/
+          .pressed = nullptr,
+          .selected = "toggleOnLarge.png",
+          .pressedAndSelected = nullptr,
+          .invalid = nullptr,
+        },
+    },
+  .diagram =
+    {
+      .bgDefault = NULL,
+      .bgImage = "GraphBg.png",
+      .colors =
+        {
+          0xFF0000FF, // Blue
+          0xFF00FF00, // Green
+          ...
+        },
+    },
+  .heightmap =
+    {
+      .bgDefault = Colors::DarkerGray,
+      .gridColor = Colors::LightGray,
+    },
+  .objectCancel =
+    {
+      .bgDefault = Colors::DarkerGray,
+      .bgCancelled = Colors::Red,
+      .bgCurrent = Colors::Green,
+      .bgBorder = Colors::Gray,
+    },
+};
+
+static Theme s_theme(
+		"dark",
+		&s_darkTheme,
+		[]() {
+			/* Overrides */
+			// Windows
+			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::DarkerGray);
+
+			// Popup
+			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setBackgroundPic("ProgressBarEmpty.png");
+			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setProgressPic("ProgressBarFull.png");
+			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setThumbPic(ZK_CONTROL_STATUS_NORMAL, nullptr);
+
+			// EStop Button
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
+		},
+		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {
+      /* List overrides */
+			if (pListView == nullptr || pListItem == nullptr)
+				return;
+
+			/* ListItem Overrides */
+			switch (pListView->getID())
+			{
+			case ID_MAIN_FileListView: {
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
+				break;
+			}
+			case ID_MAIN_AxisControlListView: {
+				ZKListView::ZKListSubItem* pHomeBtn = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
+				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Yellow);
+				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
+				break;
+			}
+			case ID_MAIN_TemperatureGraphLegend: {
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
+				break;
+			}
+			default:
+				break;
+			}
+		});
+
+```
+
 
 #### Reusable Components
 
@@ -126,13 +296,14 @@ There are some parts of the UI for this screen that are more complex than a sing
     ```cpp
     #include "UI/UserInterface.h"
 
-    UI::NUMPAD_WINDOW.Open(const char* header,
-                            const int value,
-                            function<void(int)> onValueChanged,
-                            function<void(int)> onConfirm);
+    UI::NUMPAD_WINDOW.Open(const char* header,                  // text to display at the top of the number pad.
+                           const int min,                       // minium acceptable value
+                           const int max,                       // maximum acceptable value
+                           const int value,                     // initial value
+                           function<void(int)> onValueChanged,  // callback when the value changes if within min/max
+                           function<void(int)> onConfirm,       // callback when the confirm button is pressed
+                           bool withSlider = false);
     ```
-  * `onValueChanged` is called when the value changes.
-  * `onConfirm` is called when the confirm button is pressed.
   * Can set the position after opening with `SetPosition(UI::HorizontalPosition)` method
   * ![1709737769657](docs/image/README/1709737769657.png)
 * Slider
@@ -141,14 +312,14 @@ There are some parts of the UI for this screen that are more complex than a sing
     #include "UI/UserInterface.h"
 
     UI::SLIDER_WINDOW.Open(const char* header, // The header text
-				  const char* prefix, // The prefix text, displayed on left of slider
-				  const char* suffix, // The suffix text, displayed on right of slider
-				  const char* unit,	  // The unit text, displayed after the value
-				  const int min,
-				  const int max,
-				  const int value,
-				  function<void(int)> onProgressChanged,
-				  bool displayRaw = false // Display the raw value instead of the percentage
+				                   const char* prefix, // The prefix text, displayed on left of slider
+				                   const char* suffix, // The suffix text, displayed on right of slider
+				                   const char* unit,	  // The unit text, displayed after the value
+				                   const int min,
+				                   const int max,
+				                   const int value,
+				                   function<void(int)> onProgressChanged,
+				                   bool displayRaw = false // Display the raw value instead of the percentage
 		);
     ```
   * Can set the position after opening with `SetPosition(UI::VerticalPosition, UI::HorizontalPosition)` method
@@ -244,9 +415,15 @@ There are some parts of the UI for this screen that are more complex than a sing
 * Tools List
   * Because of the flexibility RRF allows in configuring tools, accurately representing the state of all the tools in a useful and complete way can become quite complex if you do not know what tools the user will configure. Also since there are a few pages that it is desirable to show the tools list, it is useful to have a reusable component for this.
   * ![1709739921241](docs/image/README/1709739921241.png)
-  * Examples for use can be found in [mainLogic.cc](src/jni/logic/mainLogic.cc)
+  * Examples for use can be found in [HomeScreen.cpp](src/jni/UI/Logic/HomeScreen.cpp)
     ```cpp
-	UI::ToolsList::Create("home")->Init(mToolListViewPtr);
+    static ToolsList s_toolsList;
+
+    void Init()
+    {
+      s_toolsList.Init(UI::GetUIControl<ZKListView>(ID_MAIN_ToolListView));
+      ...
+    }
     ```
 
 #### Add New Language
@@ -304,28 +481,23 @@ There are some parts of the UI for this screen that are more complex than a sing
   * Only 1 window can be open at a time. Opening a new window will close the current window.
     ```cpp
     #include "UI/UserInterface.h"
-    UI::WINDOW.Open(mWindowPtr);
+    UI::WINDOW.Open(ID_MAIN_Window);  // Can be called with a pointer to the window, or the ID of the window
     ```
 * Overlay:
   * Multiple overlays can be open at the same time. Opening a new overlay will close the current overlay by default unless specifically requested not to.
     ```cpp
     #include "UI/UserInterface.h"
-    UI::WINDOW.OpenOverlay(mOverlayWindowPtr, closeAlreadyOpen);
+    UI::WINDOW.OpenOverlay(ID_MAIN_OverlayWindow, closeAlreadyOpen);  // Can be called with a pointer to the window, or the ID of the window
     ```
 
 #### Accessing GUI Elements
 
 * When you create a GUI element in the `main.ftu` file, it will automatically create a static pointer (`m{id_of_element}Ptr`) to the element in `mainActivity.cpp` and a `#define ID_MAIN_{id_of_element} xxxx` in `mainActivity.h`
-* To access the element in the program there are 2 ways to do it:
-  * If you are working in a file that gets included in `mainActivity.cpp` (eg. `mainLogic.cc`), you can use the static pointer directly:
-    ```cpp
-    m<id_of_element>Ptr;
-    ```
-  * If you are working in any other file, you can retreive the pointer using the `GetUIControl` function:
+* To access the element in the program, you can retreive the pointer using the `GetUIControl` function:
     ```cpp
     #include "UI/UserInterface.h"
 
-    UI::GetUIControl<ZKTextView>(ID_MAIN_{id_of_element});
+    UI::GetUIControl<ZKTextView>(ID_MAIN_{id_of_element});    // Returns a pointer to the element
     ```
     * Replace `ZKTextView` with the type of the element you are trying to access
   
