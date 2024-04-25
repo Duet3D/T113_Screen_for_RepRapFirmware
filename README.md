@@ -166,6 +166,7 @@ A theme can be created by adding a new `.cpp` in the [src/jni/UI/Themes](src/jni
 * Because of the way `ZKListView` is rendered, any overrides have to be applied in a specific list override method
 * Colors are in `0xARGB` format, where `A` is the alpha channel, `R` is the red channel, `G` is the green channel, and `B` is the blue channel.
 * `NULL` can be used to remove the color from an element, for example, to make a window transparent.
+* Images are the relative path of the image from the `src/resources/` folder.
 * `nullptr` can be used to remove an image from an element, for example, to make a button have no image.
 * Some custom UI elements have their own required theme properties, for example the color sequence of waveforms on the temperature graph. 
 
