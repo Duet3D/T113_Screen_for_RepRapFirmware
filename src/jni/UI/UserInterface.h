@@ -33,6 +33,15 @@
 
 namespace UI
 {
+	/// @brief Used to display an item in a list view and a callback for when the item is selected
+	/// @param id The name of the item. The string will be used to look up the translation
+	/// @param callback The function to call when the item is selected
+	struct WindowSelectItem
+	{
+		const char* id;			   // name of the window. The string will be used to look up the translation
+		function<void()> callback; // function to call when the item is selected
+	};
+
 	class Window
 	{
 	  public:

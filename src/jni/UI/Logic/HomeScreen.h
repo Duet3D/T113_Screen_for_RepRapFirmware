@@ -18,7 +18,6 @@ namespace UI::HomeScreen
 	size_t GetWindowSelectCount();
 	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index);
 	void WindowSelectListItemCallback(const int index);
-	void SlideWindowCallback(const int index);
 
 	/* Tools List */
 	size_t GetToolsListCount();

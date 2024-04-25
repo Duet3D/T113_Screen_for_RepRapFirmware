@@ -29,23 +29,62 @@
 
 namespace UI::Settings
 {
-
-	enum class SettingsSlideWindowIndex
-	{
-		language = 0,
-		duet,
-		update,
-		restart,
-		dev,
-		power_off,
-		zk_setting,
-		touch_calibration,
-		guides,
-		brightness,
-		theme,
-		screensaver,
-		buzzer,
-		webcam,
+	/* Modify this array to set what settings windows are visible  */
+	static WindowSelectItem s_windows[] = {
+		{"language", []() { EASYUICONTEXT->openActivity("LanguageSettingActivity"); }},
+		{"duet",
+		 []() {
+			 UI::GetUIControl(ID_MAIN_DuetUartCommSettingWindow)
+				 ->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
+			 UI::GetUIControl(ID_MAIN_DuetNetworkCommSettingWindow)
+				 ->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::network);
+			 UI::WINDOW.OpenOverlay(ID_MAIN_DuetCommSettingWindow);
+		 }},
+		{"update",
+		 []() {
+			 UI::POPUP_WINDOW.Open([]() {
+				 if (!UpgradeFromDuet())
+				 {
+					 registerDelayedCallback("upgrade_failed", 100, []() {
+						 UI::POPUP_WINDOW.Open();
+						 UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
+						 return false;
+					 });
+				 }
+			 });
+			 UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
+		 }},
+		{"restart",
+		 []() {
+			 // Synchronise data and save cached data to prevent data loss
+			 Reset();
+		 }},
+		{"dev", []() { EASYUICONTEXT->openActivity("DeveloperSettingActivity"); }},
+		{"power_off", []() { EASYUICONTEXT->openActivity("PowerOffActivity"); }},
+		{"zk_setting", []() { EASYUICONTEXT->openActivity("ZKSettingActivity"); }},
+		{"touch_calibration", []() { EASYUICONTEXT->openActivity("TouchCalibrationActivity"); }},
+		{"guides", []() { UI::WINDOW.OpenOverlay(ID_MAIN_GuideSelectionWindow); }},
+		{"brightness",
+		 []() {
+			 //! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
+			 //! completely white and need a power cycle.
+			 //? This might be a bug with the screen hardware itself. TODO: test with next rev hardware
+			 UI::SLIDER_WINDOW.Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
+									"",
+									"",
+									"%",
+									0,
+									100,
+									100 - BRIGHTNESSHELPER->getBrightness(),
+									[](int percent) {
+										BRIGHTNESSHELPER->setBrightness(100 -
+																		percent); // Flythings brightness is inverted
+									});
+		 }},
+		{"theme", []() { UI::WINDOW.OpenOverlay(ID_MAIN_ThemeSelectionWindow); }},
+		{"screensaver", []() { UI::WINDOW.OpenOverlay(ID_MAIN_ScreensaverSettingWindow); }},
+		{"buzzer", []() { UI::WINDOW.OpenOverlay(ID_MAIN_BuzzerSettingWindow); }},
+		{"webcam", []() { UI::WINDOW.OpenOverlay(ID_MAIN_WebcamSettingWindow); }},
 	};
 
 	void Init()
@@ -82,83 +121,32 @@ namespace UI::Settings
 		UI::GetUIControl<ZKEditText>(ID_MAIN_InfoTimeoutInput)->setText((int)UI::POPUP_WINDOW.GetTimeout());
 	}
 
-	void SlideWindowCallback(const int index)
+	size_t GetWindowSelectCount()
 	{
-		switch (SettingsSlideWindowIndex(index))
+		return ARRAY_SIZE(s_windows);
+	}
+
+	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index)
+	{
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
 		{
-		case SettingsSlideWindowIndex::language:
-			EASYUICONTEXT->openActivity("LanguageSettingActivity");
-			break;
-		case SettingsSlideWindowIndex::duet:
-			UI::GetUIControl(ID_MAIN_DuetUartCommSettingWindow)
-				->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
-			UI::GetUIControl(ID_MAIN_DuetNetworkCommSettingWindow)
-				->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::network);
-			UI::WINDOW.OpenOverlay(ID_MAIN_DuetCommSettingWindow);
-			break;
-		case SettingsSlideWindowIndex::update:
-			UI::POPUP_WINDOW.Open([]() {
-				if (!UpgradeFromDuet())
-				{
-					registerDelayedCallback("upgrade_failed", 100, []() {
-						UI::POPUP_WINDOW.Open();
-						UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_failed"));
-						return false;
-					});
-				}
-			});
-			UI::POPUP_WINDOW.SetTitle(LANGUAGEMANAGER->getValue("upgrade_firmware").c_str());
-			break;
-		case SettingsSlideWindowIndex::restart:
-			// Synchronise data and save cached data to prevent data loss
-			Reset();
-			break;
-		case SettingsSlideWindowIndex::dev:
-			EASYUICONTEXT->openActivity("DeveloperSettingActivity");
-			break;
-		case SettingsSlideWindowIndex::power_off:
-			EASYUICONTEXT->openActivity("PowerOffActivity");
-			break;
-		case SettingsSlideWindowIndex::zk_setting:
-			EASYUICONTEXT->openActivity("ZKSettingActivity");
-			break;
-		case SettingsSlideWindowIndex::touch_calibration:
-			EASYUICONTEXT->openActivity("TouchCalibrationActivity");
-			break;
-		case SettingsSlideWindowIndex::guides:
-			UI::WINDOW.OpenOverlay(ID_MAIN_GuideSelectionWindow);
-			break;
-		case SettingsSlideWindowIndex::brightness:
-			//! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
-			//! completely white and need a power cycle.
-			//? This might be a bug with the screen hardware itself. TODO: test with next rev hardware
-			UI::SLIDER_WINDOW.Open(LANGUAGEMANAGER->getValue("set_brightness").c_str(),
-								   "",
-								   "",
-								   "%",
-								   0,
-								   100,
-								   100 - BRIGHTNESSHELPER->getBrightness(),
-								   [](int percent) {
-									   BRIGHTNESSHELPER->setBrightness(100 -
-																	   percent); // Flythings brightness is inverted
-								   });
-			break;
-		case SettingsSlideWindowIndex::theme:
-			UI::WINDOW.OpenOverlay(ID_MAIN_ThemeSelectionWindow);
-			break;
-		case SettingsSlideWindowIndex::screensaver:
-			UI::WINDOW.OpenOverlay(ID_MAIN_ScreensaverSettingWindow);
-			break;
-		case SettingsSlideWindowIndex::buzzer:
-			UI::WINDOW.OpenOverlay(ID_MAIN_BuzzerSettingWindow);
-			break;
-		case SettingsSlideWindowIndex::webcam:
-			UI::WINDOW.OpenOverlay(ID_MAIN_WebcamSettingWindow);
-			break;
-		default:
-			break;
+			warn("Invalid window index %d", index);
+			return;
 		}
+
+		pListItem->setTextTr(s_windows[index].id);
+	}
+
+	void WindowSelectListItemCallback(const int index)
+	{
+		dbg("index %d", index);
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
+		{
+			warn("Invalid window index %d", index);
+			return;
+		}
+
+		s_windows[index].callback();
 	}
 
 	/* Duet Settings */

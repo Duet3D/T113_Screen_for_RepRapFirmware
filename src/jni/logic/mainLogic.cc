@@ -918,9 +918,24 @@ static void onListItemClick_PrintTemperatureList(ZKListView *pListView, int inde
 // Settings Window
 // =====================================================================================================================
 
+static int getListItemCount_SettingsWindowSelectList(const ZKListView* pListView)
+{
+	return UI::Settings::GetWindowSelectCount();
+}
+
+static void obtainListItemData_SettingsWindowSelectList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::Settings::SetWindowSelectListItem(pListItem, index);
+}
+
+static void onListItemClick_SettingsWindowSelectList(ZKListView* pListView, int index, int id)
+{
+	UI::Settings::WindowSelectListItemCallback(index);
+}
+
 static void onSlideItemClick_SettingsSlideWindow(ZKSlideWindow* pSlideWindow, int index)
 {
-	UI::Settings::SlideWindowCallback(index);
+	UI::Settings::WindowSelectListItemCallback(index);
 }
 
 static int getListItemCount_BaudRateList(const ZKListView* pListView)

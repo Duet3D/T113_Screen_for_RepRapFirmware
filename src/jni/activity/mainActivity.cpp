@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKListView* mSettingsWindowSelectListPtr;
 static ZKListView* mWindowSelectListPtr;
 static ZKListView* mMoveFeedratePtr;
 static ZKTextView* mTextView53Ptr;
@@ -418,6 +419,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_SettingsWindowSelectList, getListItemCount_SettingsWindowSelectList, obtainListItemData_SettingsWindowSelectList, onListItemClick_SettingsWindowSelectList,
     ID_MAIN_WindowSelectList, getListItemCount_WindowSelectList, obtainListItemData_WindowSelectList, onListItemClick_WindowSelectList,
     ID_MAIN_MoveFeedrate, getListItemCount_MoveFeedrate, obtainListItemData_MoveFeedrate, onListItemClick_MoveFeedrate,
     ID_MAIN_PopupAxisAdjusment, getListItemCount_PopupAxisAdjusment, obtainListItemData_PopupAxisAdjusment, onListItemClick_PopupAxisAdjusment,
@@ -599,6 +601,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mSettingsWindowSelectListPtr = NULL;
     mWindowSelectListPtr = NULL;
     mMoveFeedratePtr = NULL;
 	mTextView53Ptr = NULL;
@@ -859,6 +862,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mSettingsWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_SettingsWindowSelectList);if(mSettingsWindowSelectListPtr!= NULL){mSettingsWindowSelectListPtr->setListAdapter(this);mSettingsWindowSelectListPtr->setItemClickListener(this);}
     mWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WindowSelectList);if(mWindowSelectListPtr!= NULL){mWindowSelectListPtr->setListAdapter(this);mWindowSelectListPtr->setItemClickListener(this);}
     mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);if(mConsoleInputPtr!= NULL){mConsoleInputPtr->setTextChangeListener(this);}
     mMoveFeedratePtr = (ZKListView*)findControlByID(ID_MAIN_MoveFeedrate);if(mMoveFeedratePtr!= NULL){mMoveFeedratePtr->setListAdapter(this);mMoveFeedratePtr->setItemClickListener(this);}

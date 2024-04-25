@@ -15,7 +15,9 @@ namespace UI::Settings
 {
 	void Init();
 
-	void SlideWindowCallback(const int index);
+	size_t GetWindowSelectCount();
+	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index);
+	void WindowSelectListItemCallback(const int index);
 
 	/* Duet Settings */
 	size_t GetBaudRateCount();

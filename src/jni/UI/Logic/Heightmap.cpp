@@ -353,8 +353,10 @@ namespace UI::Heightmap
 
 	bool RenderHeightmap(const std::string& heightmapName)
 	{
-		// Render the heightmap
+		// Clear the canvas
+		ClearHeightmap();
 
+		// Render the heightmap
 		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
 		RenderScale();
 		RenderStatistics(heightmap);
@@ -371,9 +373,6 @@ namespace UI::Heightmap
 
 		static LayoutPosition canvasPos = s_canvas->getPosition();
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
-
-		// Clear the canvas
-		ClearHeightmap();
 
 		// Save the heightmap for scale text rendering
 		s_currentHeightmap = heightmapName.c_str();
@@ -488,5 +487,6 @@ namespace UI::Heightmap
 		s_canvas->setSourceColor(theme->colors->heightmap.bgDefault);
 		s_canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
 		s_currentHeightmap.clear();
+		RenderStatistics(OM::Heightmap());
 	}
 } // namespace UI

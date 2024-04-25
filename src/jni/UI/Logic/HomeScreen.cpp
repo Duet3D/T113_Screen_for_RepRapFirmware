@@ -24,12 +24,6 @@ namespace UI::HomeScreen
 	static Graph s_temperatureGraph;
 	static ToolsList s_toolsList;
 
-	struct WindowSelectItem
-	{
-		const char* id;
-		function<void()> callback;
-	};
-
 	static WindowSelectItem s_windows[] = {
 		{"move", []() { UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow); }},
 		{"extrude", []() { UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow); }},

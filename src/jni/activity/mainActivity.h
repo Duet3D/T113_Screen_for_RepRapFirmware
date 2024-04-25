@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_SettingsWindowSelectList    80037
 #define ID_MAIN_WindowSelectList    80021
 #define ID_MAIN_ConsoleInput    51001
 #define ID_MAIN_MoveFeedrate    80036
