@@ -18,9 +18,9 @@
 #include "ObjectModel/PrinterStatus.h"
 #include "ObjectModel/Utils.h"
 #include "Storage.h"
-#include "UI/Gcodes.h"
 #include "UI/Graph.h"
 #include "UI/GuidedSetup.h"
+#include "UI/Logic/Console.h"
 #include "UI/Logic/ExtrusionControl.h"
 #include "UI/Logic/FileList.h"
 #include "UI/Logic/Heightmap.h"
@@ -119,20 +119,17 @@ static void onUI_init()
 	UI::HomeScreen::Init();
 	UI::ExtrusionControl::Init();
 	UI::PrintStatus::Init();
+	UI::FileList::Init();
+	UI::Heightmap::Init();
 
-	OM::FileSystem::Init(mFolderIDPtr, mFileListViewPtr);
 	UI::WINDOW.AddHome(mMainWindowPtr);
 	UI::CONSOLE.Init(mConsoleListViewPtr, mConsoleInputPtr);
 	UI::NUMPAD_WINDOW.Init(mNumPadWindowPtr, mNumPadHeaderPtr, mNumPadInputPtr);
 	UI::SLIDER_WINDOW.Init(
 		mSliderWindowPtr, mSliderPtr, mSliderHeaderPtr, mSliderValuePtr, mSliderPrefixPtr, mSliderSuffixPtr);
-	UI::SetThumbnail(mPopupImagePtr);
 
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
-
-	// Heightmap
-	UI::RenderScale();
 
 	// Object Cancel
 	mObjectCancelPainterPtr->setTouchable(true);
@@ -566,52 +563,48 @@ static int getListItemCount_ConsoleListView(const ZKListView* pListView)
 
 static void obtainListItemData_ConsoleListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::CONSOLE.GetItem(index).c_str());
+	UI::ConsoleWindow::SetConsoleListItem(pListItem, index);
 }
 
 static void onListItemClick_ConsoleListView(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_GcodeListView(const ZKListView* pListView)
 {
-	return sizeof(s_gcode) / sizeof(gcode);
+	return UI::ConsoleWindow::GetGcodeListCount();
 }
 
 static void obtainListItemData_GcodeListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setTextTr(s_gcode[index].displayText);
+	UI::ConsoleWindow::SetGcodeListItem(pListItem, index);
 }
 
 static void onListItemClick_GcodeListView(ZKListView* pListView, int index, int id) {}
 
 static void onEditTextChanged_ConsoleInput(const std::string& text)
 {
-	UI::CONSOLE.AddCommand(text);
-	Comm::DUET.SendGcode(text.c_str());
+	UI::ConsoleWindow::ConsoleInputCallback(text);
 }
 
 static bool onButtonClick_SendBtn(ZKButton* pButton)
 {
-	UI::CONSOLE.AddCommand(mConsoleInputPtr->getText());
-	Comm::DUET.SendGcode(mConsoleInputPtr->getText().c_str());
+	UI::ConsoleWindow::SendConsoleInput();
 	return true;
 }
 
 static bool onButtonClick_ConsoleClearBtn(ZKButton* pButton)
 {
-	UI::CONSOLE.Clear();
+	UI::ConsoleWindow::ClearConsole();
 	return false;
 }
 
 static bool onButtonClick_ConsoleMacroBtn1(ZKButton* pButton)
 {
-	UI::WINDOW.OpenOverlay(ID_MAIN_DebugWindow);
+	UI::ConsoleWindow::OpenDebugCommands();
 	return false;
 }
 
 static bool onButtonClick_ConsoleMacroBtn2(ZKButton* pButton)
 {
-	UI::SLIDER_WINDOW.Open("Slider", "0", "100", "%", 0, 100, 50, [](int value) { dbg("Slider value: %d", value); });
-	UI::SLIDER_WINDOW.SetPosition(UI::VerticalPosition::center, UI::HorizontalPosition::center);
 	return false;
 }
 
@@ -623,28 +616,17 @@ static bool onButtonClick_ConsoleMacroBtn3(ZKButton* pButton)
 
 static int getListItemCount_DebugCommandList(const ZKListView* pListView)
 {
-	return Debug::GetCommandCount();
+	return UI::ConsoleWindow::GetDebugCommandsCount();
 }
 
 static void obtainListItemData_DebugCommandList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
-	if (command == nullptr)
-	{
-		pListItem->setText("");
-		return;
-	}
-	pListItem->setTextTr(command->id);
+	UI::ConsoleWindow::SetDebugCommandsListItem(pListItem, index);
 }
 
 static void onListItemClick_DebugCommandList(ZKListView* pListView, int index, int id)
 {
-	Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
-	if (command == nullptr)
-	{
-		return;
-	}
-	command->callback();
+	UI::ConsoleWindow::DebugCommandCallback(index);
 }
 
 // =====================================================================================================================
@@ -798,30 +780,27 @@ static bool onButtonClick_UnloadFilamentBtn(ZKButton* pButton)
 
 static bool onButtonClick_FileRefreshBtn(ZKButton* pButton)
 {
-	UI::POPUP_WINDOW.Close();
-	FILEINFO_CACHE->ClearCache();
-	OM::FileSystem::ClearFileSystem();
-	OM::FileSystem::RequestFiles(OM::FileSystem::GetCurrentDirPath());
-    return false;
+	UI::FileList::ReloadFileList();
+	return false;
 }
 static int getListItemCount_FileListView(const ZKListView* pListView)
 {
-	return OM::FileSystem::GetItemCount();
+	return UI::FileList::GetFileListCount();
 }
 
 static void obtainListItemData_FileListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	UI::FileList::RenderFileListItem(pListItem, index);
+	UI::FileList::SetFileListItem(pListItem, index);
 }
 
 static void onListItemClick_FileListView(ZKListView* pListView, int index, int id)
 {
-	UI::FileList::OnFileListItemClick(index);
+	UI::FileList::FileListItemCallback(index);
 }
 
 static bool onButtonClick_UsbFiles(ZKButton* pButton)
 {
-	OM::FileSystem::RequestUsbFiles("");
+	UI::FileList::RequestUSBFiles();
 	return false;
 }
 
@@ -1120,6 +1099,12 @@ static void onEditTextChanged_ScreensaverTimeoutInput(const std::string& text)
 	EASYUICONTEXT->setScreensaverTimeOut(timeout);
 }
 
+static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	dbg("isChecked = %d", isChecked);
+	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
+}
+
 static int getListItemCount_ThemesList(const ZKListView* pListView)
 {
 	return UI::Theme::GetThemeCount();
@@ -1203,12 +1188,6 @@ static bool onButtonClick_PreviousPageBtn(ZKButton* pButton)
 	return false;
 }
 
-static void onCheckedChanged_ShowSetupOnStartup(ZKCheckBox* pCheckBox, bool isChecked)
-{
-	dbg("isChecked = %d", isChecked);
-	StoragePreferences::putBool(ID_SHOW_SETUP_ON_STARTUP, isChecked);
-}
-
 static bool onButtonClick_CloseGuideBtn(ZKButton* pButton)
 {
 	UI::GuidedSetup::Close();
@@ -1221,80 +1200,50 @@ static bool onButtonClick_CloseGuideBtn(ZKButton* pButton)
 
 static int getListItemCount_HeightMapList(const ZKListView* pListView)
 {
-	return OM::GetHeightmapFiles().size();
+	return UI::Heightmap::GetHeightmapCount();
 }
 
 static void obtainListItemData_HeightMapList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	ZKListView::ZKListSubItem* pLoad = pListItem->findSubItemByID(ID_MAIN_HeightmapLoad);
-
-	std::string filename = OM::GetHeightmapNameAt(index);
-
-	bool shown = filename == UI::GetVisibleHeightmapName().c_str();
-	bool loaded = filename == OM::GetCurrentHeightmap().c_str();
-
-	verbose("Heightmap %d: %s, shown: %d (%s), loaded: %d (%s)",
-			index,
-			filename.c_str(),
-			shown,
-			UI::GetVisibleHeightmapName().c_str(),
-			loaded,
-			OM::GetCurrentHeightmap().c_str());
-
-	pListItem->setText(filename);
-	pListItem->setSelected(shown);
-	pLoad->setTextTr(loaded ? "unload_heightmap" : "load_heightmap");
+	UI::Heightmap::SetHeightmapListItem(pListItem, index);
 }
 
 static void onListItemClick_HeightMapList(ZKListView* pListView, int index, int id)
 {
-	dbg("Selected heightmap %d", index);
-	std::string filename = OM::GetHeightmapNameAt(index);
-	dbg("heightmap = %s", filename.c_str());
-	if (filename.empty())
-	{
-		return;
-	}
-	if (id == ID_MAIN_HeightmapLoad)
-	{
-		OM::ToggleHeightmap(filename.c_str());
-	}
-	UI::RenderHeightmap(filename);
+	UI::Heightmap::HeightmapListItemCallback(index, id);
 }
 
 static bool onButtonClick_HeightMapRefresh(ZKButton* pButton)
 {
-	OM::RequestHeightmapFiles();
-	UI::ClearHeightmap();
+	UI::Heightmap::Refresh();
 	return false;
 }
 
 static int getListItemCount_HeightMapScaleList(const ZKListView* pListView)
 {
-	return 5;
+	return pListView->getRows();
 }
 
 static void obtainListItemData_HeightMapScaleList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetHeightmapScaleAt(index));
+	UI::Heightmap::SetHeightmapScaleAt(pListView, pListItem, index);
 }
 
 static void onListItemClick_HeightMapScaleList(ZKListView* pListView, int index, int id) {}
 
 static int getListItemCount_HeightMapColorSchemeList(const ZKListView* pListView)
 {
-	return 2;
+	return pListView->getCols();
 }
 
 static void obtainListItemData_HeightMapColorSchemeList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetHeightmapRenderModeText(UI::HeightmapRenderMode(index)));
-    pListItem->setSelected(index == StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0));
+	UI::Heightmap::SetHeightmapRenderModeListItem(pListItem, index);
 }
 
 static void onListItemClick_HeightMapColorSchemeList(ZKListView* pListView, int index, int id)
 {
-	UI::SetHeightmapRenderMode(UI::HeightmapRenderMode(index));
+	UI::Heightmap::SetHeightmapRenderMode(UI::Heightmap::HeightmapRenderMode(index));
 }
 static int getListItemCount_HeightMapYAxis(const ZKListView* pListView)
 {
@@ -1303,7 +1252,7 @@ static int getListItemCount_HeightMapYAxis(const ZKListView* pListView)
 
 static void obtainListItemData_HeightMapYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetHeightmapYAxisText(index));
+	UI::Heightmap::SetHeightmapYAxisText(pListView, pListItem, index);
 }
 
 static void onListItemClick_HeightMapYAxis(ZKListView* pListView, int index, int id) {}
@@ -1315,7 +1264,7 @@ static int getListItemCount_HeightMapXAxis(const ZKListView* pListView)
 
 static void obtainListItemData_HeightMapXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::GetHeightmapXAxisText(index));
+	UI::Heightmap::SetHeightmapXAxisText(pListView, pListItem, index);
 }
 
 static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int id) {}
@@ -1326,7 +1275,7 @@ static void onListItemClick_HeightMapXAxis(ZKListView* pListView, int index, int
 
 static int getListItemCount_ObjectCancelObjectsList(const ZKListView* pListView)
 {
-	return OM::GetJobObjectCount();
+	return UI::ObjectCancel::GetObjectCount();
 }
 
 static void obtainListItemData_ObjectCancelObjectsList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
@@ -1346,7 +1295,7 @@ static int getListItemCount_ObjectCancelYAxis(const ZKListView* pListView)
 
 static void obtainListItemData_ObjectCancelYAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::ObjectCancel::GetObjectCancelYAxisText(index));
+	UI::ObjectCancel::SetObjectCancelYAxisText(pListView, pListItem, index);
 }
 
 static void onListItemClick_ObjectCancelYAxis(ZKListView* pListView, int index, int id) {}
@@ -1358,7 +1307,7 @@ static int getListItemCount_ObjectCancelXAxis(const ZKListView* pListView)
 
 static void obtainListItemData_ObjectCancelXAxis(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(UI::ObjectCancel::GetObjectCancelXAxisText(index));
+	UI::ObjectCancel::SetObjectCancelXAxisText(pListView, pListItem, index);
 }
 
 static void onListItemClick_ObjectCancelXAxis(ZKListView* pListView, int index, int id) {}
@@ -1381,8 +1330,7 @@ static int getListItemCount_WebcamSelectList(const ZKListView* pListView)
 
 static void obtainListItemData_WebcamSelectList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 {
-	pListItem->setText(index);
-	pListItem->setSelected(index == (int)UI::Webcam::GetActiveWebcamIndex());
+	UI::Webcam::SetWebcamListItem(pListItem, index);
 }
 
 static void onListItemClick_WebcamSelectList(ZKListView* pListView, int index, int id)

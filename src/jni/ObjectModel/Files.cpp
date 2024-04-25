@@ -10,11 +10,11 @@
 #include "Debug.h"
 
 #include "Files.h"
+#include "UI/Logic/FileList.h"
 
 #include "Comm/Communication.h"
 #include "Hardware/Duet.h"
 #include "Hardware/Usb.h"
-#include "UI/UserInterface.h"
 #include <algorithm>
 
 namespace OM::FileSystem
@@ -23,8 +23,6 @@ namespace OM::FileSystem
 	static std::vector<FileSystemItem*> s_items;
 	static bool s_inMacroFolder = false;
 	static bool s_usbFolder = false;
-	static ZKTextView* s_folderId = nullptr;
-	static ZKListView* s_listView = nullptr;
 
 	std::string FileSystemItem::GetPath() const
 	{
@@ -68,17 +66,6 @@ namespace OM::FileSystem
 	FileSystemItem::~FileSystemItem()
 	{
 		dbg("Files: destructing item %s", GetPath().c_str());
-	}
-
-	void Init(ZKTextView* folderId, ZKListView* listView)
-	{
-		s_folderId = folderId;
-		s_listView = listView;
-	}
-
-	ZKListView* GetListView()
-	{
-		return s_listView;
 	}
 
 	File* AddFileAt(const size_t index)
@@ -268,8 +255,7 @@ namespace OM::FileSystem
 			}
 			index++;
 		}
-		s_folderId->setText(LANGUAGEMANAGER->getValue("usb") + ": " + OM::FileSystem::GetCurrentDirPath());
-		s_listView->refreshListView();
+		UI::FileList::RefreshFileList();
 	}
 
 	bool IsMacroFolder()
@@ -335,7 +321,7 @@ namespace OM::FileSystem
 			delete item;
 		}
 		s_items.clear();
-		UI::SetSelectedFile(nullptr);
+		UI::FileList::SetSelectedFile(nullptr);
 	}
 
 	std::string GetFileExtension(const std::string& filename)

@@ -22,6 +22,7 @@
 #include "JsonDecoder.h"
 #include "ObjectModel/Alert.h"
 #include "ObjectModel/Utils.h"
+#include "UI/Logic/FileList.h"
 #include "UI/OmObserver.h"
 #include "uart/UartContext.h"
 #include "utils/utils.h"
@@ -245,7 +246,7 @@ namespace Comm
 				{
 					thumbnail->image.Close();
 					info("Updating thumbnail %s", thumbnail->filename.c_str());
-					UI::GetThumbnail()->setText("");
+					UI::FileList::GetThumbnail()->setText("");
 					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
 					if (thumbnail->AboveCacheLimit())
 					{

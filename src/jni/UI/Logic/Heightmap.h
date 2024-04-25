@@ -10,7 +10,7 @@
 
 #include "ObjectModel/Heightmap.h"
 
-namespace UI
+namespace UI::Heightmap
 {
 	enum class HeightmapRenderMode
 	{
@@ -18,13 +18,24 @@ namespace UI
 		Deviation,
 	};
 
+	void Init();
+
 	const std::string& GetVisibleHeightmapName();
+
+	size_t GetHeightmapCount();
+	void SetHeightmapListItem(ZKListView::ZKListItem* pListItem, const int index);
+	void HeightmapListItemCallback(const int index, const int id);
+
+	void Refresh();
+
 	void SetHeightmapRenderMode(HeightmapRenderMode mode);
 	HeightmapRenderMode GetHeightmapRenderMode();
-	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode);
-	std::string GetHeightmapXAxisText(int index);
-	std::string GetHeightmapYAxisText(int index);
-	std::string GetHeightmapScaleAt(int index);
+	void SetHeightmapRenderModeListItem(ZKListView::ZKListItem* pListItem, const int index);
+
+	void SetHeightmapXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index);
+	void SetHeightmapYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index);
+	void SetHeightmapScaleAt(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index);
+
 	void RenderScale();
 	bool RenderHeightmap(const std::string& heightmapName);
 	void ClearHeightmap();

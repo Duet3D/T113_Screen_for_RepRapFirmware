@@ -9,13 +9,14 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "UI/UserInterface.h"
+
 #include "Heightmap.h"
 
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
 #include "Storage.h"
 #include "UI/Themes.h"
-#include "UI/UserInterface.h"
 #include "control/ZKListView.h"
 #include "control/ZKPainter.h"
 #include "control/ZKTextView.h"
@@ -23,10 +24,20 @@
 #include "storage/StoragePreferences.h"
 #include <cmath>
 
-namespace UI
+namespace UI::Heightmap
 {
 	static std::string s_currentHeightmap;
 	static HeightmapRenderMode s_heightmapRenderMode = HeightmapRenderMode::Fixed;
+	static ZKPainter* s_canvas;
+	static ZKPainter* s_scale;
+	static ZKListView* s_scaleText;
+	static ZKTextView* s_statsNumPoints;
+	static ZKTextView* s_statsArea;
+	static ZKTextView* s_statsMax;
+	static ZKTextView* s_statsMin;
+	static ZKTextView* s_statsMean;
+	static ZKTextView* s_statsRms;
+	static ZKTextView* s_infoText;
 
 	struct HeightmapRange
 	{
@@ -36,9 +47,76 @@ namespace UI
 		double operator()() const { return max - min; }
 	};
 
+	void Init()
+	{
+		info("Initialising heightmap UI");
+		s_canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
+		s_scale = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapScale);
+		s_scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
+		s_statsNumPoints = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsNumPoints);
+		s_statsArea = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsArea);
+		s_statsMax = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMax);
+		s_statsMin = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMin);
+		s_statsMean = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMean);
+		s_statsRms = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsRMS);
+		s_infoText = UI::GetUIControl<ZKTextView>(ID_MAIN_HeightMapInfoText);
+
+		RenderScale();
+		SetHeightmapRenderMode(HeightmapRenderMode(StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0)));
+	}
+
 	const std::string& GetVisibleHeightmapName()
 	{
 		return s_currentHeightmap;
+	}
+
+	size_t GetHeightmapCount()
+	{
+		return OM::GetHeightmapFiles().size();
+	}
+
+	void SetHeightmapListItem(ZKListView::ZKListItem* pListItem, const int index)
+	{
+		ZKListView::ZKListSubItem* pLoad = pListItem->findSubItemByID(ID_MAIN_HeightmapLoad);
+
+		std::string filename = OM::GetHeightmapNameAt(index);
+
+		bool shown = filename == GetVisibleHeightmapName().c_str();
+		bool loaded = filename == OM::GetCurrentHeightmap().c_str();
+
+		verbose("Heightmap %d: %s, shown: %d (%s), loaded: %d (%s)",
+				index,
+				filename.c_str(),
+				shown,
+				GetVisibleHeightmapName().c_str(),
+				loaded,
+				OM::GetCurrentHeightmap().c_str());
+
+		pListItem->setText(filename);
+		pListItem->setSelected(shown);
+		pLoad->setTextTr(loaded ? "unload_heightmap" : "load_heightmap");
+	}
+
+	void HeightmapListItemCallback(const int index, const int id)
+	{
+		dbg("Selected heightmap %d", index);
+		std::string filename = OM::GetHeightmapNameAt(index);
+		dbg("heightmap = %s", filename.c_str());
+		if (filename.empty())
+		{
+			return;
+		}
+		if (id == ID_MAIN_HeightmapLoad)
+		{
+			OM::ToggleHeightmap(filename.c_str());
+		}
+		RenderHeightmap(filename);
+	}
+
+	void Refresh()
+	{
+		OM::RequestHeightmapFiles();
+		ClearHeightmap();
 	}
 
 	void SetHeightmapRenderMode(HeightmapRenderMode mode)
@@ -48,9 +126,11 @@ namespace UI
 		StoragePreferences::putInt(ID_HEIGHTMAP_RENDER_MODE, (int)mode);
 		if (s_currentHeightmap.empty())
 		{
+			ClearHeightmap();
 			return;
 		}
-		RenderHeightmap(s_currentHeightmap);
+		RenderHeightmap(
+			s_currentHeightmap.c_str()); // Can't pass s_currentHeightmap directly as it gets cleared in the function
 	}
 
 	HeightmapRenderMode GetHeightmapRenderMode()
@@ -58,65 +138,55 @@ namespace UI
 		return s_heightmapRenderMode;
 	}
 
-	std::string GetHeightmapRenderModeText(HeightmapRenderMode mode)
+	void SetHeightmapRenderModeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		HeightmapRenderMode mode = HeightmapRenderMode(index);
 		switch (mode)
 		{
 		case HeightmapRenderMode::Fixed:
-			return LANGUAGEMANAGER->getValue("hm_render_mode_fixed");
+			pListItem->setTextTr("hm_render_mode_fixed");
+			break;
 		case HeightmapRenderMode::Deviation:
-			return LANGUAGEMANAGER->getValue("hm_render_mode_deviation");
+			pListItem->setTextTr("hm_render_mode_deviation");
+			break;
 		default:
-			return "Unknown";
+			break;
 		}
+		pListItem->setSelected(mode == s_heightmapRenderMode);
 	}
 
-	std::string GetHeightmapXAxisText(int index)
+	void SetHeightmapXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
-		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapXAxis);
-
-		if (axisList == nullptr)
-		{
-			error("Failed to get axis list");
-			return "";
-		}
-
 		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
 		OM::Move::Axis* axis = heightmap.meta.GetAxis(0);
 		if (axis == nullptr)
 		{
 			error("Failed to get axis");
-			return "";
+			pListItem->setText("");
+			return;
 		}
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
 
-		return utils::format("%.0f", min + (max - min) * (float)index / (axisList->getCols() - 1));
+		pListItem->setTextf("%.0f", min + (max - min) * (float)index / (pListView->getCols() - 1));
 	}
 
-	std::string GetHeightmapYAxisText(int index)
+	void SetHeightmapYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
-		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis);
-
-		if (axisList == nullptr)
-		{
-			error("Failed to get axis list");
-			return "";
-		}
-
 		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
 		OM::Move::Axis* axis = heightmap.meta.GetAxis(1);
 		if (axis == nullptr)
 		{
 			error("Failed to get axis");
-			return "";
+			pListItem->setText("");
+			return;
 		}
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
 
-		return utils::format("%.0f", max - (max - min) * (float)index / (axisList->getRows() - 1));
+		return pListItem->setTextf("%.0f", max - (max - min) * (float)index / (pListView->getRows() - 1));
 	}
 
 	static HeightmapRange GetHeightmapRange(const OM::Heightmap& heightmap)
@@ -137,18 +207,12 @@ namespace UI
 		return range;
 	}
 
-	std::string GetHeightmapScaleAt(int index)
+	void SetHeightmapScaleAt(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
-		static ZKListView* scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
-
-		if (!scaleText)
-		{
-			error("Failed to get UI controls");
-			return "";
-		}
 		HeightmapRange range = GetHeightmapRange(OM::GetHeightmapData(s_currentHeightmap.c_str()));
 
-		return utils::format("%.2f mm", range.min + (range() * (1.0 - (double)index / (scaleText->getRows() - 1))));
+		return pListItem->setTextf("%.2f mm",
+								   range.min + (range() * (1.0 - (double)index / (pListView->getRows() - 1))));
 	}
 
 #if 0
@@ -249,11 +313,9 @@ namespace UI
 
 	void RenderScale()
 	{
-		static ZKPainter* scale = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapScale);
-		static ZKListView* scaleText = UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapScaleList);
 		static bool rendered = false;
 
-		scaleText->refreshListView();
+		s_scaleText->refreshListView();
 
 		if (rendered)
 		{
@@ -261,81 +323,60 @@ namespace UI
 		}
 		rendered = true;
 
-		if (!scale || !scaleText)
+		if (!s_scale || !s_scaleText)
 		{
 			error("Failed to get UI controls");
 			return;
 		}
 
-		static LayoutPosition scalePos = scale->getPosition();
+		static LayoutPosition scalePos = s_scale->getPosition();
 
 		int pixelSize = scalePos.mHeight / HEIGHTMAP_COLORBAR_SAMPLES;
 		for (int pos = 0; pos < scalePos.mHeight; pos += pixelSize)
 		{
 			double percent = (1.0f - (double)pos / scalePos.mHeight);
 			uint32_t color = GetColorForPercent(percent);
-			scale->setSourceColor(color);
-			scale->fillRect(0, pos, scalePos.mWidth, pixelSize, 0);
+			s_scale->setSourceColor(color);
+			s_scale->fillRect(0, pos, scalePos.mWidth, pixelSize, 0);
 		}
 	}
 
 	static void RenderStatistics(const OM::Heightmap& heightmap)
 	{
-		static ZKTextView* statsNumPoints = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsNumPoints);
-		static ZKTextView* statsArea = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsArea);
-		static ZKTextView* statsMax = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMax);
-		static ZKTextView* statsMin = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMin);
-		static ZKTextView* statsMean = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsMean);
-		static ZKTextView* statsRms = UI::GetUIControl<ZKTextView>(ID_MAIN_HMStatisticsRMS);
-
-		if (!statsNumPoints || !statsArea || !statsMax || !statsMin || !statsMean || !statsRms)
-		{
-			error("Failed to get UI controls");
-			return;
-		}
-
-		statsNumPoints->setTextTrf("hm_num_points", heightmap.GetPointCount());
-		statsArea->setTextTrf("hm_area", heightmap.GetArea() / 100);
-		statsMax->setTextTrf("hm_max", heightmap.GetMaxError());
-		statsMin->setTextTrf("hm_min", heightmap.GetMinError());
-		statsMean->setTextTrf("hm_mean", heightmap.GetMeanError());
-		statsRms->setTextTrf("hm_rms", heightmap.GetStdDev());
+		s_statsNumPoints->setTextTrf("hm_num_points", heightmap.GetPointCount());
+		s_statsArea->setTextTrf("hm_area", heightmap.GetArea() / 100);
+		s_statsMax->setTextTrf("hm_max", heightmap.GetMaxError());
+		s_statsMin->setTextTrf("hm_min", heightmap.GetMinError());
+		s_statsMean->setTextTrf("hm_mean", heightmap.GetMeanError());
+		s_statsRms->setTextTrf("hm_rms", heightmap.GetStdDev());
 	}
 
 	bool RenderHeightmap(const std::string& heightmapName)
 	{
 		// Render the heightmap
-		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
-		static ZKTextView* infoText = UI::GetUIControl<ZKTextView>(ID_MAIN_HeightMapInfoText);
 
 		OM::Heightmap heightmap = OM::GetHeightmapData(heightmapName.c_str());
 		RenderScale();
 		RenderStatistics(heightmap);
 
-		if (!canvas || !infoText)
-		{
-			error("Failed to get UI controls");
-			return false;
-		}
-
 		if (Comm::DUET.GetCommunicationType() != Comm::Duet::CommunicationType::network)
 		{
-			infoText->setTextTr("hm_not_supported_in_current_mode");
-			infoText->setVisible(true);
-			canvas->setVisible(false);
+			s_infoText->setTextTr("hm_not_supported_in_current_mode");
+			s_infoText->setVisible(true);
+			s_canvas->setVisible(false);
 			return false;
 		}
-		infoText->setVisible(false);
-		canvas->setVisible(true);
+		s_infoText->setVisible(false);
+		s_canvas->setVisible(true);
 
-		static LayoutPosition canvasPos = canvas->getPosition();
+		static LayoutPosition canvasPos = s_canvas->getPosition();
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
 
 		// Clear the canvas
 		ClearHeightmap();
 
 		// Save the heightmap for scale text rendering
-		s_currentHeightmap = heightmapName;
+		s_currentHeightmap = heightmapName.c_str();
 		if (heightmap.GetPointCount() <= 0)
 		{
 			error("Heightmap %s has no points", heightmapName.c_str());
@@ -365,15 +406,15 @@ namespace UI
 		double pixXSpacing = heightmap.meta.GetSpacing(0) * canvasPos.mWidth / (axisMaxX - axisMinX);
 		double pixYSpacing = heightmap.meta.GetSpacing(1) * canvasPos.mHeight / (axisMaxY - axisMinY);
 
-		canvas->setSourceColor(theme->colors->heightmap.gridColor);
+		s_canvas->setSourceColor(theme->colors->heightmap.gridColor);
 		for (int x = 0; x < canvasPos.mWidth; x += pixXSpacing)
 		{
-			canvas->fillRect(x, 0, 1, canvasPos.mHeight, 0);
+			s_canvas->fillRect(x, 0, 1, canvasPos.mHeight, 0);
 		}
 
 		for (int y = 0; y < canvasPos.mHeight; y += pixYSpacing)
 		{
-			canvas->fillRect(0, y, canvasPos.mWidth, 1, 0);
+			s_canvas->fillRect(0, y, canvasPos.mWidth, 1, 0);
 		}
 
 		// Render the heightmap
@@ -393,7 +434,7 @@ namespace UI
 				}
 
 				uint32_t color = GetColorForHeight(heightmap, point->z);
-				canvas->setSourceColor(color);
+				s_canvas->setSourceColor(color);
 
 				// Calculate the position of the point on the canvas
 				double xPos = canvasPos.mWidth * (point->x - axisMinX) / (axisMaxX - axisMinX) - pixXSpacing / 2;
@@ -417,11 +458,11 @@ namespace UI
 						static_cast<int>(pixYSpacing),
 						point->x,
 						point->y);
-				canvas->fillRect(static_cast<int>(xPos),
-								 static_cast<int>(yPos),
-								 static_cast<int>(pixXSpacing) + 1,
-								 static_cast<int>(pixYSpacing) + 1,
-								 0);
+				s_canvas->fillRect(static_cast<int>(xPos),
+								   static_cast<int>(yPos),
+								   static_cast<int>(pixXSpacing) + 1,
+								   static_cast<int>(pixYSpacing) + 1,
+								   0);
 			}
 		}
 		return true;
@@ -429,12 +470,23 @@ namespace UI
 
 	void ClearHeightmap()
 	{
-		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_HeightMapPainter);
-		static LayoutPosition canvasPos = canvas->getPosition();
-		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
+		dbg("Clearing Heightmap");
 
-		canvas->setSourceColor(theme->colors->heightmap.bgDefault);
-		canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
+		if (!s_canvas)
+		{
+			warn("s_canvas not set");
+			return;
+		}
+		static LayoutPosition canvasPos = s_canvas->getPosition();
+		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
+		if (!theme)
+		{
+			error("Failed to get theme");
+			return;
+		}
+
+		s_canvas->setSourceColor(theme->colors->heightmap.bgDefault);
+		s_canvas->fillRect(0, 0, canvasPos.mWidth, canvasPos.mHeight, 0);
 		s_currentHeightmap.clear();
 	}
 } // namespace UI

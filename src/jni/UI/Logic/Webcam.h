@@ -13,8 +13,10 @@
 namespace UI::Webcam
 {
 	size_t GetWebcamCount();
-	size_t GetActiveWebcamIndex();
+	void SetWebcamListItem(ZKListView::ZKListItem* pListItem, const int index);
 	bool SetActiveWebcamIndex(size_t index);
+
+	size_t GetActiveWebcamIndex();
 
 	void RestoreWebcamSettings();
 	void AddNewWebcam();

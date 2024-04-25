@@ -126,50 +126,36 @@ namespace UI::ObjectCancel
 		}
 	}
 
-	std::string GetObjectCancelXAxisText(int index)
+	void SetObjectCancelXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
-		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelXAxis);
-
-		if (axisList == nullptr)
-		{
-			error("Failed to get axis list");
-			return "";
-		}
-
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('X');
 		if (axis == nullptr)
 		{
 			error("Failed to get axis");
-			return "";
+			pListItem->setText("");
+			return;
 		}
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
 
-		return utils::format("%.0f", min + (max - min) * (float)index / (axisList->getCols() - 1));
+		pListItem->setTextf("%.0f", min + (max - min) * (float)index / (pListView->getCols() - 1));
 	}
 
-	std::string GetObjectCancelYAxisText(int index)
+	void SetObjectCancelYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
-		static ZKListView* axisList = UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelYAxis);
-
-		if (axisList == nullptr)
-		{
-			error("Failed to get axis list");
-			return "";
-		}
-
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Y');
 		if (axis == nullptr)
 		{
 			error("Failed to get axis");
-			return "";
+			pListItem->setText("");
+			return;
 		}
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
 
-		return utils::format("%.0f", max - (max - min) * (float)index / (axisList->getRows() - 1));
+		pListItem->setTextf("%.0f", max - (max - min) * (float)index / (pListView->getRows() - 1));
 	}
 
 	void SetObjectLabel(ZKListView::ZKListItem* pListItem, const int index)

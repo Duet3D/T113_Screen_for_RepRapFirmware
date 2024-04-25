@@ -554,7 +554,6 @@ namespace Comm
 						thumbnail.Close();
 						OM::FileSystem::GetListView()->refreshListView();
 					}
-					UI::GetThumbnail()->setText("");
 					return true;
 				},
 				true);

@@ -148,7 +148,7 @@ namespace UI::HomeScreen
 		case (int)UI::SlideWindowIndex::heightmap: {
 			OM::RequestHeightmapFiles();
 			UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
-			UI::RenderHeightmap(OM::GetCurrentHeightmap());
+			UI::Heightmap::RenderHeightmap(OM::GetCurrentHeightmap());
 			break;
 		}
 		case (int)UI::SlideWindowIndex::fans:

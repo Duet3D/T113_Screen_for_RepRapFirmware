@@ -193,13 +193,7 @@ namespace UI
 		return dynamic_cast<T*>(control);
 	}
 
-	void SetSelectedFile(const OM::FileSystem::File* file);
-	const OM::FileSystem::File* GetSelectedFile();
-	void RunSelectedFile();
-	void SetThumbnail(ZKTextView* thumbnail);
 	void SetM291Popup(OM::Alert alert);
-	void SetPopupFileInfo();
-	ZKTextView* GetThumbnail();
 
 #define WINDOW Window::GetInstance()
 #define NUMPAD_WINDOW NumPadWindow::GetInstance()

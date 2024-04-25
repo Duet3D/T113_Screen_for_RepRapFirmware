@@ -15,6 +15,7 @@
 #include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "UI/Logic/FileList.h"
 #include "UI/UserInterface.h"
 #include "utils/utils.h"
 #include <utils/TimeHelper.h>
@@ -278,14 +279,14 @@ namespace Comm
 		if (m_currentFileInfo == nullptr)
 			return;
 
-		const OM::FileSystem::File* file = UI::GetSelectedFile();
+		const OM::FileSystem::File* file = UI::FileList::GetSelectedFile();
 		if (file == nullptr)
 		{
 			return;
 		}
 		if (file->GetPath() == m_currentFileInfo->filename.c_str())
 		{
-			UI::SetPopupFileInfo();
+			UI::FileList::SetPopupFileInfo();
 			QueueLargeThumbnailRequest(file->GetPath());
 		}
 	}
@@ -384,7 +385,7 @@ namespace Comm
 		}
 
 		Thumbnail* largestThumbnail = nullptr;
-		LayoutPosition pos = UI::GetThumbnail()->getPosition();
+		LayoutPosition pos = UI::FileList::GetThumbnail()->getPosition();
 		int closestDistance = INT_MAX;
 		for (size_t i = 0; i < fileInfo->GetThumbnailCount(); i++)
 		{

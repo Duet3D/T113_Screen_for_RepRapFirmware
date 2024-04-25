@@ -48,8 +48,6 @@ bool AddToVector(std::vector<T>& vec, T item)
 	return true;
 }
 
-const OM::FileSystem::File* sSelectedFile;
-
 namespace UI
 {
 	Window& Window::GetInstance()
@@ -800,28 +798,6 @@ namespace UI
 		return control;
 	}
 
-	void SetSelectedFile(const OM::FileSystem::File* file)
-	{
-		sSelectedFile = file;
-	}
-
-	const OM::FileSystem::File* GetSelectedFile()
-	{
-		return sSelectedFile;
-	}
-
-	void RunSelectedFile()
-	{
-		return OM::FileSystem::RunFile(sSelectedFile);
-	}
-
-	static ZKTextView* s_thumbnail;
-
-	void SetThumbnail(ZKTextView* thumbnail)
-	{
-		s_thumbnail = thumbnail;
-	}
-
 	void SetM291Popup(OM::Alert alert)
 	{
 		info("Setting M291 popup, mode=%d", (int)alert.mode);
@@ -909,52 +885,5 @@ namespace UI
 		default:
 			break;
 		}
-	}
-
-	void SetPopupFileInfo()
-	{
-		const OM::FileSystem::File* item = GetSelectedFile();
-		if (item == nullptr)
-			return;
-
-		Comm::FileInfo* fileInfo = FILEINFO_CACHE->GetFileInfo(item->GetPath());
-		info("Setting file info popup for \"%s\"", item->GetPath().c_str());
-
-		float height = 0;
-		float layerHeight = 0;
-		tm printTime;
-		printTime.tm_hour = printTime.tm_min = printTime.tm_sec = 0;
-		std::string generatedBy = "";
-		if (fileInfo != nullptr)
-		{
-			height = fileInfo->height;
-			layerHeight = fileInfo->layerHeight;
-			printTime = fileInfo->GetPrintTime();
-			generatedBy = fileInfo->generatedBy.c_str();
-		}
-		UI::POPUP_WINDOW.SetTitle(item->GetName());
-		UI::POPUP_WINDOW.SetTextf(LANGUAGEMANAGER->getValue("file_info").c_str(),
-								  height,
-								  layerHeight,
-								  printTime.tm_hour,
-								  printTime.tm_min,
-								  printTime.tm_sec,
-								  generatedBy.c_str());
-		UI::POPUP_WINDOW.SetTextScrollable(false);
-		if (IsThumbnailCached(item->GetPath().c_str()) || IsThumbnailCached(Comm::largeThumbnailFilename))
-		{
-			UI::POPUP_WINDOW.SetImage(GetThumbnailPath(item->GetPath().c_str()).c_str());
-		}
-		else
-		{
-			UI::POPUP_WINDOW.ShowImage(false);
-		}
-		UI::POPUP_WINDOW.SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
-		UI::POPUP_WINDOW.CancelTimeout();
-	}
-
-	ZKTextView* GetThumbnail()
-	{
-		return s_thumbnail;
 	}
 } // namespace UI

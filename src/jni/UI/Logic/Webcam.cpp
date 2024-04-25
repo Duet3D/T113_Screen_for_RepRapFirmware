@@ -48,6 +48,17 @@ namespace UI::Webcam
 		return s_webcamUrls.size();
 	}
 
+	void SetWebcamListItem(ZKListView::ZKListItem* pListItem, const int index)
+	{
+		if (index >= GetWebcamCount())
+		{
+			warn("Invalid webcam index %d", index);
+			return;
+		}
+		pListItem->setText(index);
+		pListItem->setSelected(index == (int)UI::Webcam::GetActiveWebcamIndex());
+	}
+
 	size_t GetActiveWebcamIndex()
 	{
 		return s_activeWebcamIndex;

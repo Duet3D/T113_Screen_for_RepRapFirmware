@@ -11,6 +11,7 @@
 #include "Comm/FileInfo.h"
 #include "Configuration.h"
 #include "Hardware/Duet.h"
+#include "UI/Logic/FileList.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 #include "manager/LanguageManager.h"
@@ -31,10 +32,7 @@ static UI::Observer<UI::ui_field_update_cb> FileObserversField[] = {
 	OBSERVER_CHAR("dir",
 				  [](OBSERVER_CHAR_ARGS) {
 					  OM::FileSystem::SetCurrentDir(val);
-					  UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->setSelection(0);
-					  UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
-					  UI::GetUIControl<ZKTextView>(ID_MAIN_FolderID)
-						  ->setText(LANGUAGEMANAGER->getValue("folder") + ": " + OM::FileSystem::GetCurrentDirPath());
+					  UI::FileList::RefreshFileList();
 					  info("Files: current dir = %s", OM::FileSystem::GetCurrentDirPath().c_str());
 					  decoder->responseType = Comm::JsonDecoder::ResponseType::filelist;
 					  Comm::JsonDecoder::FileListData* data =
