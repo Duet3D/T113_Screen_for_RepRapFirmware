@@ -2,6 +2,35 @@
 
 This firmware provides a graphical user interface to control a Duet3D control board running RRF3.5 or later in standalone mode.
 
+- [DuetScreen](#duetscreen)
+  - [Upgrading](#upgrading)
+    - [Network](#network)
+    - [USB](#usb)
+    - [Fallback](#fallback)
+  - [Usage](#usage)
+    - [Changing Communication Mode](#changing-communication-mode)
+    - [Connecting to a Network](#connecting-to-a-network)
+    - [Touch Calibration](#touch-calibration)
+    - [Starting a Guide](#starting-a-guide)
+    - [Changing Theme](#changing-theme)
+    - [Changing Language](#changing-language)
+    - [Adding a webcam](#adding-a-webcam)
+  - [Developer Documentation](#developer-documentation)
+    - [Setup](#setup)
+    - [Compiling](#compiling)
+      - [Inverting Display](#inverting-display)
+    - [Debugging](#debugging)
+    - [Modifying GUI](#modifying-gui)
+      - [Themes](#themes)
+      - [Reusable Components](#reusable-components)
+      - [Add New Language](#add-new-language)
+    - [Modify Logic](#modify-logic)
+      - [Folder Structure](#folder-structure)
+      - [Windows / Overlays](#windows--overlays)
+      - [Accessing GUI Elements](#accessing-gui-elements)
+      - [Using Object Model Information](#using-object-model-information)
+
+
 ## Upgrading
 
 ### Network
