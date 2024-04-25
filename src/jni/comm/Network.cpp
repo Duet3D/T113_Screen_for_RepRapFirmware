@@ -108,12 +108,12 @@ namespace Comm
 		}
 	}
 
-	bool AsyncGet(std::string url,
-				  const char* subUrl,
-				  QueryParameters_t& queryParameters,
-				  function<bool(RestClient::Response&)> callback,
-				  uint32_t sessionKey,
-				  bool queue)
+	static bool AsyncGetInner(std::string url,
+							  const char* subUrl,
+							  QueryParameters_t& queryParameters,
+							  function<bool(RestClient::Response&)> callback,
+							  uint32_t sessionKey,
+							  bool queue)
 	{
 		// Attempts to use a thread from the pool if one is not currently in use
 		for (auto thread : s_threadPool)
@@ -157,6 +157,17 @@ namespace Comm
 		return true;
 	}
 
+	bool AsyncGet(std::string url,
+				  const char* subUrl,
+				  QueryParameters_t& queryParameters,
+				  function<bool(RestClient::Response&)> callback,
+				  uint32_t sessionKey,
+				  bool queue)
+	{
+		ProcessQueuedAsyncRequests();
+		return AsyncGetInner(url, subUrl, queryParameters, callback, sessionKey, queue);
+	}
+
 	void ProcessQueuedAsyncRequests()
 	{
 		if (s_queuedData.empty())
@@ -167,7 +178,7 @@ namespace Comm
 		while (data != s_queuedData.end())
 		{
 			info("Processing queued request %s", (data->url + data->subUrl).c_str());
-			if (!AsyncGet(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
+			if (!AsyncGetInner(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
 			{
 				error("Failed to process queued request %s", (data->url + data->subUrl).c_str());
 				return;
