@@ -84,7 +84,7 @@ namespace UI::Theme
 						.pressed = nullptr,
 						.selected = nullptr,
 						.pressedAndSelected = nullptr,
-						.invalid = nullptr,
+						.invalid = "ProgressBarFull.png",
 					},
 			},
 		.input =
@@ -408,6 +408,14 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundPic(nullptr);
 
 			// Sidebar Buttons
+			constexpr float sidebarButtonScale = 0.5;
+			constexpr float sidebarButtonPos = 0.4;
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+
 			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_arrow_back_white_48dp.png");
 			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_home_white_48dp.png");
 			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_rule_folder_white_48dp.png");

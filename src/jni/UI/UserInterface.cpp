@@ -799,6 +799,52 @@ namespace UI
 		return control;
 	}
 
+	void SetIconRelativePosition(ZKButton* control, float xPos, float yPos, float scale)
+	{
+		if (control == nullptr)
+		{
+			warn("Control is null");
+			return;
+		}
+		const LayoutPosition& pos = control->getPosition();
+
+		xPos = utils::bound(xPos, 0.0f, 1.0f);
+		yPos = utils::bound(yPos, 0.0f, 1.0f);
+		scale = utils::bound(scale, 0.0f, 1.0f);
+		int iconSize = (int)(std::min(pos.mWidth, pos.mHeight) * scale);
+
+		LayoutPosition iconPos;
+		iconPos.mLeft = pos.mWidth * xPos - iconSize / 2;
+		iconPos.mTop = pos.mHeight * yPos - iconSize / 2;
+		iconPos.mWidth = iconSize;
+		iconPos.mHeight = iconSize;
+
+		control->setIconPosition(iconPos);
+	}
+
+	void SetIconRelativePosition(ZKButton* control, float xPos, float yPos, float xScale, float yScale)
+	{
+		if (control == nullptr)
+		{
+			warn("Control is null");
+			return;
+		}
+		const LayoutPosition& pos = control->getPosition();
+
+		xPos = utils::bound(xPos, 0.0f, 1.0f);
+		yPos = utils::bound(yPos, 0.0f, 1.0f);
+		xScale = utils::bound(xScale, 0.0f, 1.0f);
+		yScale = utils::bound(yScale, 0.0f, 1.0f);
+
+		LayoutPosition iconPos;
+		iconPos.mLeft = pos.mWidth * xPos - (pos.mWidth * xScale) / 2;
+		iconPos.mTop = pos.mHeight * yPos - (pos.mHeight * yScale) / 2;
+		iconPos.mWidth = (pos.mWidth * xScale);
+		iconPos.mHeight = (pos.mHeight * yScale);
+
+		control->setIconPosition(iconPos);
+	}
+
 	void SetM291Popup(OM::Alert alert)
 	{
 		info("Setting M291 popup, mode=%d", (int)alert.mode);
