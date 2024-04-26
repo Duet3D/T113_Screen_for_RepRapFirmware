@@ -16,6 +16,7 @@
 #include "UI/Graph.h"
 #include "UI/Logic/Heightmap.h"
 #include "UI/Logic/Webcam.h"
+#include "UI/Themes.h"
 #include <entry/EasyUIContext.h>
 #include <std_fixed/functional.h>
 
@@ -74,6 +75,30 @@ namespace UI::HomeScreen
 		}
 
 		pListItem->setTextTr(s_windows[index].id);
+
+		const Theme::Theme* theme = Theme::GetCurrentTheme();
+		if (theme == nullptr)
+		{
+			warn("Failed to get current theme, not applying icon");
+			return;
+		}
+
+		auto iconIt = theme->colors->homeScreenWindowSelect.find(s_windows[index].id);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,
+									  iconIt == theme->colors->homeScreenWindowSelect.end() ? nullptr
+																							: iconIt->second.normal);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED,
+									  iconIt == theme->colors->homeScreenWindowSelect.end() ? nullptr
+																							: iconIt->second.pressed);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,
+									  iconIt == theme->colors->homeScreenWindowSelect.end() ? nullptr
+																							: iconIt->second.selected);
+		pListItem->setButtonStatusPic(
+			ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
+			iconIt == theme->colors->homeScreenWindowSelect.end() ? nullptr : iconIt->second.pressedAndSelected);
+		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID,
+									  iconIt == theme->colors->homeScreenWindowSelect.end() ? nullptr
+																							: iconIt->second.invalid);
 	}
 
 	void WindowSelectListItemCallback(const int index)

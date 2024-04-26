@@ -141,14 +141,16 @@ namespace UI::Theme
 		{
 			uint32_t bgDefault; // Colour of no data
 			uint32_t gridColor; // Colour of the grid
-		} heightmap;
+		} heightmap;			// Heightmap canvas
 		struct
 		{
 			uint32_t bgDefault;	  // Default background colour
 			uint32_t bgCancelled; // Color when the object is cancelled
 			uint32_t bgCurrent;	  // Color for the current object
 			uint32_t bgBorder;	  // Border color
-		} objectCancel;
+		} objectCancel;			  // Object cancel canvas
+		std::map<const char*, Images> homeScreenWindowSelect;
+		std::map<const char*, Images> settingsScreenWindowSelect;
 	};
 
 	class Theme
@@ -174,6 +176,6 @@ namespace UI::Theme
 	void SetTheme(const std::string& id);
 	void SetTheme(Theme* theme);
 	void ThemeListItem(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index);
-} // namespace UI
+} // namespace UI::Theme
 
 #endif /* JNI_UI_COLORS_HPP_ */

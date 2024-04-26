@@ -137,6 +137,11 @@ namespace UI::Theme
 				button->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->button.images.invalid);
 
 				button->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
+
+				const LayoutPosition& pos = button->getPosition();
+				int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
+				button->setIconPosition(
+					{pos.mWidth / 2 - iconSize / 2, pos.mHeight / 2 - iconSize / 2, iconSize, iconSize});
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKEditText))
@@ -241,6 +246,8 @@ namespace UI::Theme
 				checkbox->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->checkbox.images.invalid);
 
 				checkbox->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
+
+				checkbox->setIconPosition(checkbox->getPosition());
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKListView))
@@ -395,6 +402,10 @@ namespace UI::Theme
 		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED,
 									  colors->listItem.images.pressedAndSelected);
 		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listItem.images.invalid);
+
+		const LayoutPosition& pos = pListItem->getPosition();
+		int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
+		pListItem->setIconPosition({pos.mWidth / 2 - iconSize / 2, pos.mHeight / 2 - iconSize / 2, iconSize, iconSize});
 
 		// pListItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 

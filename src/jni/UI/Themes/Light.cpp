@@ -294,6 +294,8 @@ namespace UI::Theme
 				.bgCurrent = Colors::Green,
 				.bgBorder = Colors::Gray,
 			},
+		.homeScreenWindowSelect = std::map<const char*, Images>{},
+		.settingsScreenWindowSelect = std::map<const char*, Images>{},
 	};
 
 	static Theme s_theme(

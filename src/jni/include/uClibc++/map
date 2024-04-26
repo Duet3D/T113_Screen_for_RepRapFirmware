@@ -108,6 +108,11 @@ public:
 		const Compare& comp = Compare(), const Allocator& al = Allocator())
 		: base(first, last, comp, al, v_t_k) {  }
 
+	map(std::initializer_list<value_type> il, const Compare& comp = Compare(), const Allocator& al = Allocator())
+		: base(il.begin(), il.end(), comp, al, v_t_k)
+	{
+	}
+
 	map(const map<Key,T,Compare,Allocator>& x) : base(x) {  }
 	~map() {  }
 

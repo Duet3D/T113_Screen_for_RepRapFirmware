@@ -301,6 +301,36 @@ namespace UI::Theme
 				.bgCurrent = Colors::Green,
 				.bgBorder = Colors::Gray,
 			},
+		.homeScreenWindowSelect =
+			std::map<const char*, Images>{
+				{"move", {.normal = "baseline_arrow_back_white_48dp.png"}},
+				{"extrude", {.normal = nullptr}},
+				{"status", {.normal = nullptr}},
+				{"heightmap", {.normal = nullptr}},
+				{"fans", {.normal = nullptr}},
+				{"files", {.normal = nullptr}},
+				{"object_cancel", {.normal = nullptr}},
+				{"webcam", {.normal = nullptr}},
+				{"network", {.normal = nullptr}},
+				{"settings", {.normal = nullptr}},
+			},
+		.settingsScreenWindowSelect =
+			std::map<const char*, Images>{
+				{"language", {}},
+				{"duet", {}},
+				{"update", {}},
+				{"restart", {}},
+				{"dev", {}},
+				{"power_off", {}},
+				{"zk_setting", {}},
+				{"touch_calibration", {}},
+				{"guides", {}},
+				{"brightness", {}},
+				{"theme", {}},
+				{"screensaver", {}},
+				{"buzzer", {}},
+				{"webcam", {}},
+			},
 	};
 
 	static Theme s_theme(
