@@ -189,7 +189,7 @@ namespace UI::Theme
 		.listItem =
 			{
 				.bgDefault = Colors::Gray,
-				.bgImage = nullptr,
+				.bgImage = "Dark2/Background_Rounded_VDarkBlue.png",
 				.background =
 					{
 						.normal = Colors::Clear,
@@ -305,71 +305,123 @@ namespace UI::Theme
 			std::map<const char*, Images>{
 				{"move",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_open_with_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 				{"extrude",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/printer-3d-nozzle.png",
 					 .pressed = nullptr,
 				 }},
 				{"status",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_info_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 				{"heightmap",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_grid_on_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 				{"fans",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/fan.png",
 					 .pressed = nullptr,
 				 }},
 				{"files",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_play_arrow_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 				{"object_cancel",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/select-group.png",
 					 .pressed = nullptr,
 				 }},
 				{"webcam",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/webcam.png",
 					 .pressed = nullptr,
 				 }},
 				{"network",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_lan_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 				{"settings",
 				 {
-					 .normal = nullptr,
+					 .normal = "Dark2/baseline_settings_white_48dp.png",
 					 .pressed = nullptr,
 				 }},
 			},
 		.settingsScreenWindowSelect =
 			std::map<const char*, Images>{
-				{"language", {}},
-				{"duet", {}},
-				{"update", {}},
-				{"restart", {}},
-				{"dev", {}},
-				{"power_off", {}},
+				{"language",
+	                 {
+	                     .normal = "Dark2/baseline_translate_white_48dp.png",
+	                     .pressed = nullptr,
+	                 }},
+				{"duet",
+	                     {
+	                         .normal = "Dark2/duet.png",
+	                         .pressed = nullptr,
+	                     }},
+				{"update",
+		                 {
+		                     .normal = "Dark2/baseline_upgrade_white_48dp.png",
+		                     .pressed = nullptr,
+		                 }},
+				{"restart",
+                        {
+                            .normal = "Dark2/baseline_restart_alt_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"dev",
+                        {
+                            .normal = "Dark2/baseline_developer_board_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"power_off",
+                        {
+                            .normal = "Dark2/baseline_power_off_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
 				{"zk_setting", {}},
-				{"touch_calibration", {}},
-				{"guides", {}},
-				{"brightness", {}},
-				{"theme", {}},
-				{"screensaver", {}},
-				{"buzzer", {}},
-				{"webcam", {}},
+				{"touch_calibration",
+                        {
+                            .normal = "Dark2/baseline_touch_app_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"guides",
+                        {
+                            .normal = "Dark2/television-guide.png",
+                            .pressed = nullptr,
+                        }},
+				{"brightness",
+                        {
+                            .normal = "Dark2/baseline_settings_brightness_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"theme",
+                        {
+                            .normal = "Dark2/baseline_dark_mode_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"screensaver",
+                        {
+                            .normal = "Dark2/screensaver.png",
+                            .pressed = nullptr,
+                        }},
+				{"buzzer",
+                        {
+                            .normal = "Dark2/baseline_notifications_active_white_48dp.png",
+                            .pressed = nullptr,
+                        }},
+				{"webcam",
+                        {
+                            .normal = "Dark2/webcam.png",
+                            .pressed = nullptr,
+                        }},
 			},
 	};
 

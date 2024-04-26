@@ -55,7 +55,7 @@
     <string name="status">Status</string>
     <string name="heightmap">Heightmap</string>
     <string name="fans">Fans</string>
-    <string name="files">Files</string>
+    <string name="files">Jobs</string>
     <string name="network">Network</string>
     <string name="settings">Settings</string>
     <string name="debug">Debug</string>
