@@ -17,6 +17,7 @@ This firmware provides a graphical user interface to control a Duet3D control bo
     - [Adding a webcam](#adding-a-webcam)
   - [Developer Documentation](#developer-documentation)
     - [Setup](#setup)
+      - [Visual Studio Code](#visual-studio-code)
     - [Folder Structure](#folder-structure)
     - [Compiling](#compiling)
       - [Inverting Display](#inverting-display)
@@ -131,6 +132,16 @@ Flythings has some documentation on the SDK, it is split between a more up-to-da
 * Open Flythings IDE
 * `Import` Flythings project
   * ![1709737120684](docs/image/README/1709737120684.png)
+
+#### Visual Studio Code
+
+The project has also been setup to allow editing in Visual Studio Code. This also provides a much more complete autoformatter using clang-format.
+* Extract the `T113` SDK folder in the same parent directory as the project folder. 
+* Install the `C/C++` extension.
+
+> [!NOTE]
+> You will still need to use Flythings IDE to modify the `.ftu` file and generate the `.img` file. It is possible to run the Makefile from the command line to compile the project, but Flythings IDE is required to convert the `.so` library to a `.img` file.
+
 
 ### Folder Structure
 
