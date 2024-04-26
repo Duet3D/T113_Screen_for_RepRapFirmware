@@ -303,16 +303,56 @@ namespace UI::Theme
 			},
 		.homeScreenWindowSelect =
 			std::map<const char*, Images>{
-				{"move", {.normal = "baseline_arrow_back_white_48dp.png"}},
-				{"extrude", {.normal = nullptr}},
-				{"status", {.normal = nullptr}},
-				{"heightmap", {.normal = nullptr}},
-				{"fans", {.normal = nullptr}},
-				{"files", {.normal = nullptr}},
-				{"object_cancel", {.normal = nullptr}},
-				{"webcam", {.normal = nullptr}},
-				{"network", {.normal = nullptr}},
-				{"settings", {.normal = nullptr}},
+				{"move",
+				 {
+					 .normal = "baseline_arrow_back_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
+				{"extrude",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"status",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"heightmap",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"fans",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"files",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"object_cancel",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"webcam",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"network",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
+				{"settings",
+				 {
+					 .normal = nullptr,
+					 .pressed = nullptr,
+				 }},
 			},
 		.settingsScreenWindowSelect =
 			std::map<const char*, Images>{

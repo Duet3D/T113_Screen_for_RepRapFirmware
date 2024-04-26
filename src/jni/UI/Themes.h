@@ -149,7 +149,11 @@ namespace UI::Theme
 			uint32_t bgCurrent;	  // Color for the current object
 			uint32_t bgBorder;	  // Border color
 		} objectCancel;			  // Object cancel canvas
+
+		// Home screen window select images. key must match the window id
 		std::map<const char*, Images> homeScreenWindowSelect;
+
+		// Settings screen window select images. key must match the window id
 		std::map<const char*, Images> settingsScreenWindowSelect;
 	};
 
