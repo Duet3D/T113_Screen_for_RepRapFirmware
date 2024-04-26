@@ -22,7 +22,9 @@ This firmware provides a graphical user interface to control a Duet3D control bo
       - [Inverting Display](#inverting-display)
     - [Debugging](#debugging)
     - [Modifying GUI](#modifying-gui)
+      - [UI Element Types](#ui-element-types)
       - [Themes](#themes)
+        - [Theme Override Functions](#theme-override-functions)
       - [Reusable Components](#reusable-components)
       - [Add New Language](#add-new-language)
     - [Modify Logic](#modify-logic)
@@ -207,6 +209,30 @@ After you have modified and saved the `main.ftu` file with your changes to the G
 
 There are some parts of the UI for this screen that are more complex than a single UI element. Where possible these have be created in a way that allows them to be reused across the GUI. Some examples are the tools list, number pad, slider, popup, and guides.
 
+#### UI Element Types
+
+| Type              | How to get                                  | Description                                                                                                                                                     | Inherits     | Example |
+| ----------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------- |
+| `ZKBase*`         | `UI::GetUIControl(int id);`                 | Base class                                                                                                                                                      |              |         |
+| `ZKButton*`       | `UI::GetUIControl<ZKButton>(int id);`       | Run a callback when pressed. Can be set to various states.                                                                                                      | `ZKTextView` |         |
+| `ZKCameraView*`   | `UI::GetUIControl<ZKCameraView>(int id);`   | For displaying image from a local camera.                                                                                                                       | `ZKBase`     |         |
+| `ZKCheckBox*`     | `UI::GetUIControl<ZKCheckBox>(int id);`     | Run a callback when toggled.                                                                                                                                    | `ZKButton`   |         |
+| `ZKCircleBar*`    | `UI::GetUIControl<ZKCircleBar>(int id);`    | Display a background image and a foreground image. Foreground image is cropped at an angle relative to the starting angle based on current value.               | `ZKBase`     |         |
+| `ZKDiagram*`      | `UI::GetUIControl<ZKDiagram>(int id);`      | A graph.                                                                                                                                                        | `ZKBase`     |         |
+| `ZKDigitalClock*` | `UI::GetUIControl<ZKDigitalClock>(int id);` | A clock.                                                                                                                                                        | `ZKTextView` |         |
+| `ZKEditText*`     | `UI::GetUIControl<ZKEditText>(int id);`     | Give user a keyboard or number pad for text input. Run a callback once user accepts input.                                                                      | `ZKTextView` |         |
+| `ZKListView*`     | `UI::GetUIControl<ZKListView>(int id);`     | Display a dynamic length list of items. The only UI element which allows for dynamic length at runtime. Can have subitems which are equivalent to a `ZKButton`. | `ZKBase`     |         |
+| `ZKPainter*`      | `UI::GetUIControl<ZKPainter>(int id);`      | A basic canvas that supports drawing primitive shapes.                                                                                                          | `ZKBase`     |         |
+| `ZKPointer*`      | `UI::GetUIControl<ZKPointer>(int id);`      | Display a background image and a foreground image. Foreground image is rotated at an angle relative to the starting angle based on current value.               | `ZKBase`     |         |
+| `ZKQRCode*`       | `UI::GetUIControl<ZKQRCode>(int id);`       | Display a QR code                                                                                                                                               | `ZKBase`     |         |
+| `ZKRadioGroup*`   | `UI::GetUIControl<ZKRadioGroup>(int id);`   | Multiple `ZKCheckBox` where only 1 can be selected.                                                                                                             | `ZKBase`     |         |
+| `ZKSeekBar*`      | `UI::GetUIControl<ZKSeekBar>(int id);`      | A linear version of `ZKCircleBar`.                                                                                                                              | `ZKBase`     |         |
+| `ZKSlideText*`    | `UI::GetUIControl<ZKSlideText>(int id);`    | The contents of a `ZKSlideWindow`. Does not support theming.                                                                                                    | `ZKTextView` |         |
+| `ZKSlideWindow*`  | `UI::GetUIControl<ZKSlideWindow>(int id);`  | A phone style app list. Does not support theming.                                                                                                               | `ZKWindow`   |         |
+| `ZKTextView*`     | `UI::GetUIControl<ZKTextView>(int id);`     | Displays text.                                                                                                                                                  | `ZKBase`     |         |
+| `ZKVideoView*`    | `UI::GetUIControl<ZKVideoView>(int id);`    | Displays a video.                                                                                                                                               | `ZKBase`     |         |
+| `ZKWindow*`       | `UI::GetUIControl<ZKWindow>(int id);`       | A container for other UI elements.                                                                                                                              | `ZKBase`     |         |
+
 #### Themes
 
 A theme can be created by adding a new `.cpp` in the [src/jni/UI/Themes](src/jni/UI/Themes/) folder. Each file contains a complete description of the theme.
@@ -223,6 +249,156 @@ A theme can be created by adding a new `.cpp` in the [src/jni/UI/Themes](src/jni
 * Images are the relative path of the image from the `src/resources/` folder.
 * `nullptr` can be used to remove an image from an element, for example, to make a button have no image.
 * Some custom UI elements have their own required theme properties, for example the color sequence of waveforms on the temperature graph. 
+
+##### Theme Override Functions
+`ZKBase`
+```cpp
+/**
+ * @brief Set the control display position
+ */
+void setPosition(const LayoutPosition &position);
+
+/**
+ * @brief Set the visibility state
+ */
+void setVisible(bool isVisible);
+
+/**
+ * @brief Set the background image
+ * @param pPicPath Image path
+ */
+void setBackgroundPic(const char *pPicPath);
+
+/**
+ * @brief Set the background color
+ * @param color Color value in 0x ARGB format
+ */
+void setBackgroundColor(uint32_t color);
+
+/**
+ * @brief Set the background color for different control states
+ * @param status State
+ *    Normal state: ZK_CONTROL_STATUS_NORMAL
+ *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+ *    Selected state: ZK_CONTROL_STATUS_SELECTED
+ *    Pressed and selected state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+ *    Invalid state: ZK_CONTROL_STATUS_INVALID
+ * @param color Color value in 0x ARGB format
+ */
+void setBgStatusColor(int status, uint32_t color);
+
+/**
+ * @brief Set the control opacity
+ * @param alpha Opacity value, range: 0 to 255, 0 means fully transparent, 255 means opaque
+ */
+void setAlpha(uint8_t alpha);
+```
+
+`ZKButton`
+```cpp
+/**
+ * @brief Set the background image for different button states
+ * @param status Button state
+ *    Normal state: ZK_CONTROL_STATUS_NORMAL
+ *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+ *    Selected state: ZK_CONTROL_STATUS_SELECTED
+ *    Selected pressed state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+ *    Invalid state: ZK_CONTROL_STATUS_INVALID
+ * @param pPicPath Image path
+ */
+void setButtonStatusPic(int status, const char *pPicPath);
+
+/**
+ * @brief Set the icon position
+ * @param position Position
+ */
+void setIconPosition(const LayoutPosition &position);
+```
+
+`ZKCircleBar`
+```cpp
+/**
+ * @brief Set the starting angle
+ */
+void setStartAngle(int angle);
+
+/**
+ * @brief Set the text color
+ * @param color Color value in the format 0xARGB
+ */
+void setTextColor(int color);
+
+/**
+ * @brief Set the progress image
+ */
+void setProgressPic(const char *pPicPath);
+
+/**
+ * @brief Set the thumb image
+ * @param status   Status
+ *    Normal state: ZK_CONTROL_STATUS_NORMAL
+ *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+ * @param pPicPath Image path
+ */
+void setThumbPic(int status, const char *pPicPath);
+```
+
+`ZKQRCode`
+```cpp
+/**
+ * @brief Set foreground color
+ * @param color Color value in 0xARGB format
+ */
+void setForegroundColor(uint32_t color);
+
+/**
+ * @brief Load QR Code data
+ */
+bool loadQRCode(const char *pStr);
+```
+
+`ZKSeekBar`
+```cpp
+/**
+ * @brief Set the progress image
+ */
+void setProgressPic(const char *pPicPath);
+
+/**
+ * @brief Set the thumb image
+ * @param status   Status
+ *    Normal state: ZK_CONTROL_STATUS_NORMAL
+ *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+ * @param pPicPath Image path
+ */
+void setThumbPic(int status, const char *pPicPath);
+```
+
+`ZKTextView`
+```cpp
+/**
+ * @brief Set text row spacing
+ * @param space Spacing value
+ */
+void setTextRowSpace(int space);
+
+/**
+ * @brief Set text column spacing
+ * @param space Spacing value
+ */
+void setTextColSpace(int space);
+
+/**
+ * @brief Set font
+ * @param family Font name
+ */
+void setFontFamily(const char *family);
+
+/**
+ * @brief Set text long display mode (for text that is too long to fit in the control)
+ */
+void setLongMode(ELongMode mode);
+```
 
 An example of a theme would be:
 > [!NOTE]
