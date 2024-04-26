@@ -61,12 +61,12 @@ namespace UI::Theme
 		.button =
 			{
 				.bgDefault = NULL,
-				.bgImage = nullptr,
+				.bgImage = "Dark2/Background_Rounded_VDarkBlue.png",
 				.background =
 					{
-						.normal = Colors::VDarkBlue,
+						.normal = Colors::Clear,
 						.pressed = Colors::DarkBlue,
-						.selected = Colors::Blue4,
+						.selected = Colors::DarkBlue,
 						.pressedAndSelected = Colors::DarkBlue,
 						.invalid = Colors::Gray,
 					},
@@ -112,11 +112,11 @@ namespace UI::Theme
 		.slider =
 			{
 				.bgDefault = NULL,
-				.bgImage = "hSliderBar.png",
+				.bgImage = "Dark2/hSliderBar.png",
 				.validImage = nullptr,
 				.thumb =
 					{
-						.normal = "hSliderKnob.png",
+						.normal = "Dark2/hSliderKnob.png",
 						.pressed = nullptr,
 					},
 			},
@@ -166,9 +166,9 @@ namespace UI::Theme
 					},
 				.images =
 					{
-						.normal = "toggleOffLarge.png",
+						.normal = "Dark2/baseline_toggle_off_white_48dp.png",
 						.pressed = nullptr,
-						.selected = "toggleOnLarge.png",
+						.selected = "Dark2/baseline_toggle_on_white_48dp.png",
 						.pressedAndSelected = nullptr,
 						.invalid = nullptr,
 					},
@@ -192,8 +192,8 @@ namespace UI::Theme
 				.bgImage = nullptr,
 				.background =
 					{
-						.normal = Colors::VDarkBlue,
-						.pressed = Colors::Blue3,
+						.normal = Colors::Clear,
+						.pressed = Colors::DarkBlue,
 						.selected = Colors::DarkBlue,
 						.pressedAndSelected = Colors::Blue3,
 						.invalid = Colors::DarkerGray,
@@ -312,11 +312,13 @@ namespace UI::Theme
 			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::VVDarkBlue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Clear);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuideSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ThemeSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuidedSetupWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
 			UI::GetUIControl<ZKWindow>(ID_MAIN_BuzzerSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_WebcamSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::VVDarkBlue);
@@ -332,17 +334,25 @@ namespace UI::Theme
 			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setBackgroundPic("ProgressBarEmpty.png");
 			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setProgressPic("ProgressBarFull.png");
 			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setThumbPic(ZK_CONTROL_STATUS_NORMAL, nullptr);
+			// Popup rear overlay
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundPic(nullptr);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundColor(Colors::VDarkBlue);
 
 
-			// Buttons
-			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"baseline_arrow_back_white_48dp.png");
+			// Sidebar Buttons
+			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_arrow_back_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_home_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_rule_folder_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_keyboard_command_key_white_48dp.png");
 
 			// Scrollable text
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
 
 			// EStop Button
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBackgroundPic(nullptr);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_electric_bolt_white_48dp.png");
 		},
 		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {
 			if (pListView == nullptr || pListItem == nullptr)
