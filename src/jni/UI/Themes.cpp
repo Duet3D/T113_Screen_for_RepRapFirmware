@@ -139,9 +139,12 @@ namespace UI::Theme
 				button->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 
 				const LayoutPosition& pos = button->getPosition();
+				constexpr float verticalPosition = 0.4;
 				int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
-				button->setIconPosition(
-					{pos.mWidth / 2 - iconSize / 2, pos.mHeight / 2 - iconSize / 2, iconSize, iconSize});
+				button->setIconPosition({pos.mWidth / 2 - iconSize / 2,
+										 (int)(pos.mHeight * verticalPosition - iconSize / 2),
+										 iconSize,
+										 iconSize});
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKEditText))
@@ -404,8 +407,10 @@ namespace UI::Theme
 		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listItem.images.invalid);
 
 		const LayoutPosition& pos = pListItem->getPosition();
+		constexpr float verticalPosition = 0.4;
 		int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
-		pListItem->setIconPosition({pos.mWidth / 2 - iconSize / 2, pos.mHeight / 2 - iconSize / 2, iconSize, iconSize});
+		pListItem->setIconPosition(
+			{pos.mWidth / 2 - iconSize / 2, (int)(pos.mHeight * verticalPosition - iconSize / 2), iconSize, iconSize});
 
 		// pListItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 

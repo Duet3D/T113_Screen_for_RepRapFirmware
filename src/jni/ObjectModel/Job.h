@@ -47,7 +47,7 @@ namespace OM
 	void SetPrintRemaining(const uint32_t printRemaining);
 	const uint32_t GetPrintRemaining();
 
-	void SetCurrentJobObject(const int8_t index);
+	void SetCurrentJobObject(int8_t index);
 	const int8_t GetCurrentJobObjectIndex();
 
 	JobObject* GetJobObject(const size_t index);

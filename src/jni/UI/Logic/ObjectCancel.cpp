@@ -134,6 +134,7 @@ namespace UI::ObjectCancel
 		s_canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_ObjectCancelPainter);
 		s_canvas->setTouchable(true);
 		s_canvas->setTouchListener(&UI::ObjectCancel::GetTouchListener());
+		UI::GetUIControl<ZKButton>(ID_MAIN_CancelCurrentObjectBtn)->setInvalid(OM::GetCurrentJobObjectIndex() < 0);
 	}
 
 	void SetObjectCancelXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)

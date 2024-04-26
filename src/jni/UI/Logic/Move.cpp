@@ -13,6 +13,7 @@
 
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
+#include "UI/Logic/Heightmap.h"
 
 namespace UI::Move
 {
@@ -42,7 +43,7 @@ namespace UI::Move
 
 	void OpenHeightmap()
 	{
-		UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
+		UI::Heightmap::Open();
 	}
 
 	size_t GetAxisListCount()

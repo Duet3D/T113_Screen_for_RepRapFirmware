@@ -9,6 +9,8 @@
 #define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
+#include "UI/Logic/ObjectCancel.h"
+
 #include "Configuration.h"
 #include "Duet3D/General/String.h"
 #include "Duet3D/General/Vector.h"
@@ -62,15 +64,18 @@ namespace OM
 		bounds.y[1] = 0;
 	}
 
-	void SetCurrentJobObject(const int8_t index)
+	void SetCurrentJobObject(int8_t index)
 	{
 		if (index >= (int)MAX_TRACKED_OBJECTS)
 		{
 			warn("JobObject index %d out of range\n", index);
-			return;
+			index = -1;
 		}
 		verbose("Setting current job object index to %d", index);
 		s_currentJobObjectIndex = index;
+		UI::GetUIControl<ZKButton>(ID_MAIN_CancelCurrentObjectBtn)->setInvalid(s_currentJobObjectIndex < 0);
+		UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelObjectsList)->refreshListView();
+		UI::ObjectCancel::RenderObjectMap();
 	}
 
 	const int8_t GetCurrentJobObjectIndex()

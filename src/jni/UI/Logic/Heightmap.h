@@ -20,6 +20,8 @@ namespace UI::Heightmap
 
 	void Init();
 
+	void Open();
+
 	const std::string& GetVisibleHeightmapName();
 
 	size_t GetHeightmapCount();

@@ -65,6 +65,13 @@ namespace UI::Heightmap
 		SetHeightmapRenderMode(HeightmapRenderMode(StoragePreferences::getInt(ID_HEIGHTMAP_RENDER_MODE, 0)));
 	}
 
+	void Open()
+	{
+		OM::RequestHeightmapFiles();
+		UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
+		RenderHeightmap(OM::GetCurrentHeightmap());
+	}
+
 	const std::string& GetVisibleHeightmapName()
 	{
 		return s_currentHeightmap;

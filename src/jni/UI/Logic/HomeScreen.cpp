@@ -29,12 +29,7 @@ namespace UI::HomeScreen
 		{"move", []() { UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow); }},
 		{"extrude", []() { UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow); }},
 		{"status", []() { UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow); }},
-		{"heightmap",
-		 []() {
-			 OM::RequestHeightmapFiles();
-			 UI::WINDOW.OpenWindow(ID_MAIN_HeightMapWindow);
-			 UI::Heightmap::RenderHeightmap(OM::GetCurrentHeightmap());
-		 }},
+		{"heightmap", []() { UI::Heightmap::Open(); }},
 		{"fans", []() { UI::WINDOW.OpenWindow(ID_MAIN_FanWindow); }},
 		{"files",
 		 []() {

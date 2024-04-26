@@ -52,12 +52,7 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 					  OM::RemoveJobObject(indices[0], true);
 					  UI::ObjectCancel::RenderObjectMap();
 				  }),
-	OBSERVER_INT("job:build:currentObject",
-				 [](OBSERVER_INT_ARGS) {
-					 OM::SetCurrentJobObject(val);
-					 UI::GetUIControl<ZKListView>(ID_MAIN_ObjectCancelObjectsList)->refreshListView();
-					 UI::ObjectCancel::RenderObjectMap();
-				 }),
+	OBSERVER_INT("job:build:currentObject", [](OBSERVER_INT_ARGS) { OM::SetCurrentJobObject(val); }),
 	OBSERVER_CHAR("job:build:objects^", [](OBSERVER_CHAR_ARGS) { OM::RemoveJobObject(indices[0], false); }),
 	OBSERVER_BOOL("job:build:objects^:cancelled",
 				  [](OBSERVER_BOOL_ARGS) {
