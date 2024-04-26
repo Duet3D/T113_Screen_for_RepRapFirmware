@@ -211,27 +211,29 @@ There are some parts of the UI for this screen that are more complex than a sing
 
 #### UI Element Types
 
-| Type              | How to get                                  | Description                                                                                                                                                     | Inherits     | Example |
-| ----------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------- |
-| `ZKBase*`         | `UI::GetUIControl(int id);`                 | Base class                                                                                                                                                      |              |         |
-| `ZKButton*`       | `UI::GetUIControl<ZKButton>(int id);`       | Run a callback when pressed. Can be set to various states.                                                                                                      | `ZKTextView` |         |
-| `ZKCameraView*`   | `UI::GetUIControl<ZKCameraView>(int id);`   | For displaying image from a local camera.                                                                                                                       | `ZKBase`     |         |
-| `ZKCheckBox*`     | `UI::GetUIControl<ZKCheckBox>(int id);`     | Run a callback when toggled.                                                                                                                                    | `ZKButton`   |         |
-| `ZKCircleBar*`    | `UI::GetUIControl<ZKCircleBar>(int id);`    | Display a background image and a foreground image. Foreground image is cropped at an angle relative to the starting angle based on current value.               | `ZKBase`     |         |
-| `ZKDiagram*`      | `UI::GetUIControl<ZKDiagram>(int id);`      | A graph.                                                                                                                                                        | `ZKBase`     |         |
-| `ZKDigitalClock*` | `UI::GetUIControl<ZKDigitalClock>(int id);` | A clock.                                                                                                                                                        | `ZKTextView` |         |
-| `ZKEditText*`     | `UI::GetUIControl<ZKEditText>(int id);`     | Give user a keyboard or number pad for text input. Run a callback once user accepts input.                                                                      | `ZKTextView` |         |
-| `ZKListView*`     | `UI::GetUIControl<ZKListView>(int id);`     | Display a dynamic length list of items. The only UI element which allows for dynamic length at runtime. Can have subitems which are equivalent to a `ZKButton`. | `ZKBase`     |         |
-| `ZKPainter*`      | `UI::GetUIControl<ZKPainter>(int id);`      | A basic canvas that supports drawing primitive shapes.                                                                                                          | `ZKBase`     |         |
-| `ZKPointer*`      | `UI::GetUIControl<ZKPointer>(int id);`      | Display a background image and a foreground image. Foreground image is rotated at an angle relative to the starting angle based on current value.               | `ZKBase`     |         |
-| `ZKQRCode*`       | `UI::GetUIControl<ZKQRCode>(int id);`       | Display a QR code                                                                                                                                               | `ZKBase`     |         |
-| `ZKRadioGroup*`   | `UI::GetUIControl<ZKRadioGroup>(int id);`   | Multiple `ZKCheckBox` where only 1 can be selected.                                                                                                             | `ZKBase`     |         |
-| `ZKSeekBar*`      | `UI::GetUIControl<ZKSeekBar>(int id);`      | A linear version of `ZKCircleBar`.                                                                                                                              | `ZKBase`     |         |
-| `ZKSlideText*`    | `UI::GetUIControl<ZKSlideText>(int id);`    | The contents of a `ZKSlideWindow`. Does not support theming.                                                                                                    | `ZKTextView` |         |
-| `ZKSlideWindow*`  | `UI::GetUIControl<ZKSlideWindow>(int id);`  | A phone style app list. Does not support theming.                                                                                                               | `ZKWindow`   |         |
-| `ZKTextView*`     | `UI::GetUIControl<ZKTextView>(int id);`     | Displays text.                                                                                                                                                  | `ZKBase`     |         |
-| `ZKVideoView*`    | `UI::GetUIControl<ZKVideoView>(int id);`    | Displays a video.                                                                                                                                               | `ZKBase`     |         |
-| `ZKWindow*`       | `UI::GetUIControl<ZKWindow>(int id);`       | A container for other UI elements.                                                                                                                              | `ZKBase`     |         |
+| Flythings Name | Type                         | How to get                                  | Description                                                                                                                                                     | Inherits     | Example                                          |
+| -------------- | ---------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+|                | `ZKBase*`                    | `UI::GetUIControl(int id);`                 | Base class                                                                                                                                                      |              |                                                  |
+| Button         | `ZKButton*`                  | `UI::GetUIControl<ZKButton>(int id);`       | Run a callback when pressed. Can be set to various states.                                                                                                      | `ZKTextView` | ![1714126401263](docs/image/README/1714126401263.png) |
+| Camera         | `ZKCameraView*`              | `UI::GetUIControl<ZKCameraView>(int id);`   | For displaying image from a local camera.                                                                                                                       | `ZKBase`     |                                                  |
+| Checkbox       | `ZKCheckBox*`                | `UI::GetUIControl<ZKCheckBox>(int id);`     | Run a callback when toggled.                                                                                                                                    | `ZKButton`   | ![1714126830083](docs/image/README/1714126830083.png) |
+| Circle Bar     | `ZKCircleBar*`               | `UI::GetUIControl<ZKCircleBar>(int id);`    | Display a background image and a foreground image. Foreground image is cropped at an angle relative to the starting angle based on current value.               | `ZKBase`     |                                                  |
+| Diagram        | `ZKDiagram*`                 | `UI::GetUIControl<ZKDiagram>(int id);`      | A graph.                                                                                                                                                        | `ZKBase`     |                                                  |
+| Digital Clock  | `ZKDigitalClock*`            | `UI::GetUIControl<ZKDigitalClock>(int id);` | A clock.                                                                                                                                                        | `ZKTextView` |                                                  |
+| Edit Text      | `ZKEditText*`                | `UI::GetUIControl<ZKEditText>(int id);`     | Give user a keyboard or number pad for text input. Run a callback once user accepts input.                                                                      | `ZKTextView` |                                                  |
+| List View      | `ZKListView*`                | `UI::GetUIControl<ZKListView>(int id);`     | Display a dynamic length list of items. The only UI element which allows for dynamic length at runtime. Can have subitems which are equivalent to a `ZKButton`. | `ZKBase`     |                                                  |
+|                | `ZKListView::ZKListItem*`    |                                             | A item displayed in a list. No direct way to get.                                                                                                               | `ZKBase`     |                                                  |
+| List Subitem   | `ZKListView::ZKListSubItem*` | `pListItem->findSubItemByID(int id);`       | Subitems are equivalent to a `ZKButton`.                                                                                                                        | `ZKButton`   |                                                  |
+| Painter        | `ZKPainter*`                 | `UI::GetUIControl<ZKPainter>(int id);`      | A basic canvas that supports drawing primitive shapes.                                                                                                          | `ZKBase`     |                                                  |
+| Pointer        | `ZKPointer*`                 | `UI::GetUIControl<ZKPointer>(int id);`      | Display a background image and a foreground image. Foreground image is rotated at an angle relative to the starting angle based on current value.               | `ZKBase`     |                                                  |
+| QR Code        | `ZKQRCode*`                  | `UI::GetUIControl<ZKQRCode>(int id);`       | Display a QR code                                                                                                                                               | `ZKBase`     |                                                  |
+| RadioGroup     | `ZKRadioGroup*`              | `UI::GetUIControl<ZKRadioGroup>(int id);`   | Multiple `ZKCheckBox` where only 1 can be selected.                                                                                                             | `ZKBase`     |                                                  |
+| Seek Bar       | `ZKSeekBar*`                 | `UI::GetUIControl<ZKSeekBar>(int id);`      | A linear version of `ZKCircleBar`.                                                                                                                              | `ZKBase`     |                                                  |
+|                | `ZKSlideText*`               | `UI::GetUIControl<ZKSlideText>(int id);`    | The contents of a `ZKSlideWindow`. Does not support theming.                                                                                                    | `ZKTextView` |                                                  |
+| Slide Window   | `ZKSlideWindow*`             | `UI::GetUIControl<ZKSlideWindow>(int id);`  | A phone style app list. Does not support theming.                                                                                                               | `ZKWindow`   |                                                  |
+| Text View      | `ZKTextView*`                | `UI::GetUIControl<ZKTextView>(int id);`     | Displays text.                                                                                                                                                  | `ZKBase`     |                                                  |
+| Video View     | `ZKVideoView*`               | `UI::GetUIControl<ZKVideoView>(int id);`    | Displays a video.                                                                                                                                               | `ZKBase`     |                                                  |
+| Window         | `ZKWindow*`                  | `UI::GetUIControl<ZKWindow>(int id);`       | A container for other UI elements.                                                                                                                              | `ZKBase`     |                                                  |
 
 #### Themes
 
@@ -376,6 +378,30 @@ void setThumbPic(int status, const char *pPicPath);
 
 `ZKTextView`
 ```cpp
+/**
+ * @brief Set text color
+ * @param color Color value in 0xARGB format
+ */
+void setTextColor(int color);
+
+/**
+ * @brief Set text status color
+ * @param status Status
+ *    Normal state: ZK_CONTROL_STATUS_NORMAL
+ *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+ *    Selected state: ZK_CONTROL_STATUS_SELECTED
+ *    Pressed and selected state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+ *    Invalid state: ZK_CONTROL_STATUS_INVALID
+ * @param color Color value in 0xARGB format
+ */
+void setTextStatusColor(int status, uint32_t color);
+
+/**
+ * @brief Set text size
+ * @param size Text size
+ */
+void setTextSize(uint32_t size);
+
 /**
  * @brief Set text row spacing
  * @param space Spacing value
