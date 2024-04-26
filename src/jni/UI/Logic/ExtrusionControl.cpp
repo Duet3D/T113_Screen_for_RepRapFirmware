@@ -26,7 +26,7 @@ namespace UI::ExtrusionControl
 
 	void Init()
 	{
-		dbg("ExtrusionControl: Init");
+		info("Initialising ExtrusionControl UI...");
 
 		ZKListView* toolList = UI::GetUIControl<ZKListView>(ID_MAIN_ExtrudeToolList);
 		if (toolList == nullptr)

@@ -17,137 +17,137 @@ namespace UI::Theme
 {
 	struct ControlState
 	{
-		uint32_t normal;
-		uint32_t pressed;
-		uint32_t selected;
-		uint32_t pressedAndSelected;
-		uint32_t invalid;
+		uint32_t normal;			 // Default colour (applied to other states if they are not set)
+		uint32_t pressed;			 // Colour when element is pressed
+		uint32_t selected;			 // Colour when element is selected
+		uint32_t pressedAndSelected; // Colour when element is pressed and selected
+		uint32_t invalid;			 // Colour when element is invalid
 	};
 
 	struct Images
 	{
-		const char* normal;
-		const char* pressed;
-		const char* selected;
-		const char* pressedAndSelected;
-		const char* invalid;
+		const char* normal;				// Default image (applied to other states if they are not set)
+		const char* pressed;			// Image when element is pressed
+		const char* selected;			// Image when element is selected
+		const char* pressedAndSelected; // Image when element is pressed and selected
+		const char* invalid;			// Image when element is invalid
 	};
 
 	struct ThumbImage
 	{
-		const char* normal;
-		const char* pressed;
+		const char* normal;	 // Default image (applied to other states if they are not set)
+		const char* pressed; // Image when element is pressed
 	};
 
 	struct ThemeColors
 	{
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
+			uint32_t bgDefault;	 // Background colour
+			const char* bgImage; // Background image
 		} window;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
 		} text;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
-			Images images;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
+			Images images;			 // Image states (applied on top of bgImage)
 		} button;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
-			uint32_t hint; //* This isn't used
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
+			uint32_t hint;			 //! Hint colour (not used)
 		} input;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			const char* validImage;
-			ThumbImage thumb;
+			uint32_t bgDefault;		// Default background colour
+			const char* bgImage;	// Default background image
+			const char* validImage; // Image when element is valid
+			ThumbImage thumb;		// Thumb image states
 		} slider;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			const char* validImage;
-			uint32_t text;
-			ThumbImage thumb;
+			uint32_t bgDefault;		// Default background colour
+			const char* bgImage;	// Default background image
+			const char* validImage; // Image when element is valid
+			uint32_t text;			// Text colour
+			ThumbImage thumb;		// Thumb image states
 		} circularBar;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			const char* pointerImage; //* This isn't used
+			uint32_t bgDefault;		  // Default background colour
+			const char* bgImage;	  // Default background image
+			const char* pointerImage; //! Pointer image (not used)
 		} pointer;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			uint32_t text; // TODO api doesn't work?
+			uint32_t bgDefault;	 // Default background colour
+			const char* bgImage; // Default background image
+			uint32_t text;		 //! Text colour (api doesn't work?)
 		} digitalClock;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
-			Images images;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
+			Images images;			 // Image states (applied on top of bgImage)
 		} checkbox;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
 		} list;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
-			Images images;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
+			Images images;			 // Image states (applied on top of bgImage)
 		} listItem;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			ControlState background;
-			ControlState foreground;
-			Images images;
+			uint32_t bgDefault;		 // Default background colour
+			const char* bgImage;	 // Default background image
+			ControlState background; // Background colour states (overrides bgDefault)
+			ControlState foreground; // Text colour states
+			Images images;			 // Image states (applied on top of bgImage)
 		} listSubItem;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
+			uint32_t bgDefault;	 // Default background colour
+			const char* bgImage; // Default background image
 		} slideWindow;
 		struct
 		{
-			uint32_t bgDefault;
-			const char* bgImage;
-			uint32_t colors[MAX_SENSORS];
+			uint32_t bgDefault;			  // Default background colour
+			const char* bgImage;		  // Default background image
+			uint32_t colors[MAX_SENSORS]; // Array of colors for each waveform
 		} diagram;
 		struct
 		{
 			uint32_t bgDefault; // Colour of no data
-			uint32_t gridColor;
+			uint32_t gridColor; // Colour of the grid
 		} heightmap;
 		struct
 		{
-			uint32_t bgDefault;
-			uint32_t bgCancelled;
-			uint32_t bgCurrent;
-			uint32_t bgBorder;
+			uint32_t bgDefault;	  // Default background colour
+			uint32_t bgCancelled; // Color when the object is cancelled
+			uint32_t bgCurrent;	  // Color for the current object
+			uint32_t bgBorder;	  // Border color
 		} objectCancel;
 	};
 

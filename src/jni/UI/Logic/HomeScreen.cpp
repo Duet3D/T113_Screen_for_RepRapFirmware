@@ -52,6 +52,7 @@ namespace UI::HomeScreen
 
 	void Init()
 	{
+		info("Initialising HomeScreen UI...");
 		s_toolsList.Init(UI::GetUIControl<ZKListView>(ID_MAIN_ToolListView));
 		s_temperatureGraph.Init(UI::GetUIControl<ZKDiagram>(ID_MAIN_TempGraph),
 								UI::GetUIControl<ZKListView>(ID_MAIN_TempGraphXLabels),

@@ -22,7 +22,13 @@ namespace UI
 
 	void Graph::Init(ZKDiagram* diagram, ZKListView* xLabels, ZKListView* yLabels, ZKListView* legend)
 	{
+		info("Initialising Graph UI...");
 		const Theme::Theme* theme = Theme::GetCurrentTheme();
+		if (theme == nullptr)
+		{
+			warn("Failed to get current theme, not initialising graph");
+		}
+
 		m_diagram = diagram;
 		m_xLabels = xLabels;
 		m_yLabels = yLabels;
@@ -33,7 +39,15 @@ namespace UI
 			// TODO each line takes ~245KB of memory, can this be made more efficient?
 			// There does not appear to be a way to delete lines once they have been created
 			m_diagram->addDiagramInfo(
-				2, theme->colors->diagram.colors[i], ZKDiagram::E_DIAGRAM_STYLE_CURVE, 1.0, 1.0, 1.0, 1, false);
+				2,
+				theme ? theme->colors->diagram.colors[i]
+					  : 0xFFFFFFFF, // if theme is null, use white (can only happen if all theme file have been deleted)
+				ZKDiagram::E_DIAGRAM_STYLE_CURVE,
+				1.0,
+				1.0,
+				1.0,
+				1,
+				false);
 			m_waveVisible[i] = true;
 			m_waveCount++;
 		}

@@ -14,7 +14,7 @@ namespace UI::Theme
 {
 	static std::map<std::string, Theme*> s_themes;
 	static std::map<ZKListView::ZKListItem*, Theme*> s_themedListItems;
-	static Theme* s_currentTheme;
+	static Theme* s_currentTheme = nullptr;
 
 	Theme::Theme(const char* id,
 				 ThemeColors* colors,
@@ -43,6 +43,13 @@ namespace UI::Theme
 
 	const Theme* const GetCurrentTheme()
 	{
+		if (s_currentTheme == nullptr)
+		{
+			warn("No theme set, using first available theme");
+			Theme* theme = GetThemeByIndex(0);
+			SetTheme(theme);
+			return theme;
+		}
 		return s_currentTheme;
 	}
 
@@ -282,13 +289,11 @@ namespace UI::Theme
 			bool first = true;
 			for (auto theme : s_themes)
 			{
+				if (!first)
+					validThemes += ", ";
+
 				validThemes += theme.first;
-				if (first)
-				{
-					first = false;
-					continue;
-				}
-				validThemes += ", ";
+				first = false;
 			}
 			warn("Theme %s not found. Valid themes are: %s", id.c_str(), validThemes.c_str());
 			return;

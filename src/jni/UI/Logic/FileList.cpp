@@ -31,6 +31,7 @@ namespace UI::FileList
 
 	void Init()
 	{
+		info("Initialising FileList UI...");
 		s_folderId = UI::GetUIControl<ZKTextView>(ID_MAIN_FolderID);
 		s_listView = UI::GetUIControl<ZKListView>(ID_MAIN_FileListView);
 		s_thumbnail = UI::GetUIControl<ZKTextView>(ID_MAIN_PopupImage);
