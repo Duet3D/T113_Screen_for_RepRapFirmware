@@ -121,6 +121,7 @@ static void onUI_init()
 	UI::PrintStatus::Init();
 	UI::FileList::Init();
 	UI::Heightmap::Init();
+	UI::ObjectCancel::Init();
 
 	UI::WINDOW.AddHome(mMainWindowPtr);
 	UI::CONSOLE.Init(mConsoleListViewPtr, mConsoleInputPtr);
@@ -130,10 +131,6 @@ static void onUI_init()
 
 	// Guided setup
 	UI::GuidedSetup::Init(mGuidedSetupWindowPtr);
-
-	// Object Cancel
-	mObjectCancelPainterPtr->setTouchable(true);
-	mObjectCancelPainterPtr->setTouchListener(&UI::ObjectCancel::GetTouchListener());
 
 	// Hide clock here so that it is visible when editing the GUI
 	mDigitalClock1Ptr->setVisible(false);

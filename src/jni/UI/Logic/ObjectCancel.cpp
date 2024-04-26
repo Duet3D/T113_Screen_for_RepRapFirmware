@@ -15,6 +15,8 @@
 
 namespace UI::ObjectCancel
 {
+	static ZKPainter* s_canvas;
+
 	static std::string GetObjectLabel(OM::JobObject* object)
 	{
 		if (object == nullptr)
@@ -126,6 +128,14 @@ namespace UI::ObjectCancel
 		}
 	}
 
+	void Init()
+	{
+		info("Initialising ObjectCancel UI...");
+		s_canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_ObjectCancelPainter);
+		s_canvas->setTouchable(true);
+		s_canvas->setTouchListener(&UI::ObjectCancel::GetTouchListener());
+	}
+
 	void SetObjectCancelXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('X');
@@ -168,6 +178,12 @@ namespace UI::ObjectCancel
 			return;
 		}
 		const UI::Theme::Theme* theme = UI::Theme::GetCurrentTheme();
+		if (theme == nullptr)
+		{
+			warn("Failed to get current theme");
+			return;
+		}
+
 		if (object->cancelled)
 		{
 			pListItem->setBackgroundColor(theme->colors->objectCancel.bgCancelled);
@@ -249,29 +265,33 @@ namespace UI::ObjectCancel
 
 	void RenderObjectMap()
 	{
-		static ZKPainter* canvas = UI::GetUIControl<ZKPainter>(ID_MAIN_ObjectCancelPainter);
-		if (canvas == nullptr)
+		if (s_canvas == nullptr)
 		{
 			error("Failed to get canvas");
 			return;
 		}
-		static LayoutPosition canvasPos = canvas->getPosition();
+		static LayoutPosition canvasPos = s_canvas->getPosition();
 
 		const UI::Theme::Theme* theme = UI::Theme::GetCurrentTheme();
+		if (theme == nullptr)
+		{
+			warn("Failed to get current theme");
+			return;
+		}
 
-		canvas->erase(0, 0, canvasPos.mWidth, canvasPos.mHeight);
-		canvas->setLineWidth(3);
+		s_canvas->erase(0, 0, canvasPos.mWidth, canvasPos.mHeight);
+		s_canvas->setLineWidth(3);
 
 		OM::IterateJobObjectsWhile(
 			[&](OM::JobObject*& object, size_t index) {
-				DrawObject(object, canvas, theme, index == (size_t)OM::GetCurrentJobObjectIndex());
+				DrawObject(object, s_canvas, theme, index == (size_t)OM::GetCurrentJobObjectIndex());
 				return true;
 			},
 			0);
 
 		// Draw the current object last so it is on top
 		OM::JobObject* object = OM::GetJobObject(OM::GetCurrentJobObjectIndex());
-		DrawObject(object, canvas, theme, true);
+		DrawObject(object, s_canvas, theme, true);
 	}
 
 	TouchListener& GetTouchListener()

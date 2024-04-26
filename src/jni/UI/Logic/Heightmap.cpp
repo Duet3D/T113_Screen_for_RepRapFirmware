@@ -374,6 +374,12 @@ namespace UI::Heightmap
 		static LayoutPosition canvasPos = s_canvas->getPosition();
 		const UI::Theme::Theme* const theme = UI::Theme::GetCurrentTheme();
 
+		if (theme == nullptr)
+		{
+			error("Failed to get theme");
+			return false;
+		}
+
 		// Save the heightmap for scale text rendering
 		s_currentHeightmap = heightmapName.c_str();
 		if (heightmap.GetPointCount() <= 0)

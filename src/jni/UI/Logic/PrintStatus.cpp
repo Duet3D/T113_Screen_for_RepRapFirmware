@@ -22,7 +22,7 @@ namespace UI::PrintStatus
 
 	void Init()
 	{
-		dbg("ExtrusionControl: Init");
+		info("Initialising PrintStatus UI...");
 
 		ZKListView* toolList = UI::GetUIControl<ZKListView>(ID_MAIN_PrintTemperatureList);
 		if (toolList == nullptr)

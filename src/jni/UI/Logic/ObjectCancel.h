@@ -20,6 +20,8 @@ namespace UI::ObjectCancel
 		virtual void onTouchEvent(ZKBase* pBase, const MotionEvent& ev);
 	};
 
+	void Init();
+
 	void SetObjectCancelXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index);
 	void SetObjectCancelYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index);
 

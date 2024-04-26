@@ -89,7 +89,7 @@ namespace UI::Settings
 
 	void Init()
 	{
-		dbg("Init Settings UI");
+		dbg("Initialising Settings UI");
 
 		// Screensaver
 		bool screensaverEnable = StoragePreferences::getBool(ID_SCREENSAVER_ENABLE, true);
