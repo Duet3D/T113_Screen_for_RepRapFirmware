@@ -9,75 +9,75 @@
 #define _UTILS_BRIGHTNESS_HELPER_H_
 
 /**
- * @brief 亮度调节帮助类
+ * @brief Brightness adjustment helper class
  */
 class BrightnessHelper {
 public:
-	/**
-	 * @brief 获取最大亮度值，目前最大值为100
-	 */
-	int getMaxBrightness() const;
+  /**
+   * @brief Get the maximum brightness value, currently set to 100
+   */
+  int getMaxBrightness() const;
 
-	/**
-	 * @brief 获取当前亮度值
-	 */
-	int getBrightness() const;
+  /**
+   * @brief Get the current brightness value
+   */
+  int getBrightness() const;
 
-	/**
-	 * @brief 设置亮度值
-	 * @param brightness 范围：0 ~ 100
-	 */
-	void setBrightness(int brightness);
+  /**
+   * @brief Set the brightness value
+   * @param brightness Range: 0 ~ 100
+   */
+  void setBrightness(int brightness);
 
-	/**
-	 * @brief 关屏
-	 */
-	void screenOff();
+  /**
+   * @brief Turn off the screen
+   */
+  void screenOff();
 
-	/**
-	 * @brief 开屏
-	 */
-	void screenOn();
+  /**
+   * @brief Turn on the screen
+   */
+  void screenOn();
 
-	/**
-	 * @brief 关背光
-	 */
-	void backlightOff();
+  /**
+   * @brief Turn off the backlight
+   */
+  void backlightOff();
 
-	/**
-	 * @brief 开背光
-	 */
-	void backlightOn();
+  /**
+   * @brief Turn on the backlight
+   */
+  void backlightOn();
 
-	bool screenOffEx();
-	bool screenOnEx();
+  bool screenOffEx();
+  bool screenOnEx();
 
-	void setLCDEnable(bool enable);
+  void setLCDEnable(bool enable);
 
-	/**
-	 * @brief 是否是开屏状态
-	 */
-	bool isScreenOn() const;
+  /**
+   * @brief Check if the screen is on
+   */
+  bool isScreenOn() const;
 
-	/**
-	 * @brief 设置对比度
-	 * @param contrast 范围：0 ~ 100
-	 */
-	void setContrast(int contrast);
+  /**
+   * @brief Set the contrast
+   * @param contrast Range: 0 ~ 100
+   */
+  void setContrast(int contrast);
 
-	/**
-	 * @brief 设置饱和度
-	 * @param saturation 范围：0 ~ 100
-	 */
-	void setSaturation(int saturation);
+  /**
+   * @brief Set the saturation
+   * @param saturation Range: 0 ~ 100
+   */
+  void setSaturation(int saturation);
 
-	/**
-	 * @brief 设置色调
-	 * @param hue 范围：0 ~ 100
-	 */
-	void setHue(int hue);
+  /**
+   * @brief Set the hue
+   * @param hue Range: 0 ~ 100
+   */
+  void setHue(int hue);
 
-	static BrightnessHelper* getInstance();
+  static BrightnessHelper* getInstance();
 
 private:
 	BrightnessHelper();

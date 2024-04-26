@@ -16,7 +16,7 @@
 class ZKVideoViewPrivate;
 
 /**
- * @brief 视频控件
+ * @brief Video control
  */
 class ZKVideoView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKVideoView)
@@ -26,56 +26,56 @@ public:
 	virtual ~ZKVideoView();
 
 	/**
-	 * @brief 播放指定路径视频文件
-	 * @param pFilePath 视频文件路径
-	 * @param msec 指定从哪个位置开始播放，单位为毫秒，默认从头开始播放
+	 * @brief Play the specified video file
+	 * @param pFilePath Video file path
+	 * @param msec Specify the starting position to play from, in milliseconds. Default is to start from the beginning.
 	 */
 	void play(const char *pFilePath, int msec = 0);
 
 	/**
-	 * @brief 暂停播放
+	 * @brief Pause playback
 	 */
 	void pause();
 
 	/**
-	 * @brief 恢复播放
+	 * @brief Resume playback
 	 */
 	void resume();
 
 	/**
-	 * @brief 定位到msec位置播放
-	 * @param msec 单位为毫秒
+	 * @brief Seek to the specified position to play
+	 * @param msec Position in milliseconds
 	 */
 	void seekTo(int msec);
 
 	/**
-	 * @brief 停止播放
+	 * @brief Stop playback
 	 */
 	void stop();
 
 	/**
-	 * @brief 是否播放中
+	 * @brief Check if playing
 	 */
 	bool isPlaying();
 
 	/**
-	 * @brief 设置音量
-	 * @param volume 范围：0.0 ～ 1.0
+	 * @brief Set the volume
+	 * @param volume Range: 0.0 ~ 1.0
 	 */
 	void setVolume(float volume);
 
 	void setPosition(const LayoutPosition &position);
 
-	/* clockwise rotation: val=0 no rotation, val=1 90 degree; val=2 180 degree, val=3 270 degree */
+	/* clockwise rotation: val=0 no rotation, val=1 90 degrees; val=2 180 degrees, val=3 270 degrees */
 	void setRotation(int val);
 
 	/**
-	 * @brief 获取视频总时长，单位为毫秒
+	 * @brief Get the total duration of the video in milliseconds
 	 */
 	int getDuration();
 
 	/**
-	 * @brief 获取当前播放位置，单位为毫秒
+	 * @brief Get the current playback position in milliseconds
 	 */
 	int getCurrentPosition();
 
@@ -87,7 +87,7 @@ public:
 	} EMessageType;
 
 	/**
-	 * @brief 视频播放状态监听接口
+	 * @brief Video player message listener interface
 	 */
 	class IVideoPlayerMessageListener {
 	public:

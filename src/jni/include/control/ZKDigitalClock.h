@@ -15,7 +15,7 @@
 class ZKDigitalClockPrivate;
 
 /**
- * @brief 数字时钟控件
+ * @brief Digital clock control
  */
 class ZKDigitalClock : public ZKTextView {
 	ZK_DECLARE_PRIVATE(ZKDigitalClock)

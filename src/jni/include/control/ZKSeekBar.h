@@ -15,7 +15,7 @@
 class ZKSeekBarPrivate;
 
 /**
- * @brief 滑动条控件
+ * @brief Slider control
  */
 class ZKSeekBar : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKSeekBar)
@@ -25,36 +25,36 @@ public:
 	virtual ~ZKSeekBar();
 
 	/**
-	 * @brief 设置最大进度值
+	 * @brief Set the maximum progress value
 	 */
 	void setMax(int max);
 
 	/**
-	 * @brief 获取最大进度值
+	 * @brief Get the maximum progress value
 	 */
 	int getMax() const;
 
 	/**
-	 * @brief 设置当前进度值
+	 * @brief Set the current progress value
 	 */
 	void setProgress(int progress);
 
 	/**
-	 * @brief 获取当前进度值
+	 * @brief Get the current progress value
 	 */
 	int getProgress() const;
 
 	/**
-	 * @brief 设置进度图片
+	 * @brief Set the progress image
 	 */
 	void setProgressPic(const char *pPicPath);
 
 	/**
-	 * @brief 设置滑块图片
-	 * @param status   状态
-	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
-	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
-	 * @param pPicPath 图片路径
+	 * @brief Set the thumb image
+	 * @param status   Status
+	 *    Normal state: ZK_CONTROL_STATUS_NORMAL
+	 *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+	 * @param pPicPath Image path
 	 */
 	void setThumbPic(int status, const char *pPicPath);
 

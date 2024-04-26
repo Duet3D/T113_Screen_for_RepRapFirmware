@@ -22,13 +22,13 @@ public:
 	void beep();
 
 	/**
-	 * @brief 设置beep pwm
-	 * @param freq    频率 默认2500
-	 * @param duty    占空比 默认50
+	 * @brief Set beep PWM
+	 * @param freq    Frequency, default is 2500
+	 * @param duty    Duty cycle, default is 50
 	 */
 	void setBeepPWM(uint32_t freq, uint8_t duty);
 
-	// 设置自定义beep回调接口
+	// Set custom beep callback interface
 	void setCustomBeep(custom_beep_cb_t cb);
 
 private:

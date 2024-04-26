@@ -13,47 +13,47 @@
 struct pwm_dev;
 
 /**
- * @brief PWM操作帮助类
+ * @brief PWM operation helper class
  */
 class PWMHelper {
 public:
-	/**
-	 * @brief 构造函数
-	 * @param nr 端口号
-	 * @param freq 频率
-	 * @param duty 占空比
-	 * @param polarity 极性
-	 */
-	PWMHelper(int nr, uint32_t freq, uint8_t duty, uint8_t polarity);
-	virtual ~PWMHelper();
+  /**
+   * @brief Constructor
+   * @param nr Port number
+   * @param freq Frequency
+   * @param duty Duty cycle
+   * @param polarity Polarity
+   */
+  PWMHelper(int nr, uint32_t freq, uint8_t duty, uint8_t polarity);
+  virtual ~PWMHelper();
 
-	/**
-	 * @brief 设置PWM频率
-	 * @param freq 频率
-	 * @return true 成功， false 失败
-	 */
-	bool setFreq(uint32_t freq);
+  /**
+   * @brief Set PWM frequency
+   * @param freq Frequency
+   * @return true if successful, false otherwise
+   */
+  bool setFreq(uint32_t freq);
 
-	/**
-	 * @brief 设置PWM占空比
-	 * @param duty 占空比
-	 * @return true 成功， false 失败
-	 */
-	bool setDuty(uint8_t duty);
+  /**
+   * @brief Set PWM duty cycle
+   * @param duty Duty cycle
+   * @return true if successful, false otherwise
+   */
+  bool setDuty(uint8_t duty);
 
-	/**
-	 * @brief 设置PWM极性
-	 * @param polarity 极性
-	 * @return true 成功， false 失败
-	 */
-	bool setPolarity(uint8_t polarity);
+  /**
+   * @brief Set PWM polarity
+   * @param polarity Polarity
+   * @return true if successful, false otherwise
+   */
+  bool setPolarity(uint8_t polarity);
 
-	/**
-	 * @brief 设置PWM使能
-	 * @param isEnable true 使能， false 禁止
-	 * @return true 成功， false 失败
-	 */
-	bool setEnable(bool isEnable);
+  /**
+   * @brief Set PWM enable
+   * @param isEnable true to enable, false to disable
+   * @return true if successful, false otherwise
+   */
+  bool setEnable(bool isEnable);
 
 private:
 	struct pwm_dev *mPwmDevPtr;

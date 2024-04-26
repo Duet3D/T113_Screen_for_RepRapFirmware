@@ -15,7 +15,7 @@ typedef enum {
 } ESoftApState;
 
 /**
- * @brief 热点管理器
+ * @brief Hotspot Manager
  */
 class SoftApManager {
 public:
@@ -25,42 +25,42 @@ public:
 	bool init();
 
 	/**
-	 * @brief 打开、关闭热点
-	 * @param isEnable true 打开热点，false 关闭热点
+	 * @brief Enable or disable the hotspot
+	 * @param isEnable true to enable the hotspot, false to disable the hotspot
 	 */
 	void setEnable(bool isEnable);
 
 	/**
-	 * @brief 热点是否已打开
+	 * @brief Check if the hotspot is enabled
 	 */
 	bool isEnable() const;
 
 	ESoftApState getSoftApState() const;
 
 	/**
-	 * @brief 获取IP地址
+	 * @brief Get the IP address
 	 */
 	const char* getIp() const;
 
 	/**
-	 * @brief 设置热点名称和密码
-	 * @param ssid 热点名称
-	 * @param pwd 热点密码
+	 * @brief Set the hotspot name and password
+	 * @param ssid Hotspot name
+	 * @param pwd Hotspot password
 	 */
 	void setSsidAndPwd(const char *ssid, const char *pwd);
 
 	/**
-	 * @brief 获取热点名称
+	 * @brief Get the hotspot name
 	 */
 	const char* getSsid() const;
 
 	/**
-	 * @brief 获取热点密码
+	 * @brief Get the hotspot password
 	 */
 	const char* getPwd() const;
 
 	/**
-	 * @brief 热点状态监听接口
+	 * @brief Hotspot state listener interface
 	 */
 	class ISoftApStateListener {
 	public:
@@ -69,12 +69,12 @@ public:
 	};
 
 	/**
-	 * @brief 添加热点状态监听接口
+	 * @brief Add a hotspot state listener interface
 	 */
 	void addSoftApStateListener(ISoftApStateListener *pListener);
 
 	/**
-	 * @brief 移除热点状态监听接口
+	 * @brief Remove a hotspot state listener interface
 	 */
 	void removeSoftApStateListener(ISoftApStateListener *pListener);
 

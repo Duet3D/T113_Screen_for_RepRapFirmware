@@ -15,26 +15,26 @@
 
 class ScreenHelper {
 public:
-	/**
-	 * @brief 获取屏幕宽度
-	 */
-	static int getScreenWidth();
+  /**
+   * @brief Get the screen width
+   */
+  static int getScreenWidth();
 
-	/**
-	 * @brief 获取屏幕高度
-	 */
-	static int getScreenHeight();
+  /**
+   * @brief Get the screen height
+   */
+  static int getScreenHeight();
 
-	/**
-	 * @brief 获取屏幕坐标像素点颜色值
-	 */
-	static uint32_t getPixelColor(int x, int y);
+  /**
+   * @brief Get the color value of a pixel at the screen coordinates
+   */
+  static uint32_t getPixelColor(int x, int y);
 
-	/**
-	 * @brief 屏幕快照
-	 * @param pSavePath BMP图片保存路径
-	 */
-	static bool screenShot(const char *pSavePath);
+  /**
+   * @brief Take a screenshot of the screen
+   * @param pSavePath The path to save the BMP image
+   */
+  static bool screenShot(const char* pSavePath);
 };
 
 #endif /* _UTILS_SCREEN_HELPER_H_ */

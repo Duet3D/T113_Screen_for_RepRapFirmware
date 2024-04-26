@@ -15,7 +15,7 @@ typedef enum {
 class LTE4GInfo;
 
 /**
- * @brief 4G网络管理器
+ * @brief 4G network manager
  */
 class LTE4GManager {
 public:
@@ -26,12 +26,12 @@ public:
 	bool isSupported() const;
 
 	/**
-	 * @brief 获取4G电源状态
+	 * @brief Get the power state of the 4G module
 	 */
 	ELTE4GPowerState getPowerState() const;
 
 	/**
-	 * @brief 开关4G电源
+	 * @brief Turn on/off the power of the 4G module
 	 */
 	void setPower(bool isOn);
 
@@ -46,12 +46,12 @@ public:
 	const char* getVersion() const;
 
 	/**
-	 * @brief 查询信号质量
+	 * @brief Query the signal quality
 	 */
 	int queryRSSI();
 
 	/**
-	 * @brief 4G开关状态监听接口
+	 * @brief Interface for listening to 4G power state changes
 	 */
 	class ILTE4GPowerStateListener {
 	public:

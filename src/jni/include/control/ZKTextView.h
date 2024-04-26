@@ -18,7 +18,7 @@
 class ZKTextViewPrivate;
 
 /**
- * @brief 文本控件
+ * @brief Text control
  */
 class ZKTextView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKTextView)
@@ -35,22 +35,22 @@ public:
 	};
 
 	/**
-	 * @brief 设置string文本
+	 * @brief Set string text
 	 */
 	void setText(const std::string &text);
 
 	/**
-	 * @brief 设置字符串文本
+	 * @brief Set string text
 	 */
 	void setText(const char *text);
 
 	/**
-	 * @brief 设置字符文本
+	 * @brief Set character text
 	 */
 	void setText(char text);
 
 	/**
-	 * @brief 设置数字文本
+	 * @brief Set numeric text
 	 */
 	void setText(int text);
 
@@ -71,12 +71,12 @@ public:
 	void setText(float text) { setTextf("%.2f", text); }
 
 	/**
-	 * @brief 获取文本内容
+	 * @brief Get text content
 	 */
 	const std::string& getText() const;
 
 	/**
-	 * @brief 支持多国语言设置接口
+	 * @brief Support for multi-language setting interface
 	 */
 	void setTextTr(const char *name);
 
@@ -93,70 +93,71 @@ public:
 	void reloadTextTr();
 
 	/**
-	 * @brief 设置文本颜色
-	 * @param color 颜色值为0x ARGB
+	 * @brief Set text color
+	 * @param color Color value in 0xARGB format
 	 */
 	void setTextColor(int color);
 
 	/**
-	 * @brief 设置文本状态颜色
-	 * @param status 状态
-	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
-	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
-	 *    选中状态： ZK_CONTROL_STATUS_SELECTED
-	 *    选中按下状态： ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
-	 *    无效状态： ZK_CONTROL_STATUS_INVALID
-	 * @param color 颜色值为0x ARGB
+	 * @brief Set text status color
+	 * @param status Status
+	 *    Normal state: ZK_CONTROL_STATUS_NORMAL
+	 *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+	 *    Selected state: ZK_CONTROL_STATUS_SELECTED
+	 *    Pressed and selected state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+	 *    Invalid state: ZK_CONTROL_STATUS_INVALID
+	 * @param color Color value in 0xARGB format
 	 */
 	void setTextStatusColor(int status, uint32_t color);
 
 	/**
-	 * @brief 获取文本内容宽高
-	 * @param text 文本内容
-	 * @param w 返回文本宽度
-	 * @param h 返回文本高度
+	 * @brief Get text content width and height
+	 * @param text Text content
+	 * @param w Return text width
+	 * @param h Return text height
 	 */
 	void getTextExtent(const char *text, int &w, int &h);
 
 	/**
-	 * @brief 设置文本大小
-	 * @param size 文本大小
+	 * @brief Set text size
+	 * @param size Text size
 	 */
 	void setTextSize(uint32_t size);
 
 	/**
-	 * @brief 获取文本大小
+	 * @brief Get text size
 	 */
 	uint32_t getTextSize() const;
 
 	/**
-	 * @brief 设置文本行间距
-	 * @param space 间距值
+	 * @brief Set text row spacing
+	 * @param space Spacing value
 	 */
 	void setTextRowSpace(int space);
 
 	/**
-	 * @brief 设置文本列间距
-	 * @param space 间距值
+	 * @brief Set text column spacing
+	 * @param space Spacing value
 	 */
 	void setTextColSpace(int space);
 
 	/**
-	 * @brief 设置字体
-	 * @param family 字体名
+	 * @brief Set font
+	 * @param family Font name
 	 */
 	void setFontFamily(const char *family);
 
 	/**
-	 * @brief 设置文本超长显示模式
+	 * @brief Set text long display mode
 	 */
 	void setLongMode(ELongMode mode);
 
 public:
-	/**
-	 * @brief 文本内容改变监听接口
-	 */
-	class ITextChangeListener {
+  /**
+   * @brief Text content change listener interface
+   */
+  class ITextChangeListener
+  {
 	public:
 		virtual ~ITextChangeListener() { }
 		virtual void onTextChanged(ZKTextView *pTextView, const std::string &text) = 0;

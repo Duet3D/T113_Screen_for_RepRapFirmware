@@ -13,59 +13,59 @@
 #include <string>
 
 /**
- * @brief 数据存储
+ * @brief Data storage
  */
 class StoragePreferences {
 public:
-	/**
-	 * @brief 存储string值
-	 */
-	static bool putString(const std::string &key, const std::string &val);
+  /**
+   * @brief Store a string value
+   */
+  static bool putString(const std::string& key, const std::string& val);
 
-	/**
-	 * @brief 存储int值
-	 */
-	static bool putInt(const std::string &key, int val);
+  /**
+   * @brief Store an integer value
+   */
+  static bool putInt(const std::string& key, int val);
 
-	/**
-	 * @brief 存储bool值
-	 */
-	static bool putBool(const std::string &key, bool val);
+  /**
+   * @brief Store a boolean value
+   */
+  static bool putBool(const std::string& key, bool val);
 
-	/**
-	 * @brief 存储float值
-	 */
-	static bool putFloat(const std::string &key, float val);
+  /**
+   * @brief Store a floating-point value
+   */
+  static bool putFloat(const std::string& key, float val);
 
-	/**
-	 * @brief 删除key对应的数据
-	 */
-	static bool remove(const std::string &key);
+  /**
+   * @brief Remove data corresponding to a key
+   */
+  static bool remove(const std::string& key);
 
-	/**
-	 * @brief 清空存储数据
-	 */
-	static bool clear();
+  /**
+   * @brief Clear stored data
+   */
+  static bool clear();
 
-	/**
-	 * @brief 获取key对应的string值，获取不到则返回defVal默认值
-	 */
-	static std::string getString(const std::string &key, const std::string &defVal);
+  /**
+   * @brief Get the string value corresponding to a key, return defVal if not found
+   */
+  static std::string getString(const std::string& key, const std::string& defVal);
 
-	/**
-	 * @brief 获取key对应的int值，获取不到则返回defVal默认值
-	 */
-	static int getInt(const std::string &key, int defVal);
+  /**
+   * @brief Get the integer value corresponding to a key, return defVal if not found
+   */
+  static int getInt(const std::string& key, int defVal);
 
-	/**
-	 * @brief 获取key对应的bool值，获取不到则返回defVal默认值
-	 */
-	static bool getBool(const std::string &key, bool defVal);
+  /**
+   * @brief Get the boolean value corresponding to a key, return defVal if not found
+   */
+  static bool getBool(const std::string& key, bool defVal);
 
-	/**
-	 * @brief 获取key对应的float值，获取不到则返回defVal默认值
-	 */
-	static float getFloat(const std::string &key, float defVal);
+  /**
+   * @brief Get the floating-point value corresponding to a key, return defVal if not found
+   */
+  static float getFloat(const std::string& key, float defVal);
 };
 
 #endif /* _STORAGE_STORAGEPREFERENCES_H_ */

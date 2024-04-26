@@ -11,22 +11,22 @@
 #include <stdio.h>
 
 /**
- * @brief ADC操作帮助类
+ * @brief ADC operation helper class
  */
 class AdcHelper {
 public:
 	static bool setChannel(int ch);
 
 	/**
-	 * @brief 设置adc使能状态
-	 * @param isEnable true 使能， false 禁止
-	 * @return true 成功， false 失败
+	 * @brief Set the ADC enable status
+	 * @param isEnable true to enable, false to disable
+	 * @return true if successful, false otherwise
 	 */
 	static bool setEnable(bool isEnable);
 
 	/**
-	 * @brief 读取adc值
-	 * @return adc值 成功，-1 失败
+	 * @brief Read the ADC value
+	 * @return the ADC value if successful, -1 otherwise
 	 */
 	static int getVal();
 };

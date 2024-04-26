@@ -31,7 +31,7 @@ enum E_WIFI_ERROR_CODE {
 
 enum E_SUPPLICATION_STATE {
 	/**
-	 * This state indicates that client is not associated, but is likely to
+	 * This state indicates that the client is not associated, but is likely to
 	 * start looking for an access point. This state is entered when a
 	 * connection is lost.
 	 */
@@ -109,7 +109,7 @@ enum E_SUPPLICATION_STATE {
 	 * <p/>
 	 * This state is entered when 4-Way Key Handshake has been completed
 	 * (i.e., when the supplicant sends out message 4/4) and when Group
-	 * Key rekeying is started by the AP (i.e., when supplicant receives
+	 * Key rekeying is started by the AP (i.e., when the supplicant receives
 	 * message 1/2).
 	 */
 	GROUP_HANDSHAKE,
@@ -127,7 +127,7 @@ enum E_SUPPLICATION_STATE {
 	 * has been completed.
 	 * <p/>
 	 * This state indicates that the supplicant has completed its
-	 * processing for the association phase and that data connection is
+	 * processing for the association phase and that the data connection is
 	 * fully configured. Note, however, that there may not be any IP
 	 * address associated with the connection yet. Typically, a DHCP
 	 * request needs to be sent at this point to obtain an address.
@@ -170,7 +170,7 @@ enum E_SUPPLICATION_STATE {
 class WifiCtrl;
 
 /**
- * @brief Wifi管理器
+ * @brief Wifi Manager
  */
 class WifiManager {
 public:
@@ -180,58 +180,58 @@ public:
 	bool init();
 
 	/**
-	 * @brief 是否支持Wifi功能
+	 * @brief Check if Wifi is supported
 	 */
 	bool isSupported() const;
 
 	/**
-	 * @brief 打开、关闭Wifi
-	 * @param enable true 打开wifi，false 关闭wifi
+	 * @brief Enable or disable Wifi
+	 * @param enable true to enable Wifi, false to disable Wifi
 	 */
 	void enableWifi(bool enable);
 
 	/**
-	 * @brief Wifi是否已打开
+	 * @brief Check if Wifi is enabled
 	 */
 	bool isWifiEnable() const;
 
 	/**
-	 * @brief 连接Wifi
-	 * @param ssid wifi名称
-	 * @param pw wifi密码
-	 * @param encryption 加密方式
+	 * @brief Connect to Wifi
+	 * @param ssid Wifi name
+	 * @param pw Wifi password
+	 * @param encryption Encryption method
 	 */
 	void connect(const std::string &ssid, const std::string &pw, const std::string &encryption);
 
 	/**
-	 * @brief 连接Wifi
-	 * @param ssid wifi名称
-	 * @param pw wifi密码
+	 * @brief Connect to Wifi
+	 * @param ssid Wifi name
+	 * @param pw Wifi password
 	 */
 	void connect(const std::string &ssid, const std::string &pw);
 
 	/**
-	 * @brief 重新连接
+	 * @brief Reconnect to Wifi
 	 */
 	void reconnect();
 
 	/**
-	 * @brief 断开连接
+	 * @brief Disconnect from Wifi
 	 */
 	void disconnect();
 
 	/**
-	 * @brief 扫描Wifi (只扫一次)
+	 * @brief Scan for Wifi networks (single scan)
 	 */
 	void scan();
 
 	/**
-	 * @brief 启动扫描Wifi
+	 * @brief Start scanning for Wifi networks
 	 */
 	void startScan();
 
 	/**
-	 * @brief 停止扫描Wifi
+	 * @brief Stop scanning for Wifi networks
 	 */
 	void stopScan();
 
@@ -240,17 +240,17 @@ public:
 	void saveConfig();
 
 	/**
-	 * @brief 获取MAC地址
+	 * @brief Get MAC address
 	 */
 	const char* getMacAddr() const;
 
 	/**
-	 * @brief 获取IP地址
+	 * @brief Get IP address
 	 */
 	const char* getIp() const;
 
 	/**
-	 * @brief 配置静态IP信息
+	 * @brief Configure static IP information
 	 */
 	bool configure(const char *pIpAddr, const char *pMask,
 			const char *pGateway, const char *pDns1, const char *pDns2);
@@ -261,7 +261,7 @@ public:
 	bool isAutoMode() const;
 
 	/**
-	 * @brief Wifi信息监听接口
+	 * @brief Wifi information listener interface
 	 */
 	class IWifiListener {
 	public:
@@ -276,31 +276,31 @@ public:
 	};
 
 	/**
-	 * @brief 添加Wifi信息监听接口
+	 * @brief Add Wifi information listener interface
 	 */
 	void addWifiListener(IWifiListener *pListener);
 
 	/**
-	 * @brief 移除Wifi信息监听接口
+	 * @brief Remove Wifi information listener interface
 	 */
 	void removeWifiListener(IWifiListener *pListener);
 
 	std::vector<WifiInfo>* getWifiScanInfos() { return &mWifiScanInfos; }
 
 	/**
-	 * @brief 获取扫描到的wifi信息
+	 * @brief Get scanned Wifi information
 	 */
 	void getWifiScanInfosLock(std::vector<WifiInfo> &wifiInfos);
 
 	E_WIFI_ENABLE getEnableStatus() const { return mEnableStatus; }
 
 	/**
-	 * @brief 是否已连接
+	 * @brief Check if connected to Wifi
 	 */
 	bool isConnected() const;
 
 	/**
-	 * @brief 获取连接上wifi信息
+	 * @brief Get connected Wifi information
 	 */
 	WifiInfo* getConnectionInfo() const;
 
@@ -320,7 +320,7 @@ private:
 	} EMessageType;
 
 	/**
-	 * wifi控制线程
+	 * Wifi control thread
 	 */
 	class ControlThread : public Thread {
 	public:
@@ -338,7 +338,7 @@ private:
 	};
 
 	/**
-	 * wifi事件监听线程
+	 * Wifi event listener thread
 	 */
 	class EventThread : public Thread {
 	public:

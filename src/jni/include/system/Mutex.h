@@ -13,7 +13,7 @@
 #include <pthread.h>
 
 /**
- * @brief 锁
+ * @brief Lock
  */
 class Mutex {
 public:
@@ -27,42 +27,36 @@ public:
 	~Mutex();
 
 	/**
-	 * @brief 加锁
+	 * @brief Locks the mutex
 	 */
 	void lock();
 
 	/**
-	 * @brief 解锁
+	 * @brief Unlocks the mutex
 	 */
 	void unlock();
 
 	void tryLock();
 
 	/**
-	 * @brief 自动锁
+	 * @brief Automatic lock
 	 */
 	class Autolock {
 	public:
-		/**
-		 * @brief 构造时加锁
-		 */
-		inline Autolock(Mutex &mutex) : mLock(mutex) {
-			mLock.lock();
-		}
+	  /**
+	   * @brief Locks the mutex upon construction
+	   */
+	  inline Autolock(Mutex& mutex) : mLock(mutex) { mLock.lock(); }
 
-		/**
-		 * @brief 构造时加锁
-		 */
-		inline Autolock(Mutex *mutex) : mLock(*mutex) {
-			mLock.lock();
-		}
+	  /**
+	   * @brief Locks the mutex upon construction
+	   */
+	  inline Autolock(Mutex* mutex) : mLock(*mutex) { mLock.lock(); }
 
-		/**
-		 * @brief 析构时解锁
-		 */
-		inline ~Autolock() {
-			mLock.unlock();
-		}
+	  /**
+	   * @brief Unlocks the mutex upon destruction
+	   */
+	  inline ~Autolock() { mLock.unlock(); }
 
 	private:
 		Mutex &mLock;

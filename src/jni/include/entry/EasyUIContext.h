@@ -23,29 +23,30 @@ class IMEBaseApp;
 
 class EasyUIContext {
 public:
-	/**
-	 * @brief 全局触摸监听接口
-	 */
-	class ITouchListener {
+  /**
+   * @brief Global touch listener interface
+   */
+  class ITouchListener
+  {
 	public:
 		virtual ~ITouchListener() { }
 		virtual bool onTouchEvent(const MotionEvent &ev) = 0;
 	};
 
 	/**
-	 * @brief 注册全局触摸监听接口
+	 * @brief Register global touch listener interface
 	 */
 	void registerGlobalTouchListener(ITouchListener *pListener);
 
 	/**
-	 * @brief 反注册全局触摸监听接口
+	 * @brief Unregister global touch listener interface
 	 */
 	void unregisterGlobalTouchListener(ITouchListener *pListener);
 
 	bool notifyGlobalTouchListener(const MotionEvent &ev);
 
 	/**
-	 * @brief 按键监听接口
+	 * @brief Key listener interface
 	 */
 	class IKeyListener {
 	public:
@@ -54,12 +55,12 @@ public:
 	};
 
 	/**
-	 * @brief 注册按键监听接口
+	 * @brief Register key listener interface
 	 */
 	void registerKeyListener(IKeyListener *pListener);
 
 	/**
-	 * @brief 反注册按键监听接口
+	 * @brief Unregister key listener interface
 	 */
 	void unregisterKeyListener(IKeyListener *pListener);
 
@@ -69,63 +70,64 @@ public:
 	static EasyUIContext* getInstance();
 
 	/**
-	 * @brief 打开界面
-	 * @param appName 界面名称
-	 * @param intentPtr 界面间数据传递对象，默认为NULL
-	 * @attention 传入的intentPtr必须是堆里new出来的对象，最后由框架内部完成delete
+	 * @brief Open activity
+	 * @param appName Activity name
+	 * @param intentPtr Data transfer object between activities, default is NULL
+	 * @attention The intentPtr passed in must be a heap-allocated object, and will be deleted by the framework
+	 * internally
 	 */
 	void openActivity(const char *appName, Intent *intentPtr = NULL);
 
 	/**
-	 * @brief 关闭界面
-	 * @param appName 界面名称
+	 * @brief Close activity
+	 * @param appName Activity name
 	 */
 	void closeActivity(const char *appName);
 
 	/**
-	 * @brief 回到上一界面
+	 * @brief Go back to the previous activity
 	 */
 	void goBack();
 
 	/**
-	 * @brief 回到主界面
+	 * @brief Go back to the home activity
 	 */
 	void goHome();
 
 	/**
-	 * @brief 当前界面名称
+	 * @brief Current activity name
 	 */
 	const char* currentAppName() const;
 
 	/**
-	 * @brief 显示状态栏
+	 * @brief Show status bar
 	 */
 	void showStatusBar();
 
 	/**
-	 * @brief 隐藏状态栏
+	 * @brief Hide status bar
 	 */
 	void hideStatusBar();
 
 	/**
-	 * @brief 状态栏是否显示
+	 * @brief Check if status bar is shown
 	 */
 	bool isStatusBarShow() const;
 
 	BaseApp* getStatusBar() const;
 
 	/**
-	 * @brief 显示导航栏
+	 * @brief Show navigation bar
 	 */
 	void showNaviBar();
 
 	/**
-	 * @brief 隐藏导航栏
+	 * @brief Hide navigation bar
 	 */
 	void hideNaviBar();
 
 	/**
-	 * @brief 导航栏是否显示
+	 * @brief Check if navigation bar is shown
 	 */
 	bool isNaviBarShow() const;
 
@@ -136,47 +138,49 @@ public:
 	bool isPowerOff() const;
 
 	/**
-	 * @brief 设置屏保超时时间
-	 * @param timeOut 单位为秒，-1时表示不进屏保
+	 * @brief Set screensaver timeout
+	 * @param timeOut Timeout in seconds, -1 means no screensaver
 	 */
 	void setScreensaverTimeOut(int timeOut);
 
 	/**
-	 * @brief 获取屏保超时时间
+	 * @brief Get screensaver timeout
 	 */
 	int getScreensaverTimeOut() const;
 
 	/**
-	 * @brief 重置屏保检测时间
+	 * @brief Reset screensaver timeout
 	 */
 	void resetScreensaverTimeOut();
 
 	void performResetScreensaverTimeOut();
 
 	/**
-	 * @brief 设置是否允许启用屏保
-	 * @param isEnable true 允许启用屏保，false 禁止启用屏保
-	 * @note 应用场景：如升级界面不能进入屏保界面，可以在升级应用里setScreensaverEnable(false)关闭屏保检测，退出setScreensaverEnable(true)恢复屏保功能
+	 * @brief Set whether screensaver is enabled
+	 * @param isEnable true to enable screensaver, false to disable screensaver
+	 * @note Use case: For example, the upgrade activity should not enter screensaver mode. You can disable screensaver
+	 * detection in the upgrade application by calling setScreensaverEnable(false), and restore screensaver
+	 * functionality by calling setScreensaverEnable(true) when exiting.
 	 */
 	void setScreensaverEnable(bool isEnable);
 
 	/**
-	 * @brief 是否允许启用屏保
+	 * @brief Check if screensaver is enabled
 	 */
 	bool isScreensaverEnable() const;
 
 	/**
-	 * @brief 打开屏保
+	 * @brief Turn on screensaver
 	 */
 	void screensaverOn();
 
 	/**
-	 * @brief 关闭屏保
+	 * @brief Turn off screensaver
 	 */
 	void screensaverOff();
 
 	/**
-	 * @brief 是否已进入屏保
+	 * @brief Check if screensaver is active
 	 */
 	bool isScreensaverOn() const;
 
@@ -188,7 +192,7 @@ public:
 	void performHideIME();
 
 	/**
-	 * @brief 输入法是否显示
+	 * @brief Check if IME is shown
 	 */
 	bool isIMEShow() const;
 

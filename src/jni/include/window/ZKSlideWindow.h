@@ -15,7 +15,7 @@
 class ZKSlideWindowPrivate;
 
 /**
- * @brief 滑动窗口控件
+ * @brief Slide window control
  */
 class ZKSlideWindow : public ZKWindow {
 	ZK_DECLARE_PRIVATE(ZKSlideWindow)
@@ -25,10 +25,11 @@ public:
 	virtual ~ZKSlideWindow();
 
 public:
-	/**
-	 * @brief 滑动项点击监听接口
-	 */
-	class ISlideItemClickListener {
+  /**
+   * @brief Slide item click listener interface
+   */
+  class ISlideItemClickListener
+  {
 	public:
 		virtual ~ISlideItemClickListener() { }
 		virtual void onSlideItemClick(ZKSlideWindow *pSlideWindow, int index) = 0;
@@ -37,7 +38,7 @@ public:
 	void setSlideItemClickListener(ISlideItemClickListener *pListener);
 
 	/**
-	 * @brief 翻页监听接口
+	 * @brief Slide page change listener interface
 	 */
 	class ISlidePageChangeListener {
 	public:
@@ -48,24 +49,24 @@ public:
 	void setSlidePageChangeListener(ISlidePageChangeListener *pListener);
 
 	/**
-	 * @brief 获取当前页位置
+	 * @brief Get the current page position
 	 */
 	int getCurrentPage() const;
 
 	/**
-	 * @brief 获取总页数
+	 * @brief Get the total number of pages
 	 */
 	int getPageSize() const;
 
 	/**
-	 * @brief 切换到下一页
-	 * @param isAnimatable 是否开启翻页动画，默认为false，不开启动画
+	 * @brief Switch to the next page
+	 * @param isAnimatable Whether to enable page flipping animation, default is false, animation is disabled
 	 */
 	void turnToNextPage(bool isAnimatable = false);
 
 	/**
-	 * @brief 切换到上一页
-	 * @param isAnimatable 是否开启翻页动画，默认为false，不开启动画
+	 * @brief Switch to the previous page
+	 * @param isAnimatable Whether to enable page flipping animation, default is false, animation is disabled
 	 */
 	void turnToPrevPage(bool isAnimatable = false);
 

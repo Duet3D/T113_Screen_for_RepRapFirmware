@@ -15,83 +15,83 @@
 struct spi_dev;
 
 /**
- * @brief SPI操作帮助类
+ * @brief SPI operation helper class
  */
 class SpiHelper {
 public:
-	/**
-	 * @brief 构造函数
-	 * @param nr spi总线号
-	 * @param mode 模式，可选值： SPI_MODE_0、SPI_MODE_1、SPI_MODE_2、SPI_MODE_3
-	 * @param speed spi时钟频率
-	 * @param bits 一个字有多少位，默认值： 8
-	 * @param isLSB 位顺序，true： 表示低位在前，false： 表示高位在前； 默认值： false，高位在前
-	 */
-	SpiHelper(int nr, uint8_t mode, uint32_t speed, uint8_t bits = 8, bool isLSB = false);
-	virtual ~SpiHelper();
+  /**
+   * @brief Constructor
+   * @param nr SPI bus number
+   * @param mode Mode, possible values: SPI_MODE_0, SPI_MODE_1, SPI_MODE_2, SPI_MODE_3
+   * @param speed SPI clock frequency
+   * @param bits Number of bits per word, default value: 8
+   * @param isLSB Bit order, true: LSB first, false: MSB first; default value: false, MSB first
+   */
+  SpiHelper(int nr, uint8_t mode, uint32_t speed, uint8_t bits = 8, bool isLSB = false);
+  virtual ~SpiHelper();
 
-	/**
-	 * @brief 设置spi模式
-	 * @param mode 模式，可选值： SPI_MODE_0、SPI_MODE_1、SPI_MODE_2、SPI_MODE_3
-	 * @return true 成功， false 失败
-	 */
-	bool setMode(uint8_t mode);
+  /**
+   * @brief Set SPI mode
+   * @param mode Mode, possible values: SPI_MODE_0, SPI_MODE_1, SPI_MODE_2, SPI_MODE_3
+   * @return true if successful, false otherwise
+   */
+  bool setMode(uint8_t mode);
 
-	/**
-	 * @brief 设置spi时钟频率
-	 * @param speed 时钟频率
-	 * @return true 成功， false 失败
-	 */
-	bool setSpeed(uint32_t speed);
+  /**
+   * @brief Set SPI clock frequency
+   * @param speed Clock frequency
+   * @return true if successful, false otherwise
+   */
+  bool setSpeed(uint32_t speed);
 
-	/**
-	 * @brief 设置一个字有多少位
-	 * @param bits 位数
-	 * @return true 成功， false 失败
-	 */
-	bool setBitsPerWord(uint8_t bits);
+  /**
+   * @brief Set number of bits per word
+   * @param bits Number of bits
+   * @return true if successful, false otherwise
+   */
+  bool setBitsPerWord(uint8_t bits);
 
-	/**
-	 * @brief 设置位顺序
-	 * @param isLSB true： 表示低位在前，false： 表示高位在前
-	 * @return true 成功， false 失败
-	 */
-	bool setBitSeq(bool isLSB);
+  /**
+   * @brief Set bit order
+   * @param isLSB true: LSB first, false: MSB first
+   * @return true if successful, false otherwise
+   */
+  bool setBitSeq(bool isLSB);
 
-	/**
-	 * @brief 全双工传输
-	 * @param tx 写数据地址
-	 * @param rx 读数据地址
-	 * @param len 数据长度，注意： 读、写数据长度需一致
-	 * @return true 成功， false 失败
-	 */
-	bool fullduplexTransfer(const uint8_t *tx, uint8_t *rx, uint32_t len);
+  /**
+   * @brief Full duplex transfer
+   * @param tx Write data address
+   * @param rx Read data address
+   * @param len Data length, note: read and write data lengths must be the same
+   * @return true if successful, false otherwise
+   */
+  bool fullduplexTransfer(const uint8_t* tx, uint8_t* rx, uint32_t len);
 
-	/**
-	 * @brief 半双工传输
-	 * @param tx 写数据地址
-	 * @param txLen 写数据长度
-	 * @param rx 读数据地址
-	 * @param rxLen 读数据长度
-	 * @return true 成功， false 失败
-	 */
-	bool halfduplexTransfer(const uint8_t *tx, uint32_t txLen, uint8_t *rx, uint32_t rxLen);
+  /**
+   * @brief Half duplex transfer
+   * @param tx Write data address
+   * @param txLen Write data length
+   * @param rx Read data address
+   * @param rxLen Read data length
+   * @return true if successful, false otherwise
+   */
+  bool halfduplexTransfer(const uint8_t* tx, uint32_t txLen, uint8_t* rx, uint32_t rxLen);
 
-	/**
-	 * @brief 单工读
-	 * @param rx 读数据地址
-	 * @param len 数据长度
-	 * @return true 成功， false 失败
-	 */
-	bool read(uint8_t *rx, uint32_t len);
+  /**
+   * @brief Simplex read
+   * @param rx Read data address
+   * @param len Data length
+   * @return true if successful, false otherwise
+   */
+  bool read(uint8_t* rx, uint32_t len);
 
-	/**
-	 * @brief 单工写
-	 * @param tx 写数据地址
-	 * @param len 数据长度
-	 * @return true 成功， false 失败
-	 */
-	bool write(const uint8_t *tx, uint32_t len);
+  /**
+   * @brief Simplex write
+   * @param tx Write data address
+   * @param len Data length
+   * @return true if successful, false otherwise
+   */
+  bool write(const uint8_t* tx, uint32_t len);
 
 private:
 	struct spi_dev *mSpiDevPtr;

@@ -14,45 +14,46 @@
 #include "system/Thread.h"
 
 /**
- * @brief 挂载监听
+ * @brief Mount Monitor
  */
 class MountMonitor : Thread {
 public:
-	/**
-	 * @brief 挂载监听接口
-	 */
-	class IMountListener {
+  /**
+   * @brief Mount Listener Interface
+   */
+  class IMountListener
+  {
 	public:
 		virtual ~IMountListener() { };
 		virtual void notify(int what, int status, const char *msg) = 0;
 	};
 
 	/**
-	 * @brief 挂载状态
+	 * @brief Mount Status
 	 */
 	typedef enum {
 		E_MOUNT_STATUS_NO_MEDIA = 0,
 		E_MOUNT_STATUS_IDLE,
 		E_MOUNT_STATUS_PENDING,
 		E_MOUNT_STATUS_CHECKING,
-		E_MOUNT_STATUS_MOUNTED,		/**< 已挂载上 */
+		E_MOUNT_STATUS_MOUNTED, /**< Mounted */
 		E_MOUNT_STATUS_UNMOUNTING,
 		E_MOUNT_STATUS_FORMATTING,
 		E_MOUNT_STATUS_SHARED,
 		E_MOUNT_STATUS_SHAREDMNT,
-		E_MOUNT_STATUS_REMOVE		/**< 移除挂载 */
+		E_MOUNT_STATUS_REMOVE /**< Remove Mount */
 	} EMountStatus;
 
 public:
 	virtual ~MountMonitor();
 
 	/**
-	 * @brief 添加挂载监听
+	 * @brief Add Mount Listener
 	 */
 	void addMountListener(IMountListener *pListener);
 
 	/**
-	 * @brief 移除挂载监听
+	 * @brief Remove Mount Listener
 	 */
 	void removeMountListener(IMountListener *pListener);
 
@@ -62,7 +63,7 @@ public:
 	bool isInsert();
 
 	/**
-	 * @brief SD卡是否已挂载
+	 * @brief Check if SD card is mounted
 	 */
 	bool isMount();
 
@@ -107,4 +108,3 @@ private:
 #define MOUNTMONITOR		MountMonitor::getInstance()
 
 #endif
-

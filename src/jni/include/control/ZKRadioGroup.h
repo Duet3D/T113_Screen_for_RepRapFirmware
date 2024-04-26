@@ -22,14 +22,14 @@ public:
 	virtual ~ZKRadioGroup();
 
 	/**
-	 * @brief 设置选中项
-	 * @param id 子项id值
+	 * @brief Set the selected item.
+	 * @param id The id value of the sub-item.
 	 */
 	void setCheckedID(int id);
 
 	/**
-	 * @brief 获取选中项
-	 * @return 子项id值
+	 * @brief Get the selected item.
+	 * @return The id value of the sub-item.
 	 */
 	int getCheckedID() const;
 

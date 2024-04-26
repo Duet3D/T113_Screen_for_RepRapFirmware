@@ -15,7 +15,7 @@
 class ZKPointerPrivate;
 
 /**
- * @brief 指针控件
+ * @brief Pointer control
  */
 class ZKPointer : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKPointer)
@@ -25,7 +25,7 @@ public:
 	virtual ~ZKPointer();
 
 	/**
-	 * @brief 设置旋转角度
+	 * @brief Set the rotation angle
 	 */
 	void setTargetAngle(float angle);
 

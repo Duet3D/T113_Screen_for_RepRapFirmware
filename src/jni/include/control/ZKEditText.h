@@ -15,7 +15,7 @@
 class ZKEditTextPrivate;
 
 /**
- * @brief 编辑文本控件
+ * @brief Editable text control
  */
 class ZKEditText : public ZKTextView {
 	ZK_DECLARE_PRIVATE(ZKEditText)
@@ -25,12 +25,12 @@ public:
 	virtual ~ZKEditText();
 
 	/**
-	 * @brief 设置为密码类型
+	 * @brief Set as password type
 	 */
 	void setPassword(bool isPassword);
 
 	/**
-	 * @brief 是否是密码类型
+	 * @brief Check if it is password type
 	 */
 	bool isPassword() const;
 

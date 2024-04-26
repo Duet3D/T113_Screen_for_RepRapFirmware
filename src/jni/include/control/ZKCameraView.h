@@ -23,9 +23,9 @@ typedef enum {
 } ECameraStatusCode;
 
 typedef enum {
-	E_MIRROR_NORMAL = 0,	// 正常镜像
-	E_MIRROR_UPPER_LOWER,	// 上下镜像
-	E_MIRROR_LEFT_RIGHT		// 左右镜像
+	E_MIRROR_NORMAL = 0,  // Normal mirror
+	E_MIRROR_UPPER_LOWER, // Mirror vertically (upper and lower)
+	E_MIRROR_LEFT_RIGHT	  // Mirror horizontally (left and right)
 } EMirror;
 
 typedef enum {
@@ -39,7 +39,7 @@ class ZKCameraViewPrivate;
 class ZKCamera;
 
 /**
- * @brief 摄像头控件
+ * @brief Camera control
  */
 class ZKCameraView : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKCameraView)
@@ -49,27 +49,27 @@ public:
 	virtual ~ZKCameraView();
 
 	/**
-	 * @brief 设置分辨率大小
+	 * @brief Set the resolution size
 	 */
 	void setFormatSize(int width, int height);
 
 	/**
-	 * @brief 开始预览
+	 * @brief Start preview
 	 */
 	ECameraStatusCode startPreview();
 
 	/**
-	 * @brief 停止预览
+	 * @brief Stop preview
 	 */
 	ECameraStatusCode stopPreview();
 
 	/**
-	 * @brief 是否预览中
+	 * @brief Check if preview is in progress
 	 */
 	bool isPreviewing() const;
 
 	/**
-	 * @brief 拍照
+	 * @brief Take a picture
 	 */
 	ECameraStatusCode takePicture();
 
@@ -79,15 +79,15 @@ public:
 	void setRotation(ERotation rotation);
 	void setMirror(EMirror mirror);
 
-	/* 设置亮度 */
+	/* Set brightness */
 	bool setBrightness(int brightness);
-	/* 设置对比度 */
+	/* Set contrast */
 	bool setContrast(int contrast);
-	/* 设置饱和度 */
+	/* Set saturation */
 	bool setSaturation(int saturation);
-	/* 设置色调 */
+	/* Set hue */
 	bool setHue(int hue);
-	/* 设置伽马值 */
+	/* Set gamma value */
 	bool setGamma(int gamma);
 
 public:

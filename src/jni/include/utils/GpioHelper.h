@@ -155,14 +155,14 @@
 #endif
 
 /**
- * @brief GPIO边沿触发方式
+ * @brief GPIO edge trigger type
  */
 typedef enum
 {
-	E_GPIO_EDGE_TYPE_NONE,	  /**< 无中断触发 默认值 */
-	E_GPIO_EDGE_TYPE_RISING,  /**< 上升沿触发 */
-	E_GPIO_EDGE_TYPE_FALLING, /**< 下降沿触发 */
-	E_GPIO_EDGE_TYPE_BOTH	  /**< 上升沿或下降沿触发 */
+	E_GPIO_EDGE_TYPE_NONE,	  /**< No interrupt trigger, default value */
+	E_GPIO_EDGE_TYPE_RISING,  /**< Rising edge trigger */
+	E_GPIO_EDGE_TYPE_FALLING, /**< Falling edge trigger */
+	E_GPIO_EDGE_TYPE_BOTH	  /**< Rising or falling edge trigger */
 } EGpioEdgeType;
 
 class IGpioListener
@@ -174,7 +174,7 @@ class IGpioListener
 };
 
 /**
- * @brief GPIO操作帮助类
+ * @brief GPIO operation helper class
  */
 class GpioHelper
 {
@@ -182,30 +182,30 @@ class GpioHelper
 	static void initPinMap(uint32_t enmap, uint32_t dirmap, uint32_t levelmap);
 
 	/**
-	 * @brief 读io口状态
-	 * @return -1 失败， 1 / 0(高 / 低电平) 成功
+	 * @brief Read the status of an IO port
+	 * @return -1 if failed, 1 / 0 (high / low level) if successful
 	 */
 	static int input(const char* pPin);
 
 	/**
-	 * @brief 写io口状态
-	 * @param val 1 高电平，0 低电平
-	 * @return -1 失败， 0 成功
+	 * @brief Write the status of an IO port
+	 * @param val 1 for high level, 0 for low level
+	 * @return -1 if failed, 0 if successful
 	 */
 	static int output(const char* pPin, int val);
 
 	/**
-	 * @brief 注册io口触发监听
-	 * @param pPin io口号
-	 * @param pListener 监听对象
-	 * @param type 触发方式
+	 * @brief Register an IO port trigger listener
+	 * @param pPin IO port number
+	 * @param pListener Listener object
+	 * @param type Trigger type
 	 */
 	static void registerGpioListener(const char* pPin, IGpioListener* pListener, EGpioEdgeType type);
 
 	/**
-	 * @brief 反注册io口触发监听
-	 * @param pPin io口号
-	 * @param pListener 监听对象
+	 * @brief Unregister an IO port trigger listener
+	 * @param pPin IO port number
+	 * @param pListener Listener object
 	 */
 	static void unregisterGpioListener(const char* pPin, IGpioListener* pListener);
 };

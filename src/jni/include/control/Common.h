@@ -32,7 +32,7 @@ struct _message_t;
 #define ZK_D(Class) Class##Private * const _d = d_func()
 #define ZK_Q(Class) Class * const _q = q_func()
 
-/********************自定义控件名********************/
+/******************** Custom Control Names ********************/
 #define ZK_WINDOW		"zk_window"
 #define ZK_SLIDEWINDOW	"zk_slidewindow"
 #define ZK_SCROLLWINDOW	"zk_scrollwindow"
@@ -56,7 +56,7 @@ struct _message_t;
 #define ZK_PAINTER		"zk_painter"
 /**************************************************/
 
-/**********************控件状态*********************/
+/********************** Control States *********************/
 #define ZK_CONTROL_STATUS_NORMAL          0x00000000
 #define ZK_CONTROL_STATUS_PRESSED         0x00000001
 #define ZK_CONTROL_STATUS_SELECTED        0x00000002

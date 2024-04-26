@@ -15,7 +15,7 @@
 class ZKButtonPrivate;
 
 /**
- * @brief 按钮控件
+ * @brief Button control
  */
 class ZKButton : public ZKTextView {
 	ZK_DECLARE_PRIVATE(ZKButton)
@@ -25,20 +25,20 @@ public:
 	virtual ~ZKButton();
 
 	/**
-	 * @brief 设置状态背景图
-	 * @param status 状态
-	 *    正常状态： ZK_CONTROL_STATUS_NORMAL
-	 *    按下状态： ZK_CONTROL_STATUS_PRESSED
-	 *    选中状态： ZK_CONTROL_STATUS_SELECTED
-	 *    选中按下状态： ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
-	 *    无效状态： ZK_CONTROL_STATUS_INVALID
-	 * @param pPicPath 图片路径
+	 * @brief Set the background image for different button states
+	 * @param status Button state
+	 *    Normal state: ZK_CONTROL_STATUS_NORMAL
+	 *    Pressed state: ZK_CONTROL_STATUS_PRESSED
+	 *    Selected state: ZK_CONTROL_STATUS_SELECTED
+	 *    Selected pressed state: ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED
+	 *    Invalid state: ZK_CONTROL_STATUS_INVALID
+	 * @param pPicPath Image path
 	 */
 	void setButtonStatusPic(int status, const char *pPicPath);
 
 	/**
-	 * @brief 设置图标位置
-	 * @param position 位置
+	 * @brief Set the icon position
+	 * @param position Position
 	 */
 	void setIconPosition(const LayoutPosition &position);
 

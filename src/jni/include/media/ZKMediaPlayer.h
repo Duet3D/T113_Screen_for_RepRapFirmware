@@ -17,17 +17,18 @@
 class InternalMediaPlayer;
 
 /**
- * @brief 媒体播放
+ * @brief Media player
  */
 class ZKMediaPlayer {
 	friend class InternalMediaPlayer;
 public:
-	/**
-	 * @brief 媒体类型
-	 */
-	typedef enum {
-		E_MEDIA_TYPE_AUDIO,	/**< 音频类型 */
-		E_MEDIA_TYPE_VIDEO	/**< 视频类型 */
+  /**
+   * @brief Media type
+   */
+  typedef enum
+  {
+	  E_MEDIA_TYPE_AUDIO, /**< Audio type */
+	  E_MEDIA_TYPE_VIDEO  /**< Video type */
 	} EMediaType;
 
 	typedef enum {
@@ -52,67 +53,68 @@ public:
 	} SMediaErrorInfo;
 
 public:
-	/**
-	 * @param mediaType 媒体类型
-	 */
-	ZKMediaPlayer(EMediaType mediaType);
-	virtual ~ZKMediaPlayer();
+  /**
+   * @param mediaType Media type
+   */
+  ZKMediaPlayer(EMediaType mediaType);
+  virtual ~ZKMediaPlayer();
 
-	/**
-	 * @brief 播放指定路径媒体文件
-	 * @param pFilePath 媒体文件路径
-	 * @param msec 指定从哪个位置开始播放，单位为毫秒，默认从头开始播放
-	 */
-	void play(const char *pFilePath, int msec = 0);
+  /**
+   * @brief Play media file at the specified path
+   * @param pFilePath Media file path
+   * @param msec Specify the starting position in milliseconds, default is from the beginning
+   */
+  void play(const char* pFilePath, int msec = 0);
 
-	/**
-	 * @brief 暂停播放
-	 */
-	void pause();
+  /**
+   * @brief Pause playback
+   */
+  void pause();
 
-	/**
-	 * @brief 恢复播放
-	 */
-	void resume();
+  /**
+   * @brief Resume playback
+   */
+  void resume();
 
-	/**
-	 * @brief 定位到msec位置播放
-	 * @param msec 单位为毫秒
-	 */
-	void seekTo(int msec);
+  /**
+   * @brief Seek to the specified position in msec
+   * @param msec Position in milliseconds
+   */
+  void seekTo(int msec);
 
-	/**
-	 * @brief 停止播放
-	 */
-	void stop();
+  /**
+   * @brief Stop playback
+   */
+  void stop();
 
-	/**
-	 * @brief 是否播放中
-	 */
-	bool isPlaying();
+  /**
+   * @brief Check if playing
+   */
+  bool isPlaying();
 
-	/**
-	 * @brief 设置音量
-	 * @param volume 音量范围：0.0 ～ 1.0
-	 */
-	void setVolume(float volume);
+  /**
+   * @brief Set volume
+   * @param volume Volume range: 0.0 to 1.0
+   */
+  void setVolume(float volume);
 
-	void setPreviewPos(const LayoutPosition &pos);
+  void setPreviewPos(const LayoutPosition& pos);
 
-	/* clockwise rotation: val=0 no rotation, val=1 90 degree; val=2 180 degree, val=3 270 degree */
-	void setRotation(int val);
+  /* clockwise rotation: val=0 no rotation, val=1 90 degrees; val=2 180 degrees, val=3 270 degrees */
+  void setRotation(int val);
 
-	/**
-	 * @brief 获取总时长，单位为毫秒
-	 */
-	int getDuration();
+  /**
+   * @brief Get total duration in milliseconds
+   */
+  int getDuration();
 
-	/**
-	 * @brief 获取当前播放位置，单位为毫秒
-	 */
-	int getCurrentPosition();
+  /**
+   * @brief Get current playback position in milliseconds
+   */
+  int getCurrentPosition();
 
-	class IPlayerMessageListener {
+  class IPlayerMessageListener
+  {
 	public:
 		virtual ~IPlayerMessageListener() { }
 		virtual void onPlayerMessage(ZKMediaPlayer *pMediaPlayer, int msg, void *pMsgData) = 0;

@@ -15,7 +15,7 @@
 class ZKQRCodePrivate;
 
 /**
- * @brief 二维码控件
+ * @brief QR Code control
  */
 class ZKQRCode : public ZKBase {
 	ZK_DECLARE_PRIVATE(ZKQRCode)
@@ -25,13 +25,13 @@ public:
 	virtual ~ZKQRCode();
 
 	/**
-	 * @brief 设置前景颜色
-	 * @param color 颜色值为0x ARGB
+	 * @brief Set foreground color
+	 * @param color Color value in 0xARGB format
 	 */
 	void setForegroundColor(uint32_t color);
 
 	/**
-	 * @brief 加载二维码数据
+	 * @brief Load QR Code data
 	 */
 	bool loadQRCode(const char *pStr);
 
