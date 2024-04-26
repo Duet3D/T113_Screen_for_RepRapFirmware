@@ -715,6 +715,7 @@ static Theme s_theme(
     ```cpp
     UI::GetUIControl<ZKTextView>(ID_OF_UI_ELEMENT)->setTextTrf("babystepping_offset", 1.23f);
     ```
+* To add a new line in the text, use the `&#x000A;` character sequence.
 
 ### Modify Logic
 

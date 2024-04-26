@@ -117,6 +117,8 @@ namespace UI::Theme
 			ControlState background; // Background colour states (overrides bgDefault)
 			ControlState foreground; // Text colour states
 			Images images;			 // Image states (applied on top of bgImage)
+			float iconPosition;		 // Vertical position of the image center (0.0 - 1.0), 0 = top, 1 = bottom
+			float iconScale;		 // Scale of the image (0.0 - 1.0) based on smallest of width or height
 		} listItem;
 		struct
 		{

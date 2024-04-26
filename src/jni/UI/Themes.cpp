@@ -136,15 +136,12 @@ namespace UI::Theme
 										   colors->button.images.pressedAndSelected);
 				button->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->button.images.invalid);
 
-				button->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
+				LayoutPosition pos = button->getPosition();
+				pos.mLeft = 0;
+				pos.mTop = 0;
+				button->setIconPosition(pos);
 
-				const LayoutPosition& pos = button->getPosition();
-				constexpr float verticalPosition = 0.4;
-				int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
-				button->setIconPosition({pos.mWidth / 2 - iconSize / 2,
-										 (int)(pos.mHeight * verticalPosition - iconSize / 2),
-										 iconSize,
-										 iconSize});
+				button->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKEditText))
@@ -250,7 +247,10 @@ namespace UI::Theme
 
 				checkbox->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 
-				checkbox->setIconPosition(checkbox->getPosition());
+				LayoutPosition pos = checkbox->getPosition();
+				pos.mLeft = 0;
+				pos.mTop = 0;
+				checkbox->setIconPosition(pos);
 				continue;
 			}
 			if (typeid(*control) == typeid(ZKListView))
@@ -406,11 +406,10 @@ namespace UI::Theme
 									  colors->listItem.images.pressedAndSelected);
 		pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_INVALID, colors->listItem.images.invalid);
 
-		const LayoutPosition& pos = pListItem->getPosition();
-		constexpr float verticalPosition = 0.4;
-		int iconSize = std::min(pos.mWidth, pos.mHeight) / 2;
-		pListItem->setIconPosition(
-			{pos.mWidth / 2 - iconSize / 2, (int)(pos.mHeight * verticalPosition - iconSize / 2), iconSize, iconSize});
+		LayoutPosition pos = pListItem->getPosition();
+		pos.mLeft = 0;
+		pos.mTop = 0;
+		pListItem->setIconPosition(pos);
 
 		// pListItem->setLongMode(ZKTextView::E_LONG_MODE_DOTS);
 

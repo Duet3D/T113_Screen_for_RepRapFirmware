@@ -170,6 +170,32 @@ namespace UI
 		return dynamic_cast<T*>(control);
 	}
 
+	/**
+	 * Sets the relative position of an icon within a ZKButton control.
+	 *
+	 * @param control The ZKButton control.
+	 * @param xPos The x-position of the icon center as a percentage of the control's width.
+	 * Relative to the control's top-left corner. 0.0 is the left edge, 1.0 is the right edge.
+	 * @param yPos The y-position of the icon center as a percentage of the control's height.
+	 * Relative to the control's top-left corner. 0.0 is the top edge, 1.0 is the bottom edge.
+	 * @param scale The scale factor to apply to the icon's size. Scaled based on the smallest of the control's width or
+	 * height.
+	 */
+	void SetIconRelativePosition(ZKButton* control, float xPos, float yPos, float scale);
+
+	/**
+	 * Sets the relative position of an icon within a ZKButton control.
+	 *
+	 * @param control The ZKButton control.
+	 * @param xPos The x-position of the icon center as a percentage of the control's width.
+	 * Relative to the control's top-left corner. 0.0 is the left edge, 1.0 is the right edge.
+	 * @param yPos The y-position of the icon center as a percentage of the control's height.
+	 * Relative to the control's top-left corner. 0.0 is the top edge, 1.0 is the bottom edge.
+	 * @param xScale The scale factor to apply to the icon's width.
+	 * @param yScale The scale factor to apply to the icon's height.
+	 */
+	void SetIconRelativePosition(ZKButton* control, float xPos, float yPos, float xScale, float yScale);
+
 	void SetM291Popup(OM::Alert alert);
 
 #define WINDOW Window::GetInstance()
