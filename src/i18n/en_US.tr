@@ -97,6 +97,7 @@
 
     <!-- Object Cancel -->
     <string name="object_cancel">Object Cancel</string>
+    <string name="object_cancel_header">Object Cancel</string>
     <string name="objects">Objects</string>
     <string name="resume_object">Resume Object</string>
     <string name="cancel_object">Cancel Object</string>

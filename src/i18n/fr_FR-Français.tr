@@ -159,6 +159,7 @@
 
     <!-- Object Cancel -->
     <string name="object_cancel">Annuler l'objet</string>
+    <string name="object_cancel_header">Annuler l'objet</string>
     <string name="objects">Objets</string>
     <string name="resume_object">Reprendre l'objet</string>
     <string name="cancel_object">Annuler l'objet</string>

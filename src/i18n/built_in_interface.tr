@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Built in -->
     <string name="sys_setup">Settings</string>
     <string name="sys_developer_options">Developer Options</string>
     <string name="sys_debug_switch">Debug Switch</string>
