@@ -110,13 +110,13 @@
     <string name="home">Accueil</string>
     <string name="macros">Macros</string>
     <string name="console">Console</string>
-    <string name="estop">Arrêt d'urgence</string>
+    <string name="estop">Arrêt &#x000A;d'urgence</string>
 
     <!-- Main Page -->
     <string name="move">Déplacer</string>
     <string name="extrude">Extruder</string>
     <string name="status">État</string>
-    <string name="heightmap">Carte de hauteur</string>
+    <string name="heightmap">Carte de &#x000A;hauteur</string>
     <string name="fans">Ventilateurs</string>
     <string name="files">Fichiers</string>
     <string name="network">Réseau</string>
@@ -127,9 +127,9 @@
     <!-- Move Page -->
     <string name="axis_control_home">Accueil %s</string>
     <string name="home_all">Tout accueillir</string>
-    <string name="true_bed_levelling">Nivellement réel du lit</string>
-    <string name="mesh_bed_levelling">Nivellement du lit en maillage</string>
-    <string name="disable_motors">Désactiver les moteurs</string>
+    <string name="true_bed_levelling">Nivellement &#x000A;réel du lit</string>
+    <string name="mesh_bed_levelling">Nivellement du &#x000A;lit en maillage</string>
+    <string name="disable_motors">Désactiver &#x000A;les moteurs</string>
     <string name="tool_position">Position de l'outil</string>
     <string name="machine_position">Position de la machine</string>
     <string name="feedrate_label">Vitesse d'avance en mm/s</string>
@@ -247,7 +247,7 @@
     <string name="poll_interval_ms">Intervalle de sondage (ms)</string>
     <string name="update">Mettre à jour</string>
     <string name="restart">Redémarrer</string>
-    <string name="dev">Paramètres de développement</string>
+    <string name="dev">Paramètres de &#x000A;développement</string>
     <string name="power_off">Éteindre</string>
     <string name="zk_setting">Paramètres ZK</string>
     <string name="touch_calibration">Calibration tactile</string>

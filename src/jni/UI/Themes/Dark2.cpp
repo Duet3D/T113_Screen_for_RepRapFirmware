@@ -27,6 +27,7 @@ namespace UI::Theme
 		VDarkBlue = 0xFF0B0D2B,
 		VVDarkBlue = 0xFF0b0d17,
 		DarkBlue = 0xFF0b0d56,
+		BurntOrange = 0xFFCC5500,
 	};
 
 	static ThemeColors s_dark2Theme = {
@@ -473,6 +474,35 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_rule_folder_white_48dp.png");
 			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_keyboard_command_key_white_48dp.png");
 
+			// Move Window Buttons
+			constexpr float moveButtonScale = 0.45;
+			constexpr float moveButtonPosY = 0.25;
+			constexpr float moveButtonPosX = 0.5;
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn), moveButtonPosX, 0.25, moveButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn), moveButtonPosX, 0.25, moveButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn), moveButtonPosX, 0.25, moveButtonScale);
+
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/home-circle-outline.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/G32.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/G29.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_grid_on_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/engine-off.png");
+
+			// Extruder Window
+			UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_RetractBtn)->setBackgroundPic(nullptr);
+			UI::GetUIControl<ZKButton>(ID_MAIN_ExtrudeBtn)->setBackgroundPic(nullptr);
+
+			// Console
+			constexpr float consoleButtonScale = 0.45;
+			constexpr float consoleButtonPosY = 0.5;
+			constexpr float consoleButtonPosX = 0.2;
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
+
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_bug_report_white_48dp.png");
+
 			// Scrollable text
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
 
@@ -499,6 +529,34 @@ namespace UI::Theme
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
 				break;
 			}
+			case ID_MAIN_ExtruderFeedrate: {
+			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected.png");
+			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+			    break;
+			}
+			case ID_MAIN_ExtruderFeedDist: {
+			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected.png");
+			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+			    break;
+			}
+			case ID_MAIN_ToolListView: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_GcodeListView: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_ConsoleListView: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_WindowSelectList:
+			            case ID_MAIN_SettingsWindowSelectList:
+			            {
+			                UI::SetIconRelativePosition(pListItem, 0.5, 0.4, 0.5);
+			                break;
+			            }
 			case ID_MAIN_TemperatureGraphLegend: {
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
 				break;
