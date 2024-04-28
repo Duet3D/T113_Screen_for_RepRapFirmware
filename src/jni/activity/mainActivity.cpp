@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView40Ptr;
 static ZKListView* mSettingsWindowSelectListPtr;
 static ZKListView* mWindowSelectListPtr;
 static ZKListView* mMoveFeedratePtr;
@@ -601,6 +602,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView40Ptr = NULL;
     mSettingsWindowSelectListPtr = NULL;
     mWindowSelectListPtr = NULL;
     mMoveFeedratePtr = NULL;
@@ -862,6 +864,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView40Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView40);
     mSettingsWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_SettingsWindowSelectList);if(mSettingsWindowSelectListPtr!= NULL){mSettingsWindowSelectListPtr->setListAdapter(this);mSettingsWindowSelectListPtr->setItemClickListener(this);}
     mWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WindowSelectList);if(mWindowSelectListPtr!= NULL){mWindowSelectListPtr->setListAdapter(this);mWindowSelectListPtr->setItemClickListener(this);}
     mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);if(mConsoleInputPtr!= NULL){mConsoleInputPtr->setTextChangeListener(this);}

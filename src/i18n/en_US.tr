@@ -94,6 +94,7 @@
     <string name="speed_factor">Speed Factor</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+    <string name="jobcontrol">Job Control</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Object Cancel</string>

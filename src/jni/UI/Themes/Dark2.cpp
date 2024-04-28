@@ -500,8 +500,30 @@ namespace UI::Theme
 			constexpr float consoleButtonPosY = 0.5;
 			constexpr float consoleButtonPosX = 0.2;
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
 
 			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_bug_report_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_send_white_48dp.png");
+
+			// File View
+			constexpr float filesButtonScale = 0.75;
+			constexpr float filesButtonPosY = 0.5;
+			constexpr float filesButtonPosX = 0.15;
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn), filesButtonPosX, filesButtonPosY, filesButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles), filesButtonPosX, filesButtonPosY, filesButtonScale);
+
+			UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_refresh_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_usb_white_48dp.png");
+
+			// Status Window
+			constexpr float statusButtonScale = 0.65;
+			constexpr float statusButtonPosY = 0.5;
+			constexpr float statusButtonPosX = 0.25;
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn), statusButtonPosX, statusButtonPosY, statusButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn), statusButtonPosX, statusButtonPosY, statusButtonScale);
+
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_compress_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_expand_white_48dp.png");
 
 			// Scrollable text
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
@@ -521,6 +543,7 @@ namespace UI::Theme
 			{
 			case ID_MAIN_FileListView: {
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
+				pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
 				break;
 			}
 			case ID_MAIN_AxisControlListView: {
@@ -539,6 +562,28 @@ namespace UI::Theme
 			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
 			    break;
 			}
+			case ID_MAIN_HeightMapColorSchemeList: {
+			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected_Elongated.png");
+			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+			    break;
+			}
+			case ID_MAIN_WebcamSelectList: {
+			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected_Elongated.png");
+			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+			break;
+			}
+			case ID_MAIN_PrintFanList: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_PrintTemperatureList: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_HeightMapList: {
+			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
 			case ID_MAIN_ToolListView: {
 			    pListItem->setBackgroundPic(nullptr);
 			    break;
@@ -549,6 +594,10 @@ namespace UI::Theme
 			}
 			case ID_MAIN_ConsoleListView: {
 			    pListItem->setBackgroundPic(nullptr);
+			    break;
+			}
+			case ID_MAIN_DebugCommandList: {
+			    pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
 			    break;
 			}
 			case ID_MAIN_WindowSelectList:
