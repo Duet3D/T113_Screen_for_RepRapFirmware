@@ -150,6 +150,7 @@
     <string name="babystepping">Babystepping Z</string>
     <string name="babystepping_offset">Décalage actuel : %.2f mm</string>
     <string name="extruder_drives">Entraînements de l'extrudeuse</string>
+    <string name="extrusion_factor">Facteur d'extrusion</string>
     <string name="requested_speed">Demandé : %.2f mm/s</string>
     <string name="top_speed">Max : %.2f mm/s</string>
     <string name="volumetric_flow">Débit volumétrique :&#x000A;%.2f mm^3/s</string>

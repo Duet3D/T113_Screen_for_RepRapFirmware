@@ -100,8 +100,11 @@ namespace OM::Move
 	bool SetExtruderFilamentName(size_t index, const char* name);
 
 	void SetExtrusionRate(float rate);
-	const float GetExtrusionRate();
+	const float& GetExtrusionRate();
 	const float GetVolumetricFlow();
+
+	const float& GetSpeedFactor();
+	void SetSpeedFactor(float factor);
 }
 
 

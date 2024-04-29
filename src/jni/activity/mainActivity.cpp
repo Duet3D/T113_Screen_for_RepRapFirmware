@@ -4,6 +4,9 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mPrintThumbnailPtr;
+static ZKTextView* mTextView41Ptr;
+static ZKButton* mPrintSpeedFactorPtr;
 static ZKButton* mChamberTempSnapshotPtr;
 static ZKButton* mBedTempSnapshotPtr;
 static ZKButton* mToolTempSnapshotPtr;
@@ -140,7 +143,6 @@ static ZKTextView* mTextView9Ptr;
 static ZKListView* mPrintTemperatureListPtr;
 static ZKWindow* mPrintTemperatureWindowPtr;
 static ZKTextView* mTextView15Ptr;
-static ZKTextView* mPrintSpeedFactorPtr;
 static ZKTextView* mPrintVolFlowPtr;
 static ZKTextView* mPrintTopSpeedPtr;
 static ZKTextView* mPrintRequestedSpeedPtr;
@@ -299,6 +301,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_PrintSpeedFactor, onButtonClick_PrintSpeedFactor,
     ID_MAIN_ChamberTempSnapshot, onButtonClick_ChamberTempSnapshot,
     ID_MAIN_BedTempSnapshot, onButtonClick_BedTempSnapshot,
     ID_MAIN_ToolTempSnapshot, onButtonClick_ToolTempSnapshot,
@@ -610,6 +613,8 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mPrintThumbnailPtr = NULL;
+    mTextView41Ptr = NULL;
     mChamberTempSnapshotPtr = NULL;
     mBedTempSnapshotPtr = NULL;
     mToolTempSnapshotPtr = NULL;
@@ -877,6 +882,9 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mPrintThumbnailPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintThumbnail);
+    mTextView41Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView41);
+    mPrintSpeedFactorPtr = (ZKButton*)findControlByID(ID_MAIN_PrintSpeedFactor);
     mChamberTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_ChamberTempSnapshot);
     mBedTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_BedTempSnapshot);
     mToolTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_ToolTempSnapshot);
@@ -1044,7 +1052,6 @@ void mainActivity::onCreate() {
     mPrintTemperatureListPtr = (ZKListView*)findControlByID(ID_MAIN_PrintTemperatureList);if(mPrintTemperatureListPtr!= NULL){mPrintTemperatureListPtr->setListAdapter(this);mPrintTemperatureListPtr->setItemClickListener(this);}
     mPrintTemperatureWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_PrintTemperatureWindow);
     mTextView15Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView15);
-    mPrintSpeedFactorPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintSpeedFactor);
     mPrintVolFlowPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintVolFlow);
     mPrintTopSpeedPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintTopSpeed);
     mPrintRequestedSpeedPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintRequestedSpeed);

@@ -33,6 +33,7 @@ namespace UI::PrintStatus
 	void ExtruderListItemCallback(const int index);
 
 	void SpeedMultiplierCallback(const int progress);
+	void OpenPrintSpeedFactorPopup();
 
 	size_t GetToolsListCount();
 	void SetToolsListItem(ZKListView::ZKListItem* pListItem, const int index);

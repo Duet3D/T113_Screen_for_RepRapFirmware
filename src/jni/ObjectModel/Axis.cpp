@@ -25,7 +25,8 @@ static uint8_t s_currentWorkplaceNumber = OM::Move::Workplaces::MaxTotalWorkplac
 
 namespace OM::Move
 {
-	static float sExtrusionRate = 0.0f;
+	static float s_extrusionRate = 0.0f;
+	static float s_speedFactor = 100.0f;
 
 	void Axis::Reset()
 	{
@@ -267,12 +268,12 @@ namespace OM::Move
 
 	void SetExtrusionRate(float rate)
 	{
-		sExtrusionRate = rate;
+		s_extrusionRate = rate;
 	}
 
-	const float GetExtrusionRate()
+	const float& GetExtrusionRate()
 	{
-		return sExtrusionRate;
+		return s_extrusionRate;
 	}
 
 	const float GetVolumetricFlow()
@@ -298,5 +299,15 @@ namespace OM::Move
 
 		filamentArea /= numExtruders;
 		return filamentArea * GetExtrusionRate();
+	}
+
+	const float& GetSpeedFactor()
+	{
+		return s_speedFactor;
+	}
+
+	void SetSpeedFactor(float factor)
+	{
+		s_speedFactor = factor;
 	}
 } // namespace OM::Move

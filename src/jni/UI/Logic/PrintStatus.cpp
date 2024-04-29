@@ -130,13 +130,15 @@ namespace UI::PrintStatus
 
 	void SetExtruderListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
-		ZKListView::ZKListSubItem* pSubItem = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
+		ZKListView::ZKListSubItem* pSubItem1 = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
+		ZKListView::ZKListSubItem* pSubItem2 = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem2);
 		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
 		if (extruder == nullptr)
 			return;
 
 		pListItem->setText(extruder->index);
-		pSubItem->setText(extruder->position);
+		pSubItem1->setText(extruder->position);
+		pSubItem2->setTextf("%.1f%%", extruder->factor * 100);
 	}
 
 	void ExtruderListItemCallback(const int index)
@@ -168,6 +170,18 @@ namespace UI::PrintStatus
 	void SpeedMultiplierCallback(const int progress)
 	{
 		Comm::DUET.SendGcodef("M220 S%d\n", progress);
+	}
+
+	void OpenPrintSpeedFactorPopup()
+	{
+		UI::OpenSliderNumPad(LANGUAGEMANAGER->getValue("speed_factor").c_str(),
+							 "",
+							 "",
+							 "%",
+							 10,
+							 1000,
+							 (int)(OM::Move::GetSpeedFactor() * 100),
+							 [](int percent) { SpeedMultiplierCallback(percent); });
 	}
 
 	size_t GetToolsListCount()

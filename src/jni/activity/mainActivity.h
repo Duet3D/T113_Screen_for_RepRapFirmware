@@ -28,6 +28,10 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_PrintThumbnail    50071
+#define ID_MAIN_TextView41    50023
+#define ID_MAIN_PrintSpeedFactor    20024
+#define ID_MAIN_PrintExtruderPositionListSubItem2    24035
 #define ID_MAIN_ChamberTempSnapshot    20023
 #define ID_MAIN_BedTempSnapshot    20022
 #define ID_MAIN_ToolTempSnapshot    20018
@@ -173,7 +177,6 @@
 #define ID_MAIN_PrintTemperatureList    80010
 #define ID_MAIN_PrintTemperatureWindow    110022
 #define ID_MAIN_TextView15    50033
-#define ID_MAIN_PrintSpeedFactor    50023
 #define ID_MAIN_PrintVolFlow    50022
 #define ID_MAIN_PrintTopSpeed    50021
 #define ID_MAIN_PrintRequestedSpeed    50020

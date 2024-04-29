@@ -913,6 +913,12 @@ static void onProgressChanged_PrintSpeedMultiplierBar(ZKSeekBar* pSeekBar, int p
 	UI::PrintStatus::SpeedMultiplierCallback(progress);
 }
 
+static bool onButtonClick_PrintSpeedFactor(ZKButton* pButton)
+{
+	UI::PrintStatus::OpenPrintSpeedFactorPopup();
+	return false;
+}
+
 static int getListItemCount_PrintTemperatureList(const ZKListView* pListView)
 {
 	return UI::PrintStatus::GetToolsListCount();

@@ -151,6 +151,7 @@
     <string name="babystepping">Z Babystepping</string>
     <string name="babystepping_offset">Aktueller Offset: %.2f mm</string>
     <string name="extruder_drives">Extruderantriebe</string>
+    <string name="extrusion_factor">Extrusionsfaktor</string>
     <string name="requested_speed">Angefordert: %.2f mm/s</string>
     <string name="top_speed">Maximal: %.2f mm/s</string>
     <string name="volumetric_flow">Volumetrischer Durchfluss:&#x000A;%.2f mm^3/s</string>

@@ -25,7 +25,8 @@
  */
 static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 	OBSERVER_FLOAT("move:axes^:babystep",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetBabystepOffset(indices[0], val))
 					   {
 						   error("Failed to set axis[%d]->babystep = %f", indices[0], val);
@@ -33,7 +34,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   }
 				   }),
 	OBSERVER_BOOL("move:axes^:homed",
-				  [](OBSERVER_BOOL_ARGS) {
+				  [](OBSERVER_BOOL_ARGS)
+				  {
 					  if (!OM::Move::SetAxisHomedStatus(indices[0], val))
 					  {
 						  error("Failed to set axis[%d]->homed = %d", indices[0], val);
@@ -41,7 +43,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  }
 				  }),
 	OBSERVER_CHAR("move:axes^:letter",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  if (!OM::Move::SetAxisLetter(indices[0], val[0]))
 					  {
 						  error("Failed to set axis[%d]->letter = %s", indices[0], val);
@@ -49,7 +52,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  }
 				  }),
 	OBSERVER_FLOAT("move:axes^:machinePosition",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetAxisMachinePosition(indices[0], val))
 					   {
 						   error("Failed to set axis[%d]->machinePosition = %f", indices[0], val);
@@ -57,7 +61,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   }
 				   }),
 	OBSERVER_FLOAT("move:axes^:min",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetAxisMinPosition(indices[0], val))
 					   {
 						   error("Failed to set axis[%d]->min = %f", indices[0], val);
@@ -67,7 +72,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis)->refreshListView();
 				   }),
 	OBSERVER_FLOAT("move:axes^:max",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetAxisMaxPosition(indices[0], val))
 					   {
 						   error("Failed to set axis[%d]->max = %f", indices[0], val);
@@ -77,7 +83,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapYAxis)->refreshListView();
 				   }),
 	OBSERVER_FLOAT("move:axes^:userPosition",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetAxisUserPosition(indices[0], val))
 					   {
 						   error("Failed to set axis[%d]->userPosition = %f", indices[0], val);
@@ -85,7 +92,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   }
 				   }),
 	OBSERVER_BOOL("move:axes^:visible",
-				  [](OBSERVER_BOOL_ARGS) {
+				  [](OBSERVER_BOOL_ARGS)
+				  {
 					  if (!OM::Move::SetAxisVisible(indices[0], val))
 					  {
 						  error("Failed to set axis[%d]->visible = %d", indices[0], val);
@@ -93,7 +101,8 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  }
 				  }),
 	OBSERVER_FLOAT("move:axes^:workplaceOffsets^",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetAxisWorkplaceOffset(indices[0], indices[1], val))
 					   {
 						   error("Failed to set axis[%d]->workplaceOffset[%d] = %f", indices[0], indices[1], val);
@@ -101,21 +110,24 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:factor",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetExtruderFactor(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->factor = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:filamentDiameter",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetExtruderFilamentDiameter(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->filamentDiameter = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_CHAR("move:extruders^:filament",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  if (!OM::Move::SetExtruderFilamentName(indices[0], val))
 					  {
 						  error("Failed to set extruderAxis[%d]->filamentName = %s", indices[0], val);
@@ -123,21 +135,24 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  UI::GetUIControl<ZKListView>(ID_MAIN_ExtrudeToolList)->refreshListView();
 				  }),
 	OBSERVER_FLOAT("move:extruders^:position",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetExtruderPosition(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->position = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:pressureAdvance",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetExtruderPressureAdvance(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->pressureAdvance = %f", indices[0], val);
 					   }
 				   }),
 	OBSERVER_FLOAT("move:extruders^:stepsPerMm",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
 					   if (!OM::Move::SetExtruderStepsPerMm(indices[0], val))
 					   {
 						   error("Failed to set extruderAxis[%d]->stepsPerMm = %f", indices[0], val);
@@ -145,13 +160,16 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 				   }),
 	OBSERVER_CHAR("move:kinematics:name", [](OBSERVER_CHAR_ARGS) {}),
 	OBSERVER_FLOAT("move:speedFactor",
-				   [](OBSERVER_FLOAT_ARGS) {
+				   [](OBSERVER_FLOAT_ARGS)
+				   {
+					   OM::Move::SetSpeedFactor(val);
 					   int factor = (int)(val * 100);
-					   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintSpeedFactor)->setTextf("%d %%", factor);
+					   UI::GetUIControl<ZKButton>(ID_MAIN_PrintSpeedFactor)->setTextf("%d %%", factor);
 					   UI::GetUIControl<ZKSeekBar>(ID_MAIN_PrintSpeedMultiplierBar)->setMax(factor + 100);
 				   }),
 	OBSERVER_UINT("move:workplaceNumber",
-				  [](OBSERVER_UINT_ARGS) {
+				  [](OBSERVER_UINT_ARGS)
+				  {
 					  if (!OM::Move::SetCurrentWorkplaceNumber((uint8_t)val))
 					  {
 						  error("Failed to set workplace number = %d", val);
@@ -159,21 +177,22 @@ static UI::Observer<UI::ui_field_update_cb> MoveObserversField[] = {
 					  }
 				  }),
 	OBSERVER_FLOAT("move:currentMove:requestedSpeed",
-				   [](OBSERVER_FLOAT_ARGS) {
-					   UI::GetUIControl<ZKTextView>(ID_MAIN_PrintRequestedSpeed)->setTextTrf("requested_speed", val);
-				   }),
-	OBSERVER_FLOAT(
-		"move:currentMove:topSpeed",
-		[](OBSERVER_FLOAT_ARGS) { UI::GetUIControl<ZKTextView>(ID_MAIN_PrintTopSpeed)->setTextTrf("top_speed", val); }),
+				   [](OBSERVER_FLOAT_ARGS)
+				   { UI::GetUIControl<ZKTextView>(ID_MAIN_PrintRequestedSpeed)->setTextTrf("requested_speed", val); }),
+	OBSERVER_FLOAT("move:currentMove:topSpeed",
+				   [](OBSERVER_FLOAT_ARGS)
+				   { UI::GetUIControl<ZKTextView>(ID_MAIN_PrintTopSpeed)->setTextTrf("top_speed", val); }),
 	OBSERVER_FLOAT(
 		"move:currentMove:extrusionRate",
-		[](OBSERVER_FLOAT_ARGS) {
+		[](OBSERVER_FLOAT_ARGS)
+		{
 			OM::Move::SetExtrusionRate(val);
 			float volumetricFlow = OM::Move::GetVolumetricFlow();
 			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintVolFlow)->setTextTrf("volumetric_flow", volumetricFlow);
 		}),
 	OBSERVER_CHAR("move:compensation:file",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  OM::SetCurrentHeightmap(val);
 					  UI::GetUIControl<ZKListView>(ID_MAIN_HeightMapList)->refreshListView();
 				  }),
