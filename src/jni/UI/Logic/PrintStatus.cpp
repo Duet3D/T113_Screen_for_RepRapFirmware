@@ -66,9 +66,8 @@ namespace UI::PrintStatus
 				jobName = jobName.substr(pos + 1);
 			}
 			s_printFileName->setTextTrf("filename_in_progress", jobName.c_str());
-			return;
 		}
-		if (!OM::GetLastJobName().empty())
+		else if (!OM::GetLastJobName().empty())
 		{
 			std::string jobName = OM::GetLastJobName();
 			size_t pos = jobName.find_last_of("/");
@@ -77,9 +76,12 @@ namespace UI::PrintStatus
 				jobName = jobName.substr(pos + 1);
 			}
 			s_printFileName->setTextTrf("filename_finished", jobName.c_str());
-			return;
 		}
-		s_printFileName->setTextTr("no_job_running");
+		else
+		{
+			s_printFileName->setTextTr("no_job_running");
+		}
+		s_printFileName->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 	}
 
 	void UpdateEstimatedPrintTime(uint32_t seconds)
