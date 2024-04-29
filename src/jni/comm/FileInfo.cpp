@@ -104,6 +104,10 @@ namespace Comm
 		{
 			UI::POPUP_WINDOW.SetProgress(m_currentThumbnail->GetProgress());
 		}
+		else
+		{
+			UI::POPUP_WINDOW.SetProgress(-1); // Hide the progress bar
+		}
 
 		long long now = TimeHelper::getCurrentTime();
 

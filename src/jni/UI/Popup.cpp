@@ -302,7 +302,7 @@ namespace UI
 
 	void PopupWindow::SetProgress(int percent)
 	{
-		m_progress->setVisible(true);
+		m_progress->setVisible(percent >= 0);
 		m_progress->setProgress(percent);
 	}
 
