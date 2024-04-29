@@ -157,6 +157,7 @@
     <string name="speed_factor">Geschwindigkeitsfaktor</string>
     <string name="pause">Pause</string>
     <string name="resume">Fortsetzen</string>
+    <string name="jobcontrol">Taakcontrole</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Objekt&#x000A;abbrechen</string>

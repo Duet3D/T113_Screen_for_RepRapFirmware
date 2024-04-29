@@ -156,6 +156,7 @@
     <string name="speed_factor">Facteur de vitesse</string>
     <string name="pause">Pause</string>
     <string name="resume">Reprendre</string>
+    <string name="jobcontrol">Contrôle des tâches</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Annuler l'objet</string>
