@@ -261,7 +261,14 @@ A theme can be created by adding a new `.cpp` in the [src/jni/UI/Themes](src/jni
 * `NULL` can be used to remove the color from an element, for example, to make a window transparent.
 * Images are the relative path of the image from the `src/resources/` folder.
 * `nullptr` can be used to remove an image from an element, for example, to make a button have no image.
-* Some custom UI elements have their own required theme properties, for example the color sequence of waveforms on the temperature graph. 
+* Some custom UI elements have their own required theme properties, for example the color sequence of waveforms on the temperature graph.
+
+> [!IMPORTANT]
+> The order which colors and images are applied is (from bottom layer up):
+> 1. bgDefault (`setBackgroundColor`): The default background color for the element.
+> 2. background (`setBgStatusColor`): The background color for the element in different states.
+> 3. bgImage (`setBackgroundPic`): The background image for the element.
+> 4. images (`setButtonStatusPic`, `setThumbPic`, etc.): The image for the element in different states.
 
 ##### Theme Override Functions
 `ZKBase`

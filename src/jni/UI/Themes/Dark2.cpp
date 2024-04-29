@@ -23,10 +23,12 @@ namespace UI::Theme
 		Blue3 = 0xFF00AAF4,
 		Blue4 = 0xFF00CCFF,
 		Yellow = 0xFFECBC35,
+		DarkYellow = 0xFFD4A82A,
 		Green = 0xFF00FF00,
 		VDarkBlue = 0xFF0B0D2B,
-		VVDarkBlue = 0xFFFF0000,
-		// VVDarkBlue = 0xFF0b0d17,
+		// VVDarkBlue = 0xFFFF0000,
+		VVDarkBlue = 0xFF0b0d17,
+		VVDarkBlueTrans = 0x8F0b0d17,
 		DarkBlue = 0xFF0b0d56,
 		BurntOrange = 0xFFCC5500,
 	};
@@ -63,10 +65,10 @@ namespace UI::Theme
 		.button =
 			{
 				.bgDefault = NULL,
-				.bgImage = "Dark2/Background_Rounded_VDarkBlue.png",
+				.bgImage = "Dark2/Background_Rounded_Inverted_Black.png",
 				.background =
 					{
-						.normal = Colors::Clear,
+						.normal = Colors::VDarkBlue,
 						.pressed = Colors::DarkBlue,
 						.selected = Colors::DarkBlue,
 						.pressedAndSelected = Colors::DarkBlue,
@@ -83,10 +85,10 @@ namespace UI::Theme
 				.images =
 					{
 						.normal = nullptr,
-						.pressed = "Dark2/selected_Elongated.png",
+						.pressed = nullptr,
 						.selected = "Dark2/selected_Elongated.png",
 						.pressedAndSelected = nullptr,
-						.invalid = "ProgressBarFull.png", // TODO - placeholder
+						.invalid = nullptr,
 					},
 			},
 		.input =
@@ -191,13 +193,13 @@ namespace UI::Theme
 		.listItem =
 			{
 				.bgDefault = Colors::Gray,
-				.bgImage = "Dark2/Background_Rounded_VDarkBlue.png",
+				.bgImage = "Dark2/Background_Rounded_Inverted_Black.png",
 				.background =
 					{
-						.normal = Colors::Clear,
+						.normal = Colors::VDarkBlue,
 						.pressed = Colors::DarkBlue,
 						.selected = Colors::DarkBlue,
-						.pressedAndSelected = Colors::Blue3,
+						.pressedAndSelected = Colors::Blue2,
 						.invalid = Colors::DarkerGray,
 					},
 				.foreground =
@@ -214,7 +216,7 @@ namespace UI::Theme
 						.pressed = nullptr,
 						.selected = "Dark2/selected_Elongated.png",
 						.pressedAndSelected = nullptr,
-						.invalid = "ProgressBarFull.png", // TODO - placeholder
+						.invalid = nullptr,
 					},
 			},
 		.listSubItem =
@@ -305,125 +307,33 @@ namespace UI::Theme
 			},
 		.homeScreenWindowSelect =
 			std::map<const char*, Images>{
-				{"move",
-				 {
-					 .normal = "Dark2/baseline_open_with_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"extrude",
-				 {
-					 .normal = "Dark2/printer-3d-nozzle.png",
-					 .pressed = nullptr,
-				 }},
-				{"status",
-				 {
-					 .normal = "Dark2/baseline_info_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"heightmap",
-				 {
-					 .normal = "Dark2/baseline_grid_on_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"fans",
-				 {
-					 .normal = "Dark2/fan.png",
-					 .pressed = nullptr,
-				 }},
-				{"files",
-				 {
-					 .normal = "Dark2/baseline_play_arrow_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"object_cancel",
-				 {
-					 .normal = "Dark2/select-group.png",
-					 .pressed = nullptr,
-				 }},
-				{"webcam",
-				 {
-					 .normal = "Dark2/webcam.png",
-					 .pressed = nullptr,
-				 }},
-				{"network",
-				 {
-					 .normal = "Dark2/baseline_lan_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"settings",
-				 {
-					 .normal = "Dark2/baseline_settings_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
+				{"move", {.normal = "Dark2/baseline_open_with_white_48dp.png"}},
+				{"extrude", {.normal = "Dark2/printer-3d-nozzle.png"}},
+				{"status", {.normal = "Dark2/baseline_info_white_48dp.png"}},
+				{"heightmap", {.normal = "Dark2/baseline_grid_on_white_48dp.png"}},
+				{"fans", {.normal = "Dark2/fan.png"}},
+				{"files", {.normal = "Dark2/baseline_play_arrow_white_48dp.png"}},
+				{"object_cancel", {.normal = "Dark2/select-group.png"}},
+				{"webcam", {.normal = "Dark2/webcam.png"}},
+				{"network", {.normal = "Dark2/baseline_lan_white_48dp.png"}},
+				{"settings", {.normal = "Dark2/baseline_settings_white_48dp.png"}},
 			},
 		.settingsScreenWindowSelect =
 			std::map<const char*, Images>{
-				{"language",
-				 {
-					 .normal = "Dark2/baseline_translate_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"duet",
-				 {
-					 .normal = "Dark2/duet.png",
-					 .pressed = nullptr,
-				 }},
-				{"update",
-				 {
-					 .normal = "Dark2/baseline_upgrade_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"restart",
-				 {
-					 .normal = "Dark2/baseline_restart_alt_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"dev",
-				 {
-					 .normal = "Dark2/baseline_developer_board_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"power_off",
-				 {
-					 .normal = "Dark2/baseline_power_off_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
+				{"language", {.normal = "Dark2/baseline_translate_white_48dp.png"}},
+				{"duet", {.normal = "Dark2/duet.png"}},
+				{"update", {.normal = "Dark2/baseline_upgrade_white_48dp.png"}},
+				{"restart", {.normal = "Dark2/baseline_restart_alt_white_48dp.png"}},
+				{"dev", {.normal = "Dark2/baseline_developer_board_white_48dp.png"}},
+				{"power_off", {.normal = "Dark2/baseline_power_off_white_48dp.png"}},
 				{"zk_setting", {}},
-				{"touch_calibration",
-				 {
-					 .normal = "Dark2/baseline_touch_app_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"guides",
-				 {
-					 .normal = "Dark2/television-guide.png",
-					 .pressed = nullptr,
-				 }},
-				{"brightness",
-				 {
-					 .normal = "Dark2/baseline_settings_brightness_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"theme",
-				 {
-					 .normal = "Dark2/baseline_dark_mode_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"screensaver",
-				 {
-					 .normal = "Dark2/screensaver.png",
-					 .pressed = nullptr,
-				 }},
-				{"buzzer",
-				 {
-					 .normal = "Dark2/baseline_notifications_active_white_48dp.png",
-					 .pressed = nullptr,
-				 }},
-				{"webcam",
-				 {
-					 .normal = "Dark2/webcam.png",
-					 .pressed = nullptr,
-				 }},
+				{"touch_calibration", {.normal = "Dark2/baseline_touch_app_white_48dp.png"}},
+				{"guides", {.normal = "Dark2/television-guide.png"}},
+				{"brightness", {.normal = "Dark2/baseline_settings_brightness_white_48dp.png"}},
+				{"theme", {.normal = "Dark2/baseline_dark_mode_white_48dp.png"}},
+				{"screensaver", {.normal = "Dark2/screensaver.png"}},
+				{"buzzer", {.normal = "Dark2/baseline_notifications_active_white_48dp.png"}},
+				{"webcam", {.normal = "Dark2/webcam.png"}},
 			},
 	};
 
@@ -455,10 +365,11 @@ namespace UI::Theme
 			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setProgressPic("ProgressBarFull.png");
 			UI::GetUIControl<ZKSeekBar>(ID_MAIN_PopupProgress)->setThumbPic(ZK_CONTROL_STATUS_NORMAL, nullptr);
 			// Popup rear overlay
-			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundColor(NULL);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundColor(Colors::VVDarkBlueTrans);
 			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, NULL);
 			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, NULL);
-			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)->setBackgroundPic(nullptr);
+			UI::GetUIControl<ZKButton>(ID_MAIN_OverlayModalZone)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_PRESSED, nullptr);
 
 			// Sidebar Buttons
 			constexpr float sidebarButtonScale = 0.5;
@@ -491,7 +402,7 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/engine-off.png");
 
 			// Extruder Window
-			UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
+			// UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
 
 			// Console
 			constexpr float consoleButtonScale = 0.45;
@@ -539,7 +450,6 @@ namespace UI::Theme
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
 
 			// EStop Button
-			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBackgroundPic(nullptr);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_electric_bolt_white_48dp.png");
@@ -554,8 +464,23 @@ namespace UI::Theme
 			{
 			case ID_MAIN_FileListView:
 			{
+				// Folder subitems
+				pListItem->findSubItemByID(ID_MAIN_FileNameSubItem)
+					->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+				pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem)
+					->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+				pListItem->findSubItemByID(ID_MAIN_FileDateSubItem)
+					->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+				pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem)
+					->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+				pListItem->findSubItemByID(ID_MAIN_FileThumbnailSubItem)
+					->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+
+				// Folder items
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
-				pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED | ZK_CONTROL_STATUS_SELECTED, Colors::DarkYellow);
+				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, nullptr);
+				// pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");	// TODO - invert bg
 				break;
 			}
 			case ID_MAIN_AxisControlListView:
@@ -586,12 +511,12 @@ namespace UI::Theme
 			case ID_MAIN_GcodeListView:
 			case ID_MAIN_ConsoleListView:
 			{
-				pListItem->setBackgroundPic(nullptr);
+				// pListItem->setBackgroundPic(nullptr);
 				break;
 			}
 			case ID_MAIN_DebugCommandList:
 			{
-				pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
+				// pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");	// TODO invert
 				break;
 			}
 			case ID_MAIN_WindowSelectList:
@@ -602,8 +527,8 @@ namespace UI::Theme
 			}
 			case ID_MAIN_TemperatureGraphLegend:
 			{
-				pListItem->setBackgroundPic(nullptr);
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
+				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, nullptr);
 				break;
 			}
 			default:

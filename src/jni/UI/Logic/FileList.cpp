@@ -104,6 +104,12 @@ namespace UI::FileList
 			pFileType->setTextTr("folder");
 			pFileSize->setText("");
 			pFileThumbnail->setBackgroundPic("");
+
+			pFileName->setSelected(true);
+			pFileType->setSelected(true);
+			pFileSize->setSelected(true);
+			pFileDate->setSelected(true);
+			pFileThumbnail->setSelected(true);
 			break;
 		}
 		pFileDate->setTextTrf("file_date", item->GetDate().c_str());
