@@ -25,7 +25,8 @@ namespace UI::Theme
 		Yellow = 0xFFECBC35,
 		Green = 0xFF00FF00,
 		VDarkBlue = 0xFF0B0D2B,
-		VVDarkBlue = 0xFF0b0d17,
+		VVDarkBlue = 0xFFFF0000,
+		// VVDarkBlue = 0xFF0b0d17,
 		DarkBlue = 0xFF0b0d56,
 		BurntOrange = 0xFFCC5500,
 	};
@@ -82,10 +83,10 @@ namespace UI::Theme
 				.images =
 					{
 						.normal = nullptr,
-						.pressed = nullptr,
-						.selected = nullptr,
+						.pressed = "Dark2/selected_Elongated.png",
+						.selected = "Dark2/selected_Elongated.png",
 						.pressedAndSelected = nullptr,
-						.invalid = "ProgressBarFull.png",
+						.invalid = "ProgressBarFull.png", // TODO - placeholder
 					},
 			},
 		.input =
@@ -211,9 +212,9 @@ namespace UI::Theme
 					{
 						.normal = nullptr,
 						.pressed = nullptr,
-						.selected = nullptr,
+						.selected = "Dark2/selected_Elongated.png",
 						.pressedAndSelected = nullptr,
-						.invalid = nullptr,
+						.invalid = "ProgressBarFull.png", // TODO - placeholder
 					},
 			},
 		.listSubItem =
@@ -433,23 +434,19 @@ namespace UI::Theme
 		{
 			/* Overrides */
 			// Windows
-			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
+			UI::GetRootWindow()->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::VVDarkBlue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Clear);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)
-				->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuideSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ThemeSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuidedSetupWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)
-				->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
 			UI::GetUIControl<ZKWindow>(ID_MAIN_BuzzerSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_WebcamSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_NumPadWindow)->setBackgroundColor(Colors::VVDarkBlue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow)->setBackgroundColor(Colors::Clear);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_NoTouchWindow)->setBackgroundColor(NULL);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_DebugWindow)->setBackgroundColor(Colors::VVDarkBlue);
 
@@ -495,8 +492,6 @@ namespace UI::Theme
 
 			// Extruder Window
 			UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_RetractBtn)->setBackgroundPic(nullptr);
-			UI::GetUIControl<ZKButton>(ID_MAIN_ExtrudeBtn)->setBackgroundPic(nullptr);
 
 			// Console
 			constexpr float consoleButtonScale = 0.45;
@@ -607,6 +602,7 @@ namespace UI::Theme
 			}
 			case ID_MAIN_TemperatureGraphLegend:
 			{
+				pListItem->setBackgroundPic(nullptr);
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
 				break;
 			}
