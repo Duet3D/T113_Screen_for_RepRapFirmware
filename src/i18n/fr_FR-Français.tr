@@ -157,7 +157,13 @@
     <string name="speed_factor">Facteur de vitesse</string>
     <string name="pause">Pause</string>
     <string name="resume">Reprendre</string>
-    <string name="jobcontrol">Contrôle des tâches</string>
+    <string name="print_again">Imprimer à nouveau</string>
+    <string name="jobcontrol">Contrôle du travail</string>
+    <string name="no_job_running">Aucun travail en cours.</string>
+    <string name="filename_in_progress">Impression en cours: %s</string>
+    <string name="filename_finished">Impression terminée: %s</string>
+    <string name="elapsed">Écoulé: %d:%02d:%02d</string>
+    <string name="estimated">Estimé: %d:%02d:%02d</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Annuler l'objet</string>
@@ -196,8 +202,6 @@
     <string name="folder">Dossier</string>
     <string name="file_size">Taille : %s</string>
     <string name="file_date">Date : %s</string>
-    <string name="elapsed">Écoulé</string>
-    <string name="estimated">Estimé</string>
     <string name="refresh">Actualiser</string>
     <string name="usb">Fichiers USB</string>
     <string name="file_cache_state">Cache d'informations sur les fichiers : En attente (%d) Mis en cache (%d) Demande en cours (%s) Miniature (%s)</string>

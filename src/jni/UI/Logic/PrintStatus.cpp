@@ -59,12 +59,24 @@ namespace UI::PrintStatus
 		const bool isPrinting = OM::PrintInProgress();
 		if (isPrinting)
 		{
-			s_printFileName->setTextTrf("filename_in_progress", OM::GetJobName().c_str());
+			std::string jobName = OM::GetJobName();
+			size_t pos = jobName.find_last_of("/");
+			if (pos != std::string::npos)
+			{
+				jobName = jobName.substr(pos + 1);
+			}
+			s_printFileName->setTextTrf("filename_in_progress", jobName.c_str());
 			return;
 		}
 		if (!OM::GetLastJobName().empty())
 		{
-			s_printFileName->setTextTrf("filename_finished", OM::GetLastJobName().c_str());
+			std::string jobName = OM::GetLastJobName();
+			size_t pos = jobName.find_last_of("/");
+			if (pos != std::string::npos)
+			{
+				jobName = jobName.substr(pos + 1);
+			}
+			s_printFileName->setTextTrf("filename_finished", jobName.c_str());
 			return;
 		}
 		s_printFileName->setTextTr("no_job_running");
@@ -82,7 +94,7 @@ namespace UI::PrintStatus
 	void UpdateElapsedTime(uint32_t seconds)
 	{
 		tm time = Comm::ParseSeconds(seconds);
-		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
+		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintElapsedTime)
 			->setTextTrf("elapsed", time.tm_hour, time.tm_min, time.tm_sec);
 	}
 

@@ -158,7 +158,13 @@
     <string name="speed_factor">Geschwindigkeitsfaktor</string>
     <string name="pause">Pause</string>
     <string name="resume">Fortsetzen</string>
-    <string name="jobcontrol">Taakcontrole</string>
+    <string name="print_again">Erneut drucken</string>
+    <string name="jobcontrol">Jobsteuerung</string>
+    <string name="no_job_running">Kein laufender Job.</string>
+    <string name="filename_in_progress">Drucken: %s</string>
+    <string name="filename_finished">Gedruckt: %s</string>
+    <string name="elapsed">Verstrichen: %d:%02d:%02d</string>
+    <string name="estimated">Geschätzt: %d:%02d:%02d</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Objekt&#x000A;abbrechen</string>
@@ -197,8 +203,6 @@
     <string name="folder">Ordner</string>
     <string name="file_size">Größe: %s</string>
     <string name="file_date">Datum: %s</string>
-    <string name="elapsed">Verstrichen</string>
-    <string name="estimated">Geschätzt</string>
     <string name="refresh">Aktualisieren</string>
     <string name="usb">USB-Dateien</string>
     <string name="file_cache_state">Dateiinfo-Cache: In Warteschlange(%d) Zwischengespeichert(%d) Anfordern(%s) Miniaturansicht(%s)</string>
