@@ -101,6 +101,7 @@ namespace UI::ObjectCancel
 				if (TouchInObjectBounds(*object, canvasPos, ev))
 				{
 					CancelJobObject(object->index);
+					return;
 				}
 			}
 
@@ -111,7 +112,7 @@ namespace UI::ObjectCancel
 				return;
 			}
 
-			for (size_t i = OM::GetJobObjectCount() - 1; i >= 0; i--)
+			for (int i = OM::GetJobObjectCount() - 1; i >= 0; i--)
 			{
 				object = OM::GetJobObject(i);
 				if (object == nullptr)
