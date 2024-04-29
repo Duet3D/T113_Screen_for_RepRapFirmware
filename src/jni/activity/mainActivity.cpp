@@ -4,6 +4,7 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKButton* mPrintAgainBtnPtr;
 static ZKTextView* mPrintThumbnailPtr;
 static ZKTextView* mTextView41Ptr;
 static ZKButton* mPrintSpeedFactorPtr;
@@ -301,6 +302,7 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_PrintAgainBtn, onButtonClick_PrintAgainBtn,
     ID_MAIN_PrintSpeedFactor, onButtonClick_PrintSpeedFactor,
     ID_MAIN_ChamberTempSnapshot, onButtonClick_ChamberTempSnapshot,
     ID_MAIN_BedTempSnapshot, onButtonClick_BedTempSnapshot,
@@ -613,6 +615,7 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mPrintAgainBtnPtr = NULL;
     mPrintThumbnailPtr = NULL;
     mTextView41Ptr = NULL;
     mChamberTempSnapshotPtr = NULL;
@@ -882,6 +885,7 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mPrintAgainBtnPtr = (ZKButton*)findControlByID(ID_MAIN_PrintAgainBtn);
     mPrintThumbnailPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintThumbnail);
     mTextView41Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView41);
     mPrintSpeedFactorPtr = (ZKButton*)findControlByID(ID_MAIN_PrintSpeedFactor);

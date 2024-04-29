@@ -881,6 +881,12 @@ static bool onButtonClick_PrintResumeBtn(ZKButton* pButton)
 	return false;
 }
 
+static bool onButtonClick_PrintAgainBtn(ZKButton* pButton)
+{
+	UI::PrintStatus::PrintAgain();
+	return false;
+}
+
 static int getListItemCount_PrintPositionList(const ZKListView* pListView)
 {
 	return UI::PrintStatus::GetAxisListCount();

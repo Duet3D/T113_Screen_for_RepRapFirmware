@@ -75,11 +75,7 @@ namespace Comm
 
 	tm FileInfo::GetPrintTime() const
 	{
-		tm time;
-		uint32_t seconds = printTime;
-		time.tm_hour = static_cast<int>(seconds / 3600);
-		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
-		time.tm_sec = static_cast<int>(seconds - time.tm_hour * 3600 - time.tm_min * 60);
+		tm time = ParseSeconds(printTime);
 		dbg("Print time (%d): %d:%02d:%02d", printTime, time.tm_hour, time.tm_min, time.tm_sec);
 		return time;
 	}
@@ -576,6 +572,15 @@ namespace Comm
 						  thumbnail == nullptr ? "null" : GetInstance()->m_currentThumbnail->filename.c_str())
 				.c_str());
 		UI::CONSOLE.AddLineBreak();
+	}
+
+	tm ParseSeconds(uint32_t seconds)
+	{
+		tm time;
+		time.tm_hour = static_cast<int>(seconds / 3600);
+		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
+		time.tm_sec = static_cast<int>(seconds - time.tm_hour * 3600 - time.tm_min * 60);
+		return time;
 	}
 
 	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",

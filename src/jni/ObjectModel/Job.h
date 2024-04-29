@@ -35,8 +35,19 @@ namespace OM
 		void Reset();
 	};
 
+	enum class RemainingTimeType
+	{
+		filament = 0,
+		file,
+		slicer,
+		simulated
+	};
+
 	void SetJobName(const char* name);
-	const StringRef GetJobName();
+	const std::string& GetJobName();
+
+	void SetLastJobName(const char* name);
+	const std::string& GetLastJobName();
 
 	void SetPrintTime(const uint32_t printTime);
 	const uint32_t GetPrintTime();
@@ -44,8 +55,8 @@ namespace OM
 	void SetPrintDuration(const uint32_t printDuration);
 	const uint32_t GetPrintDuration();
 
-	void SetPrintRemaining(const uint32_t printRemaining);
-	const uint32_t GetPrintRemaining();
+	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining);
+	const uint32_t GetPrintRemaining(RemainingTimeType type);
 
 	void SetCurrentJobObject(int8_t index);
 	const int8_t GetCurrentJobObjectIndex();

@@ -291,8 +291,7 @@ namespace OM::FileSystem
 
 	void StartPrint(const std::string& path)
 	{
-		Comm::DUET.SendGcodef("M23 \"%s\"\n", path.c_str());
-		Comm::DUET.SendGcode("M24\n");
+		Comm::DUET.SendGcodef("M32 \"%s\"\n", path.c_str());
 	}
 
 	void ResumePrint()

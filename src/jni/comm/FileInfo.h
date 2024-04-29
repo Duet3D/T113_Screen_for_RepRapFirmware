@@ -111,8 +111,9 @@ namespace Comm
 		long long m_lastThumbnailRequestTime = 0;
 	};
 
-	extern ThumbnailBuf g_thumbnailBuf;
+	tm ParseSeconds(uint32_t seconds);
 
+	extern ThumbnailBuf g_thumbnailBuf;
 } // namespace Comm
 #define FILEINFO_CACHE Comm::FileInfoCache::GetInstance()
 

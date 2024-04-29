@@ -28,6 +28,7 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_PrintAgainBtn    20025
 #define ID_MAIN_PrintThumbnail    50071
 #define ID_MAIN_TextView41    50023
 #define ID_MAIN_PrintSpeedFactor    20024

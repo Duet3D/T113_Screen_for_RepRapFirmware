@@ -95,7 +95,13 @@
     <string name="speed_factor">Speed Factor</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+    <string name="print_again">Print Again</string>
     <string name="jobcontrol">Job Control</string>
+    <string name="no_job_running">No Job running.</string>
+    <string name="filename_in_progress">Printing: %s</string>
+    <string name="filename_finished">Printed: %s</string>
+    <string name="elapsed">Elapsed: %d:%02d:%02d</string>
+    <string name="estimated">Estimated: %d:%02d:%02d</string>
 
     <!-- Object Cancel -->
     <string name="object_cancel">Object Cancel</string>
@@ -134,8 +140,6 @@
     <string name="folder">Folder</string>
     <string name="file_size">Size: %s</string>
     <string name="file_date">Date: %s</string>
-    <string name="elapsed">Elapsed</string>
-    <string name="estimated">Estimated</string>
     <string name="refresh">Refresh</string>
     <string name="usb">USB Files</string>
     <string name="file_cache_state">File Info Cache: Queued(%d) Cached(%d) Requesting(%s) Thumbnail(%s)</string>

@@ -14,8 +14,14 @@ namespace UI::PrintStatus
 {
     void Init();
 
+	void Open();
+
 	void BabyStepDown();
 	void BabyStepUp();
+
+	void UpdateFileName();
+	void UpdateEstimatedPrintTime(uint32_t time);
+	void UpdateElapsedTime(uint32_t time);
 
 	size_t GetFanListCount();
 	void SetFanListItem(ZKListView::ZKListItem* pListItem, const int index);
@@ -24,6 +30,7 @@ namespace UI::PrintStatus
 	void PausePrint();
 	void StopPrint();
 	void ResumePrint();
+	void PrintAgain();
 
 	size_t GetAxisListCount();
 	void SetAxisListItem(ZKListView::ZKListItem* pListItem, const int index);

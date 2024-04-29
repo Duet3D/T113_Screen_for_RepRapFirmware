@@ -34,23 +34,79 @@ namespace OM
 	static JobObjectList s_jobObjects;
 	static int8_t s_currentJobObjectIndex = -1;
 
-	static String<MAX_FILENAME_LENGTH> s_jobName;
+	static std::string s_jobName;
+	static std::string s_lastJobName;
 	static uint32_t s_printTime = 0;
 	static uint32_t s_printDuration = 0;
-	static uint32_t s_printRemaining = 0;
+	static struct
+	{
+		uint32_t filament = 0;
+		uint32_t file = 0;
+		uint32_t slicer = 0;
+		uint32_t simulated = 0;
+	} s_printRemaining;
 
 	ATTR_SETTR_GETTR(PrintTime, uint32_t, s_printTime)
 	ATTR_SETTR_GETTR(PrintDuration, uint32_t, s_printDuration)
-	ATTR_SETTR_GETTR(PrintRemaining, uint32_t, s_printRemaining)
+
+	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining)
+	{
+		switch (type)
+		{
+		case RemainingTimeType::filament:
+			s_printRemaining.filament = printRemaining;
+			break;
+		case RemainingTimeType::file:
+			s_printRemaining.file = printRemaining;
+			break;
+		case RemainingTimeType::slicer:
+			s_printRemaining.slicer = printRemaining;
+			break;
+		case RemainingTimeType::simulated:
+			s_printRemaining.simulated = printRemaining;
+			break;
+		default:
+			warn("Unknown RemainingTimeType %d\n", (int)type);
+			break;
+		}
+	}
+
+	const uint32_t GetPrintRemaining(RemainingTimeType type)
+	{
+		switch (type)
+		{
+		case RemainingTimeType::filament:
+			return s_printRemaining.filament;
+		case RemainingTimeType::file:
+			return s_printRemaining.file;
+		case RemainingTimeType::slicer:
+			return s_printRemaining.slicer;
+		case RemainingTimeType::simulated:
+			return s_printRemaining.simulated;
+		default:
+			warn("Unknown RemainingTimeType %d\n", (int)type);
+			return 0;
+		}
+	}
 
 	void SetJobName(const char* name)
 	{
-		s_jobName.copy(name);
+		s_jobName = name;
 	}
 
-	const StringRef GetJobName()
+	const std::string& GetJobName()
 	{
-		return s_jobName.GetRef();
+		return s_jobName;
+	}
+
+	void SetLastJobName(const char* name)
+	{
+		s_lastJobName = name;
+	}
+
+	const std::string& GetLastJobName()
+	{
+		return s_lastJobName;
 	}
 
 	void JobObject::Reset()

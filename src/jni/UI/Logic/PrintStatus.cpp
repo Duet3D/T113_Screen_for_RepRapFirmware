@@ -14,17 +14,22 @@
 #include "Hardware/Duet.h"
 #include "ObjectModel/Fan.h"
 #include "ObjectModel/Files.h"
+#include "ObjectModel/Job.h"
+#include "ObjectModel/PrinterStatus.h"
+#include "comm/FileInfo.h"
 #include <manager/LanguageManager.h>
 
 namespace UI::PrintStatus
 {
 	static ToolsList s_toolsList;
+	static ZKTextView* s_printFileName = nullptr;
 
 	void Init()
 	{
 		info("Initialising PrintStatus UI...");
 
 		ZKListView* toolList = UI::GetUIControl<ZKListView>(ID_MAIN_PrintTemperatureList);
+		s_printFileName = UI::GetUIControl<ZKTextView>(ID_MAIN_PrintFileName);
 		if (toolList == nullptr)
 		{
 			error("Failed to get tool list");
@@ -32,6 +37,11 @@ namespace UI::PrintStatus
 		}
 
 		s_toolsList.Init(toolList);
+	}
+
+	void Open()
+	{
+		UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow);
 	}
 
 	void BabyStepDown()
@@ -42,6 +52,38 @@ namespace UI::PrintStatus
 	void BabyStepUp()
 	{
 		Comm::DUET.SendGcode("M290 S0.05");
+	}
+
+	void UpdateFileName()
+	{
+		const bool isPrinting = OM::PrintInProgress();
+		if (isPrinting)
+		{
+			s_printFileName->setTextTrf("filename_in_progress", OM::GetJobName().c_str());
+			return;
+		}
+		if (!OM::GetLastJobName().empty())
+		{
+			s_printFileName->setTextTrf("filename_finished", OM::GetLastJobName().c_str());
+			return;
+		}
+		s_printFileName->setTextTr("no_job_running");
+	}
+
+	void UpdateEstimatedPrintTime(uint32_t seconds)
+	{
+		int percentage = std::min<int>((100 * OM::GetPrintDuration()) / OM::GetPrintTime(), 100);
+		tm time = Comm::ParseSeconds(seconds);
+		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
+			->setTextTrf("estimated", time.tm_hour, time.tm_min, time.tm_sec);
+		UI::GetUIControl<ZKCircleBar>(ID_MAIN_PrintProgressBar)->setProgress(percentage);
+	}
+
+	void UpdateElapsedTime(uint32_t seconds)
+	{
+		tm time = Comm::ParseSeconds(seconds);
+		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
+			->setTextTrf("elapsed", time.tm_hour, time.tm_min, time.tm_sec);
 	}
 
 	size_t GetFanListCount()
@@ -101,6 +143,11 @@ namespace UI::PrintStatus
 	void ResumePrint()
 	{
 		OM::FileSystem::ResumePrint();
+	}
+
+	void PrintAgain()
+	{
+		OM::FileSystem::StartPrint(OM::GetLastJobName());
 	}
 
 	size_t GetAxisListCount()

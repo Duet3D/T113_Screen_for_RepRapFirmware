@@ -16,6 +16,7 @@
 #include <algorithm>
 
 #include "ObjectModel/Job.h"
+#include "UI/Logic/PrintStatus.h"
 
 /*
  * These functions are run when the OM field is received.
@@ -27,27 +28,33 @@
  */
 static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 	OBSERVER_CHAR("job:file:fileName",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  OM::SetJobName(val);
-					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintFileName)->setText(val);
+					  UI::PrintStatus::UpdateFileName();
+				  }),
+	OBSERVER_CHAR("job:lastFileName",
+				  [](OBSERVER_CHAR_ARGS)
+				  {
+					  OM::SetLastJobName(val);
+					  UI::PrintStatus::UpdateFileName();
 				  }),
 	OBSERVER_UINT("job:file:printTime", [](OBSERVER_UINT_ARGS) { OM::SetPrintTime(val); }),
 	OBSERVER_UINT("job:duration",
-				  [](OBSERVER_UINT_ARGS) {
+				  [](OBSERVER_UINT_ARGS)
+				  {
 					  OM::SetPrintDuration(val);
-					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintElapsedTime)
-						  ->setTextf("%s: %d", LANGUAGEMANAGER->getValue("elapsed").c_str(), val);
+					  UI::PrintStatus::UpdateElapsedTime(val);
 				  }),
 	OBSERVER_UINT("job:timesLeft:slicer",
-				  [](OBSERVER_UINT_ARGS) {
-					  OM::SetPrintRemaining(val);
-					  int percentage = std::min<int>((100 * OM::GetPrintDuration()) / OM::GetPrintTime(), 100);
-					  UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
-						  ->setTextf("%s: %d", LANGUAGEMANAGER->getValue("estimated").c_str(), val);
-					  UI::GetUIControl<ZKCircleBar>(ID_MAIN_PrintProgressBar)->setProgress(percentage);
+				  [](OBSERVER_UINT_ARGS)
+				  {
+					  OM::SetPrintRemaining(OM::RemainingTimeType::slicer, val);
+					  UI::PrintStatus::UpdateEstimatedPrintTime(val);
 				  }),
 	OBSERVER_CHAR("job:build",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  dbg("Job: build is null");
 					  OM::RemoveJobObject(indices[0], true);
 					  UI::ObjectCancel::RenderObjectMap();
@@ -55,7 +62,8 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 	OBSERVER_INT("job:build:currentObject", [](OBSERVER_INT_ARGS) { OM::SetCurrentJobObject(val); }),
 	OBSERVER_CHAR("job:build:objects^", [](OBSERVER_CHAR_ARGS) { OM::RemoveJobObject(indices[0], false); }),
 	OBSERVER_BOOL("job:build:objects^:cancelled",
-				  [](OBSERVER_BOOL_ARGS) {
+				  [](OBSERVER_BOOL_ARGS)
+				  {
 					  OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
 					  if (jobObject == nullptr)
 					  {
@@ -64,7 +72,8 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 					  jobObject->cancelled = val;
 				  }),
 	OBSERVER_CHAR("job:build:objects^:name",
-				  [](OBSERVER_CHAR_ARGS) {
+				  [](OBSERVER_CHAR_ARGS)
+				  {
 					  OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
 					  if (jobObject == nullptr)
 					  {
@@ -73,7 +82,8 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 					  jobObject->name = val;
 				  }),
 	OBSERVER_INT("job:build:objects^:x^",
-				 [](OBSERVER_INT_ARGS) {
+				 [](OBSERVER_INT_ARGS)
+				 {
 					 OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
 					 if (jobObject == nullptr)
 					 {
@@ -87,7 +97,8 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 					 jobObject->bounds.x[indices[1]] = val;
 				 }),
 	OBSERVER_INT("job:build:objects^:y^",
-				 [](OBSERVER_INT_ARGS) {
+				 [](OBSERVER_INT_ARGS)
+				 {
 					 OM::JobObject* jobObject = OM::GetOrCreateJobObject(indices[0]);
 					 if (jobObject == nullptr)
 					 {

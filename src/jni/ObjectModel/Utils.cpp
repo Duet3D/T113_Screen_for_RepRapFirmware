@@ -141,7 +141,7 @@ namespace OM
 		UI::CONSOLE.AddResponse(utils::format("    name: %s", GetJobName().c_str()).c_str());
 		UI::CONSOLE.AddResponse(utils::format("    Print time: %u", GetPrintTime()).c_str());
 		UI::CONSOLE.AddResponse(utils::format("    Print duration: %u", GetPrintDuration()).c_str());
-		UI::CONSOLE.AddResponse(utils::format("    Print remaining: %u", GetPrintRemaining()).c_str());
+		UI::CONSOLE.AddResponse(utils::format("    Print remaining (slicer): %u", GetPrintRemaining(OM::RemainingTimeType::slicer)).c_str());
 		UI::CONSOLE.AddResponse(utils::format("    Current object: %d", GetCurrentJobObjectIndex()).c_str());
 		UI::CONSOLE.AddResponse("    Objects:");
 		for (size_t i = 0; i < MAX_TRACKED_OBJECTS; ++i)

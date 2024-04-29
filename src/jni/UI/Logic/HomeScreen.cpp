@@ -15,6 +15,7 @@
 #include "ObjectModel/Sensor.h"
 #include "UI/Graph.h"
 #include "UI/Logic/Heightmap.h"
+#include "UI/Logic/PrintStatus.h"
 #include "UI/Logic/Webcam.h"
 #include "UI/Themes.h"
 #include <entry/EasyUIContext.h>
@@ -28,17 +29,19 @@ namespace UI::HomeScreen
 	static WindowSelectItem s_windows[] = {
 		{"move", []() { UI::WINDOW.OpenWindow(ID_MAIN_MoveWindow); }},
 		{"extrude", []() { UI::WINDOW.OpenWindow(ID_MAIN_ExtrudeWindow); }},
-		{"status", []() { UI::WINDOW.OpenWindow(ID_MAIN_PrintWindow); }},
+		{"status", []() { UI::PrintStatus::Open(); }},
 		{"heightmap", []() { UI::Heightmap::Open(); }},
 		{"fans", []() { UI::WINDOW.OpenWindow(ID_MAIN_FanWindow); }},
 		{"files",
-		 []() {
+		 []()
+		 {
 			 OM::FileSystem::RequestFiles("0:/gcodes");
 			 UI::WINDOW.OpenWindow(ID_MAIN_FilesWindow);
 		 }},
 		{"object_cancel", []() { UI::WINDOW.OpenWindow(ID_MAIN_ObjectCancelWindow); }},
 		{"webcam",
-		 []() {
+		 []()
+		 {
 			 UI::Webcam::RegisterUpdateLoop();
 			 UI::WINDOW.OpenWindow(ID_MAIN_WebcamWindow);
 		 }},
