@@ -358,90 +358,93 @@ namespace UI::Theme
 		.settingsScreenWindowSelect =
 			std::map<const char*, Images>{
 				{"language",
-	                 {
-	                     .normal = "Dark2/baseline_translate_white_48dp.png",
-	                     .pressed = nullptr,
-	                 }},
+				 {
+					 .normal = "Dark2/baseline_translate_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"duet",
-	                     {
-	                         .normal = "Dark2/duet.png",
-	                         .pressed = nullptr,
-	                     }},
+				 {
+					 .normal = "Dark2/duet.png",
+					 .pressed = nullptr,
+				 }},
 				{"update",
-		                 {
-		                     .normal = "Dark2/baseline_upgrade_white_48dp.png",
-		                     .pressed = nullptr,
-		                 }},
+				 {
+					 .normal = "Dark2/baseline_upgrade_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"restart",
-                        {
-                            .normal = "Dark2/baseline_restart_alt_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_restart_alt_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"dev",
-                        {
-                            .normal = "Dark2/baseline_developer_board_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_developer_board_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"power_off",
-                        {
-                            .normal = "Dark2/baseline_power_off_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_power_off_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"zk_setting", {}},
 				{"touch_calibration",
-                        {
-                            .normal = "Dark2/baseline_touch_app_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_touch_app_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"guides",
-                        {
-                            .normal = "Dark2/television-guide.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/television-guide.png",
+					 .pressed = nullptr,
+				 }},
 				{"brightness",
-                        {
-                            .normal = "Dark2/baseline_settings_brightness_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_settings_brightness_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"theme",
-                        {
-                            .normal = "Dark2/baseline_dark_mode_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_dark_mode_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"screensaver",
-                        {
-                            .normal = "Dark2/screensaver.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/screensaver.png",
+					 .pressed = nullptr,
+				 }},
 				{"buzzer",
-                        {
-                            .normal = "Dark2/baseline_notifications_active_white_48dp.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/baseline_notifications_active_white_48dp.png",
+					 .pressed = nullptr,
+				 }},
 				{"webcam",
-                        {
-                            .normal = "Dark2/webcam.png",
-                            .pressed = nullptr,
-                        }},
+				 {
+					 .normal = "Dark2/webcam.png",
+					 .pressed = nullptr,
+				 }},
 			},
 	};
 
 	static Theme s_theme(
 		"dark2",
 		&s_dark2Theme,
-		[]() {
+		[]()
+		{
 			/* Overrides */
 			// Windows
 			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_TemperatureGraphWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_FilamentLoadUnloadWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundColor(Colors::Clear);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DuetCommSettingWindow)
+				->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuideSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ThemeSelectionWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_GuidedSetupWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
-			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
+			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)
+				->setBackgroundPic("Dark2/Background_Rounded_Large_VDarkBlue.png");
 			UI::GetUIControl<ZKWindow>(ID_MAIN_BuzzerSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_WebcamSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::VVDarkBlue);
@@ -469,10 +472,10 @@ namespace UI::Theme
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_arrow_back_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_home_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_rule_folder_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_keyboard_command_key_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_arrow_back_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_home_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_rule_folder_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_keyboard_command_key_white_48dp.png");
 
 			// Move Window Buttons
 			constexpr float moveButtonScale = 0.45;
@@ -484,11 +487,11 @@ namespace UI::Theme
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn), moveButtonPosX, 0.25, moveButtonScale);
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn), moveButtonPosX, 0.25, moveButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/home-circle-outline.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/G32.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/G29.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_grid_on_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/engine-off.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/home-circle-outline.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G32.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G29.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_grid_on_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/engine-off.png");
 
 			// Extruder Window
 			UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
@@ -499,11 +502,17 @@ namespace UI::Theme
 			constexpr float consoleButtonScale = 0.45;
 			constexpr float consoleButtonPosY = 0.5;
 			constexpr float consoleButtonPosX = 0.2;
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1),
+										consoleButtonPosX,
+										consoleButtonPosY,
+										consoleButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn),
+										consoleButtonPosX,
+										consoleButtonPosY,
+										consoleButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_bug_report_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_send_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_bug_report_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_send_white_48dp.png");
 
 			// File View
 			constexpr float filesButtonScale = 0.75;
@@ -512,18 +521,24 @@ namespace UI::Theme
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn), filesButtonPosX, filesButtonPosY, filesButtonScale);
 			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles), filesButtonPosX, filesButtonPosY, filesButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_refresh_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_usb_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_refresh_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_usb_white_48dp.png");
 
 			// Status Window
 			constexpr float statusButtonScale = 0.65;
 			constexpr float statusButtonPosY = 0.5;
 			constexpr float statusButtonPosX = 0.25;
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn), statusButtonPosX, statusButtonPosY, statusButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn), statusButtonPosX, statusButtonPosY, statusButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn),
+										statusButtonPosX,
+										statusButtonPosY,
+										statusButtonScale);
+			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn),
+										statusButtonPosX,
+										statusButtonPosY,
+										statusButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_compress_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_expand_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_compress_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_expand_white_48dp.png");
 
 			// Scrollable text
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
@@ -532,81 +547,66 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBackgroundPic(nullptr);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
-			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,"Dark2/baseline_electric_bolt_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_electric_bolt_white_48dp.png");
 		},
-		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {
+		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+		{
 			if (pListView == nullptr || pListItem == nullptr)
 				return;
 
 			/* ListItem Overrides */
 			switch (pListView->getID())
 			{
-			case ID_MAIN_FileListView: {
+			case ID_MAIN_FileListView:
+			{
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
 				pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
 				break;
 			}
-			case ID_MAIN_AxisControlListView: {
+			case ID_MAIN_AxisControlListView:
+			{
 				ZKListView::ZKListSubItem* pHomeBtn = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Yellow);
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
 				break;
 			}
-			case ID_MAIN_ExtruderFeedrate: {
-			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected.png");
-			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
-			    break;
+			case ID_MAIN_ExtruderFeedrate:
+			case ID_MAIN_ExtruderFeedDist:
+			{
+				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, "Dark2/selected.png");
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+				break;
 			}
-			case ID_MAIN_ExtruderFeedDist: {
-			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected.png");
-			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
-			    break;
+			case ID_MAIN_HeightMapColorSchemeList:
+			case ID_MAIN_WebcamSelectList:
+			{
+				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, "Dark2/selected_Elongated.png");
+				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
+				break;
 			}
-			case ID_MAIN_HeightMapColorSchemeList: {
-			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected_Elongated.png");
-			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
-			    break;
+			case ID_MAIN_PrintFanList:
+			case ID_MAIN_PrintTemperatureList:
+			case ID_MAIN_HeightMapList:
+			case ID_MAIN_ToolListView:
+			case ID_MAIN_GcodeListView:
+			case ID_MAIN_ConsoleListView:
+			{
+				pListItem->setBackgroundPic(nullptr);
+				break;
 			}
-			case ID_MAIN_WebcamSelectList: {
-			    pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED,"Dark2/selected_Elongated.png");
-			    pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
-			break;
-			}
-			case ID_MAIN_PrintFanList: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_PrintTemperatureList: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_HeightMapList: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_ToolListView: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_GcodeListView: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_ConsoleListView: {
-			    pListItem->setBackgroundPic(nullptr);
-			    break;
-			}
-			case ID_MAIN_DebugCommandList: {
-			    pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
-			    break;
+			case ID_MAIN_DebugCommandList:
+			{
+				pListItem->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
+				break;
 			}
 			case ID_MAIN_WindowSelectList:
-			            case ID_MAIN_SettingsWindowSelectList:
-			            {
-			                UI::SetIconRelativePosition(pListItem, 0.5, 0.4, 0.5);
-			                break;
-			            }
-			case ID_MAIN_TemperatureGraphLegend: {
+			case ID_MAIN_SettingsWindowSelectList:
+			{
+				UI::SetIconRelativePosition(pListItem, 0.5, 0.4, 0.5);
+				break;
+			}
+			case ID_MAIN_TemperatureGraphLegend:
+			{
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
 				break;
 			}

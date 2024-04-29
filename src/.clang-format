@@ -8,4 +8,5 @@
   AlwaysBreakTemplateDeclarations: Yes,
   BinPackArguments: false,
   BinPackParameters: false,
+  BreakBeforeBraces: Allman,
 }
