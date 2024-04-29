@@ -385,6 +385,13 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_rule_folder_white_48dp.png");
 			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_keyboard_command_key_white_48dp.png");
 
+			UI::GetUIControl<ZKButton>(ID_MAIN_ToolTempSnapshot)->setIconPosition({0, 0, 25, 25});
+			UI::GetUIControl<ZKButton>(ID_MAIN_BedTempSnapshot)->setIconPosition({0, 0, 25, 25});
+			UI::GetUIControl<ZKButton>(ID_MAIN_ChamberTempSnapshot)->setIconPosition({0, 0, 25, 25});
+			UI::GetUIControl<ZKButton>(ID_MAIN_ToolTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/printer-3d-nozzle.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_BedTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/radiator.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ChamberTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_stop_white_48dp.png");	// TODO - Change to chamber icon
+
 			// Move Window Buttons
 			constexpr float moveButtonScale = 0.45;
 			constexpr float moveButtonPosY = 0.25;
@@ -494,14 +501,12 @@ namespace UI::Theme
 			case ID_MAIN_ExtruderFeedDist:
 			{
 				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, "Dark2/selected.png");
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
 				break;
 			}
 			case ID_MAIN_HeightMapColorSchemeList:
 			case ID_MAIN_WebcamSelectList:
 			{
 				pListItem->setButtonStatusPic(ZK_CONTROL_STATUS_SELECTED, "Dark2/selected_Elongated.png");
-				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Clear);
 				break;
 			}
 			case ID_MAIN_PrintFanList:

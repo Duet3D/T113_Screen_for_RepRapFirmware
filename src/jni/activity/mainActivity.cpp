@@ -4,6 +4,11 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKButton* mChamberTempSnapshotPtr;
+static ZKButton* mBedTempSnapshotPtr;
+static ZKButton* mToolTempSnapshotPtr;
+static ZKWindow* mTemperatureSnapshotWindowPtr;
+static ZKWindow* mTopBarWindowPtr;
 static ZKTextView* mTextView40Ptr;
 static ZKListView* mSettingsWindowSelectListPtr;
 static ZKListView* mWindowSelectListPtr;
@@ -294,6 +299,9 @@ typedef struct {
 
 /*TAG:ButtonCallbackTab按键映射表*/
 static S_ButtonCallback sButtonCallbackTab[] = {
+    ID_MAIN_ChamberTempSnapshot, onButtonClick_ChamberTempSnapshot,
+    ID_MAIN_BedTempSnapshot, onButtonClick_BedTempSnapshot,
+    ID_MAIN_ToolTempSnapshot, onButtonClick_ToolTempSnapshot,
     ID_MAIN_EStopBtn, onButtonClick_EStopBtn,
     ID_MAIN_CloseGuideBtn, onButtonClick_CloseGuideBtn,
     ID_MAIN_PreviousPageBtn, onButtonClick_PreviousPageBtn,
@@ -602,6 +610,11 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mChamberTempSnapshotPtr = NULL;
+    mBedTempSnapshotPtr = NULL;
+    mToolTempSnapshotPtr = NULL;
+    mTemperatureSnapshotWindowPtr = NULL;
+    mTopBarWindowPtr = NULL;
     mTextView40Ptr = NULL;
     mSettingsWindowSelectListPtr = NULL;
     mWindowSelectListPtr = NULL;
@@ -864,6 +877,11 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mChamberTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_ChamberTempSnapshot);
+    mBedTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_BedTempSnapshot);
+    mToolTempSnapshotPtr = (ZKButton*)findControlByID(ID_MAIN_ToolTempSnapshot);
+    mTemperatureSnapshotWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_TemperatureSnapshotWindow);
+    mTopBarWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_TopBarWindow);
     mTextView40Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView40);
     mSettingsWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_SettingsWindowSelectList);if(mSettingsWindowSelectListPtr!= NULL){mSettingsWindowSelectListPtr->setListAdapter(this);mSettingsWindowSelectListPtr->setItemClickListener(this);}
     mWindowSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WindowSelectList);if(mWindowSelectListPtr!= NULL){mWindowSelectListPtr->setListAdapter(this);mWindowSelectListPtr->setItemClickListener(this);}

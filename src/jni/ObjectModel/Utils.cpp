@@ -88,9 +88,7 @@ namespace OM
 			if (bed != nullptr)
 			{
 				UI::CONSOLE.AddResponse(
-					utils::format(
-						"    [%u]: heater(%d), status(%d), slot(%d)", bed->index, bed->heater, bed->status, bed->slot)
-						.c_str());
+					utils::format("    [%u]: heater(%d), slot(%d)", bed->index, bed->heater, bed->slot).c_str());
 			}
 		}
 		UI::CONSOLE.AddResponse("  Chambers:");
@@ -99,12 +97,9 @@ namespace OM
 			BedOrChamber* chamber = GetChamber(i);
 			if (chamber != nullptr)
 			{
-				UI::CONSOLE.AddResponse(utils::format("    [%u]: heater(%d), status(%d), slot(%d)",
-													  chamber->index,
-													  chamber->heater,
-													  chamber->status,
-													  chamber->slot)
-											.c_str());
+				UI::CONSOLE.AddResponse(
+					utils::format("    [%u]: heater(%d), slot(%d)", chamber->index, chamber->heater, chamber->slot)
+						.c_str());
 			}
 		}
 		UI::CONSOLE.AddResponse("  Fans:");

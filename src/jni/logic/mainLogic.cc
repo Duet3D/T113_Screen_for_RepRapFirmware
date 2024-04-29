@@ -116,6 +116,7 @@ static void onUI_init()
 	// UI
 	UI::Init(mRootWindowPtr);
 	UI::Settings::Init(); // Sets various UI elements states
+	UI::Sidebar::Init();
 	UI::HomeScreen::Init();
 	UI::ExtrusionControl::Init();
 	UI::PrintStatus::Init();
@@ -288,6 +289,21 @@ static bool onButtonClick_ConsoleBtn(ZKButton* pButton)
 static bool onButtonClick_EStopBtn(ZKButton *pButton)
 {
 	UI::Sidebar::EStop();
+	return false;
+}
+
+static bool onButtonClick_ToolTempSnapshot(ZKButton* pButton)
+{
+	return false;
+}
+
+static bool onButtonClick_BedTempSnapshot(ZKButton* pButton)
+{
+	return false;
+}
+
+static bool onButtonClick_ChamberTempSnapshot(ZKButton* pButton)
+{
 	return false;
 }
 

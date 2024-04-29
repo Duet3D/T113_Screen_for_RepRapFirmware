@@ -28,6 +28,11 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_ChamberTempSnapshot    20023
+#define ID_MAIN_BedTempSnapshot    20022
+#define ID_MAIN_ToolTempSnapshot    20018
+#define ID_MAIN_TemperatureSnapshotWindow    110032
+#define ID_MAIN_TopBarWindow    110005
 #define ID_MAIN_TextView40    50070
 #define ID_MAIN_SettingsWindowSelectList    80037
 #define ID_MAIN_WindowSelectList    80021

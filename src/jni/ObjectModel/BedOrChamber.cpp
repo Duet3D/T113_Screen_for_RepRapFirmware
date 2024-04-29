@@ -33,7 +33,6 @@ namespace OM
 	{
 		index = 0;
 		heater = -1;
-		status = BedOrChamberStatus::off;
 		slot = MAX_SLOTS;
 	}
 

@@ -53,7 +53,6 @@ namespace OM
 		uint8_t index;
 		// Id of heater
 		int8_t heater;
-		BedOrChamberStatus status;
 		// Slot for display on panel
 		uint8_t slot;
 

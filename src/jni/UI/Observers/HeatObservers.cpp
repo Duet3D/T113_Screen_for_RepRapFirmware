@@ -7,6 +7,7 @@
 #include "Debug.h"
 
 #include "Configuration.h"
+#include "UI/Logic/Sidebar.h"
 #include "UI/OmObserver.h"
 #include "UI/UserInterface.h"
 
@@ -32,6 +33,7 @@ static UI::Observer<UI::ui_field_update_cb> HeatObserversField[] = {
 						   return;
 					   }
 					   UI::ToolsList::RefreshAllToolLists(false);
+					   UI::Sidebar::UpdateTemperatureSnapshot();
 				   }), /* Update what tool heaters active temperature */
 	OBSERVER_INT("heat:heaters^:active",
 				 [](OBSERVER_INT_ARGS) {
