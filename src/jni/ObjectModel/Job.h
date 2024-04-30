@@ -55,6 +55,9 @@ namespace OM
 	void SetPrintDuration(const uint32_t printDuration);
 	const uint32_t GetPrintDuration();
 
+	void SetWarmUpDuration(const uint32_t warmUpDuration);
+	const uint32_t GetWarmUpDuration();
+
 	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining);
 	const uint32_t GetPrintRemaining(RemainingTimeType type);
 

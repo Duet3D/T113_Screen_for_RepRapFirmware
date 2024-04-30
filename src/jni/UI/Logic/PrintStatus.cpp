@@ -84,9 +84,12 @@ namespace UI::PrintStatus
 		s_printFileName->setLongMode(ZKTextView::E_LONG_MODE_SCROLL);
 	}
 
-	void UpdateEstimatedPrintTime(uint32_t seconds)
+	void UpdateEstimatedPrintTime()
 	{
-		int percentage = std::min<int>((100 * OM::GetPrintDuration()) / OM::GetPrintTime(), 100);
+		uint32_t seconds = OM::GetPrintRemaining(OM::RemainingTimeType::slicer);
+		int percentage = std::min<int>(
+			(100 * std::max<int>(0, (int)OM::GetPrintDuration() - (int)OM::GetWarmUpDuration())) / OM::GetPrintTime(),
+			100);
 		tm time = Comm::ParseSeconds(seconds);
 		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
 			->setTextTrf("estimated", time.tm_hour, time.tm_min, time.tm_sec);

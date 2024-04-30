@@ -50,7 +50,13 @@ static UI::Observer<UI::ui_field_update_cb> JobObserversField[] = {
 				  [](OBSERVER_UINT_ARGS)
 				  {
 					  OM::SetPrintRemaining(OM::RemainingTimeType::slicer, val);
-					  UI::PrintStatus::UpdateEstimatedPrintTime(val);
+					  UI::PrintStatus::UpdateEstimatedPrintTime();
+				  }),
+	OBSERVER_UINT("job:warmUpDuration",
+				  [](OBSERVER_UINT_ARGS)
+				  {
+					  OM::SetWarmUpDuration(val);
+					  UI::PrintStatus::UpdateEstimatedPrintTime();
 				  }),
 	OBSERVER_CHAR("job:build",
 				  [](OBSERVER_CHAR_ARGS)

@@ -20,7 +20,7 @@ namespace UI::PrintStatus
 	void BabyStepUp();
 
 	void UpdateFileName();
-	void UpdateEstimatedPrintTime(uint32_t time);
+	void UpdateEstimatedPrintTime();
 	void UpdateElapsedTime(uint32_t time);
 
 	size_t GetFanListCount();

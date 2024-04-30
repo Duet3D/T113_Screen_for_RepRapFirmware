@@ -38,6 +38,7 @@ namespace OM
 	static std::string s_lastJobName;
 	static uint32_t s_printTime = 0;
 	static uint32_t s_printDuration = 0;
+	static uint32_t s_warmUpDuration = 0;
 	static struct
 	{
 		uint32_t filament = 0;
@@ -48,6 +49,7 @@ namespace OM
 
 	ATTR_SETTR_GETTR(PrintTime, uint32_t, s_printTime)
 	ATTR_SETTR_GETTR(PrintDuration, uint32_t, s_printDuration)
+	ATTR_SETTR_GETTR(WarmUpDuration, uint32_t, s_warmUpDuration)
 
 	void SetPrintRemaining(RemainingTimeType type, const uint32_t printRemaining)
 	{

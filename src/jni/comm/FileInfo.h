@@ -114,6 +114,7 @@ namespace Comm
 	};
 
 	tm ParseSeconds(uint32_t seconds);
+	size_t GetFileSize(const char* filepath);
 
 	extern ThumbnailBuf g_thumbnailBuf;
 } // namespace Comm

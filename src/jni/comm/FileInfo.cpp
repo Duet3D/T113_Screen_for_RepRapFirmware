@@ -19,6 +19,7 @@
 #include "UI/Logic/FileList.h"
 #include "UI/UserInterface.h"
 #include "utils/utils.h"
+#include <sys/stat.h>
 #include <utils/TimeHelper.h>
 
 namespace Comm
@@ -195,10 +196,16 @@ namespace Comm
 				}
 				if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
 				{
-					system(utils::format(
-							   "cp %s %s", m_currentThumbnail->GetThumbnailPath().c_str(), currentJobThumbnailFilePath)
-							   .c_str());
-					UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)->setBackgroundPic(currentJobThumbnailFilePath);
+					if (GetFileSize(currentJobThumbnailFilePath) <
+						GetFileSize(m_currentThumbnail->GetThumbnailPath().c_str()))
+					{
+						system(utils::format("cp %s %s",
+											 m_currentThumbnail->GetThumbnailPath().c_str(),
+											 currentJobThumbnailFilePath)
+								   .c_str());
+						UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
+							->setBackgroundPic(currentJobThumbnailFilePath);
+					}
 					m_currentCachedJobPath = OM::GetJobName();
 				}
 				m_thumbnailRequestInProgress = false;
@@ -634,6 +641,21 @@ namespace Comm
 		time.tm_min = static_cast<int>((seconds - time.tm_hour * 3600) / 60);
 		time.tm_sec = static_cast<int>(seconds - time.tm_hour * 3600 - time.tm_min * 60);
 		return time;
+	}
+
+	size_t GetFileSize(const char* filepath)
+	{
+		struct stat sb;
+		if (system(utils::format("test -f \"%s\"", filepath).c_str()) == 0)
+		{
+			if (stat(filepath, &sb) == -1)
+			{
+				// File doesn't exist
+				return 0;
+			}
+			return sb.st_size;
+		}
+		return 0;
 	}
 
 	static Debug::DebugCommand s_dbgFileInfoCache("dbg_file_info_cache",
