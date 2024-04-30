@@ -550,14 +550,7 @@ namespace OM
 			return false;
 		}
 
-		if (strcmp(name, "") == 0)
-		{
-			tool->name.printf("%s %d", LANGUAGEMANAGER->getValue("tool").c_str(), tool->index);
-		}
-		else
-		{
-			tool->name.copy(name, MAX_TOOL_NAME_LENGTH);
-		}
+		tool->name.copy(name, MAX_TOOL_NAME_LENGTH);
 		dbg("Tool %d name=%s", tool->index, tool->name.c_str());
 		return true;
 	}

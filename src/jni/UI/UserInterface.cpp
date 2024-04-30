@@ -345,16 +345,20 @@ namespace UI
 			pCurrentTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
 			pActiveTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
 			pStandbyTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
+			std::string toolName =
+				data.tool->name.IsEmpty()
+					? utils::format("%s %d", LANGUAGEMANAGER->getValue("tool").c_str(), data.tool->index).c_str()
+					: data.tool->name.c_str();
 			if (data.toolHeater != nullptr)
 			{
 				// Heater
 				if (data.tool->GetHeaterCount() > 1)
 				{
-					pToolName->setTextf("%s (%d)", data.tool->name.c_str(), data.toolHeaterIndex);
+					pToolName->setTextf("%s (%d)", toolName.c_str(), data.toolHeaterIndex);
 				}
 				else
 				{
-					pToolName->setText(data.tool->name.c_str());
+					pToolName->setText(toolName.c_str());
 				}
 				pActiveTemperature->setText((int)data.toolHeater->activeTemp);
 				pStandbyTemperature->setText((int)data.toolHeater->standbyTemp);
@@ -365,7 +369,7 @@ namespace UI
 			else if (data.spindle != nullptr)
 			{
 				// Spindle
-				pToolName->setTextf("%s (spindle)", data.tool->name.c_str());
+				pToolName->setTextf("%s (spindle)", toolName.c_str());
 				pActiveTemperature->setText((int)data.tool->spindleRpm);
 				pStandbyTemperature->setText("RPM");
 				pCurrentTemperature->setText((int)data.spindle->current);
@@ -375,7 +379,7 @@ namespace UI
 			else
 			{
 				// Tool with no heaters or spindle
-				pToolName->setText(data.tool->name.c_str());
+				pToolName->setText(toolName.c_str());
 				pActiveTemperature->setVisible(false);
 				pStandbyTemperature->setVisible(false);
 				pCurrentTemperature->setVisible(false);

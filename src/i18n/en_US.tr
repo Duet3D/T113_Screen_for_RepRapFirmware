@@ -87,7 +87,7 @@
     <string name="fan_status">Fan %d: %d %%</string>
     <string name="babystepping">Z Babystepping</string>
     <string name="babystepping_offset">Current Offset: %.2f mm</string>
-    <string name="extruder_drives">Extruder Drives</string>
+    <string name="extruder_drives">Extruder Position</string>
     <string name="extrusion_factor">Extrusion Factor</string>
     <string name="requested_speed">Requested: %.2f mm/s</string>
     <string name="top_speed">Top: %.2f mm/s</string>
