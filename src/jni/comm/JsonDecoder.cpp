@@ -21,6 +21,7 @@
 #include "Hardware/SerialIo.h"
 #include "JsonDecoder.h"
 #include "ObjectModel/Alert.h"
+#include "ObjectModel/Job.h"
 #include "ObjectModel/Utils.h"
 #include "UI/Logic/FileList.h"
 #include "UI/OmObserver.h"
@@ -244,14 +245,6 @@ namespace Comm
 				}
 				if (thumbnail->context.next == 0)
 				{
-					thumbnail->image.Close();
-					info("Updating thumbnail %s", thumbnail->filename.c_str());
-					UI::FileList::GetThumbnail()->setText("");
-					UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
-					if (thumbnail->AboveCacheLimit())
-					{
-						UI::POPUP_WINDOW.SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
-					}
 					thumbnail->context.state = ThumbnailState::Cached;
 				}
 				else

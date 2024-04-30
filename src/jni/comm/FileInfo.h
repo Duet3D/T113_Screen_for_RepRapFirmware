@@ -22,6 +22,7 @@
 namespace Comm
 {
 	constexpr const char* largeThumbnailFilename = "largeThumbnail";
+	constexpr const char* currentJobThumbnailFilePath = "/tmp/currentJobThumbnail";
 
 	struct FileInfo
 	{
@@ -104,6 +105,7 @@ namespace Comm
 		FileInfo* m_currentFileInfo = nullptr; // the file info currently being processed
 		Thumbnail* m_currentThumbnail = nullptr;
 		Thumbnail* m_queuedLargeThumbnail = nullptr;
+		std::string m_currentCachedJobPath;
 		std::map<std::string, FileInfo*> m_cache; // cache of file path and their associated file info
 		std::list<std::string> m_fileInfoRequestQueue;
 		std::list<Thumbnail*> m_thumbnailRequestQueue;

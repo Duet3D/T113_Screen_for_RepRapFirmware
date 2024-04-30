@@ -449,7 +449,6 @@ namespace UI::Theme
 										statusButtonPosX,
 										statusButtonPosY,
 										statusButtonScale);
-			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)->setBackgroundPic("Dark2/selected.png");
 
 			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_compress_white_48dp.png");
 			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_expand_white_48dp.png");

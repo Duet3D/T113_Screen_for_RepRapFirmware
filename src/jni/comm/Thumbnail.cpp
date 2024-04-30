@@ -82,6 +82,15 @@ namespace Comm
 	{
 		return meta.width > MAX_THUMBNAIL_CACHE_PIXELS || meta.height > MAX_THUMBNAIL_CACHE_PIXELS;
 	}
+
+	std::string Thumbnail::GetThumbnailPath() const
+	{
+		if (AboveCacheLimit())
+		{
+			return ::GetThumbnailPath(largeThumbnailFilename);
+		}
+		return ::GetThumbnailPath(filename.c_str());
+	}
 } // namespace Comm
 
 bool ThumbnailIsValid(Comm::Thumbnail& thumbnail)

@@ -14,6 +14,7 @@
 
 #include "Configuration.h"
 #include "Hardware/Duet.h"
+#include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
 #include "UI/Logic/FileList.h"
 #include "UI/UserInterface.h"
@@ -107,14 +108,19 @@ namespace Comm
 
 		long long now = TimeHelper::getCurrentTime();
 
+		// Limit request rate while printing or if the file list is not visible
 		if ((OM::PrintInProgress() || !UI::GetUIControl<ZKWindow>(ID_MAIN_FilesWindow)->isVisible()) &&
 			(now - m_lastFileInfoRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL ||
 			 now - m_lastThumbnailRequestTime < BACKGROUND_FILE_CACHE_POLL_INTERVAL))
 		{
-			verbose("Skipping file info cache spin");
-			return;
+			if (m_currentThumbnail == nullptr || !m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
+			{
+				verbose("Skipping file info cache spin");
+				return;
+			}
 		}
 
+		// Check if a file info request has timed out
 		if (m_fileInfoRequestInProgress && now > m_lastFileInfoRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
 		{
 			warn("File info request timed out for %s", m_currentFileInfoRequest.c_str());
@@ -123,8 +129,8 @@ namespace Comm
 			m_currentFileInfoRequest.clear();
 		}
 
-		if (m_currentThumbnail != nullptr &&
-			TimeHelper::getCurrentTime() > m_lastThumbnailRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
+		// Check if a thumbnail request has timed out
+		if (m_currentThumbnail != nullptr && now > m_lastThumbnailRequestTime + FILE_CACHE_REQUEST_TIMEOUT)
 		{
 			Thumbnail* thumbnail = m_currentThumbnail;
 			m_currentThumbnail = nullptr;
@@ -133,6 +139,7 @@ namespace Comm
 			QueueThumbnailRequest(thumbnail->filename.c_str());
 		}
 
+		// Check if a request has finished
 		if (!m_fileInfoRequestInProgress && m_currentFileInfo != nullptr)
 		{
 			m_currentFileInfoRequest.clear();
@@ -178,11 +185,42 @@ namespace Comm
 				m_currentThumbnail->context.state = ThumbnailState::DataWait;
 				return;
 			case ThumbnailState::Cached:
+				m_currentThumbnail->image.Close();
+				info("Updating thumbnail %s", m_currentThumbnail->filename.c_str());
+				UI::FileList::GetThumbnail()->setText("");
+				UI::GetUIControl<ZKListView>(ID_MAIN_FileListView)->refreshListView();
+				if (m_currentThumbnail->AboveCacheLimit())
+				{
+					UI::POPUP_WINDOW.SetImage(GetThumbnailPath(largeThumbnailFilename).c_str());
+				}
+				if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
+				{
+					system(utils::format(
+							   "cp %s %s", m_currentThumbnail->GetThumbnailPath().c_str(), currentJobThumbnailFilePath)
+							   .c_str());
+					UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)->setBackgroundPic(currentJobThumbnailFilePath);
+					m_currentCachedJobPath = OM::GetJobName();
+				}
 				m_thumbnailRequestInProgress = false;
 				m_currentThumbnail = nullptr;
 				break;
 			default:
 				break;
+			}
+		}
+
+		if (!OM::GetJobName().empty() && m_currentCachedJobPath != OM::GetJobName())
+		{
+			// Set the thumbnail to a small version if it exists
+			UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)
+				->setBackgroundPic(GetThumbnailPath(OM::GetJobName().c_str()).c_str());
+
+			// Queue a request for a large thumbnail
+			bool queued = QueueLargeThumbnailRequest(OM::GetJobName());
+			if (GetFileInfo(OM::GetJobName()) != nullptr && !queued)
+			{
+				// No valid thumbnail
+				m_currentCachedJobPath = OM::GetJobName();
 			}
 		}
 
@@ -482,12 +520,27 @@ namespace Comm
 		return m_currentThumbnail;
 	}
 
+	/**
+	 * @brief Stops the current thumbnail request. Will not stop a thumbnail request if it is for the current print job.
+	 * @param largeOnly If true, only stops the request if the current thumbnail is above the cache limit.
+	 * @return True if the thumbnail request was stopped, false otherwise.
+	 */
 	bool FileInfoCache::StopThumbnailRequest(bool largeOnly)
 	{
-		if (largeOnly && m_currentThumbnail != nullptr && !m_currentThumbnail->AboveCacheLimit())
+		if (m_currentThumbnail == nullptr)
+		{
+			return true;
+		}
+		if (largeOnly && !m_currentThumbnail->AboveCacheLimit())
 		{
 			return false;
 		}
+		if (m_currentThumbnail->filename.Equals(OM::GetJobName().c_str()))
+		{
+			dbg("Not stopping thumbnail request for current print job %s", m_currentThumbnail->filename.c_str());
+			return false;
+		}
+		dbg("Stopping thumbnail request for %s", m_currentThumbnail->filename.c_str());
 		m_currentThumbnail = nullptr;
 		return true;
 	}

@@ -11,6 +11,7 @@
 
 #include "FileList.h"
 #include <ObjectModel/Files.h>
+#include <ObjectModel/PrinterStatus.h>
 #include <UI/Popup.h>
 #include <activity/mainActivity.h>
 #include <comm/FileInfo.h>
@@ -49,6 +50,9 @@ namespace UI::FileList
 
 	static void RunSelectedFile()
 	{
+		system(utils::format("rm -f %s", Comm::currentJobThumbnailFilePath).c_str());
+		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintThumbnail)->setBackgroundPic(nullptr);
+		FILEINFO_CACHE->QueueLargeThumbnailRequest(s_selectedFile->GetPath());
 		return OM::FileSystem::RunFile(s_selectedFile);
 	}
 
@@ -209,6 +213,7 @@ namespace UI::FileList
 		{
 			UI::POPUP_WINDOW.ShowImage(false);
 		}
+		UI::POPUP_WINDOW.OkVisible(!OM::PrintInProgress());
 		UI::POPUP_WINDOW.SetOkBtnText(LANGUAGEMANAGER->getValue("start_print").c_str());
 		UI::POPUP_WINDOW.CancelTimeout();
 	}
