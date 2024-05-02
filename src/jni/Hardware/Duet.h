@@ -129,6 +129,7 @@ namespace Comm
 		int32_t m_sessionTimeout;
 		long long m_lastRequestTime;
 		uint32_t m_sessionKey;
+		bool m_sbcMode;
 
 		uint32_t m_pollInterval;
 		baudrate_t m_baudRate;

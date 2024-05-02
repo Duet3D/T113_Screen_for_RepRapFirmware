@@ -51,6 +51,7 @@ namespace Comm
 	{
 		verbose("");
 		m_sessionKey = sm_noSessionKey;
+		m_sbcMode = false;
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
 		ClearIPAddress();
@@ -103,7 +104,8 @@ namespace Comm
 						function<bool(RestClient::Response&)> callback,
 						bool queue)
 	{
-		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
+			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -126,7 +128,8 @@ namespace Comm
 	*/
 	bool Duet::Get(const char* subUrl, RestClient::Response& r, QueryParameters_t& queryParameters)
 	{
-		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
+			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -158,7 +161,8 @@ namespace Comm
 					QueryParameters_t& queryParameters,
 					const std::string& data)
 	{
-		if (m_sessionKey == sm_noSessionKey || (TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
+		if ((!m_sbcMode && m_sessionKey == sm_noSessionKey) ||
+			(TimeHelper::getCurrentTime() - m_lastRequestTime > m_sessionTimeout))
 		{
 			if (!Connect())
 			{
@@ -697,6 +701,12 @@ namespace Comm
 					{
 						m_sessionKey = body["sessionKey"].asUInt();
 						info("Duet session key = %u", m_sessionKey);
+					}
+					if (body.isMember("isEmulated"))
+					{
+						m_sessionKey = sm_noSessionKey;
+						m_sbcMode = true;
+						info("Connected to Duet in SBC mode");
 					}
 					info("rr_connect succeeded");
 					return true;

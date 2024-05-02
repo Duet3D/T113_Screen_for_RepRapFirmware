@@ -218,14 +218,21 @@ namespace Comm
 		conn->FollowRedirects(true, 3);
 
 		// set headers
-		conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+		if (sessionKey > 0)
+		{
+			conn->AppendHeader("X-Session-Key", utils::format("%u", sessionKey));
+			dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
+		}
+		else
+		{
+			dbg("Get: \"%s\"", url.c_str());
+		}
 		conn->AppendHeader("Accept", "application/json");
 		conn->AppendHeader("Content-Type", "application/json");
 
 		// if using a non-standard Certificate Authority (CA) trust file
 		conn->SetCAInfoFilePath(CONFIGMANAGER->getResFilePath("cacert.pem"));
 
-		dbg("Get: \"%s\", sessionKey=%u", url.c_str(), sessionKey);
 		r = conn->get("");
 		if (r.code != 200)
 		{
