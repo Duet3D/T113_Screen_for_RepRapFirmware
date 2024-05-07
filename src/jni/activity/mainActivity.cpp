@@ -897,6 +897,10 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView52Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView52);
+    mAddWebcamBtnPtr = (ZKButton*)findControlByID(ID_MAIN_AddWebcamBtn);
+    mWebcamSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSettingWindow);
+    mWebcamFeedPtr = (ZKTextView*)findControlByID(ID_MAIN_WebcamFeed);
     mConsoleHeaderPtr = (ZKTextView*)findControlByID(ID_MAIN_ConsoleHeader);
     mConsoleSystemCommandsPtr = (ZKCheckBox*)findControlByID(ID_MAIN_ConsoleSystemCommands);if(mConsoleSystemCommandsPtr!= NULL){mConsoleSystemCommandsPtr->setCheckedChangeListener(this);}
     mTextView55Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView55);
@@ -921,27 +925,6 @@ void mainActivity::onCreate() {
     mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);if(mWebcamUrlListPtr!= NULL){mWebcamUrlListPtr->setListAdapter(this);mWebcamUrlListPtr->setItemClickListener(this);}
     mWebcamSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamSelectList);if(mWebcamSelectListPtr!= NULL){mWebcamSelectListPtr->setListAdapter(this);mWebcamSelectListPtr->setItemClickListener(this);}
 	mTextView53Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView53);
-	mWebcamUpdateIntervalInputPtr = (ZKEditText*)findControlByID(ID_MAIN_WebcamUpdateIntervalInput);
-	if (mWebcamUpdateIntervalInputPtr != NULL)
-	{
-		mWebcamUpdateIntervalInputPtr->setTextChangeListener(this);
-	}
-	mTextView52Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView52);
-	mAddWebcamBtnPtr = (ZKButton*)findControlByID(ID_MAIN_AddWebcamBtn);
-	mWebcamUrlListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamUrlList);
-	if (mWebcamUrlListPtr != NULL)
-	{
-		mWebcamUrlListPtr->setListAdapter(this);
-		mWebcamUrlListPtr->setItemClickListener(this);
-	}
-	mWebcamSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSettingWindow);
-	mWebcamFeedPtr = (ZKTextView*)findControlByID(ID_MAIN_WebcamFeed);
-	mWebcamSelectListPtr = (ZKListView*)findControlByID(ID_MAIN_WebcamSelectList);
-	if (mWebcamSelectListPtr != NULL)
-	{
-		mWebcamSelectListPtr->setListAdapter(this);
-		mWebcamSelectListPtr->setItemClickListener(this);
-	}
 	mTextView51Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView51);
 	mWebcamSelectWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSelectWindow);
 	mWebcamWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamWindow);
@@ -987,18 +970,6 @@ void mainActivity::onCreate() {
     mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);if(mTempGraphYLabelsPtr!= NULL){mTempGraphYLabelsPtr->setListAdapter(this);mTempGraphYLabelsPtr->setItemClickListener(this);}
     mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);if(mTempGraphXLabelsPtr!= NULL){mTempGraphXLabelsPtr->setListAdapter(this);mTempGraphXLabelsPtr->setItemClickListener(this);}
     mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);if(mTemperatureGraphLegendPtr!= NULL){mTemperatureGraphLegendPtr->setListAdapter(this);mTemperatureGraphLegendPtr->setItemClickListener(this);}
-	mTempGraphYLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphYLabels);
-	if (mTempGraphYLabelsPtr != NULL)
-	{
-		mTempGraphYLabelsPtr->setListAdapter(this);
-		mTempGraphYLabelsPtr->setItemClickListener(this);
-	}
-	mTempGraphXLabelsPtr = (ZKListView*)findControlByID(ID_MAIN_TempGraphXLabels);
-	if (mTempGraphXLabelsPtr != NULL)
-	{
-		mTempGraphXLabelsPtr->setListAdapter(this);
-		mTempGraphXLabelsPtr->setItemClickListener(this);
-	}
 	mGraphYLabelBottomPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelBottom);
 	mGraphYLabelMidPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelMid);
 	mGraphYLabelTopPtr = (ZKTextView*)findControlByID(ID_MAIN_GraphYLabelTop);
@@ -1180,12 +1151,6 @@ void mainActivity::onCreate() {
     mHomeAllBtnPtr = (ZKButton*)findControlByID(ID_MAIN_HomeAllBtn);
     mMoveWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_MoveWindow);
     mSlideWindow1Ptr = (ZKSlideWindow*)findControlByID(ID_MAIN_SlideWindow1);if(mSlideWindow1Ptr!= NULL){mSlideWindow1Ptr->setSlideItemClickListener(this);}
-	mTemperatureGraphLegendPtr = (ZKListView*)findControlByID(ID_MAIN_TemperatureGraphLegend);
-	if (mTemperatureGraphLegendPtr != NULL)
-	{
-		mTemperatureGraphLegendPtr->setListAdapter(this);
-		mTemperatureGraphLegendPtr->setItemClickListener(this);
-	}
 	mTempGraphPtr = (ZKDiagram*)findControlByID(ID_MAIN_TempGraph);
     mTemperatureGraphWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_TemperatureGraphWindow);
     mToolListHeadingStandbyPtr = (ZKTextView*)findControlByID(ID_MAIN_ToolListHeadingStandby);

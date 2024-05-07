@@ -16,20 +16,76 @@
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Job.h"
 #include "ObjectModel/PrinterStatus.h"
+#include "Storage.h"
 #include "comm/FileInfo.h"
 #include <manager/LanguageManager.h>
+#include <storage/StoragePreferences.h>
 
 namespace UI::PrintStatus
 {
 	static ToolsList s_toolsList;
 	static ZKTextView* s_printFileName = nullptr;
+	static ZKButton* s_babyStepDown = nullptr;
+	static ZKButton* s_babyStepUp = nullptr;
+	static float s_babyStepAmount = DEFAULT_BABY_STEP_SIZE;
+
+	static void SetBabyStepAmount(float amount)
+	{
+		if (amount <= 0.0f || amount >= 10.0f)
+		{
+			warn("Invalid babystep amount: %.3f", amount);
+			return;
+		}
+		StoragePreferences::putFloat(ID_BABYSTEP_AMOUNT, amount);
+		s_babyStepAmount = amount;
+		s_babyStepDown->setTextf("-%.3f mm", s_babyStepAmount);
+		s_babyStepUp->setTextf("%.3f mm", s_babyStepAmount);
+	}
+
+	class IMETextUpdateListener : public IMEContext::IIMETextUpdateListener
+	{
+	  public:
+		virtual void onIMETextUpdate(const std::string& text)
+		{
+			s_babyStepAmount = atof(text.c_str());
+			SetBabyStepAmount(s_babyStepAmount);
+		}
+	};
+
+	class BabyStepLongClickListener : public ZKBase::ILongClickListener
+	{
+		virtual void onLongClick(ZKBase* pBase)
+		{
+			static IMETextUpdateListener listener;
+			static IMEContext::SIMETextInfo info;
+
+			dbg("Long click on babystep button");
+
+			info.imeTextType = IMEContext::E_IME_TEXT_TYPE_NUMBER;
+			info.isPassword = false;
+			info.text = utils::format("%.3f", s_babyStepAmount);
+
+			EASYUICONTEXT->showIME(&info, &listener);
+		}
+	};
 
 	void Init()
 	{
+		static BabyStepLongClickListener s_babyStepListener;
+
 		info("Initialising PrintStatus UI...");
 
 		ZKListView* toolList = UI::GetUIControl<ZKListView>(ID_MAIN_PrintTemperatureList);
 		s_printFileName = UI::GetUIControl<ZKTextView>(ID_MAIN_PrintFileName);
+
+		s_babyStepDown = UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn);
+		s_babyStepUp = UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn);
+
+		SetBabyStepAmount(StoragePreferences::getFloat(ID_BABYSTEP_AMOUNT, DEFAULT_BABY_STEP_SIZE));
+
+		s_babyStepDown->setLongClickListener(&s_babyStepListener);
+		s_babyStepUp->setLongClickListener(&s_babyStepListener);
+
 		if (toolList == nullptr)
 		{
 			error("Failed to get tool list");
@@ -46,12 +102,12 @@ namespace UI::PrintStatus
 
 	void BabyStepDown()
 	{
-		Comm::DUET.SendGcode("M290 S-0.05");
+		Comm::DUET.SendGcodef("M290 S-%.3f", s_babyStepAmount);
 	}
 
 	void BabyStepUp()
 	{
-		Comm::DUET.SendGcode("M290 S0.05");
+		Comm::DUET.SendGcodef("M290 S%.3f", s_babyStepAmount);
 	}
 
 	void UpdateFileName()

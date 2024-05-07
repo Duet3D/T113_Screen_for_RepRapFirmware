@@ -12,7 +12,7 @@
 
 namespace UI::PrintStatus
 {
-    void Init();
+	void Init();
 
 	void Open();
 

@@ -36,4 +36,6 @@ constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam_update_interval";
 constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
 constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
 
+constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
+
 #endif /* JNI_STORAGE_H_ */

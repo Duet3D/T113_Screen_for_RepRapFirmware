@@ -24,6 +24,7 @@ constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchro
 constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
 constexpr const char* DEFAULT_FILAMENTS_FILE = "filaments.csv";
 constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
+constexpr float DEFAULT_BABY_STEP_SIZE = 0.05;
 
 /* Thumbnails */
 constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
@@ -57,9 +58,6 @@ constexpr size_t MAX_TRACKED_OBJECTS = 40;
 /* Heightmap */
 constexpr double HEIGHTMAP_FIXED_MAX = 0.25;
 constexpr double HEIGHTMAP_FIXED_MIN = -0.25;
-
-// Increasing this too high will cause a delay when rendering the heightmap.
-// Recommended max of 100
 constexpr size_t HEIGHTMAP_COLORBAR_SAMPLES = 100;
 
 /* Console */
