@@ -271,12 +271,15 @@
     <string name="add_new_webcam">Neue Webcam hinzufügen</string>
     <string name="webcam_update_interval_ms">Aktualisierungsintervall (ms):</string>
     <string name="webcam_update_interval_ms_hint">Aktualisierungsintervall (ms)</string>
+    <string name="usb_host">USB-C Host-Modus</string>
+    <string name="console_system_commands">Systembefehle in Konsole senden</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>
     <string name="clear">Löschen</string>
     <string name="send">Senden</string>
     <string name="enter_command">Befehl eingeben</string>
+    <string name="console_system">Konsole - System</string>
 
     <!-- Debug Menu -->
     <string name="open_debug_commands">Debug</string>

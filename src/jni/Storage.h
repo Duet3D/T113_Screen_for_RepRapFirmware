@@ -33,4 +33,7 @@ constexpr const char* ID_WEBCAM_URL = "webcam_url_%d";
 constexpr const char* ID_ACTIVE_WEBCAM_INDEX = "webcam_active_index";
 constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam_update_interval";
 
+constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
+constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
+
 #endif /* JNI_STORAGE_H_ */

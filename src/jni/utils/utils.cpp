@@ -14,6 +14,37 @@
 
 namespace utils
 {
+
+	/**
+	 * Executes a command and returns the output as a string.
+	 *
+	 * @param cmd The command to be executed.
+	 * @return The output of the command as a string.
+	 */
+	std::string exec(const char* cmd)
+	{
+		char buffer[128];
+		std::string result = "";
+		std::string errorText = "";
+		FILE* pipe = popen(cmd, "r");
+		if (!pipe)
+		{
+			error("popen(%s) failed!", cmd);
+			return "";
+		}
+		while (!feof(pipe))
+		{
+			if (fgets(buffer, 128, pipe) != NULL)
+				result += buffer;
+		}
+		int status = pclose(pipe);
+		if (status != 0)
+		{
+			errorText = format("Command failed with status: %d", status);
+		}
+		return result + "\n" + errorText;
+	}
+
 	std::string format(const char* fmt, ...)
 	{
 		va_list args;

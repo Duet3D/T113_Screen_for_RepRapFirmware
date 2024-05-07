@@ -16,6 +16,7 @@
 #include "Settings.h"
 #include "Storage.h"
 #include "UI/GuidedSetup.h"
+#include "UI/Logic/Console.h"
 #include "UI/Logic/Heightmap.h"
 #include "UI/Logic/Webcam.h"
 #include "UI/Themes.h"
@@ -26,6 +27,7 @@
 #include <manager/LanguageManager.h>
 #include <storage/StoragePreferences.h>
 #include <utils/BrightnessHelper.h>
+#include <utils/GpioHelper.h>
 
 namespace UI::Settings
 {
@@ -33,7 +35,8 @@ namespace UI::Settings
 	static WindowSelectItem s_windows[] = {
 		{"language", []() { EASYUICONTEXT->openActivity("LanguageSettingActivity"); }},
 		{"duet",
-		 []() {
+		 []()
+		 {
 			 UI::GetUIControl(ID_MAIN_DuetUartCommSettingWindow)
 				 ->setVisible(Comm::DUET.GetCommunicationType() == Comm::Duet::CommunicationType::uart);
 			 UI::GetUIControl(ID_MAIN_DuetNetworkCommSettingWindow)
@@ -41,7 +44,8 @@ namespace UI::Settings
 			 UI::WINDOW.OpenOverlay(ID_MAIN_DuetCommSettingWindow);
 		 }},
 		{"update",
-		 []() {
+		 []()
+		 {
 			 UI::POPUP_WINDOW.Open([]() {
 				 if (!UpgradeFromDuet())
 				 {
@@ -56,17 +60,19 @@ namespace UI::Settings
 			 UI::POPUP_WINDOW.CancelTimeout();
 		 }},
 		{"restart",
-		 []() {
+		 []()
+		 {
 			 // Synchronise data and save cached data to prevent data loss
 			 Reset();
 		 }},
-		{"dev", []() { EASYUICONTEXT->openActivity("DeveloperSettingActivity"); }},
+		{"dev", []() { UI::WINDOW.OpenOverlay(ID_MAIN_DeveloperSettingWindow); }},
 		{"power_off", []() { EASYUICONTEXT->openActivity("PowerOffActivity"); }},
 		{"zk_setting", []() { EASYUICONTEXT->openActivity("ZKSettingActivity"); }},
 		{"touch_calibration", []() { EASYUICONTEXT->openActivity("TouchCalibrationActivity"); }},
 		{"guides", []() { UI::WINDOW.OpenOverlay(ID_MAIN_GuideSelectionWindow); }},
 		{"brightness",
-		 []() {
+		 []()
+		 {
 			 //! TODO: There is a bug in the flythings brightness api. Sometimes when calling it, the screen will go
 			 //! completely white and need a power cycle.
 			 //? This might be a bug with the screen hardware itself. TODO: test with next rev hardware
@@ -120,6 +126,11 @@ namespace UI::Settings
 		UI::GetUIControl<ZKEditText>(ID_MAIN_PasswordInput)->setText(Comm::DUET.GetPassword());
 		UI::GetUIControl<ZKEditText>(ID_MAIN_PollIntervalInput)->setText((int)Comm::DUET.GetPollInterval());
 		UI::GetUIControl<ZKEditText>(ID_MAIN_InfoTimeoutInput)->setText((int)UI::POPUP_WINDOW.GetTimeout());
+
+		// USB Settings
+		UI::GetUIControl<ZKCheckBox>(ID_MAIN_UsbHost)->setChecked(StoragePreferences::getBool(ID_USB_HOST_MODE, true));
+		UI::GetUIControl<ZKCheckBox>(ID_MAIN_ConsoleSystemCommands)
+			->setChecked(StoragePreferences::getBool(ID_CONSOLE_SYSTEM_COMMANDS, false));
 	}
 
 	size_t GetWindowSelectCount()
@@ -350,6 +361,27 @@ namespace UI::Settings
 		default:
 			UI::Webcam::OpenWebcamUrlInput(index);
 			break;
+		}
+	}
+
+	/* Developer */
+
+	void SetUsbHostMode(const bool isHost)
+	{
+		GpioHelper::output(GPIO_PIN_E_08, !isHost);
+		StoragePreferences::putBool(ID_USB_HOST_MODE, isHost);
+	}
+
+	void SetConsoleSystemMode(const bool isSystem)
+	{
+		StoragePreferences::putBool(ID_CONSOLE_SYSTEM_COMMANDS, isSystem);
+		if (isSystem)
+		{
+			UI::ConsoleWindow::SetConsoleMode(UI::ConsoleWindow::ConsoleMode::System);
+		}
+		else
+		{
+			UI::ConsoleWindow::SetConsoleMode(UI::ConsoleWindow::ConsoleMode::Duet);
 		}
 	}
 

@@ -4,6 +4,12 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mConsoleHeaderPtr;
+static ZKCheckBox* mConsoleSystemCommandsPtr;
+static ZKTextView* mTextView55Ptr;
+static ZKCheckBox* mUsbHostPtr;
+static ZKTextView* mTextView54Ptr;
+static ZKWindow* mDeveloperSettingWindowPtr;
 static ZKButton* mPrintAgainBtnPtr;
 static ZKTextView* mPrintThumbnailPtr;
 static ZKTextView* mTextView41Ptr;
@@ -211,7 +217,6 @@ static ZKButton* mConsoleMacroBtn1Ptr;
 static ZKButton* mConsoleClearBtnPtr;
 static ZKButton* mSendBtnPtr;
 static ZKTextView* mTextView4Ptr;
-static ZKTextView* mTextView3Ptr;
 static ZKEditText* mConsoleInputPtr;
 static ZKListView* mGcodeListViewPtr;
 static ZKListView* mConsoleListViewPtr;
@@ -597,6 +602,8 @@ typedef struct {
 }S_CheckboxCallback;
 /*TAG:CheckboxCallbackTab*/
 static S_CheckboxCallback SCheckboxCallbackTab[] = {
+    ID_MAIN_ConsoleSystemCommands, onCheckedChanged_ConsoleSystemCommands,
+    ID_MAIN_UsbHost, onCheckedChanged_UsbHost,
     ID_MAIN_BuzzerEnabled, onCheckedChanged_BuzzerEnabled,
     ID_MAIN_ShowSetupOnStartup, onCheckedChanged_ShowSetupOnStartup,
     ID_MAIN_ScreensaverEnable, onCheckedChanged_ScreensaverEnable,
@@ -615,6 +622,12 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mConsoleHeaderPtr = NULL;
+    mConsoleSystemCommandsPtr = NULL;
+    mTextView55Ptr = NULL;
+    mUsbHostPtr = NULL;
+    mTextView54Ptr = NULL;
+    mDeveloperSettingWindowPtr = NULL;
     mPrintAgainBtnPtr = NULL;
     mPrintThumbnailPtr = NULL;
     mTextView41Ptr = NULL;
@@ -822,7 +835,6 @@ mainActivity::~mainActivity() {
     mConsoleClearBtnPtr = NULL;
     mSendBtnPtr = NULL;
     mTextView4Ptr = NULL;
-    mTextView3Ptr = NULL;
 	mConsoleInputPtr = NULL;
 	mGcodeListViewPtr = NULL;
     mConsoleListViewPtr = NULL;
@@ -885,6 +897,12 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mConsoleHeaderPtr = (ZKTextView*)findControlByID(ID_MAIN_ConsoleHeader);
+    mConsoleSystemCommandsPtr = (ZKCheckBox*)findControlByID(ID_MAIN_ConsoleSystemCommands);if(mConsoleSystemCommandsPtr!= NULL){mConsoleSystemCommandsPtr->setCheckedChangeListener(this);}
+    mTextView55Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView55);
+    mUsbHostPtr = (ZKCheckBox*)findControlByID(ID_MAIN_UsbHost);if(mUsbHostPtr!= NULL){mUsbHostPtr->setCheckedChangeListener(this);}
+    mTextView54Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView54);
+    mDeveloperSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_DeveloperSettingWindow);
     mPrintAgainBtnPtr = (ZKButton*)findControlByID(ID_MAIN_PrintAgainBtn);
     mPrintThumbnailPtr = (ZKTextView*)findControlByID(ID_MAIN_PrintThumbnail);
     mTextView41Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView41);
@@ -1123,7 +1141,6 @@ void mainActivity::onCreate() {
     mConsoleClearBtnPtr = (ZKButton*)findControlByID(ID_MAIN_ConsoleClearBtn);
     mSendBtnPtr = (ZKButton*)findControlByID(ID_MAIN_SendBtn);
     mTextView4Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView4);
-    mTextView3Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView3);
 	mConsoleInputPtr = (ZKEditText*)findControlByID(ID_MAIN_ConsoleInput);
 	if (mConsoleInputPtr != NULL)
 	{

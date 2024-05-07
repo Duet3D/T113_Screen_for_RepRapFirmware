@@ -208,12 +208,15 @@
     <string name="add_new_webcam">Add New Webcam</string>
     <string name="webcam_update_interval_ms">Update Interval (ms):</string>
     <string name="webcam_update_interval_ms_hint">Update Interval (ms)</string>
+    <string name="usb_host">USB-C Host mode</string>
+    <string name="console_system_commands">Send system commands in console</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>
     <string name="clear">Clear</string>
     <string name="send">Send</string>
     <string name="enter_command">Enter Command</string>
+    <string name="console_system">Console - System</string>
 
     <!-- Debug Menu -->
     <string name="open_debug_commands">Debug</string>

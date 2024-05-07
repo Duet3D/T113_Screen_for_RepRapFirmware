@@ -28,6 +28,12 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_ConsoleHeader    50009
+#define ID_MAIN_ConsoleSystemCommands    21005
+#define ID_MAIN_TextView55    50101
+#define ID_MAIN_UsbHost    21003
+#define ID_MAIN_TextView54    50100
+#define ID_MAIN_DeveloperSettingWindow    110049
 #define ID_MAIN_PrintAgainBtn    20025
 #define ID_MAIN_PrintThumbnail    50071
 #define ID_MAIN_TextView41    50023
@@ -252,7 +258,6 @@
 #define ID_MAIN_ConsoleClearBtn    20027
 #define ID_MAIN_SendBtn    20026
 #define ID_MAIN_TextView4    50010
-#define ID_MAIN_TextView3    50009
 #define ID_MAIN_GcodeListView    80005
 #define ID_MAIN_ConsoleListView    80004
 #define ID_MAIN_ConsoleWindow    110008

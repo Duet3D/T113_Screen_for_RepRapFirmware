@@ -12,11 +12,18 @@
 
 namespace UI::ConsoleWindow
 {
+	enum class ConsoleMode
+	{
+		Duet = 0,
+		System,
+	};
+
 	void SetConsoleListItem(ZKListView::ZKListItem* pListItem, const int index);
 
 	size_t GetGcodeListCount();
 	void SetGcodeListItem(ZKListView::ZKListItem* pListItem, const int index);
 
+	void SetConsoleMode(const ConsoleMode mode);
 	void ConsoleInputCallback(const std::string& input);
 	void SendConsoleInput();
 	void ClearConsole();

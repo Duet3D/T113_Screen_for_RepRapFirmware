@@ -354,6 +354,7 @@ namespace UI::Theme
 			UI::GetUIControl<ZKWindow>(ID_MAIN_ScreensaverSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_BuzzerSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_WebcamSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
+			UI::GetUIControl<ZKWindow>(ID_MAIN_DeveloperSettingWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_SliderWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_NumPadWindow)->setBackgroundColor(Colors::VVDarkBlue);
 			UI::GetUIControl<ZKWindow>(ID_MAIN_PopupWindow)->setBackgroundColor(Colors::VVDarkBlue);

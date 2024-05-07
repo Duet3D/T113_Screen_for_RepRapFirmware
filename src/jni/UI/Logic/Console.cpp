@@ -16,6 +16,8 @@
 
 namespace UI::ConsoleWindow
 {
+	static ConsoleMode s_consoleMode = ConsoleMode::Duet;
+
 	void SetConsoleListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
 		pListItem->setText(UI::CONSOLE.GetItem(index).c_str());
@@ -31,17 +33,56 @@ namespace UI::ConsoleWindow
 		pListItem->setTextTr(s_gcode[index].displayText);
 	}
 
+	void SetConsoleMode(const ConsoleMode mode)
+	{
+		info("Setting console mode to %d", (int)mode);
+		switch (mode)
+		{
+		case ConsoleMode::Duet:
+			UI::GetUIControl<ZKTextView>(ID_MAIN_ConsoleHeader)->setTextTr("console");
+			break;
+		case ConsoleMode::System:
+			UI::GetUIControl<ZKTextView>(ID_MAIN_ConsoleHeader)->setTextTr("console_system");
+			break;
+		default:
+			break;
+		}
+		s_consoleMode = mode;
+	}
+
 	void ConsoleInputCallback(const std::string& input)
 	{
-		UI::CONSOLE.AddCommand(input);
-		Comm::DUET.SendGcode(input.c_str());
+		if (input.empty())
+		{
+			return;
+		}
+		SendConsoleInput();
 	}
 
 	void SendConsoleInput()
 	{
 		static ZKEditText* s_consoleInput = UI::GetUIControl<ZKEditText>(ID_MAIN_ConsoleInput);
 		UI::CONSOLE.AddCommand(s_consoleInput->getText());
-		Comm::DUET.SendGcode(s_consoleInput->getText().c_str());
+		switch (s_consoleMode)
+		{
+		case ConsoleMode::Duet:
+		{
+			Comm::DUET.SendGcode(s_consoleInput->getText().c_str());
+			break;
+		}
+		case ConsoleMode::System:
+		{
+			std::string response = utils::exec(s_consoleInput->getText().c_str());
+			for (auto& line : utils::splitString(response, "\n"))
+			{
+				UI::CONSOLE.AddResponse(line.c_str());
+			}
+			break;
+		}
+		default:
+			error("Unknown console mode: %d", (int)s_consoleMode);
+			break;
+		}
 	}
 
 	void ClearConsole()

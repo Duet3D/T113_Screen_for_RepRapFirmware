@@ -54,6 +54,10 @@ namespace UI::Settings
 	/* Webcam */
 	void SetWebcamUrlListItem(ZKListView::ZKListItem* pListItem, const int index);
 	void WebcamUrlListItemCallback(const int index, const int id);
+
+	/* Developer */
+	void SetUsbHostMode(const bool isHost);
+	void SetConsoleSystemMode(const bool isSystem);
 } // namespace UI::Settings
 
 #endif /* JNI_UI_LOGIC_SETTINGS_H_ */

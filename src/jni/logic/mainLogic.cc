@@ -1089,6 +1089,16 @@ static void onEditTextChanged_WebcamUpdateIntervalInput(const std::string& text)
 	UI::Webcam::SetWebcamUpdateInterval(atoi(text.c_str()));
 }
 
+static void onCheckedChanged_UsbHost(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	UI::Settings::SetUsbHostMode(isChecked);
+}
+
+static void onCheckedChanged_ConsoleSystemCommands(ZKCheckBox* pCheckBox, bool isChecked)
+{
+	UI::Settings::SetConsoleSystemMode(isChecked);
+}
+
 // =====================================================================================================================
 // Guide Window
 // =====================================================================================================================
