@@ -142,10 +142,16 @@ namespace UI::PrintStatus
 
 	void UpdateEstimatedPrintTime()
 	{
+		dbg("Updating estimated print time");
 		uint32_t seconds = OM::GetPrintRemaining(OM::RemainingTimeType::slicer);
-		int percentage = std::min<int>(
-			(100 * std::max<int>(0, (int)OM::GetPrintDuration() - (int)OM::GetWarmUpDuration())) / OM::GetPrintTime(),
-			100);
+		int percentage = 0;
+		if (OM::GetPrintTime() != 0)
+		{
+			percentage =
+				std::min<int>((100 * std::max<int>(0, (int)OM::GetPrintDuration() - (int)OM::GetWarmUpDuration())) /
+								  OM::GetPrintTime(),
+							  100);
+		}
 		tm time = Comm::ParseSeconds(seconds);
 		UI::GetUIControl<ZKTextView>(ID_MAIN_PrintEstimatedTime)
 			->setTextTrf("estimated", time.tm_hour, time.tm_min, time.tm_sec);
