@@ -37,5 +37,11 @@ constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
 constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
+constexpr const char* ID_MOVE_FEEDRATE = "move_feedrate_%d";
+constexpr const char* ID_MOVE_SELECTED_FEEDRATE = "move_selected_feedrate";
+constexpr const char* ID_EXTRUSION_DISTANCE = "extrusion_distance_%d";
+constexpr const char* ID_EXTRUSION_SELECTED_DISTANCE = "extrusion_selected_distance";
+constexpr const char* ID_EXTRUSION_FEEDRATE = "extrusion_feedrate_%d";
+constexpr const char* ID_EXTRUSION_SELECTED_FEEDRATE = "extrusion_selected_feedrate";
 
 #endif /* JNI_STORAGE_H_ */

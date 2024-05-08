@@ -133,17 +133,20 @@
     <string name="tool_position">Werkzeugposition</string>
     <string name="machine_position">Maschinenposition</string>
     <string name="feedrate_label">Vorschubgeschwindigkeit in mm/s</string>
+    <string name="set_move_feedrate">Bewegungsvorschub einstellen (mm/s)</string>
 
     <!-- Extrude Page -->
     <string name="extrusion_control">Extrusionssteuerung</string>
     <string name="retract">Zurückziehen</string>
-    <string name="feed_amount"> Vorschubmenge in mm</string>
+    <string name="feed_amount">Vorschubmenge in mm</string>
     <string name="filament">Filament</string>
     <string name="choose_filament">Bitte wählen Sie ein Filament</string>
     <string name="load_filament">Filament laden</string>
     <string name="unload_filament">Filament entladen</string>
     <string name="change_filament">Filament wechseln</string>
     <string name="tool_filament_control">Werkzeug %d Filamentsteuerung</string>
+    <string name="set_extrusion_feedrate">Extrusionsvorschub einstellen (mm/s)</string>
+    <string name="set_extrusion_distance">Extrusionsabstand einstellen (mm)</string>
 
 
     <!-- Status Page -->

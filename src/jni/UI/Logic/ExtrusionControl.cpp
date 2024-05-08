@@ -10,23 +10,116 @@
 #include "Debug.h"
 
 #include "ExtrusionControl.h"
+
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Files.h"
 #include "ObjectModel/Tool.h"
+#include "Storage.h"
+#include <manager/LanguageManager.h>
+#include <storage/StoragePreferences.h>
 
 namespace UI::ExtrusionControl
 {
 	static uint32_t s_extrusionFeedRates[] = {50, 10, 5, 2, 1};
 	static uint32_t s_extrusionFeedDistances[] = {100, 50, 20, 10, 5, 2, 1};
-	static uint32_t s_defaultExtrusionFeedRate = 5;
-	static uint32_t s_defaultExtrusionFeedDistance = 10;
+	static uint32_t s_selectedExtrusionFeedRateIndex = 2;
+	static uint32_t s_selectedExtrusionFeedDistanceIndex = 2;
 
 	static OM::Tool* s_filamentDialogTool = nullptr;
 	static ToolsList s_toolsList;
 
+	static void SetFeedDistanceAmount(const int index, int amount)
+	{
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_extrusionFeedDistances))
+		{
+			warn("Invalid feedrate index %d", index);
+			return;
+		}
+		if (amount <= 0 || amount > MAX_EXTRUDE_DISTANCE)
+		{
+			warn("Invalid distance amount: %d", amount);
+			return;
+		}
+		info("Setting s_extrusionFeedDistances[%d] to %d", index, amount);
+		StoragePreferences::putInt(utils::format(ID_EXTRUSION_DISTANCE, index), amount);
+		s_extrusionFeedDistances[index] = amount;
+	}
+
+	static void SetFeedRateAmount(const int index, int amount)
+	{
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_extrusionFeedRates))
+		{
+			warn("Invalid feedrate index %d", index);
+			return;
+		}
+		if (amount <= 0 || amount > MAX_EXTRUDE_FEEDRATE)
+		{
+			warn("Invalid feedrate amount: %d", amount);
+			return;
+		}
+		info("Setting s_extrusionFeedRates[%d] to %d", index, amount);
+		StoragePreferences::putInt(utils::format(ID_EXTRUSION_FEEDRATE, index), amount);
+		s_extrusionFeedRates[index] = amount;
+	}
+
+	class FeedDistanceLongClickListener : public ZKListView::IItemLongClickListener
+	{
+		virtual void onItemLongClick(ZKListView* pListView, int index, int itemID)
+		{
+			dbg("Long click on distance button");
+
+			UI::NUMPAD_WINDOW.Open(
+				LANGUAGEMANAGER->getValue("set_extrusion_distance").c_str(),
+				1,
+				MAX_EXTRUDE_DISTANCE,
+				s_extrusionFeedDistances[index],
+				[](int) {},
+				[index](int value) { SetFeedDistanceAmount(index, value); });
+		}
+	};
+
+	class FeedRateLongClickListener : public ZKListView::IItemLongClickListener
+	{
+		virtual void onItemLongClick(ZKListView* pListView, int index, int itemID)
+		{
+			dbg("Long click on feedRate button");
+
+			UI::NUMPAD_WINDOW.Open(
+				LANGUAGEMANAGER->getValue("set_extrusion_feedrate").c_str(),
+				1,
+				MAX_EXTRUDE_FEEDRATE,
+				s_extrusionFeedRates[index],
+				[](int) {},
+				[index](int value) { SetFeedRateAmount(index, value); });
+		}
+	};
+
 	void Init()
 	{
+		static FeedDistanceLongClickListener distanceListener;
+		static FeedRateLongClickListener feedrateListener;
 		info("Initialising ExtrusionControl UI...");
+
+		for (size_t i = 0; i < ARRAY_SIZE(s_extrusionFeedDistances); i++)
+		{
+			s_extrusionFeedDistances[i] =
+				StoragePreferences::getInt(utils::format(ID_EXTRUSION_DISTANCE, i), s_extrusionFeedDistances[i]);
+		}
+
+		for (size_t i = 0; i < ARRAY_SIZE(s_extrusionFeedRates); i++)
+		{
+			s_extrusionFeedRates[i] =
+				StoragePreferences::getInt(utils::format(ID_EXTRUSION_FEEDRATE, i), s_extrusionFeedRates[i]);
+		}
+
+		s_selectedExtrusionFeedDistanceIndex =
+			StoragePreferences::getInt(ID_EXTRUSION_SELECTED_DISTANCE, s_selectedExtrusionFeedDistanceIndex);
+		s_selectedExtrusionFeedRateIndex =
+			StoragePreferences::getInt(ID_EXTRUSION_SELECTED_FEEDRATE, s_selectedExtrusionFeedRateIndex);
+
+		UI::GetUIControl<ZKListView>(ID_MAIN_ExtruderFeedDist)->setItemLongClickListener(&distanceListener);
+		UI::GetUIControl<ZKListView>(ID_MAIN_ExtruderFeedrate)->setItemLongClickListener(&feedrateListener);
 
 		ZKListView* toolList = UI::GetUIControl<ZKListView>(ID_MAIN_ExtrudeToolList);
 		if (toolList == nullptr)
@@ -146,7 +239,7 @@ namespace UI::ExtrusionControl
 			return;
 		}
 		pListItem->setTextf("%d", s_extrusionFeedDistances[index]);
-		pListItem->setSelected(s_defaultExtrusionFeedDistance == s_extrusionFeedDistances[index]);
+		pListItem->setSelected((int)s_selectedExtrusionFeedDistanceIndex == index);
 	}
 
 	void ExtrusionDistanceListItemCallback(const int index)
@@ -155,7 +248,8 @@ namespace UI::ExtrusionControl
 		{
 			return;
 		}
-		s_defaultExtrusionFeedDistance = s_extrusionFeedDistances[index];
+		StoragePreferences::putInt(ID_EXTRUSION_SELECTED_DISTANCE, index);
+		s_selectedExtrusionFeedDistanceIndex = index;
 		UI::GetUIControl<ZKListView>(ID_MAIN_ExtruderFeedrate)->refreshListView();
 	}
 
@@ -171,7 +265,7 @@ namespace UI::ExtrusionControl
 			return;
 		}
 		pListItem->setTextf("%d", s_extrusionFeedRates[index]);
-		pListItem->setSelected(s_defaultExtrusionFeedRate == s_extrusionFeedRates[index]);
+		pListItem->setSelected((int)s_selectedExtrusionFeedRateIndex == index);
 	}
 
 	void ExtrusionSpeedListItemCallback(const int index)
@@ -180,18 +274,23 @@ namespace UI::ExtrusionControl
 		{
 			return;
 		}
-		s_defaultExtrusionFeedRate = s_extrusionFeedRates[index];
+		StoragePreferences::putInt(ID_EXTRUSION_SELECTED_FEEDRATE, index);
+		s_selectedExtrusionFeedRateIndex = index;
 		UI::GetUIControl<ZKListView>(ID_MAIN_ExtruderFeedrate)->refreshListView();
 	}
 
 	void ExtrudeFilament()
 	{
-		Comm::DUET.SendGcodef("G1 E%u F%u\n", s_defaultExtrusionFeedDistance, s_defaultExtrusionFeedRate * 60);
+		Comm::DUET.SendGcodef("G1 E%u F%u\n",
+							  s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex],
+							  s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex] * 60);
 	}
 
 	void RetractFilament()
 	{
-		Comm::DUET.SendGcodef("G1 E-%u F%u\n", s_defaultExtrusionFeedDistance, s_defaultExtrusionFeedRate * 60);
+		Comm::DUET.SendGcodef("G1 E-%u F%u\n",
+							  s_extrusionFeedDistances[s_selectedExtrusionFeedDistanceIndex],
+							  s_extrusionFeedRates[s_selectedExtrusionFeedRateIndex] * 60);
 	}
 
 	bool UnloadFilament()

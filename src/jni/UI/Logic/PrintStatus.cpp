@@ -47,8 +47,8 @@ namespace UI::PrintStatus
 	  public:
 		virtual void onIMETextUpdate(const std::string& text)
 		{
-			s_babyStepAmount = atof(text.c_str());
-			SetBabyStepAmount(s_babyStepAmount);
+			float amount = atof(text.c_str());
+			SetBabyStepAmount(amount);
 		}
 	};
 

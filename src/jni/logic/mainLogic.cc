@@ -118,6 +118,7 @@ static void onUI_init()
 	UI::Settings::Init(); // Sets various UI elements states
 	UI::Sidebar::Init();
 	UI::HomeScreen::Init();
+	UI::Move::Init();
 	UI::ExtrusionControl::Init();
 	UI::PrintStatus::Init();
 	UI::FileList::Init();

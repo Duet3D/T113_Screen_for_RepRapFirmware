@@ -12,6 +12,8 @@
 
 namespace UI::Move
 {
+	void Init();
+	
 	void HomeAll();
 	void TrueLevel();
 	void MeshLevel();

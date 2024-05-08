@@ -70,17 +70,20 @@
     <string name="tool_position">Tool Position</string>
     <string name="machine_position">Machine Position</string>
     <string name="feedrate_label">Feedrate in mm/s</string>
+    <string name="set_move_feedrate">Set Move Feedrate (mm/s)</string>
 
     <!-- Extrude Page -->
     <string name="extrusion_control">Extrusion Control</string>
     <string name="retract">Retract</string>
-    <string name="feed_amount"> Feed amount in mm</string>
+    <string name="feed_amount">Feed amount in mm</string>
     <string name="filament">Filament</string>
     <string name="choose_filament">Please choose a filament</string>
     <string name="load_filament">Load Filament</string>
     <string name="unload_filament">Unload Filament</string>
     <string name="change_filament">Change Filament</string>
     <string name="tool_filament_control">Tool %d Filament Control</string>
+    <string name="set_extrusion_feedrate">Set Extrusion Feedrate (mm/s)</string>
+    <string name="set_extrusion_distance">Set Extrusion Distance (mm)</string>
 
 
     <!-- Status Page -->

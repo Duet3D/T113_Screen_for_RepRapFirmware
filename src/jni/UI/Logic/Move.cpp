@@ -11,15 +11,64 @@
 
 #include "Move.h"
 
+#include "Configuration.h"
 #include "Hardware/Duet.h"
 #include "ObjectModel/Axis.h"
+#include "Storage.h"
 #include "UI/Logic/Heightmap.h"
+#include <storage/StoragePreferences.h>
 
 namespace UI::Move
 {
-	static float s_moveDistances[] = {-50, -10, -1, -0.1, 0.1, 1, 10, 50};
-	static uint32_t s_moveFeedRates[] = {300, 100, 50, 20, 10, 5};
-	static uint32_t s_defaultMoveFeedRate = 50;
+	static float s_moveDistances[] = {-50, -10, -1, -0.1, 0.1, 1, 10, 50}; // mm
+	static uint32_t s_moveFeedRates[] = {300, 100, 50, 20, 10, 5};		   // mm/s : can be overridden by user
+	static uint32_t s_selectedFeedRateIndex = 2;
+
+	static void SetFeedRateAmount(const int index, int amount)
+	{
+		if (index < 0 || index >= (int)ARRAY_SIZE(s_moveFeedRates))
+		{
+			warn("Invalid feedrate index %d", index);
+			return;
+		}
+		if (amount <= 0 || amount > MAX_MOVE_FEEDRATE)
+		{
+			warn("Invalid feedrate amount: %d", amount);
+			return;
+		}
+		info("Setting s_moveFeedRates[%d] to %d", index, amount);
+		StoragePreferences::putInt(utils::format(ID_MOVE_FEEDRATE, index), amount);
+		s_moveFeedRates[index] = amount;
+	}
+
+	class FeedRateLongClickListener : public ZKListView::IItemLongClickListener
+	{
+		virtual void onItemLongClick(ZKListView* pListView, int index, int itemID)
+		{
+			dbg("Long click on feedRate button");
+
+			UI::NUMPAD_WINDOW.Open(
+				LANGUAGEMANAGER->getValue("set_move_feedrate").c_str(),
+				1,
+				MAX_MOVE_FEEDRATE,
+				s_moveFeedRates[index],
+				[](int) {},
+				[index](int value) { SetFeedRateAmount(index, value); });
+		}
+	};
+
+	void Init()
+	{
+		static FeedRateLongClickListener s_feedRateListener;
+
+		for (size_t i = 0; i < ARRAY_SIZE(s_moveFeedRates); i++)
+		{
+			s_moveFeedRates[i] = StoragePreferences::getInt(utils::format(ID_MOVE_FEEDRATE, i), s_moveFeedRates[i]);
+		}
+		s_selectedFeedRateIndex = StoragePreferences::getInt(ID_MOVE_SELECTED_FEEDRATE, s_selectedFeedRateIndex);
+
+		UI::GetUIControl<ZKListView>(ID_MAIN_MoveFeedrate)->setItemLongClickListener(&s_feedRateListener);
+	}
 
 	void HomeAll()
 	{
@@ -113,7 +162,8 @@ namespace UI::Move
 			distance = s_moveDistances[7];
 			break;
 		}
-		Comm::DUET.SendGcodef("G91\nG1 %s%.3f F%d\nG90\n", axis->letter, distance, s_defaultMoveFeedRate * 60);
+		Comm::DUET.SendGcodef(
+			"G91\nG1 %s%.3f F%d\nG90\n", axis->letter, distance, s_moveFeedRates[s_selectedFeedRateIndex] * 60);
 	}
 
 	size_t GetFeedRateCount()
@@ -128,7 +178,7 @@ namespace UI::Move
 			return;
 		}
 		pListItem->setTextf("%d", s_moveFeedRates[index]);
-		pListItem->setSelected(s_defaultMoveFeedRate == s_moveFeedRates[index]);
+		pListItem->setSelected((int)s_selectedFeedRateIndex == index);
 	}
 
 	void FeedRateListItemCallback(const int index)
@@ -137,7 +187,8 @@ namespace UI::Move
 		{
 			return;
 		}
-		s_defaultMoveFeedRate = s_moveFeedRates[index];
+		StoragePreferences::putInt(ID_MOVE_SELECTED_FEEDRATE, index);
+		s_selectedFeedRateIndex = index;
 	}
 
 } // namespace UI::Move

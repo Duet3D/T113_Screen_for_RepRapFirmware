@@ -133,6 +133,7 @@
     <string name="tool_position">Position de l'outil</string>
     <string name="machine_position">Position de la machine</string>
     <string name="feedrate_label">Vitesse d'avance en mm/s</string>
+    <string name="set_move_feedrate">Définir la vitesse de déplacement (mm/s)</string>
 
     <!-- Extrude Page -->
     <string name="extrusion_control">Contrôle de l'extrusion</string>
@@ -144,6 +145,8 @@
     <string name="unload_filament">Décharger le filament</string>
     <string name="change_filament">Changer de filament</string>
     <string name="tool_filament_control">Contrôle du filament de l'outil %d</string>
+    <string name="set_extrusion_feedrate">Définir la vitesse d'extrusion (mm/s)</string>
+    <string name="set_extrusion_distance">Définir la distance d'extrusion (mm)</string>
 
     <!-- Status Page -->
     <string name="fan_status">Ventilateur %d : %d %%</string>

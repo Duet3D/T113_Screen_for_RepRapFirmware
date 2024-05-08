@@ -24,7 +24,6 @@ constexpr unsigned long long TIME_SYNC_INTERVAL = 10e3; // Interval to resynchro
 constexpr size_t MAX_UART_UPLOAD_SIZE = 1024;
 constexpr const char* DEFAULT_FILAMENTS_FILE = "filaments.csv";
 constexpr const char* DEFAULT_HEIGHTMAPS_FILE = "heightmaps.csv";
-constexpr float DEFAULT_BABY_STEP_SIZE = 0.05;
 
 /* Thumbnails */
 constexpr int32_t FILE_CACHE_REQUEST_TIMEOUT = 5000;
@@ -54,6 +53,16 @@ constexpr unsigned int MAX_HEATERS = 32;
 constexpr unsigned int MAX_SENSORS = 32;
 constexpr unsigned int MAX_ENDSTOPS = 20;
 constexpr size_t MAX_TRACKED_OBJECTS = 40;
+
+/* Move */
+constexpr int MAX_MOVE_FEEDRATE = 10000;
+
+/* Extrusion */
+constexpr int MAX_EXTRUDE_FEEDRATE = 300;
+constexpr int MAX_EXTRUDE_DISTANCE = 500;
+
+/* Print Status */
+constexpr float DEFAULT_BABY_STEP_SIZE = 0.05;
 
 /* Heightmap */
 constexpr double HEIGHTMAP_FIXED_MAX = 0.25;
