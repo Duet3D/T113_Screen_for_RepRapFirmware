@@ -342,9 +342,6 @@ namespace UI
 		if (data.tool != nullptr)
 		{
 			pListItem->setSelected(data.tool->status == OM::ToolStatus::active);
-			pCurrentTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
-			pActiveTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
-			pStandbyTemperature->setVisible(data.toolHeater != nullptr || data.spindle != nullptr);
 			std::string toolName =
 				data.tool->name.IsEmpty()
 					? utils::format("%s %d", LANGUAGEMANAGER->getValue("tool").c_str(), data.tool->index).c_str()
@@ -380,9 +377,13 @@ namespace UI
 			{
 				// Tool with no heaters or spindle
 				pToolName->setText(toolName.c_str());
-				pActiveTemperature->setVisible(false);
-				pStandbyTemperature->setVisible(false);
-				pCurrentTemperature->setVisible(false);
+
+				// BUG: Ideally we would use `setVisible(false)` here but a bug in Flythings means this causes
+				// undesirable behaviour if it is the last item in the list. Instead we set the text to an empty string
+				// and have to handle this in the callback if the subitem is clicked.
+				pActiveTemperature->setText("");
+				pStandbyTemperature->setText("");
+				pCurrentTemperature->setText("");
 				return;
 			}
 			return;
@@ -409,6 +410,7 @@ namespace UI
 			{
 				pToolName->setTextTr("bed");
 			}
+
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
@@ -438,6 +440,7 @@ namespace UI
 			{
 				pToolName->setTextTr("chamber");
 			}
+
 			pActiveTemperature->setText((int)heater->activeTemp);
 			pStandbyTemperature->setText((int)heater->standbyTemp);
 			pCurrentTemperature->setText(heater->current);
