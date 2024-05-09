@@ -18,6 +18,7 @@ namespace UI::ConsoleWindow
 		System,
 	};
 
+	size_t GetConsoleListCount();
 	void SetConsoleListItem(ZKListView::ZKListItem* pListItem, const int index);
 
 	size_t GetGcodeListCount();

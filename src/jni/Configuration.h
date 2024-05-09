@@ -44,7 +44,7 @@ constexpr size_t MAX_THREAD_POOL_SIZE = 2;
 constexpr size_t MAX_TOTAL_AXES = 15; // This needs to be kept in sync with the maximum in RRF
 constexpr size_t MAX_EXTRUDERS_PER_TOOL = 8;
 constexpr size_t MAX_HEATERS_PER_TOOL = 8;
-constexpr unsigned int MAX_TOOL_NAME_LENGTH = 10;
+constexpr unsigned int MAX_TOOL_NAME_LENGTH = 20;
 constexpr unsigned int MAX_FILAMENT_NAME_LENGTH = 100;
 constexpr unsigned int MAX_FILENAME_LENGTH = 100;
 constexpr unsigned int MAX_SLOTS = 32;
@@ -97,6 +97,6 @@ constexpr size_t ALERT_CHOICES_TEXT_LENGTH = 50; // maximum characters in the al
 constexpr float DEFAULT_TEMP_GRAPH_MAX = 300;
 constexpr size_t DEFAULT_TEMP_GRAPH_TIME_RANGE = 60;
 constexpr float TEMP_GRAPH_Y_AXIS_PADDING = 10;
-constexpr size_t GRAPH_DATAPOINTS = 200;
+constexpr size_t GRAPH_DATAPOINTS = DEFAULT_TEMP_GRAPH_TIME_RANGE * (1000 / MIN_PRINTER_POLL_INTERVAL);
 
 #endif /* JNI_CONFIGURATION_H_ */

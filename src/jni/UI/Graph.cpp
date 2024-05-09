@@ -61,6 +61,7 @@ namespace UI
 
 		long long now = TimeHelper::getCurrentTime();
 		DataPoint dp = {now, value};
+		verbose("Adding data point (%lld, %f) to sensor %d", dp.time, dp.value, index);
 		m_data[index].Push(dp);
 
 		if (m_diagram->isVisible())
@@ -106,19 +107,25 @@ namespace UI
 			return;
 		}
 
-		if (m_data[index].Empty())
-		{
-			m_diagram->clear(index);
-			return;
-		}
-
 		long long now = TimeHelper::getCurrentTime();
+		verbose("Updating wave for sensor %d, time=%lld", index, now);
 		SZKPoint points[GRAPH_DATAPOINTS];
 
 		float maxVal = DEFAULT_TEMP_GRAPH_MAX;
-		verbose("m_data[%d].size = %d", index, m_data[index].GetFilled());
+		verbose("m_data[%d].size=%d, head=%d, tail=%d",
+				index,
+				m_data[index].GetFilled(),
+				m_data[index].GetHead(),
+				m_data[index].GetTail());
 		for (size_t i = 0; i < GRAPH_DATAPOINTS; i++)
 		{
+
+			if (m_data[index].Empty())
+			{
+				m_diagram->clear(index);
+				return;
+			}
+
 			// points[i].x = i;
 			// points[i].y = i % 100;
 			if (i >= m_data[index].GetFilled())
@@ -134,12 +141,23 @@ namespace UI
 				maxVal = dp.value;
 			}
 
+			// If the X distance between 2 points is greater than ~900,000, zkgui will crash
+			// This can happen if the system time is updated and there is already data in the graph
+			if (dp.time < now - m_xRange * 1000 || dp.time > now)
+			{
+				// Remove old data
+				verbose("Removing old data point (%lld, %f)", dp.time, dp.value);
+				m_data[index].Pop();
+				i--;
+				continue;
+			}
+
 			points[i].x = static_cast<float>(dp.time - now) / 1000;
 			points[i].y = (dp.value);
 			verbose("points[%d] = (%f, %f)", i, points[i].x, points[i].y);
 		}
 
-		dbg("Setting data for index %d", index);
+		verbose("Setting data for index %d", index);
 		ScaleYAxis(maxVal);
 		m_diagram->setData(index, points, GRAPH_DATAPOINTS);
 	}
@@ -205,6 +223,7 @@ namespace UI
 		m_yMax = ((((int)max - 1) / 50) + 1) * 50;
 #endif
 		float scale = 100.0 / m_yMax;
+		verbose("Setting Y scale to %f", scale);
 		for (size_t i = 0; i < MAX_SENSORS; i++)
 		{
 			m_diagram->setYScale(i, scale);

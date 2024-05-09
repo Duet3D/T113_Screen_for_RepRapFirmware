@@ -18,6 +18,11 @@ namespace UI::ConsoleWindow
 {
 	static ConsoleMode s_consoleMode = ConsoleMode::Duet;
 
+	size_t GetConsoleListCount()
+	{
+		return UI::CONSOLE.GetItemCount();
+	}
+
 	void SetConsoleListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
 		pListItem->setText(UI::CONSOLE.GetItem(index).c_str());

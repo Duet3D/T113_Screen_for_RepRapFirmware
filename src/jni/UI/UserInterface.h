@@ -142,6 +142,7 @@ namespace UI
 		void AddResponse(const char* str);
 		void AddResponse(const StringRef& ref);
 		void AddLineBreak();
+		size_t GetItemCount() const { return m_buffer.GetFilled(); }
 		String<MAX_RESPONSE_LINE_LENGTH> GetItem(size_t index) { return m_buffer.GetItem(index); }
 		void Refresh();
 		void Clear();

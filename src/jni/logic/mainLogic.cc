@@ -205,7 +205,6 @@ static bool onUI_Timer(int id)
 {
 	switch (id)
 	{
-
 	case TIMER_UPDATE_DATA:
 	{
 		static OM::PrinterStatus status = OM::PrinterStatus::unknown;
@@ -587,7 +586,7 @@ static void onProgressChanged_PopupProgress(ZKSeekBar* pSeekBar, int progress) {
 
 static int getListItemCount_ConsoleListView(const ZKListView* pListView)
 {
-	return MAX_RESPONSE_LINES;
+	return UI::ConsoleWindow::GetConsoleListCount();
 }
 
 static void obtainListItemData_ConsoleListView(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
