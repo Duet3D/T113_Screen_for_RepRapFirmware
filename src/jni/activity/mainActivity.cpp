@@ -4,6 +4,8 @@
 #include "mainActivity.h"
 
 /*TAG:GlobalVariable全局变量*/
+static ZKTextView* mTextView3Ptr;
+static ZKListView* mDebugLevelListPtr;
 static ZKTextView* mConsoleHeaderPtr;
 static ZKCheckBox* mConsoleSystemCommandsPtr;
 static ZKTextView* mTextView55Ptr;
@@ -438,6 +440,7 @@ typedef struct {
 }S_ListViewFunctionsCallback;
 /*TAG:ListViewFunctionsCallback*/
 static S_ListViewFunctionsCallback SListViewFunctionsCallbackTab[] = {
+    ID_MAIN_DebugLevelList, getListItemCount_DebugLevelList, obtainListItemData_DebugLevelList, onListItemClick_DebugLevelList,
     ID_MAIN_SettingsWindowSelectList, getListItemCount_SettingsWindowSelectList, obtainListItemData_SettingsWindowSelectList, onListItemClick_SettingsWindowSelectList,
     ID_MAIN_WindowSelectList, getListItemCount_WindowSelectList, obtainListItemData_WindowSelectList, onListItemClick_WindowSelectList,
     ID_MAIN_MoveFeedrate, getListItemCount_MoveFeedrate, obtainListItemData_MoveFeedrate, onListItemClick_MoveFeedrate,
@@ -622,6 +625,8 @@ mainActivity::~mainActivity() {
     unregisterProtocolDataUpdateListener(onProtocolDataUpdate);
     onUI_quit();
     mActivityPtr = NULL;
+    mTextView3Ptr = NULL;
+    mDebugLevelListPtr = NULL;
     mConsoleHeaderPtr = NULL;
     mConsoleSystemCommandsPtr = NULL;
     mTextView55Ptr = NULL;
@@ -897,6 +902,8 @@ const char* mainActivity::getAppName() const{
 //TAG:onCreate
 void mainActivity::onCreate() {
 	Activity::onCreate();
+    mTextView3Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView3);
+    mDebugLevelListPtr = (ZKListView*)findControlByID(ID_MAIN_DebugLevelList);if(mDebugLevelListPtr!= NULL){mDebugLevelListPtr->setListAdapter(this);mDebugLevelListPtr->setItemClickListener(this);}
     mTextView52Ptr = (ZKTextView*)findControlByID(ID_MAIN_TextView52);
     mAddWebcamBtnPtr = (ZKButton*)findControlByID(ID_MAIN_AddWebcamBtn);
     mWebcamSettingWindowPtr = (ZKWindow*)findControlByID(ID_MAIN_WebcamSettingWindow);

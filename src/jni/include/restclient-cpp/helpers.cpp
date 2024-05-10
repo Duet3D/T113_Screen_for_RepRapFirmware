@@ -4,8 +4,6 @@
  * @author Daniel Schauenberg <d@unwiredcouch.com>
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
 #include "Debug.h"
 
 #include "restclient-cpp/helpers.h"

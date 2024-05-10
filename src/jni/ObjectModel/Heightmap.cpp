@@ -5,8 +5,6 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_VERBOSE
 #include "Debug.h"
 
 #include "Heightmap.h"

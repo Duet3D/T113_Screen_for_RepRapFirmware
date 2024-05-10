@@ -422,7 +422,7 @@ namespace Comm
 
 	void JsonDecoder::RemoveLastId()
 	{
-		verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
 		size_t index = m_fieldId.strlen();
 		while (index != 0 && m_fieldId[index - 1] != '^' && m_fieldId[index - 1] != ':')
 		{
@@ -430,13 +430,11 @@ namespace Comm
 		}
 		m_fieldId.Truncate(index);
 
-		verbose("RemoveLastId: %s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
+		// verbose("%s, len: %d", m_fieldId.c_str(), m_fieldId.strlen());
 	}
 
 	void JsonDecoder::RemoveLastIdChar()
 	{
-		verbose();
-
 		if (m_fieldId.strlen() != 0)
 		{
 			m_fieldId.Truncate(m_fieldId.strlen() - 1);
@@ -445,8 +443,6 @@ namespace Comm
 
 	bool JsonDecoder::InArray()
 	{
-		verbose();
-
 		return m_fieldId.strlen() > 0 && m_fieldId[m_fieldId.strlen() - 1] == '^';
 	}
 
@@ -477,9 +473,8 @@ namespace Comm
 
 		if (m_arrayDepth != 0)
 		{ // should always be true
-			verbose("id %s (%s), arrayIndices [%d|%d|%d|%d], arrayDepth %d",
+			verbose("id %s, arrayIndices [%d|%d|%d|%d], arrayDepth %d",
 					m_fieldId.c_str(),
-					m_fieldVal.c_str(),
 					m_arrayIndices[0],
 					m_arrayIndices[1],
 					m_arrayIndices[2],
@@ -607,8 +602,6 @@ namespace Comm
 	// Check whether the incoming character signals the end of the value. If it does, process it and return true.
 	bool JsonDecoder::CheckValueCompleted(char c, bool doProcess)
 	{
-		verbose();
-
 		switch (c)
 		{
 		case ',':
@@ -691,7 +684,7 @@ namespace Comm
 		while (len != m_nextOut)
 		{
 			char c = rxBuffer[m_nextOut];
-			verbose("char %d: %c", m_nextOut, c);
+			// verbose("char %d: %c", m_nextOut, c);
 			m_nextOut = (m_nextOut + 1) % (len + 1);
 			if (c == '\n')
 			{
@@ -1031,9 +1024,11 @@ namespace Comm
 					break;
 				}
 
+#if 0
 				if (m_lastState != m_state)
+				{
 					verbose("state %d -> %d", m_lastState, m_state);
-#if DEBUG
+				}
 #endif
 			}
 		}

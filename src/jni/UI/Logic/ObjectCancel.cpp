@@ -5,8 +5,6 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "ObjectCancel.h"
@@ -29,6 +27,11 @@ namespace UI::ObjectCancel
 
 	static int ConvertPointToCanvas(int point, float min, float max, int canvasSize, bool invert)
 	{
+		verbose("point(%d), min(%f), max(%f), canvasSize(%d), invert(%d)", point, min, max, canvasSize, invert);
+		if (max - min == 0)
+		{
+			return 0;
+		}
 		if (invert)
 		{
 			return canvasSize - canvasSize * (point - min) / (max - min);
@@ -59,6 +62,7 @@ namespace UI::ObjectCancel
 		pos.mHeight =
 			ConvertPointToCanvas(object.bounds.y[0], yAxis->minPosition, yAxis->maxPosition, canvasPos.mHeight, true) -
 			pos.mTop;
+		verbose("Converted Layout position: (%d, %d, %d, %d)", pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
 		return pos;
 	}
 
@@ -140,6 +144,7 @@ namespace UI::ObjectCancel
 
 	void SetObjectCancelXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('X');
 		if (axis == nullptr)
 		{
@@ -147,6 +152,7 @@ namespace UI::ObjectCancel
 			pListItem->setText("");
 			return;
 		}
+		dbg("Setting X axis %d text", index);
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
@@ -156,6 +162,7 @@ namespace UI::ObjectCancel
 
 	void SetObjectCancelYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::Move::Axis* axis = OM::Move::GetAxisByLetter('Y');
 		if (axis == nullptr)
 		{
@@ -163,6 +170,7 @@ namespace UI::ObjectCancel
 			pListItem->setText("");
 			return;
 		}
+		dbg("Setting Y axis %d text", index);
 
 		float min = axis->minPosition;
 		float max = axis->maxPosition;
@@ -172,6 +180,7 @@ namespace UI::ObjectCancel
 
 	void SetObjectLabel(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::JobObject* object = OM::GetJobObject(index);
 		pListItem->setText(GetObjectLabel(object));
 		if (object == nullptr)
@@ -238,10 +247,16 @@ namespace UI::ObjectCancel
 						   const UI::Theme::Theme* theme,
 						   const bool current)
 	{
-		if (object == nullptr)
+		if (object == nullptr || canvas == nullptr || theme == nullptr)
 		{
 			return;
 		}
+		verbose("Drawing Object %d (%d, %d) -> (%d, %d)",
+				object->index,
+				object->bounds.x[0],
+				object->bounds.y[0],
+				object->bounds.x[1],
+				object->bounds.y[1]);
 		if (object->cancelled)
 		{
 			canvas->setSourceColor(theme->colors->objectCancel.bgCancelled);
@@ -262,6 +277,7 @@ namespace UI::ObjectCancel
 		// Border
 		canvas->setSourceColor(theme->colors->objectCancel.bgBorder);
 		canvas->drawRect(pos.mLeft, pos.mTop, pos.mWidth, pos.mHeight);
+		verbose("Finished drawing object %u", object->index);
 		return;
 	}
 
@@ -280,20 +296,28 @@ namespace UI::ObjectCancel
 			warn("Failed to get current theme");
 			return;
 		}
+		dbg("Rendering ObjectCancel canvas");
 
 		s_canvas->erase(0, 0, canvasPos.mWidth, canvasPos.mHeight);
 		s_canvas->setLineWidth(3);
 
 		OM::IterateJobObjectsWhile(
-			[&](OM::JobObject*& object, size_t index) {
+			[&](OM::JobObject*& object, size_t index)
+			{
+				if (object == nullptr)
+				{
+					warn("Invalid object index %d", index);
+					return true;
+				}
 				DrawObject(object, s_canvas, theme, index == (size_t)OM::GetCurrentJobObjectIndex());
 				return true;
 			},
 			0);
-
+		verbose("Drawing current object");
 		// Draw the current object last so it is on top
 		OM::JobObject* object = OM::GetJobObject(OM::GetCurrentJobObjectIndex());
-		DrawObject(object, s_canvas, theme, true);
+		if (object != nullptr)
+			DrawObject(object, s_canvas, theme, true);
 	}
 
 	TouchListener& GetTouchListener()

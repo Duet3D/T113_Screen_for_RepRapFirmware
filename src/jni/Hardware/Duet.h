@@ -74,7 +74,7 @@ namespace Comm
 		void SendGcode(const char* gcode);
 		void SendGcodef(const char* fmt, ...);
 		void RequestReply(RestClient::Response& r);
-		void ProcessReply(const RestClient::Response& r);
+		void ProcessReply(RestClient::Response& r);
 
 		bool UploadFile(const char* filename, const std::string& contents);
 		bool DownloadFile(const char* filename, std::string& contents);

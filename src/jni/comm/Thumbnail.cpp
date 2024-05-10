@@ -1,5 +1,3 @@
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
 #define QOI_IMPLEMENTATION 1

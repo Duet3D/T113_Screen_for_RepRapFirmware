@@ -180,7 +180,7 @@ namespace Comm
 			info("Processing queued request %s", (data->url + data->subUrl).c_str());
 			if (!AsyncGetInner(data->url, data->subUrl, data->queryParameters, data->callback, data->sessionKey, false))
 			{
-				error("Failed to process queued request %s", (data->url + data->subUrl).c_str());
+				warn("Failed to process queued request %s", (data->url + data->subUrl).c_str());
 				return;
 			}
 			info("Processed queued request %s", (data->url + data->subUrl).c_str());

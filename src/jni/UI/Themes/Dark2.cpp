@@ -1,5 +1,3 @@
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/Themes.h"
@@ -375,39 +373,62 @@ namespace UI::Theme
 			// Sidebar Buttons
 			constexpr float sidebarButtonScale = 0.5;
 			constexpr float sidebarButtonPos = 0.4;
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn), 0.5, sidebarButtonPos, sidebarButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_arrow_back_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_home_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_rule_folder_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_keyboard_command_key_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_BackBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_arrow_back_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_home_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MacroBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_rule_folder_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_keyboard_command_key_white_48dp.png");
 
 			UI::GetUIControl<ZKButton>(ID_MAIN_ToolTempSnapshot)->setIconPosition({0, 0, 25, 25});
 			UI::GetUIControl<ZKButton>(ID_MAIN_BedTempSnapshot)->setIconPosition({0, 0, 25, 25});
 			UI::GetUIControl<ZKButton>(ID_MAIN_ChamberTempSnapshot)->setIconPosition({0, 0, 25, 25});
-			UI::GetUIControl<ZKButton>(ID_MAIN_ToolTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/printer-3d-nozzle.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_BedTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/radiator.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_ChamberTempSnapshot)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_stop_white_48dp.png");	// TODO - Change to chamber icon
+			UI::GetUIControl<ZKButton>(ID_MAIN_ToolTempSnapshot)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/printer-3d-nozzle.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_BedTempSnapshot)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/radiator.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ChamberTempSnapshot)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL,
+									 "Dark2/baseline_stop_white_48dp.png"); // TODO - Change to chamber icon
 
 			// Move Window Buttons
 			constexpr float moveButtonScale = 0.45;
 			constexpr float moveButtonPosY = 0.25;
 			constexpr float moveButtonPosX = 0.5;
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn), moveButtonPosX, 0.25, moveButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn), moveButtonPosX, 0.25, moveButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn), moveButtonPosX, 0.25, moveButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn), moveButtonPosX, 0.25, moveButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn), moveButtonPosX, moveButtonPosY, moveButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn), moveButtonPosX, 0.25, moveButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn), moveButtonPosX, 0.25, moveButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/home-circle-outline.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G32.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G29.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_grid_on_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/engine-off.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HomeAllBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/home-circle-outline.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_TrueLevelBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G32.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_MeshLevelBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/G29.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_HeightmapBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_grid_on_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_DisableMotorsBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/engine-off.png");
 
 			// Extruder Window
 			// UI::GetUIControl<ZKButton>(ID_MAIN_UnloadFilamentBtn)->setBackgroundPic("Dark2/Background_Rounded_Elongated_VDarkBlue.png");
@@ -420,23 +441,27 @@ namespace UI::Theme
 										consoleButtonPosX,
 										consoleButtonPosY,
 										consoleButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn),
-										consoleButtonPosX,
-										consoleButtonPosY,
-										consoleButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn), consoleButtonPosX, consoleButtonPosY, consoleButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_bug_report_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_send_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_ConsoleMacroBtn1)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_bug_report_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_SendBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_send_white_48dp.png");
 
 			// File View
 			constexpr float filesButtonScale = 0.75;
 			constexpr float filesButtonPosY = 0.5;
 			constexpr float filesButtonPosX = 0.15;
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn), filesButtonPosX, filesButtonPosY, filesButtonScale);
-			UI::SetIconRelativePosition(UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles), filesButtonPosX, filesButtonPosY, filesButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn), filesButtonPosX, filesButtonPosY, filesButtonScale);
+			UI::SetIconRelativePosition(
+				UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles), filesButtonPosX, filesButtonPosY, filesButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_refresh_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_usb_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_FileRefreshBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_refresh_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_UsbFiles)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_usb_white_48dp.png");
 
 			// Status Window
 			constexpr float statusButtonScale = 0.65;
@@ -451,8 +476,10 @@ namespace UI::Theme
 										statusButtonPosY,
 										statusButtonScale);
 
-			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_compress_white_48dp.png");
-			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_expand_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepDecBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_compress_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_PrintBabystepIncBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_expand_white_48dp.png");
 
 			// Scrollable text
 			// UI::GetUIControl<ZKTextView>(ID_MAIN_PopupText)->setLongMode(ZKTextView::ELongMode::E_LONG_MODE_SCROLL);
@@ -460,7 +487,8 @@ namespace UI::Theme
 			// EStop Button
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
-			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_electric_bolt_white_48dp.png");
+			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)
+				->setButtonStatusPic(ZK_CONTROL_STATUS_NORMAL, "Dark2/baseline_electric_bolt_white_48dp.png");
 		},
 		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
 		{

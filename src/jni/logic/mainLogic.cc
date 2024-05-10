@@ -1099,6 +1099,21 @@ static void onCheckedChanged_ConsoleSystemCommands(ZKCheckBox* pCheckBox, bool i
 	UI::Settings::SetConsoleSystemMode(isChecked);
 }
 
+static int getListItemCount_DebugLevelList(const ZKListView* pListView)
+{
+	return UI::Settings::GetDebugLevelCount();
+}
+
+static void obtainListItemData_DebugLevelList(ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+{
+	UI::Settings::SetDebugLevelListItem(pListItem, index);
+}
+
+static void onListItemClick_DebugLevelList(ZKListView* pListView, int index, int id)
+{
+	UI::Settings::DebugLevelListItemCallback(index);
+}
+
 // =====================================================================================================================
 // Guide Window
 // =====================================================================================================================

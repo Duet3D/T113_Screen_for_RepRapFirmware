@@ -4,8 +4,6 @@
  *  Created on: Nov 19, 2023
  *      Author: Loïc & Andy Everitt
  */
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "OmObserver.h"

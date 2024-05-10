@@ -603,7 +603,7 @@ namespace Comm
 		}
 	}
 
-	void Duet::ProcessReply(const RestClient::Response& reply)
+	void Duet::ProcessReply(RestClient::Response& reply)
 	{
 		if (m_communicationType != CommunicationType::network)
 			return;
@@ -618,24 +618,31 @@ namespace Comm
 		if (reply.body[0] != '{')
 		{
 			dbg("Reply not json: assuming it is a gcode response");
+
+			dbg("Removing \\r from reply body");
+			utils::removeCharFromString(reply.body, '\r');
 			size_t prevPosition = 0;
 			size_t position = reply.body.find("\n"); // Find the first occurrence of \n
 
 			// Split reply by new line and handle each as its own response.
 			// The replicates the uart behaviour and is required because rr_reply will group multiple
 			// replies together into a single response.
+			StringRef ref((char*)"resp", 5);
+			size_t indices[MAX_ARRAY_NESTING] = {0};
 			while (position != std::string::npos)
 			{
-				StringRef ref((char*)"resp", 5);
 				std::string line = reply.body.substr(prevPosition, position - prevPosition);
 				dbg("line: %s", line.c_str());
 				prevPosition = position + 1;
 				position = reply.body.find("\n", position + 1); // Find the next occurrence, if any
+				verbose("position=%u, prevPosition=%u", position, prevPosition);
 				if (line.empty())
+				{
+					verbose("Skipping empty line");
 					continue;
-
+				}
 				// Can skip checking the input since we know it's a gcode response
-				decoder.ProcessReceivedValue(ref, line.c_str(), {});
+				decoder.ProcessReceivedValue(ref, line.c_str(), indices);
 			}
 			return;
 		}

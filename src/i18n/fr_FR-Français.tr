@@ -276,6 +276,13 @@
     <string name="webcam_update_interval_ms_hint">Intervalle de mise à jour (ms)</string>
     <string name="usb_host">Mode hôte USB-C</string>
     <string name="console_system_commands">Envoyer des commandes système dans la console</string>
+    <string name="debug_level">Niveau de débogage</string>
+    <string name="dbg_verbose">Verbeux</string>
+    <string name="dbg_debug">Débogage</string>
+    <string name="dbg_info">Info</string>
+    <string name="dbg_warn">Avertissement</string>
+    <string name="dbg_error">Erreur</string>
+    <string name="dbg_fatal">Fatal</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

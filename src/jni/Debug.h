@@ -10,51 +10,54 @@
 
 #include "DebugLevels.h"
 
-#ifndef DEBUG_LEVEL
-#define DEBUG_LEVEL DEBUG_LEVEL_WARN
-#endif
-
 #include "utils/Log.h"
-#define __dbg(level, fmt, args...)                                                                                     \
+#include <cstdarg>
+
+#define __dbg(level, tag, fmt, args...)                                                                                \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		__android_log_print(level, __FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                          \
+		__android_log_vprint(level, tag, fmt, args);                                                                   \
 	} while (0)
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_VERBOSE
-#define verbose(fmt, args...) __dbg(ANDROID_LOG_VERBOSE, fmt, ##args)
-#else
-#define verbose(fmt, args...)
-#endif
+constexpr const char* DebugLevelStrings[] = {
+	"dbg_verbose",
+	"dbg_debug",
+	"dbg_info",
+	"dbg_warn",
+	"dbg_error",
+	"dbg_fatal",
+};
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_DBG
-#define dbg(fmt, args...) __dbg(ANDROID_LOG_DEBUG, fmt, ##args)
-#else
-#define dbg(fmt, args...)
-#endif
+enum class DebugLevel
+{
+	Verbose = 0,
+	Debug,
+	Info,
+	Warn,
+	Error,
+	Fatal,
+	COUNT
+};
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_INFO
-#define info(fmt, args...) __dbg(ANDROID_LOG_INFO, fmt, ##args)
-#else
-#define info(fmt, args...)
-#endif
+void SetDebugLevel(DebugLevel level);
+const DebugLevel& GetDebugLevel();
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_WARN
-#define warn(fmt, args...) __dbg(ANDROID_LOG_WARN, fmt, ##args)
-#else
-#define warn(fmt, args...)
-#endif
+void verbose_inner(const char* tag, const char* fmt, ...);
+#define verbose(fmt, args...) verbose_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_ERROR
-#define error(fmt, args...) __dbg(ANDROID_LOG_ERROR, fmt, ##args)
-#else
-#define error(fmt, args...)
-#endif
+void dbg_inner(const char* tag, const char* fmt, ...);
+#define dbg(fmt, args...) dbg_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
 
-#if DEBUG_LEVEL <= DEBUG_LEVEL_FATAL
-#define fatal(fmt, args...) __dbg(ANDROID_LOG_FATAL, fmt, ##args)
-#else
-#define fatal(fmt, args...)
-#endif
+void info_inner(const char* tag, const char* fmt, ...);
+#define info(fmt, args...) info_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
+
+void warn_inner(const char* tag, const char* fmt, ...);
+#define warn(fmt, args...) warn_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
+
+void error_inner(const char* tag, const char* fmt, ...);
+#define error(fmt, args...) error_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
+
+void fatal_inner(const char* tag, const char* fmt, ...);
+#define fatal(fmt, args...) fatal_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
 
 #endif /* JNI_DEBUG_HPP_ */

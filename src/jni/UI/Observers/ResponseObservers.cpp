@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
 #include "Configuration.h"

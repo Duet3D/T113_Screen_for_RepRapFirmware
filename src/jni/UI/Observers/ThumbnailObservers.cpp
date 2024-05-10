@@ -4,8 +4,6 @@
  *  Created on: 8 Jan 2024
  *      Author: Andy Everitt
  */
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Comm/Communication.h"

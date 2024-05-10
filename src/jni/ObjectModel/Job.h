@@ -64,8 +64,8 @@ namespace OM
 	void SetCurrentJobObject(int8_t index);
 	const int8_t GetCurrentJobObjectIndex();
 
-	JobObject* GetJobObject(const size_t index);
-	JobObject* GetOrCreateJobObject(const size_t index);
+	JobObject* GetJobObject(const int8_t index);
+	JobObject* GetOrCreateJobObject(const int8_t index);
 	size_t GetJobObjectCount();
 	bool IterateJobObjectsWhile(function_ref<bool(JobObject*&, size_t)> func, const size_t startAt = 0);
 	size_t RemoveJobObject(const size_t index, const bool allFollowing);

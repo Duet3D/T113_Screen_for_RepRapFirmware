@@ -5,8 +5,6 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/UserInterface.h"
@@ -147,6 +145,7 @@ namespace UI::Heightmap
 
 	void SetHeightmapRenderModeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		HeightmapRenderMode mode = HeightmapRenderMode(index);
 		switch (mode)
 		{
@@ -164,6 +163,7 @@ namespace UI::Heightmap
 
 	void SetHeightmapXAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
 		OM::Move::Axis* axis = heightmap.meta.GetAxis(0);
 		if (axis == nullptr)
@@ -181,6 +181,7 @@ namespace UI::Heightmap
 
 	void SetHeightmapYAxisText(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::Heightmap heightmap = OM::GetHeightmapData(s_currentHeightmap.c_str());
 		OM::Move::Axis* axis = heightmap.meta.GetAxis(1);
 		if (axis == nullptr)
@@ -216,6 +217,7 @@ namespace UI::Heightmap
 
 	void SetHeightmapScaleAt(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		HeightmapRange range = GetHeightmapRange(OM::GetHeightmapData(s_currentHeightmap.c_str()));
 
 		return pListItem->setTextf("%.2f mm",

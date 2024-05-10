@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Move.h"
@@ -102,6 +100,7 @@ namespace UI::Move
 
 	void SetAxisListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		ZKListView::ZKListSubItem* pHome = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
 		ZKListView::ZKListSubItem* pMachinePosition =
 			pListItem->findSubItemByID(ID_MAIN_AxisControlMachinePositionSubItem);
@@ -173,6 +172,7 @@ namespace UI::Move
 
 	void SetFeedRateListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index < 0 || index >= (int)ARRAY_SIZE(s_moveFeedRates))
 		{
 			return;

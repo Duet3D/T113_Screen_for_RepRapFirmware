@@ -28,6 +28,8 @@
 #include "window/ZKSlideWindow.h"
 
 /*TAG:Macro宏ID*/
+#define ID_MAIN_TextView3    50102
+#define ID_MAIN_DebugLevelList    80038
 #define ID_MAIN_ConsoleHeader    50009
 #define ID_MAIN_ConsoleSystemCommands    21005
 #define ID_MAIN_TextView55    50101

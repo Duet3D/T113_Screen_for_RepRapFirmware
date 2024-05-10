@@ -8,10 +8,11 @@
 #ifndef SRC_OBJECTMODEL_LISTHELPERS_HPP_
 #define SRC_OBJECTMODEL_LISTHELPERS_HPP_
 
-//#include <cstdint>
-#include <sys/types.h>
-#include <Duet3D/General/function_ref.h>
 #include "Debug.h"
+
+//#include <cstdint>
+#include <Duet3D/General/function_ref.h>
+#include <sys/types.h>
 
 template <typename L, typename T>
 T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent = false)
@@ -21,14 +22,14 @@ T* GetOrCreate(L& list, const size_t index, const bool create, const bool silent
 	{
 		if (list[i]->index == index)
 		{
-			// dbg("Getting index=%d", index);
+			verbose("Getting index=%d", index);
 			return list[i];
 		}
 	}
 
 	if (create && !list.Full())
 	{
-		// dbg("Creating index=%d", index);
+		verbose("Creating index=%d", index);
 		T* elem = new T;
 		elem->Reset();
 		elem->index = index;

@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/Logic/ObjectCancel.h"
@@ -141,9 +139,9 @@ namespace OM
 		return s_currentJobObjectIndex;
 	}
 
-	JobObject* GetJobObject(const size_t index)
+	JobObject* GetJobObject(const int8_t index)
 	{
-		if (index < 0 || index >= MAX_TRACKED_OBJECTS)
+		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
 			warn("JobObject index %d out of range\n", index);
 			return nullptr;
@@ -151,9 +149,9 @@ namespace OM
 		return GetOrCreate<JobObjectList, JobObject>(s_jobObjects, index, false);
 	}
 
-	JobObject* GetOrCreateJobObject(const size_t index)
+	JobObject* GetOrCreateJobObject(const int8_t index)
 	{
-		if (index < 0 || index >= MAX_TRACKED_OBJECTS)
+		if (index < 0 || (size_t)index >= MAX_TRACKED_OBJECTS)
 		{
 			warn("JobObject index %d out of range\n", index);
 			return nullptr;

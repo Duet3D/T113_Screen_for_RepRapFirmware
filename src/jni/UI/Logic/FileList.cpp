@@ -5,8 +5,6 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "FileList.h"
@@ -76,6 +74,7 @@ namespace UI::FileList
 
 	void SetFileListItem(ZKListView::ZKListItem* pListItem, int index)
 	{
+		verbose("%d", index);
 		ZKListView::ZKListSubItem* pFileName = pListItem->findSubItemByID(ID_MAIN_FileNameSubItem);
 		ZKListView::ZKListSubItem* pFileType = pListItem->findSubItemByID(ID_MAIN_FileTypeSubItem);
 		ZKListView::ZKListSubItem* pFileSize = pListItem->findSubItemByID(ID_MAIN_FileSizeSubItem);

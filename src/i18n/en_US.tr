@@ -213,6 +213,13 @@
     <string name="webcam_update_interval_ms_hint">Update Interval (ms)</string>
     <string name="usb_host">USB-C Host mode</string>
     <string name="console_system_commands">Send system commands in console</string>
+    <string name="debug_level">Debug Level</string>
+    <string name="dbg_verbose">Verbose</string>
+    <string name="dbg_debug">Debug</string>
+    <string name="dbg_info">Info</string>
+    <string name="dbg_warn">Warning</string>
+    <string name="dbg_error">Error</string>
+    <string name="dbg_fatal">Fatal</string>
 
     <!-- Console Page -->
     <string name="gcodes">Gcodes</string>

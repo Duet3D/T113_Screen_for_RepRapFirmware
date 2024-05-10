@@ -1,5 +1,3 @@
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/Themes.h"
@@ -305,7 +303,8 @@ namespace UI::Theme
 	static Theme s_theme(
 		"dark",
 		&s_darkTheme,
-		[]() {
+		[]()
+		{
 			/* Overrides */
 			// Windows
 			UI::GetRootWindow()->setBackgroundColor(Colors::Black);
@@ -339,24 +338,28 @@ namespace UI::Theme
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Red);
 			UI::GetUIControl<ZKButton>(ID_MAIN_EStopBtn)->setBgStatusColor(ZK_CONTROL_STATUS_PRESSED, Colors::DarkRed);
 		},
-		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index) {
+		[](ZKListView* pListView, ZKListView::ZKListItem* pListItem, int index)
+		{
 			if (pListView == nullptr || pListItem == nullptr)
 				return;
 
 			/* ListItem Overrides */
 			switch (pListView->getID())
 			{
-			case ID_MAIN_FileListView: {
+			case ID_MAIN_FileListView:
+			{
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Yellow);
 				break;
 			}
-			case ID_MAIN_AxisControlListView: {
+			case ID_MAIN_AxisControlListView:
+			{
 				ZKListView::ZKListSubItem* pHomeBtn = pListItem->findSubItemByID(ID_MAIN_AxisControlHomeSubItem);
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_NORMAL, Colors::Yellow);
 				pHomeBtn->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Blue2);
 				break;
 			}
-			case ID_MAIN_TemperatureGraphLegend: {
+			case ID_MAIN_TemperatureGraphLegend:
+			{
 				pListItem->setBgStatusColor(ZK_CONTROL_STATUS_SELECTED, Colors::Gray);
 				break;
 			}

@@ -200,12 +200,13 @@ It is possible to debug the screen using `adb` from the command line without hav
 * Start monitoring the logs with `adb logcat`
   * You can add the time with `adb logcat -v time`
   * You can filter by priority with `adb logcat -v time *:E` (error), `adb logcat -v time  *:W` (warning), `adb logcat -v time  *:I` (info), `adb logcat -v time  *:D` (debug), `adb logcat -v time  *:V` (verbose)
+  * A [Python file](./Tools/logcat.py) has been created to provide colour to the logcat output, this can be run with `py ./Tools/logcat.py`
   * To you can chain multiple filters together
   * You can also pipe the output to `grep` to filter the output further.
   * > [!NOTE]
-    > To get the logs at any firmware crashes and the preceding log messages, you can use `adb logcat -v time | grep -B 20 vold$` to get the 20 lines before the crash.
+    > To get the logs at any firmware crashes and the preceding log messages, you can use `./Tools/crash.sh 20` or `adb logcat -v time | grep -B 20 vold$` to get the 20 lines before the crash.
   * > [!NOTE]
-    > To get the logs at any error logs and the preceding log messages, you can use `adb logcat -v time | grep -B 5 -e "E/"` to get the 5 lines before the error.
+    > To get any error logs and the preceding log messages, you can use `py ./Tools/logcat.py | grep -B 5 -e " E/"` to get the 5 lines before the error.
 
 To check the memory usage of the screen, you can use the `adb shell` command to connect to the screen and run the `top` command.
 

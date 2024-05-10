@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "HomeScreen.h"
@@ -66,6 +64,7 @@ namespace UI::HomeScreen
 
 	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
 		{
 			warn("Invalid window index %d", index);
@@ -120,6 +119,7 @@ namespace UI::HomeScreen
 
 	void SetToolsListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		s_toolsList.ObtainListItemData(pListItem,
 									   index,
 									   ID_MAIN_ToolNameSubItem,
@@ -146,6 +146,7 @@ namespace UI::HomeScreen
 
 	void SetTemperatureGraphLegendItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::AnalogSensor* sensor = OM::GetAnalogSensorBySlot(index);
 		if (sensor == nullptr)
 		{
@@ -163,6 +164,7 @@ namespace UI::HomeScreen
 
 	void SetTemperatureGraphXLabel(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		int range = s_temperatureGraph.GetTimeRange();
 		int time = -range + (index * range / (pListView->getCols() - 1));
 		pListItem->setTextf("%ds", time);
@@ -170,6 +172,7 @@ namespace UI::HomeScreen
 
 	void SetTemperatureGraphYLabel(ZKListView* pListView, ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		float yMax = s_temperatureGraph.GetYMax();
 		float label = yMax - (yMax / (pListView->getRows() - 1)) * index;
 		pListItem->setTextf("%.1f", label);

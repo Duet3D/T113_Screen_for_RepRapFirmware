@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "PrintStatus.h"
@@ -172,6 +170,7 @@ namespace UI::PrintStatus
 
 	void SetFanListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::Fan* fan = OM::GetFanBySlot(index);
 		if (fan == nullptr)
 		{
@@ -236,6 +235,7 @@ namespace UI::PrintStatus
 
 	void SetAxisListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		ZKListView::ZKListSubItem* pMachinePosition =
 			pListItem->findSubItemByID(ID_MAIN_PrintPositionListMachinePositionSubItem);
 		ZKListView::ZKListSubItem* pUserPosition =
@@ -256,6 +256,7 @@ namespace UI::PrintStatus
 
 	void SetExtruderListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		ZKListView::ZKListSubItem* pSubItem1 = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem1);
 		ZKListView::ZKListSubItem* pSubItem2 = pListItem->findSubItemByID(ID_MAIN_PrintExtruderPositionListSubItem2);
 		OM::Move::ExtruderAxis* extruder = OM::Move::GetExtruderAxisBySlot(index);
@@ -317,6 +318,7 @@ namespace UI::PrintStatus
 
 	void SetToolsListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		s_toolsList.ObtainListItemData(pListItem,
 									   index,
 									   ID_MAIN_PrintTemperatureListNameSubItem,

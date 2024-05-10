@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "UI/UserInterface.h"
@@ -96,6 +94,14 @@ namespace UI::Settings
 
 	void Init()
 	{
+		int debugLevel = StoragePreferences::getInt(ID_DEBUG_LEVEL, (int)DebugLevel::Info);
+		if (debugLevel < 0 || debugLevel >= (int)DebugLevel::COUNT)
+		{
+			warn("Invalid debug level %d", debugLevel);
+			debugLevel = (int)DebugLevel::Info;
+		}
+		SetDebugLevel((DebugLevel)debugLevel);
+
 		dbg("Initialising Settings UI");
 
 		// Screensaver
@@ -140,6 +146,7 @@ namespace UI::Settings
 
 	void SetWindowSelectListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index < 0 || index >= (int)ARRAY_SIZE(s_windows))
 		{
 			warn("Invalid window index %d", index);
@@ -194,6 +201,7 @@ namespace UI::Settings
 
 	void SetBaudRateListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		pListItem->setSelected(Comm::baudRates[index].rate == Comm::DUET.GetBaudRate().rate);
 		pListItem->setText((int)Comm::baudRates[index].rate);
 	}
@@ -210,6 +218,7 @@ namespace UI::Settings
 
 	void SetDuetCommMethodListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		pListItem->setText(Comm::duetCommunicationTypeNames[index]);
 		pListItem->setSelected(index == (int)Comm::DUET.GetCommunicationType());
 	}
@@ -261,6 +270,7 @@ namespace UI::Settings
 
 	void SetGuideListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		UI::GuidedSetup::Guide* guide = UI::GuidedSetup::GetGuideByIndex(index);
 		if (guide == nullptr)
 		{
@@ -316,6 +326,7 @@ namespace UI::Settings
 
 	void SetThemeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		UI::Theme::Theme* theme = UI::Theme::GetThemeByIndex(index);
 		if (theme == nullptr)
 		{
@@ -348,6 +359,7 @@ namespace UI::Settings
 
 	void SetWebcamUrlListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		pListItem->setTextf("[%d] %s", index, UI::Webcam::GetWebcamUrl(index).c_str());
 	}
 
@@ -383,6 +395,33 @@ namespace UI::Settings
 		{
 			UI::ConsoleWindow::SetConsoleMode(UI::ConsoleWindow::ConsoleMode::Duet);
 		}
+	}
+
+	size_t GetDebugLevelCount()
+	{
+		return (size_t)DebugLevel::COUNT;
+	}
+
+	void SetDebugLevelListItem(ZKListView::ZKListItem* pListItem, const int index)
+	{
+		verbose("%d", index);
+		if (index < 0 || index >= (int)ARRAY_SIZE(DebugLevelStrings))
+		{
+			warn("Invalid debug level index %d", index);
+			return;
+		}
+		pListItem->setTextTr(DebugLevelStrings[index]);
+		pListItem->setSelected(index == (int)GetDebugLevel());
+	}
+
+	void DebugLevelListItemCallback(const int index)
+	{
+		if (index < 0 || index >= (int)DebugLevel::COUNT)
+		{
+			warn("Invalid debug level index %d", index);
+			return;
+		}
+		SetDebugLevel((DebugLevel)index);
 	}
 
 } // namespace UI::Settings

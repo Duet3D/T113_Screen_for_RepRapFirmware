@@ -58,6 +58,9 @@ namespace UI::Settings
 	/* Developer */
 	void SetUsbHostMode(const bool isHost);
 	void SetConsoleSystemMode(const bool isSystem);
+	size_t GetDebugLevelCount();
+	void SetDebugLevelListItem(ZKListView::ZKListItem* pListItem, const int index);
+	void DebugLevelListItemCallback(const int index);
 } // namespace UI::Settings
 
 #endif /* JNI_UI_LOGIC_SETTINGS_H_ */

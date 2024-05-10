@@ -4,8 +4,6 @@
  *  Created on: Sep 5, 2017
  *      Author: guoxs
  */
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_INFO
 #include "Debug.h"
 
 #include <stdio.h>

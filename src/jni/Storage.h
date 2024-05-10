@@ -35,6 +35,7 @@ constexpr const char* ID_WEBCAM_UPADTE_ITERVAL = "webcam_update_interval";
 
 constexpr const char* ID_USB_HOST_MODE = "usb_host_mode";
 constexpr const char* ID_CONSOLE_SYSTEM_COMMANDS = "console_system_commands";
+constexpr const char* ID_DEBUG_LEVEL = "debug_level";
 
 constexpr const char* ID_BABYSTEP_AMOUNT = "baby_step_amount";
 constexpr const char* ID_MOVE_FEEDRATE = "move_feedrate_%d";

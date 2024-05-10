@@ -5,8 +5,6 @@
  *      Author: andy
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Configuration.h"
@@ -50,6 +48,7 @@ namespace UI::Webcam
 
 	void SetWebcamListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index >= (int)GetWebcamCount())
 		{
 			warn("Invalid webcam index %d", index);

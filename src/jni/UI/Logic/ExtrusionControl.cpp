@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "ExtrusionControl.h"
@@ -138,6 +136,7 @@ namespace UI::ExtrusionControl
 
 	void SetExtrudeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		ZKListView::ZKListSubItem* pfilament = pListItem->findSubItemByID(ID_MAIN_ExtrudeToolFilamentSubItem);
 
 		s_toolsList.ObtainListItemData(pListItem,
@@ -199,6 +198,7 @@ namespace UI::ExtrusionControl
 
 	void SetFilamentListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		OM::FileSystem::FileSystemItem* item = OM::FileSystem::GetItem(index);
 		if (item == nullptr || s_filamentDialogTool == nullptr)
 		{
@@ -234,6 +234,7 @@ namespace UI::ExtrusionControl
 
 	void SetExtrusionDistanceListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index < 0 || index >= (int)GetExtrusionDistanceCount())
 		{
 			return;
@@ -260,6 +261,7 @@ namespace UI::ExtrusionControl
 
 	void SetExtrusionSpeedListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		if (index < 0 || index >= (int)GetExtrusionSpeedCount())
 		{
 			return;

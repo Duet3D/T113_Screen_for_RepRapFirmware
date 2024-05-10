@@ -5,8 +5,6 @@
  *      Author: Andy Everitt
  */
 
-#include "DebugLevels.h"
-#define DEBUG_LEVEL DEBUG_LEVEL_DBG
 #include "Debug.h"
 
 #include "Console.h"
@@ -25,6 +23,7 @@ namespace UI::ConsoleWindow
 
 	void SetConsoleListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		pListItem->setText(UI::CONSOLE.GetItem(index).c_str());
 	}
 
@@ -35,6 +34,7 @@ namespace UI::ConsoleWindow
 
 	void SetGcodeListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		pListItem->setTextTr(s_gcode[index].displayText);
 	}
 
@@ -107,6 +107,7 @@ namespace UI::ConsoleWindow
 
 	void SetDebugCommandsListItem(ZKListView::ZKListItem* pListItem, const int index)
 	{
+		verbose("%d", index);
 		Debug::DebugCommand* command = Debug::GetCommandByIndex(index);
 		if (command == nullptr)
 		{
