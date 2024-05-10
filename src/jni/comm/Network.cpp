@@ -146,7 +146,7 @@ namespace Comm
 
 		if (s_threadPool.size() >= MAX_THREAD_POOL_SIZE)
 		{
-			error("Thread pool is full, cannot add more threads");
+			warn("Thread pool is full, cannot add more threads");
 			return false;
 		}
 

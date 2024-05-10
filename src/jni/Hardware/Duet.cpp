@@ -58,7 +58,6 @@ namespace Comm
 
 		OM::RemoveAll();
 		Comm::ResetSeqs();
-		FILEINFO_CACHE->ClearCache();
 		UI::HomeScreen::ClearTemperatureGraph();
 	}
 
@@ -78,6 +77,7 @@ namespace Comm
 		Disconnect();
 
 		m_communicationType = type;
+		FILEINFO_CACHE->ClearCache();
 		Connect();
 	}
 
@@ -819,6 +819,7 @@ namespace Comm
 		m_hostname += hostname.c_str();
 		ClearIPAddress();
 		info("Set Duet hostname to %s", m_hostname.c_str());
+		FILEINFO_CACHE->ClearCache();
 		if (m_communicationType == CommunicationType::network)
 			Connect();
 	}

@@ -32,7 +32,7 @@ namespace Comm
 
 		String<MAX_FILENAME_LENGTH> filename;
 		uint32_t size;
-		String<20> lastModified;
+		String<19> lastModified;
 		float height;
 		float layerHeight;
 		uint32_t printTime;

@@ -69,5 +69,6 @@
     "stop_token": "cpp",
     "thread": "cpp"
   },
-  "C_Cpp.formatting": "clangFormat"
+  "C_Cpp.formatting": "clangFormat",
+  "C_Cpp.default.compilerPath": "${workspaceFolder}/../t113/toolchain/bin/arm-unknown-linux-musleabihf-gcc.exe"
 }

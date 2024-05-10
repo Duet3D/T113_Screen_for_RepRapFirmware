@@ -269,8 +269,7 @@ namespace Comm
 	// Public functions called by the SerialIo module
 	void JsonDecoder::ProcessReceivedValue(StringRef id, const char data[], const size_t indices[])
 	{
-		verbose(
-			"id %s, data %s, indices [%d|%d|%d|%d]", id.c_str(), data, indices[0], indices[1], indices[2], indices[3]);
+		dbg("%s (indices [%d|%d|%d|%d]) = %s", id.c_str(), indices[0], indices[1], indices[2], indices[3], data);
 		if (StringStartsWith(id.c_str(), "result"))
 		{
 			// We might either get something like:
@@ -460,7 +459,6 @@ namespace Comm
 				m_fieldVal.Clear(); // so that we can distinguish null from an empty string
 			}
 		}
-		dbg("%s: %s", m_fieldId.c_str(), m_fieldVal.c_str());
 		ProcessReceivedValue(m_fieldId.GetRef(), m_fieldVal.c_str(), m_arrayIndices);
 		m_fieldVal.Clear();
 	}
@@ -924,6 +922,28 @@ namespace Comm
 								jserror("jsStringEscape 2, failed to append space");
 							}
 							break;
+						case 'u':
+						{
+							if (len - m_nextOut < 4)
+							{
+								m_state = jsError;
+								jserror("jsUnicodeEscape, not enough characters left in buffer for \\uXXXX");
+								break;
+							}
+							const char* code = (const char*)(rxBuffer + m_nextOut);
+							// DSF replaces `+` with `\u002B` for some messages (e.g. rr_thumbnail)
+							if (strncmp(code, "002B", 4) == 0)
+							{
+								m_fieldVal.cat('+');
+							}
+							else
+							{
+								m_state = jsError;
+								jserror("jsUnicodeEscape, unknown code %s", code);
+							}
+							m_nextOut += 4;
+							break;
+						}
 						case 'b':
 						case 'f':
 						case 'r':

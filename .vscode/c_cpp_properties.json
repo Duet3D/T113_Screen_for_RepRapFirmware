@@ -1,29 +1,26 @@
 {
     "configurations": [
         {
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/src/jni/include",
-                "${workspaceFolder}/src/jni/include/system",
-                "${workspaceFolder}/src/jni/include/uClibc++",
-                "${workspaceFolder}/../t113/prebuilt/include/uClibc++",
-                "${workspaceFolder}/src/jni/logic",
-                "${workspaceFolder}/src/jni/"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE",
-                "_FORTIFY_SOURCE=1",
-                "USE_ANDROID_LOG"
-            ],
-            "compilerPath": "${workspaceFolder}/../t113/toolchain/bin/arm-unknown-linux-musleabihf-gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
-            "intelliSenseMode": "linux-gcc-arm64",
-            "compilerArgs": [
-                "-nostdinc++"
-            ]
+          "name": "T113",
+          "includePath": [
+            "${workspaceFolder}/src/jni/include",
+            "${workspaceFolder}/src/jni/include/system",
+            "${workspaceFolder}/src/jni/include/uClibc++",
+            "${workspaceFolder}/../t113/prebuilt/include/uClibc++",
+            "${workspaceFolder}/src/jni/logic",
+            "${workspaceFolder}/src/jni/"
+          ],
+          "defines": [
+            "_DEBUG",
+            "UNICODE",
+            "_UNICODE",
+            "_FORTIFY_SOURCE=1",
+            "USE_ANDROID_LOG"
+          ],
+          "cStandard": "c11",
+          "cppStandard": "c++11",
+          "compilerPath": "${workspaceFolder}/../t113/toolchain/bin/arm-unknown-linux-musleabihf-gcc",
+          "compilerArgs": ["-nostdinc++"]
         }
     ],
     "version": 4

@@ -233,6 +233,7 @@ namespace Comm
 
 		if (m_queuedLargeThumbnail != nullptr)
 		{
+			info("Requesting queued large thumbnail for %s", m_queuedLargeThumbnail->filename.c_str());
 			if (RequestThumbnail(m_queuedLargeThumbnail))
 			{
 				m_queuedLargeThumbnail = nullptr;
@@ -283,7 +284,7 @@ namespace Comm
 		FileInfo* fileInfo = m_cache[filepath];
 
 		// Is the last modified time the same?
-		if (!fileInfo->lastModified.Equals(lastModified))
+		if (strncmp(fileInfo->lastModified.c_str(), lastModified, fileInfo->lastModified.Capacity()) != 0)
 		{
 			dbg("Last modified time for %s does not match", filepath.c_str());
 			return false;
@@ -453,6 +454,10 @@ namespace Comm
 			warn("No valid thumbnail found for %s", filepath.c_str());
 			return false;
 		}
+		info("Queued large thumbnail request for %s, size=%u, offset=%u",
+			 filepath.c_str(),
+			 largestThumbnail->meta.size,
+			 largestThumbnail->meta.offset);
 		m_queuedLargeThumbnail = largestThumbnail;
 		return true;
 	}

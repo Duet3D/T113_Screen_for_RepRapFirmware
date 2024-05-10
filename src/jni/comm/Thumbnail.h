@@ -92,7 +92,7 @@ namespace Comm
 	{
 		uint16_t size;
 		unsigned char buffer[MAX_JSON_VALUE_LENGTH]; // 1024 bytes for UART, 2600 bytes for network, some extra since we
-													 // have lots of memory
+													 // have lots of memory. DSF will send the thumbnail in 1 chunk
 	};
 } // namespace Comm
 

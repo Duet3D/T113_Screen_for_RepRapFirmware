@@ -208,7 +208,7 @@ static UI::Observer<UI::ui_field_update_cb> ThumbnailObserversField[] = {
 						  return;
 					  }
 
-					  verbose("thumbnail data %d", strlen(val));
+					  dbg("thumbnail data %d", strlen(val));
 					  Comm::g_thumbnailBuf.size = strnlen(val, sizeof(Comm::g_thumbnailBuf.buffer));
 					  memcpy(Comm::g_thumbnailBuf.buffer, val, Comm::g_thumbnailBuf.size);
 					  thumbnail->context.state = Comm::ThumbnailState::Data;

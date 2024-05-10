@@ -116,6 +116,17 @@ namespace OM
 											.c_str());
 			}
 		}
+		UI::CONSOLE.AddResponse("  Files:");
+		for (size_t i = 0; i < FileSystem::GetItemCount(); ++i)
+		{
+			FileSystem::FileSystemItem* item = FileSystem::GetItem(i);
+			if (item != nullptr)
+			{
+				UI::CONSOLE.AddResponse(utils::format("    [%u]: path(%s)", i, item->GetPath().c_str()).c_str());
+				UI::CONSOLE.AddResponse(
+					utils::format("          date(%s), size(%u)", item->GetDate().c_str(), item->GetSize()).c_str());
+			}
+		}
 		UI::CONSOLE.AddResponse("  Heaters:");
 		for (size_t i = 0; i < MAX_HEATERS; ++i)
 		{
