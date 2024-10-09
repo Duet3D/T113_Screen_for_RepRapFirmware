@@ -1,8 +1,8 @@
-# DuetScreen
+# UI for RepRapFirmware for T113 based screens
 
 This firmware provides a graphical user interface to control a Duet3D control board running RRF3.5 or later in standalone mode.
 
-- [DuetScreen](#duetscreen)
+- [UI for RepRapFirmware for T113 based screens](#ui-for-reprapfirmware-for-t113-based-screens)
   - [Note on Licensing](#licensing)
   - [Upgrading](#upgrading)
     - [Network](#network)
