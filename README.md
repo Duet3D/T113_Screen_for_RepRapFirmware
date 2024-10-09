@@ -36,9 +36,9 @@ This firmware provides a graphical user interface to control a Duet3D control bo
 
 ## Licensing
 
-Duet3D has decided to release our work under the GPL v3 License for the benefit of the RepRapFirmware community who have screens that use the Z6s and T113 processors. Due to issues with accessing the souce code for the underlying Linux distribution that the Flythings architecture runs on we are not providing screen hardware for this architecture as a product at this point.
+Duet3D has decided to release our work under the GPL v3 License for the benefit of the RepRapFirmware community who have screens that use the Z6s and T113 processors. Due to issues with accessing the souce code for the underlying Linux distribution that the Flythings architecture runs on Duet3D are not providing screen hardware for this architecture as a product at this point.
 
-We are not able to provide any support for this project.
+Duet3D is not able to provide any support for this project.
 
 ## Upgrading
 
