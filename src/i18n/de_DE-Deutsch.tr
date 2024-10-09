@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Built in -->
+    <string name="sys_setup">Einstellungen</string>
+    <string name="sys_developer_options">Entwickleroptionen</string>
+    <string name="sys_debug_switch">Debug-Schalter</string>
+    <string name="sys_net_setup">Netzwerkeinstellungen</string>
+    <string name="sys_wifi_setup">WLAN-Einstellungen</string>
+    <string name="sys_lte4g_setup">4G-Einstellungen</string>
+    <string name="sys_hotspot_setup">Hotspot-Einstellungen</string>
+    <string name="sys_ethernet_setup">Ethernet-Einstellungen</string>
+    <string name="sys_hotspot_switch">Hotspot-Schalter</string>
+    <string name="sys_hotspot_name">Hotspot-Name:</string>
+    <string name="sys_hotspot_password">Hotspot-Passwort:</string>
+    <string name="sys_show_password">Passwort anzeigen</string>
+    <string name="sys_save">Speichern</string>
+    <string name="sys_lang_setup">Spracheinstellungen</string>
+    <string name="sys_cancel">Abbrechen</string>
+    <string name="sys_confirm">Bestätigen</string>
+    <string name="sys_lang_switch_tip">Systemsprache auf %s umschalten?</string>
+    <string name="sys_wifi_name">Name:</string>
+    <string name="sys_wifi_encryption_method">Verschlüsselungsmethode:</string>
+    <string name="sys_wifi_encryption_encrypted">Verschlüsselt</string>
+    <string name="sys_wifi_encryption_open">Offen</string>
+    <string name="sys_wifi_password">Passwort:</string>
+    <string name="sys_wifi_status">Status:</string>
+    <string name="sys_wifi_connect">Verbinden</string>
+    <string name="sys_wifi_disconnect">Trennen</string>
+    <string name="sys_wifi_status_authenticating">Authentifizierung...</string>
+    <string name="sys_wifi_status_handshake">IP-Adresse abrufen</string>
+    <string name="sys_wifi_status_connected">Verbunden</string>
+    <string name="sys_wifi_ip_addr">IP-Adresse:</string>
+    <string name="sys_wifi_mac_addr">MAC-Adresse:</string>
+    <string name="sys_wifi_password_error">Falsches Passwort</string>
+    <string name="sys_lte4g_manufacturer">Hersteller:</string>
+    <string name="sys_lte4g_version">Version:</string>
+    <string name="sys_ethernet_connect_type">Verbindungstyp</string>
+    <string name="sys_ethernet_dynamic_ip">IP automatisch beziehen</string>
+    <string name="sys_ethernet_static_ip">Statische IP</string>
+    <string name="sys_ethernet_ip_addr">IP-Adresse</string>
+    <string name="sys_ethernet_mask">Subnetzmaske</string>
+    <string name="sys_ethernet_gateway">Standardgateway</string>
+    <string name="sys_ethernet_first_dns">Bevorzugter DNS-Server</string>
+    <string name="sys_ethernet_second_dns">Alternativer DNS-Server</string>
+    <string name="sys_ethernet_save_ok">Speichern erfolgreich</string>
+    <string name="sys_ethernet_save_error">Speichern fehlgeschlagen</string>
+    <string name="sys_touch_calibration">Touch-Kalibrierung</string>
+    <string name="sys_upgrade">Upgrade</string>
+    <string name="sys_upgrade_need_reboot">System wird für Upgrade neu gestartet</string>
+    <string name="sys_upgrade_success">Upgrade erfolgreich, System wird neu gestartet</string>
+    <string name="sys_upgrade_fail">Upgrade fehlgeschlagen</string>
+    <string name="sys_upgrade_pack_format_error">Upgrade-Paketformatfehler, bitte das Upgrade-Paket neu generieren!</string>
+    <string name="sys_upgrade_type_no_match_error">Upgrade-Paketmodell stimmt nicht überein!</string>
+    <string name="sys_upgrade_forbid_error">Upgrade verboten!</string>
+    <string name="sys_upgrade_image_size_error">Bildgröße ist größer als Partition, Upgrade fehlgeschlagen</string>
+    <string name="sys_upgrade_logo_size_error">Boot-Logo-Bildauflösung ist größer als Bildschirmauflösung, Upgrade fehlgeschlagen</string>
+    <string name="sys_upgrade_not_support_logo_error">Boot-Logo-Upgrade nicht unterstützt, Upgrade fehlgeschlagen</string>
+    <string name="sys_exit">Beenden</string>
+    <string name="sys_upgrade_warning">Upgrade wird durchgeführt, nicht ausschalten</string>
+    <string name="sys_upgrade_ts_tip_warning">Hinweis: Löschen Sie nach Abschluss des Upgrades die Datei ts.cfg in der T-Karte, um weitere Upgrades zu verhindern!</string>
+    <string name="sys_ts_type">Typ:</string>
+    <string name="sys_ts_version">Version:</string>
+    <string name="sys_ts_pix">Auflösung:</string>
+    <string name="sys_ts_date">Datum:</string>
+
+     <!-- Druckerstatus -->
+    <string name="busy">Beschäftigt</string>
+    <string name="cancelling">Abbruch</string>
+    <string name="changingTool">Werkzeugwechsel</string>
+    <string name="connecting">Verbindung wird hergestellt</string>
+    <string name="halted">Angehalten</string>
+    <string name="idle">Inaktiv</string>
+    <string name="off">Aus</string>
+    <string name="paused">Pausiert</string>
+    <string name="pausing">Pausieren</string>
+    <string name="processing">Verarbeitung</string>
+    <string name="resuming">Fortsetzen</string>
+    <string name="simulating">Simulation</string>
+    <string name="starting">Starten</string>
+    <string name="updating">Aktualisieren</string>
+
+    <!-- Heater Status -->
+    <string name="active">Aktiv</string>
+    <string name="fault">Fehler</string>
+    <string name="off">Aus</string>
+    <string name="offline">Offline</string>
+    <string name="standby">Bereitschaft</string>
+    <string name="tuning">Kalibrierung</string>
+    <string name="unknown">Unbekannt</string>
+
+    <!-- Spindle Status -->
+    <string name="forward">Vorwärts</string>
+    <string name="reverse">Rückwärts</string>
+    <string name="stopped">Angehalten</string>
+
+    <!-- Tool List -->
+    <string name="tool">Werkzeug</string>
+    <string name="bed">Bett</string>
+    <string name="chamber">Kammer</string>
+    <string name="filament">Filament</string>
+    <string name="current">Aktuell</string>
+    <string name="active">Aktiv</string>
+    <string name="standby">Bereitschaft</string>
+
+    <!-- Temperature Graph -->
+    <string name="temperature_graph">Temperaturdiagramm</string>
+
+    <!-- Side Bar -->
+    <string name="back">Zurück</string>
+    <string name="home">Startseite</string>
+    <string name="macros">Makros</string>
+    <string name="console">Konsole</string>
+    <string name="estop">Not-Aus</string>
+
+    <!-- Main Page -->
+    <string name="move">Bewegen</string>
+    <string name="extrude">Extrudieren</string>
+    <string name="status">Status</string>
+    <string name="heightmap">Höhenkarte</string>
+    <string name="fans">Lüfter</string>
+    <string name="files">Dateien</string>
+    <string name="network">Netzwerk</string>
+    <string name="settings">Einstellungen</string>
+    <string name="debug">Debug</string>
+    <string name="webcam">Webcam</string>
+
+    <!-- Move Page -->
+    <string name="axis_control_home">Start %s</string>
+    <string name="home_all">Alle starten</string>
+    <string name="true_bed_levelling">Echtes Bett Leveling</string>
+    <string name="mesh_bed_levelling">Mesh Bett Leveling</string>
+    <string name="disable_motors">Motoren deaktivieren</string>
+    <string name="tool_position">Werkzeugposition</string>
+    <string name="machine_position">Maschinenposition</string>
+    <string name="feedrate_label">Vorschubgeschwindigkeit in mm/s</string>
+    <string name="set_move_feedrate">Bewegungsvorschub einstellen (mm/s)</string>
+
+    <!-- Extrude Page -->
+    <string name="extrusion_control">Extrusionssteuerung</string>
+    <string name="retract">Zurückziehen</string>
+    <string name="feed_amount">Vorschubmenge in mm</string>
+    <string name="filament">Filament</string>
+    <string name="choose_filament">Bitte wählen Sie ein Filament</string>
+    <string name="load_filament">Filament laden</string>
+    <string name="unload_filament">Filament entladen</string>
+    <string name="change_filament">Filament wechseln</string>
+    <string name="tool_filament_control">Werkzeug %d Filamentsteuerung</string>
+    <string name="set_extrusion_feedrate">Extrusionsvorschub einstellen (mm/s)</string>
+    <string name="set_extrusion_distance">Extrusionsabstand einstellen (mm)</string>
+
+
+    <!-- Status Page -->
+    <string name="fan_status">Lüfter %d: %d %%</string>
+    <string name="babystepping">Z Babystepping</string>
+    <string name="babystepping_offset">Aktueller Offset: %.3f mm</string>
+    <string name="extruder_drives">Extruderposition</string>
+    <string name="extrusion_factor">Extrusionsfaktor</string>
+    <string name="requested_speed">Angefordert: %.2f mm/s</string>
+    <string name="top_speed">Maximal: %.2f mm/s</string>
+    <string name="volumetric_flow">Volumetrischer Durchfluss:&#x000A;%.2f mm^3/s</string>
+    <string name="speed_factor">Geschwindigkeitsfaktor</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Fortsetzen</string>
+    <string name="print_again">Erneut drucken</string>
+    <string name="jobcontrol">Jobsteuerung</string>
+    <string name="no_job_running">Kein laufender Job.</string>
+    <string name="filename_in_progress">Drucken: %s</string>
+    <string name="filename_finished">Gedruckt: %s</string>
+    <string name="elapsed">Verstrichen: %d:%02d:%02d</string>
+    <string name="estimated">Geschätzt: %d:%02d:%02d</string>
+
+    <!-- Object Cancel -->
+    <string name="object_cancel">Objekt&#x000A;abbrechen</string>
+    <string name="object_cancel_header">Objektabbrechen</string>
+    <string name="objects">Objekte</string>
+    <string name="resume_object">Objekt fortsetzen</string>
+    <string name="cancel_object">Objekt abbrechen</string>
+    <string name="cancel_object_text">[%d]: %s</string>
+    <string name="cancel_current_object">Aktuelles Objekt abbrechen</string>
+
+    <!-- Heightmap -->
+    <string name="height_map">Höhenkarte</string>
+    <string name="height_maps">Höhenkarten</string>
+    <string name="load_heightmap">Laden</string>
+    <string name="unload_heightmap">Entladen</string>
+    <string name="hm_color_scheme">Farbschema:</string>
+    <string name="hm_render_mode_fixed">Fixiert</string>
+    <string name="hm_render_mode_deviation">Abweichung</string>
+    <string name="hm_invert_z">Z-Koordinaten umkehren:</string>
+    <string name="hm_scale_header">Skalierung:</string>
+    <string name="hm_scale_max">%.2f mm oder mehr</string>
+    <string name="hm_scale_min">%.2f mm oder weniger</string>
+    <string name="statistics">Statistiken</string>
+    <string name="hm_num_points">Anzahl der Punkte: %u</string>
+    <string name="hm_area">Probenbereich: %.1f cm^2</string>
+    <string name="hm_max">Maximale Abweichung: %.3f mm</string>
+    <string name="hm_min">Minimale Abweichung: %.3f mm</string>
+    <string name="hm_mean">Durchschnittlicher Fehler: %.3f mm</string>
+    <string name="hm_rms">RMS-Fehler: %.3f mm</string>
+    <string name="hm_not_supported_in_current_mode">Höhenkarte wird in der aktuellen Verbindungsart nicht unterstützt</string>
+
+    <!-- Fans Page -->
+
+    <!-- Files Page -->
+    <string name="file">Datei</string>
+    <string name="folder">Ordner</string>
+    <string name="file_size">Größe: %s</string>
+    <string name="file_date">Datum: %s</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="usb">USB-Dateien</string>
+    <string name="file_cache_state">Dateiinfo-Cache: In Warteschlange(%d) Zwischengespeichert(%d) Anfordern(%s) Miniaturansicht(%s)</string>
+    <string name="file_too_large_uart">Datei zu groß zum Hochladen über UART</string>
+
+    <!-- Network Page -->
+
+    <!-- Webcam -->
+    <string name="select_webcam">Webcam auswählen</string>
+
+    <!-- Popup messages -->
+    <string name="uart_buffer_overflow">UART-Pufferüberlauf</string>
+    <string name="run_macro">Makro ausführen: %s</string>
+    <string name="start_print">Druck starten</string>
+    <string name="file_info">Höhe: %.2f mm&#x000A;Schichthöhe: %.2f mm&#x000A;Druckzeit: %d:%02d:%02d&#x000A;Erstellt von: %s</string>
+    <string name="upload_file">Datei hochladen</string>
+    <string name="uploading_file">Datei wird hochgeladen</string>
+    <string name="finished_uploading">Hochladen der Datei abgeschlossen</string>
+    <string name="upload_failed">Hochladen fehlgeschlagen!</string>
+    <string name="upgrade_firmware">Möchten Sie ein Upgrade von Duet durchführen?</string>
+    <string name="upgrade_failed">Upgrade fehlgeschlagen</string>
+    <string name="upgrade_from">Möchten Sie ein Upgrade mit %s durchführen?</string>
+    <string name="open_console">Konsole öffnen</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="fan_header">Lüfter %d</string>
+    <string name="extrusion_factor_header">Extrusionsfaktor: Extruder %d</string>
+    <string name="close">Schließen</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="num_pad_del">Löschen</string>
+    <string name="invalid_int_malformed">Wert ist keine ganze Zahl</string>
+    <string name="invalid_int_min">Wert zu niedrig</string>
+    <string name="invalid_int_max">Wert zu hoch</string>
+    <string name="invalid_float_malformed">Wert ist keine Gleitkommazahl</string>
+    <string name="invalid_float_min">Wert zu niedrig</string>
+    <string name="invalid_float_max">Wert zu hoch</string>
+    <string name="invalid_text_min">Eingabe zu kurz</string>
+    <string name="invalid_text_max">Eingabe zu lang</string>
+
+    <!-- Settings Page -->
+    <string name="language">Sprache</string>
+    <string name="baud_rate">Baudrate</string>
+    <string name="duet">Duet</string>
+    <string name="hostname_ip">Hostname/IP-Adresse</string>
+    <string name="hostname_ip_hint">Hostname oder IP eingeben</string>
+    <string name="ip_address">IP-Adresse</string>
+    <string name="password">Passwort</string>
+    <string name="poll_interval_ms">Abfrageintervall (ms)</string>
+    <string name="update">Aktualisieren</string>
+    <string name="restart">Neustarten</string>
+    <string name="dev">Entwicklereinstellungen</string>
+    <string name="power_off">Ausschalten</string>
+    <string name="zk_setting">ZK-Einstellungen</string>
+    <string name="touch_calibration">Touch-Kalibrierung</string>
+    <string name="info_timeout">Info-Timeout</string>
+    <string name="brightness">Helligkeit</string>
+    <string name="theme">Design</string>
+    <string name="themes">Designs</string>
+    <string name="screensaver">Bildschirmschoner</string>
+    <string name="timeout">Timeout</string>
+    <string name="enabled">Aktiviert</string>
+    <string name="set_brightness">Helligkeit einstellen</string>
+    <string name="buzzer">Summer</string>
+    <string name="webcam_settings_header">Webcam-Einstellungen</string>
+    <string name="delete_webcam">Löschen</string>
+    <string name="add_new_webcam">Neue Webcam hinzufügen</string>
+    <string name="webcam_update_interval_ms">Aktualisierungsintervall (ms):</string>
+    <string name="webcam_update_interval_ms_hint">Aktualisierungsintervall (ms)</string>
+    <string name="usb_host">USB-C Host-Modus</string>
+    <string name="console_system_commands">Systembefehle in Konsole senden</string>
+    <string name="debug_level">Debug-Ebene</string>
+    <string name="dbg_verbose">Ausführlich</string>
+    <string name="dbg_debug">Debug</string>
+    <string name="dbg_info">Info</string>
+    <string name="dbg_warn">Warnung</string>
+    <string name="dbg_error">Fehler</string>
+    <string name="dbg_fatal">Schwerwiegender&#x000A;Fehler</string>
+
+    <!-- Console Page -->
+    <string name="gcodes">Gcodes</string>
+    <string name="clear">Löschen</string>
+    <string name="send">Senden</string>
+    <string name="enter_command">Befehl eingeben</string>
+    <string name="console_system">Konsole - System</string>
+
+    <!-- Debug Menu -->
+    <string name="open_debug_commands">Debug</string>
+    <string name="dbg_commands">Debug-Befehle</string>
+    <string name="dbg_file_info_cache">Dateiinfo-Cache anzeigen</string>
+    <string name="dbg_verbose_log">Ausführliche Protokolldatei erstellen</string>
+    <string name="dbg_error_log">Fehlerprotokolldatei erstellen</string>
+    <string name="dbg_log_OM">Objektmodell anzeigen</string>
+
+
+    <!-- Guide Settup Page -->
+    <string name="show_on_startup">Beim Start anzeigen</string>
+    <string name="previous">Zurück</string>
+    <string name="next">Weiter</string>
+    <string name="finish">Fertig</string>
+    <string name="page_num">Seite %d/%d</string>
+    <string name="start_guide_header">Wählen Sie einen Guide zum Starten aus</string>
+    <string name="guides">Guides</string>
+
+    <!-- Theme names -->
+    <string name="dark">Dunkel</string>
+    <string name="light">Hell</string>
+    <string name="dark2">Dunkel2</string>
+
+    <!-- Guide names -->
+    <string name="setup">Einrichtung</string>
+
+    <!-- Gcode List Descriptions -->
+    <string name="G0G1_desc">G0 &amp; G1: Bewegen</string>
+    <string name="G2G3_desc">G2 &amp; G3: Kontrollierte Bogenbewegung</string>
+    <string name="G4_desc">G4: Verweilen</string>
+    <string name="G10_temperature_desc">G10: Werkzeugversatz und Temperatureinstellung</string>
+    <string name="G10_workplace_desc">G10: Arbeitsplatz-Koordinatenversatz oder Werkzeugversatz festlegen</string>
+    <string name="G10_retract_desc">G10: Zurückziehen</string>
+    <string name="G11_desc">G11: Zurückziehen aufheben</string>
+    <string name="G17_desc">G17: XY-Ebene für Bogenbewegungen auswählen</string>
+    <string name="G20_desc">G20: Einheiten auf Zoll einstellen</string>
+    <string name="G21_desc">G21: Einheiten auf Millimeter einstellen</string>
+    <string name="G28_desc">G28: Nullpunkt anfahren</string>
+    <string name="G29_desc">G29: Mesh-Bettsondierung</string>
+    <string name="G30_desc">G30: Einzelne Z-Sonde</string>
+    <string name="G31_desc">G31: Aktuellen Sondenstatus setzen oder abfragen</string>
+    <string name="G32_desc">G32: bed.g-Makro ausführen</string>
+    <string name="G38.2_desc">G38.2 bis G38.5: Gerade Sonde</string>
+    <string name="G53_desc">G53: Maschinenkoordinaten verwenden</string>
+    <string name="G54_desc">G54 bis G59.3: Koordinatensystem auswählen</string>
+    <string name="G60_desc">G60: Aktuelle Position in Slot speichern</string>
+    <string name="G90_desc">G90: Absolute Positionierung einstellen</string>
+    <string name="G91_desc">G91: Relative Positionierung einstellen</string>
+    <string name="G92_desc">G92: Position einstellen</string>
+    <string name="M0_desc">M0: Anhalten oder bedingtes Anhalten</string>
+    <string name="M1_desc">M1: Schlafen oder bedingtes Anhalten</string>
+    <string name="M3_desc">M3: Spindel ein, im Uhrzeigersinn (CNC-spezifisch) / Laser ein (Laser-spezifisch)</string>
+    <string name="M4_desc">M4: Spindel ein, gegen den Uhrzeigersinn (CNC-spezifisch)</string>
+    <string name="M5_desc">M5: Spindel aus (CNC-spezifisch), Laser aus (Laser-spezifisch)</string>
+    <string name="M18_desc">M18: Alle Schrittmotoren deaktivieren</string>
+    <string name="M20_desc">M20: SD-Karte auflisten</string>
+    <string name="M21_desc">M21: SD-Karte initialisieren</string>
+    <string name="M22_desc">M22: SD-Karte freigeben</string>
+    <string name="M23_desc">M23: SD-Datei auswählen</string>
+    <string name="M24_desc">M24: SD-Druck starten/fortsetzen</string>
+    <string name="M25_desc">M25: SD-Druck pausieren</string>
+    <string name="M26_desc">M26: SD-Position setzen</string>
+    <string name="M27_desc">M27: SD-Druckstatus abfragen</string>
+    <string name="M28_desc">M28: Schreiben auf SD-Karte beginnen</string>
+    <string name="M29_desc">M29: Schreiben auf SD-Karte beenden</string>
+    <string name="M30_desc">M30: Datei auf der SD-Karte löschen</string>
+    <string name="M32_desc">M32: Datei auswählen und SD-Druck starten</string>
+    <string name="M36_desc">M36: Dateiinformationen abrufen</string>
+    <string name="M37_desc">M37: Simulationsmodus</string>
+    <string name="M38_desc">M38: SHA1-Hash der Zieldatei berechnen</string>
+    <string name="M39_desc">M39: SD-Karteninformationen abrufen</string>
+    <string name="M42_desc">M42: I/O-Pin umschalten</string>
+    <string name="M80_desc">M80: ATX-Stromversorgung einschalten</string>
+    <string name="M81_desc">M81: ATX-Stromversorgung ausschalten</string>
+    <string name="M82_desc">M82: Extruder auf absoluten Modus einstellen</string>
+    <string name="M83_desc">M83: Extruder auf relativen Modus einstellen</string>
+    <string name="M84_desc">M84: Leerlauf-Haltefunktion stoppen</string>
+    <string name="M92_desc">M92: Achsschritte pro Einheit einstellen</string>
+    <string name="M98_desc">M98: Makro/Unterprogramm aufrufen</string>
+    <string name="M99_desc">M99: Rückkehr aus Makro/Unterprogramm</string>
+    <string name="M104_desc">M104: Extrudertemperatur einstellen</string>
+    <string name="M105_desc">M105: Extrudertemperatur abrufen</string>
+    <string name="M106_desc">M106: Lüfter ein</string>
+    <string name="M107_desc">M107: Lüfter aus</string>
+    <string name="M108_desc">M108: Heizung abbrechen</string>
+    <string name="M109_desc">M109: Extrudertemperatur einstellen und warten</string>
+    <string name="M110_desc">M110: Aktuelle Zeilennummer einstellen</string>
+    <string name="M111_desc">M111: Debug-Level einstellen</string>
+    <string name="M112_desc">M112: Not-Aus</string>
+    <string name="M114_desc">M114: Aktuelle Position abrufen</string>
+    <string name="M115_desc">M115: Firmware-Version und -Funktionen abrufen</string>
+    <string name="M116_desc">M116: Warten</string>
+    <string name="M117_desc">M117: Nachricht anzeigen</string>
+    <string name="M118_desc">M118: Nachricht an bestimmtes Ziel senden</string>
+    <string name="M119_desc">M119: Endschalterstatus abrufen</string>
+    <string name="M120_desc">M120: Drücken</string>
+    <string name="M121_desc">M121: Herausziehen</string>
+    <string name="M122_desc">M122: Diagnose</string>
+    <string name="M135_desc">M135: PID-Abtastintervall einstellen</string>
+    <string name="M140_desc">M140: Betttemperatur einstellen (schnell) oder Bett-Heizung konfigurieren</string>
+    <string name="M141_desc">M141: Kammer-Temperatur einstellen (schnell) oder Kammer-Heizung konfigurieren</string>
+    <string name="M143_desc">M143: Maximale Heizertemperatur</string>
+    <string name="M144_desc">M144: Bettbereitschaft</string>
+    <string name="M150_desc">M150: LED-Farben einstellen</string>
+    <string name="M190_desc">M190: Auf Erreichen der Betttemperatur warten</string>
+    <string name="M191_desc">M191: Auf Erreichen der Kammer-Temperatur warten</string>
+    <string name="M200_desc">M200: Filamentdurchmesser einstellen</string>
+    <string name="M201_desc">M201: Maximale Beschleunigung einstellen</string>
+    <string name="M203_desc">M203: Maximale Vorschubgeschwindigkeit einstellen</string>
+    <string name="M204_desc">M204: Druck- und Verfahrbeschleunigungen einstellen</string>
+    <string name="M205_desc">M205: Maximale Geschwindigkeitsänderung in mm/s einstellen</string>
+    <string name="M206_desc">M206: Achsenversatz</string>
+    <string name="M207_desc">M207: Rückzugslänge einstellen</string>
+    <string name="M208_desc">M208: Maximalen Achsweg einstellen</string>
+    <string name="M220_desc">M220: Geschwindigkeitsfaktor-Überschreibung in Prozent einstellen</string>
+    <string name="M221_desc">M221: Extrusionsfaktor-Überschreibung in Prozent einstellen</string>
+    <string name="M226_desc">M226: Synchroner Halt</string>
+    <string name="M260_desc">M260: i2c-Daten senden und/oder anfordern</string>
+    <string name="M261_desc">M261: i2c-Daten anfordern</string>
+    <string name="M280_desc">M280: Servoposition einstellen</string>
+    <string name="M290_desc">M290: Babystepping</string>
+    <string name="M291_desc">M291: Nachricht anzeigen und optional auf Antwort warten</string>
+    <string name="M292_desc">M292: Nachricht bestätigen</string>
+    <string name="M300_desc">M300: Piepton abspielen</string>
+    <string name="M301_desc">M301: PID-Parameter einstellen</string>
+    <string name="M302_desc">M302: Kalte Extrusionen zulassen</string>
+    <string name="M303_desc">M303: Heizungsabstimmung durchführen</string>
+    <string name="M304_desc">M304: PID-Parameter einstellen - Bett</string>
+    <string name="M305_desc">M305: Temperatursensorparameter einstellen</string>
+    <string name="M307_desc">M307: Heizprozessparameter setzen oder abfragen</string>
+    <string name="M308_desc">M308: Sensorparameter setzen oder abfragen</string>
+    <string name="M350_desc">M350: Mikroschrittbetriebsart einstellen</string>
+    <string name="M374_desc">M374: Höhenkarte speichern</string>
+    <string name="M375_desc">M375: Höhenkarte laden</string>
+    <string name="M376_desc">M376: Bettkompensation verjüngen</string>
+    <string name="M400_desc">M400: Auf Beendigung der aktuellen Bewegungen warten</string>
+    <string name="M401_desc">M401: Z-Sonde ausfahren</string>
+    <string name="M402_desc">M402: Z-Sonde zurückziehen</string>
+    <string name="M404_desc">M404: Filamentbreite und Düsendurchmesser</string>
+    <string name="M408_desc">M408: JSON-Style-Antwort melden</string>
+    <string name="M409_desc">M409: Objektmodell abfragen</string>
+    <string name="M450_desc">M450: Druckermodus melden</string>
+    <string name="M451_desc">M451: FFF-Druckermodus auswählen</string>
+    <string name="M452_desc">M452: Lasergerätemodus auswählen</string>
+    <string name="M453_desc">M453: CNC-Gerätemodus auswählen</string>
+    <string name="M470_desc">M470: Verzeichnis auf SD-Karte erstellen</string>
+    <string name="M471_desc">M471: Datei/Verzeichnis auf SD-Karte umbenennen</string>
+    <string name="M486_desc">M486: Objekt abbrechen</string>
+    <string name="M500_desc">M500: Parameter speichern</string>
+    <string name="M501_desc">M501: Gespeicherte Parameter lesen</string>
+    <string name="M502_desc">M502: Gespeicherte Parameter zurücksetzen</string>
+    <string name="M503_desc">M503: Einstellungen anzeigen</string>
+    <string name="M505_desc">M505: Konfigurationsdateiordner festlegen</string>
+    <string name="M540_desc">M540: MAC-Adresse festlegen</string>
+    <string name="M550_desc">M550: Name festlegen</string>
+    <string name="M551_desc">M551: Passwort festlegen</string>
+    <string name="M552_desc">M552: IP-Adresse festlegen, Netzwerkschnittstelle aktivieren/deaktivieren</string>
+    <string name="M553_desc">M553: Netzmaske festlegen</string>
+    <string name="M554_desc">M554: Gateway festlegen</string>
+    <string name="M555_desc">M555: Kompatibilität festlegen</string>
+    <string name="M556_desc">M556: Achsversatzkompensation</string>
+    <string name="M557_desc">M557: Z-Sondenpunkt festlegen oder Rastermessung definieren</string>
+    <string name="M558_desc">M558: Z-Sondentyp festlegen</string>
+    <string name="M559_desc">M559: Datei hochladen</string>
+    <string name="M560_desc">M560: Datei hochladen</string>
+    <string name="M561_desc">M561: Identitätstransformation festlegen</string>
+    <string name="M562_desc">M562: Temperaturfehler zurücksetzen</string>
+    <string name="M563_desc">M563: Werkzeug definieren oder entfernen</string>
+    <string name="M564_desc">M564: Achsen begrenzen</string>
+    <string name="M566_desc">M566: Zulässige sofortige Geschwindigkeitsänderung festlegen</string>
+    <string name="M567_desc">M567: Werkzeugmischungsverhältnisse festlegen</string>
+    <string name="M568_desc">M568: Werkzeugmischungsverhältnisse ein-/ausschalten</string>
+    <string name="M569_desc">M569: Motortreiber-Richtung, Polarität und Schrittimpulszeit festlegen</string>
+    <string name="M569.1_desc">M569.1: Stepper-Treiber Closed-Loop-Steuerung</string>
+    <string name="M570_desc">M570: Heizungsfehlererkennung konfigurieren</string>
+    <string name="M571_desc">M571: Ausgabe beim Extrudieren festlegen</string>
+    <string name="M572_desc">M572: Extruderdruckvorschub einstellen oder melden</string>
+    <string name="M573_desc">M573: Heizungs-PWM melden</string>
+    <string name="M574_desc">M574: Endschalterkonfiguration festlegen</string>
+    <string name="M575_desc">M575: Serielle Kommunikationsparameter festlegen</string>
+    <string name="M577_desc">M577: Warten, bis Endschalter ausgelöst wird</string>
+    <string name="M578_desc">M578: Tintenstrahl-Bits zünden</string>
+    <string name="M579_desc">M579: Kartesische Achsen skalieren</string>
+    <string name="M580_desc">M580: Roland auswählen</string>
+    <string name="M581_desc">M581: Externen Trigger konfigurieren</string>
+    <string name="M582_desc">M582: Externen Trigger überprüfen</string>
+    <string name="M584_desc">M584: Laufwerkszuordnung festlegen</string>
+    <string name="M585_desc">M585: Werkzeug sondieren</string>
+    <string name="M586_desc">M586: Netzwerkprotokolle konfigurieren</string>
+    <string name="M587_desc">M587: WiFi-Hostnetzwerk zur Liste der gespeicherten Netzwerke hinzufügen oder gespeicherte Netzwerke auflisten</string>
+    <string name="M588_desc">M588: WiFi-Hostnetzwerk vergessen</string>
+    <string name="M589_desc">M589: Zugriffspunktparameter konfigurieren</string>
+    <string name="M591_desc">M591: Filament-Sensor konfigurieren</string>
+    <string name="M592_desc">M592: Nichtlineare Extrusion konfigurieren</string>
+    <string name="M593_desc">M593: Dynamische Beschleunigungsanpassung konfigurieren</string>
+    <string name="M594_desc">M594: Höhenfolgemodus aktivieren/deaktivieren</string>
+    <string name="M600_desc">M600: Filamentwechsel-Pause</string>
+    <string name="M650_desc">M650: Peel-Bewegungsparameter festlegen</string>
+    <string name="M651_desc">M651: Peel-Bewegung ausführen</string>
+    <string name="M665_desc">M665: Delta-Konfiguration festlegen</string>
+    <string name="M666_desc">M666: Delta-Endschalteranpassung festlegen</string>
+    <string name="M667_desc">M667: CoreXY- oder verwandten Modus auswählen</string>
+    <string name="M669_desc">M669: Kinematiktyp und Kinematikparameter festlegen</string>
+    <string name="M670_desc">M670: IO-Port-Bit-Zuordnung festlegen</string>
+    <string name="M671_desc">M671: Positionen der Z-Leitspindeln oder Bett-Nivellierschrauben definieren</string>
+    <string name="M672_desc">M672: Z-Sonde programmieren</string>
+    <string name="M673_desc">M673: Ebene am Drehachse ausrichten</string>
+    <string name="M674_desc">M674: Z auf den Mittelpunkt setzen</string>
+    <string name="M675_desc">M675: Mitte der Hohlraum finden</string>
+    <string name="M701_desc">M701: Filament laden</string>
+    <string name="M702_desc">M702: Filament entladen</string>
+    <string name="M703_desc">M703: Filament konfigurieren</string>
+    <string name="M750_desc">M750: 3D-Scanner-Erweiterung aktivieren</string>
+    <string name="M751_desc">M751: 3D-Scanner-Erweiterung über USB registrieren</string>
+    <string name="M752_desc">M752: 3D-Scan starten</string>
+    <string name="M753_desc">M753: Aktuelle 3D-Scanner-Aktion abbrechen</string>
+    <string name="M754_desc">M754: 3D-Scanner kalibrieren</string>
+    <string name="M755_desc">M755: Ausrichtungsmodus für 3D-Scanner festlegen</string>
+    <string name="M756_desc">M756: 3D-Scanner herunterfahren</string>
+    <string name="M851_desc">M851: Z-Probe-Offset festlegen (Marlin-Kompatibilität)</string>
+    <string name="M905_desc">M905: Lokales Datum und Uhrzeit festlegen</string>
+    <string name="M906_desc">M906: Motorströme festlegen</string>
+    <string name="M911_desc">M911: Automatisches Speichern bei Stromausfall konfigurieren</string>
+    <string name="M912_desc">M912: Einstellung des Temperaturmonitors für die Elektronik festlegen</string>
+    <string name="M913_desc">M913: Prozentsatz des normalen Motorstroms festlegen</string>
+    <string name="M914_desc">M914: Spannungseinstellung für den Level Translator festlegen/abfragen</string>
+    <string name="M915_desc">M915: Motorblockierungserkennung konfigurieren</string>
+    <string name="M916_desc">M916: Druck fortsetzen nach Stromausfall</string>
+    <string name="M917_desc">M917: Reduzierung des Motorstillstandsstroms festlegen</string>
+    <string name="M918_desc">M918: Direktverbundenes Display konfigurieren</string>
+    <string name="M929_desc">M929: Starten/Stoppen der Ereignisprotokollierung auf SD-Karte</string>
+    <string name="M950_desc">M950: Heizung, Lüfter oder GPIO/Servo-Pin erstellen</string>
+    <string name="M951_desc">M951: Parameter für den Höhenfolgemodus festlegen</string>
+    <string name="M952_desc">M952: Adresse des CAN-FD-Erweiterungsboards und/oder normale Datenrate festlegen</string>
+    <string name="M953_desc">M953: Schnelle Datenrate für den CAN-FD-Bus festlegen</string>
+    <string name="M997_desc">M997: Firmware-Update in der Anwendung durchführen</string>
+    <string name="M998_desc">M998: Wiederholte Übertragung der Zeile anfordern</string>
+    <string name="M999_desc">M999: Neustart</string>
+    <string name="T_desc">T: Werkzeug auswählen</string>
+</resources>
