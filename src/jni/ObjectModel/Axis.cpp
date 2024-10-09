@@ -54,6 +54,7 @@ namespace OM::Move
 
 	Axis* GetAxisBySlot(const size_t slot, const bool includeHidden)
 	{
+		dbg("Slot %u%s", slot, includeHidden ? " (including hidden)" : "");
 		size_t count = 0;
 		for (size_t i = 0; i < MAX_TOTAL_AXES; ++i)
 		{

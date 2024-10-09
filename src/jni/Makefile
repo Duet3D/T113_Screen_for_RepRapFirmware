@@ -39,9 +39,17 @@ OBJS_DIR_TREE=$(addprefix $(OBJS_ROOT_DIR),$(PROJ_DIR_TREE))
 CFLAGS=-Os -fPIC -pipe -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -Wl,-z,defs -DUSE_ANDROID_LOG
 CXXFLAGS=-Os -fPIC -pipe -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -Wl,-z,defs -DUSE_ANDROID_LOG 
 
+# Add debug flag
+CFLAGS += $(if $(DEBUG),-DDEBUG)
+CXXFLAGS += $(if $(DEBUG),-DDEBUG)
+
 # Add -MMD -MP to generate .d files
 CFLAGS += -MMD -MP
 CXXFLAGS += -MMD -MP
+
+# Add stack traces
+CFLAGS += -funwind-tables -Wl,--no-merge-exidx-entries
+CXXFLAGS += -funwind-tables -Wl,--no-merge-exidx-entries
 
 # Additional compiler flags
 CXXFLAGS+= -fexceptions -Wall -nostdinc++ -std=c++11

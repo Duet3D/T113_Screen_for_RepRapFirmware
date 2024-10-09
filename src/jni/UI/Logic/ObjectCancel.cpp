@@ -249,6 +249,7 @@ namespace UI::ObjectCancel
 	{
 		if (object == nullptr || canvas == nullptr || theme == nullptr)
 		{
+			warn("object, canvas, or theme is null");
 			return;
 		}
 		verbose("Drawing Object %d (%d, %d) -> (%d, %d)",

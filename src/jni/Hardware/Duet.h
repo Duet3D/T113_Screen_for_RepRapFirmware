@@ -68,8 +68,12 @@ namespace Comm
 		void SetCommunicationType(CommunicationType type);
 		const CommunicationType GetCommunicationType() const { return m_communicationType; }
 		void SetPollInterval(uint32_t interval);
-		void ScalePollInterval(float scale);
+		void ScalePollIntervalScale(float scale);
 		const uint32_t GetPollInterval() const { return m_pollInterval; }
+		const uint32_t GetScaledPollInterval() const
+		{
+			return static_cast<uint32_t>(m_pollInterval * m_pollIntervalScale);
+		}
 
 		void SendGcode(const char* gcode);
 		void SendGcodef(const char* fmt, ...);
@@ -132,6 +136,7 @@ namespace Comm
 		bool m_sbcMode;
 
 		uint32_t m_pollInterval;
+		float m_pollIntervalScale;
 		baudrate_t m_baudRate;
 
 		static constexpr uint32_t sm_noSessionKey = 0;

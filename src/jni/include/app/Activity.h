@@ -27,66 +27,68 @@ public:
 	bool needSwitchEffect() const { return mNeedSwitchEffect; }
 
 protected:
-	/**
-	 * @brief 界面传递数据时回调
-	 */
-	virtual void onIntent(const Intent *intentPtr) { }
+  /**
+   * @brief Callback when data is passed to the interface
+   */
+  virtual void onIntent(const Intent* intentPtr) {}
 
-	/**
-	 * @brief 界面显示时回调
-	 */
-	virtual void onResume() { }
+  /**
+   * @brief Callback when the interface is displayed
+   */
+  virtual void onResume() {}
 
-	/**
-	 * @brief 界面隐藏时回调
-	 */
-	virtual void onPause() { }
+  /**
+   * @brief Callback when the interface is hidden
+   */
+  virtual void onPause() {}
 
-	/**
-	 * @brief 执行返回时回调
-	 * @return true 允许返回，false 禁止返回
-	 */
-	virtual bool onBack() { return true; }
+  /**
+   * @brief Callback when the back button is pressed
+   * @return true to allow back navigation, false to disable it
+   */
+  virtual bool onBack() { return true; }
 
-	typedef enum {
-		E_STYLE_PUSH = 0x01,
-		E_STYLE_ZOOM,
-		E_STYLE_ALPHA
-	} EStyle;
+  typedef enum
+  {
+	  E_STYLE_PUSH = 0x01,
+	  E_STYLE_ZOOM,
+	  E_STYLE_ALPHA
+  } EStyle;
 
 protected:
-	int mStyle;
-	int mPushIndex;
-	bool mNeedSwitchEffect;
+  int mStyle;
+  int mPushIndex;
+  bool mNeedSwitchEffect;
 };
 
-
-class Intent {
-public:
-	typedef enum {
+class Intent
+{
+  public:
+	typedef enum
+	{
 		E_INTENT_ACTION_MAIN,
 		E_INTENT_ACTION_VIEW,
 		E_INTENT_ACTION_EDIT
 	} EIntentAction;
 
-	Intent(int action = E_INTENT_ACTION_MAIN, std::string uri = "") :
-		mAction(action), mUri(uri) { }
-	virtual ~Intent() { }
+	Intent(int action = E_INTENT_ACTION_MAIN, std::string uri = "") : mAction(action), mUri(uri) {}
+	virtual ~Intent() {}
 
-public:
+  public:
 	int getAction() const { return mAction; }
 	const std::string& getUri() const { return mUri; }
 
 	/**
-	 * @brief 设置键值数据
-	 * @note 统一设置为string类型，如int类型需转为string类型，再存储，getExtra的时候再转一下
+	 * @brief Set key-value data
+	 * @note Set all values as string type. If the value is an int, convert it to string before storing it, and convert
+	 * it back when retrieving it with getExtra.
 	 */
 	void putExtra(const std::string &key, const std::string &value) {
 		mExtras[key] = value;
 	}
 
 	/**
-	 * @brief 获取key对应的数据
+	 * @brief Get the data corresponding to the key
 	 */
 	const std::string& getExtra(const std::string &key) const {
 		ExtraMap::const_iterator found = mExtras.find(key);
@@ -106,7 +108,6 @@ protected:
 	std::string mUri;
 	ExtraMap mExtras;
 };
-
 
 #include <vector>
 
@@ -134,14 +135,17 @@ private:
 };
 
 #define ACTIVITYFACTORY		ActivityFactory::getInstance()
-#define REGISTER_ACTIVITY(_class) \
-    static struct _ActivityFactory_##_class { \
-        static Activity* create() { \
-            return new _class(); \
-        } \
-        _ActivityFactory_##_class() { \
-        	ACTIVITYFACTORY->registerActivity(#_class, create); \
-        } \
-    } _autoRegister_Activity_##_class
+#define REGISTER_ACTIVITY(_class)                                                                                      \
+	static struct _ActivityFactory_##_class                                                                            \
+	{                                                                                                                  \
+		static Activity* create()                                                                                      \
+		{                                                                                                              \
+			return new _class();                                                                                       \
+		}                                                                                                              \
+		_ActivityFactory_##_class()                                                                                    \
+		{                                                                                                              \
+			ACTIVITYFACTORY->registerActivity(#_class, create);                                                        \
+		}                                                                                                              \
+	} _autoRegister_Activity_##_class
 
 #endif /* _APP_ACTIVITY_H_ */

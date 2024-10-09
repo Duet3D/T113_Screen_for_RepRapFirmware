@@ -126,6 +126,7 @@ namespace UI::Move
 
 	void AxisListItemCallback(const int index, const int id)
 	{
+		dbg("index(%d), id(%d)", index, id);
 		OM::Move::Axis* axis = OM::Move::GetAxisBySlot(index);
 		if (axis == nullptr)
 			return;

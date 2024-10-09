@@ -1,4 +1,6 @@
 #pragma once
+#include "Debug.h"
+#include "Hardware/Duet.h"
 #include "control/ZKTextView.h"
 
 /*
@@ -61,6 +63,8 @@ static int s_yOffset = 1;
 static void onUI_init()
 {
 	// Tips: Add UI initialization display code here, such as mText1->setText("123");
+	info("Screensaver UI init");
+	Comm::DUET.ScalePollIntervalScale(5);
 	LayoutPosition position = mScreensaverTextPtr->getPosition();
 	position.mLeft = 10;
 	position.mTop = 10;
@@ -72,7 +76,10 @@ static void onUI_init()
 /*
  * Triggered when the UI is completely exited
  */
-static void onUI_quit() {}
+static void onUI_quit()
+{
+	Comm::DUET.ScalePollIntervalScale(1);
+}
 
 /**
  * Serial data callback interface
@@ -98,7 +105,7 @@ static bool onUI_Timer(int id)
 	switch (id)
 	{
 	case 0: {
-		ZKTextView* textPtr = mScreensaverTextPtr;
+		static ZKTextView* textPtr = mScreensaverTextPtr;
 		if (textPtr == nullptr)
 		{
 			return true;

@@ -198,7 +198,7 @@ namespace UI::HomeScreen
 			float value = sensor->lastReading;
 #if 0
 			long long now = TimeHelper::getCurrentTime();
-			if (now - sensor->lastReadingTime > 3 * Comm::DUET.GetPollInterval() + PRINTER_REQUEST_TIMEOUT)
+			if (now - sensor->lastReadingTime > 3 * Comm::DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT)
 			{
 				dbg("Sensor %d has timed out", i);
 				value = -273;

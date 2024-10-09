@@ -312,7 +312,7 @@ namespace Comm
 	void sendNext()
 	{
 		long long now = TimeHelper::getCurrentTime();
-		if (now > (s_lastResponseTime + DUET.GetPollInterval() + PRINTER_REQUEST_TIMEOUT))
+		if (now > (s_lastResponseTime + DUET.GetScaledPollInterval() + PRINTER_REQUEST_TIMEOUT))
 		{
 			Reconnect();
 		}

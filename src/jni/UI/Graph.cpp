@@ -100,7 +100,7 @@ namespace UI
 			return;
 		}
 
-		if (!m_waveVisible[index])
+		if (!m_diagram->isVisible() || !m_waveVisible[index])
 		{
 			return;
 		}

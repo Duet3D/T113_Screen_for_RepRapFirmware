@@ -32,7 +32,8 @@ namespace Comm
 {
 	Duet::Duet()
 		: m_communicationType(CommunicationType::none), m_hostname(""), m_password(""), m_sessionTimeout(0),
-		  m_lastRequestTime(0), m_sessionKey(sm_noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL)
+		  m_lastRequestTime(0), m_sessionKey(sm_noSessionKey), m_pollInterval(DEFAULT_PRINTER_POLL_INTERVAL),
+		  m_pollIntervalScale(1.0f)
 	{
 	}
 
@@ -54,6 +55,7 @@ namespace Comm
 		m_sbcMode = false;
 		m_sessionTimeout = 0;
 		m_lastRequestTime = 0;
+		m_pollIntervalScale = 1.0f;
 		ClearIPAddress();
 
 		OM::RemoveAll();
@@ -85,18 +87,31 @@ namespace Comm
 	{
 		if (interval < MIN_PRINTER_POLL_INTERVAL)
 		{
-			info("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
+			warn("Poll interval too low, setting to %d", MIN_PRINTER_POLL_INTERVAL);
 			interval = MIN_PRINTER_POLL_INTERVAL;
 		}
-		info("Setting poll interval to %d", interval);
+		info("Setting poll interval to %u (scaled to %u)",
+			 interval,
+			 static_cast<uint32_t>(interval * m_pollIntervalScale));
 		StoragePreferences::putInt(ID_DUET_POLL_INTERVAL, (int)interval);
-		resetUserTimer(TIMER_UPDATE_DATA, (int)interval);
 		m_pollInterval = interval;
+		resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
-	void Duet::ScalePollInterval(float scale)
+	void Duet::ScalePollIntervalScale(float scale)
 	{
-		SetPollInterval(static_cast<uint32_t>(m_pollInterval * scale));
+		if (scale <= 0.0f)
+		{
+			warn("Invalid scale factor %f", scale);
+			return;
+		}
+
+		info("Scalling poll interval by %f from %u to %u",
+			 scale,
+			 GetScaledPollInterval(),
+			 static_cast<uint32_t>(m_pollInterval * scale));
+		m_pollIntervalScale = scale;
+		resetUserTimer(TIMER_UPDATE_DATA, static_cast<int>(m_pollInterval * m_pollIntervalScale));
 	}
 
 	bool Duet::AsyncGet(const char* subUrl,

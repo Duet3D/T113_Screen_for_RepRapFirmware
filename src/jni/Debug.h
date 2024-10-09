@@ -43,21 +43,47 @@ void SetDebugLevel(DebugLevel level);
 const DebugLevel& GetDebugLevel();
 
 void verbose_inner(const char* tag, const char* fmt, ...);
-#define verbose(fmt, args...) verbose_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
-
 void dbg_inner(const char* tag, const char* fmt, ...);
-#define dbg(fmt, args...) dbg_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
-
 void info_inner(const char* tag, const char* fmt, ...);
-#define info(fmt, args...) info_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
-
 void warn_inner(const char* tag, const char* fmt, ...);
-#define warn(fmt, args...) warn_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
-
 void error_inner(const char* tag, const char* fmt, ...);
-#define error(fmt, args...) error_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
-
 void fatal_inner(const char* tag, const char* fmt, ...);
-#define fatal(fmt, args...) fatal_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args)
+
+#ifdef DEBUG
+#define verbose(fmt, args...)                                                                                          \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		verbose_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                       \
+	} while (0)
+#define dbg(fmt, args...)                                                                                              \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		dbg_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                           \
+	} while (0)
+#else
+#define verbose(fmt, args...)
+#define dbg(fmt, args...)
+#endif
+
+#define info(fmt, args...)                                                                                             \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		info_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                          \
+	} while (0)
+#define warn(fmt, args...)                                                                                             \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		warn_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                          \
+	} while (0)
+#define error(fmt, args...)                                                                                            \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		error_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                         \
+	} while (0)
+#define fatal(fmt, args...)                                                                                            \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		fatal_inner(__FILE__, "%s(%d): " fmt, __FUNCTION__, __LINE__, ##args);                                         \
+	} while (0)
 
 #endif /* JNI_DEBUG_HPP_ */
