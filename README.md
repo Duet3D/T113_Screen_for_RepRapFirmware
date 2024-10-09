@@ -3,6 +3,7 @@
 This firmware provides a graphical user interface to control a Duet3D control board running RRF3.5 or later in standalone mode.
 
 - [DuetScreen](#duetscreen)
+  - [Note on Licensing](#licensing)
   - [Upgrading](#upgrading)
     - [Network](#network)
     - [USB](#usb)
@@ -33,6 +34,11 @@ This firmware provides a graphical user interface to control a Duet3D control bo
       - [Accessing GUI Elements](#accessing-gui-elements)
       - [Using Object Model Information](#using-object-model-information)
 
+## Licensing
+
+Duet3D has decided to release our work under the GPL v3 License for the benefit of the RepRapFirmware community who have screens that use the Z6s and T113 processors. Due to issues with accessing the souce code for the underlying Linux distribution that the Flythings architecture runs on we are not providing screen hardware for this architecture as a product at this point.
+
+We are not able to provide any support for this project.
 
 ## Upgrading
 
